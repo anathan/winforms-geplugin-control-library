@@ -26,12 +26,11 @@ _GEWebBorwserEventHandeler_ *ScriptError* <br><br>Raised when there is a script 
 == Public methods == 
 
 _void_ *Ready*(IGEPlugin plugin) <br><br>
-This method should be called from javascript when the plugin is ready. Ideally this would be done in the "google.earth.createInstance" callback function.<br>i.e. window.external.Ready(ge);
+This method should be called from javascript when the plugin is ready. Ideally this would be done in the "google.earth.createInstance" callback function. e.g. window.external.Ready(ge);
 
 _void_ *LoadKml*(_string_ url) <br><br>Loads a kml/kmz file specified by the url.
 
-_void_ *LoadKmlCallBack*(IKmlFeature kmlFeature) <br><br>This method should be called from javascript when a kml or kmz file has been successfully loaded. Ideally this is done in the "google.earth.fetchKml" callback function.<br>
-i.e. window.external.LoadKmlCallBack(kmlFeature);.
+_void_ *LoadKmlCallBack*(IKmlFeature kmlFeature) <br><br>This method should be called from javascript when a kml or kmz file has been successfully loaded. Ideally this is done in the "google.earth.fetchKml" callback function. e.g. window.external.LoadKmlCallBack(kmlFeature);
 
 _object_ *CreatePlacemark*(_string_ id, _string_ name, _double_ lat, _double_ lng, _string_ description) <br><br>Create a placemark and add it to the plug-in.
 
