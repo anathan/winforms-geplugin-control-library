@@ -3,45 +3,46 @@ GEWebBrowser
 
 = Introduction =
 
-The main control that holds the Google Earth Plugin 
-
+The main control that holds the Google Earth Plug-in. 
 
 = Details =
 
-The GEWebBrowser inherits from the standard System.Windows.Forms.WebBrowser control 
+The GEWebBrowser inherits from the standard [http://msdn.microsoft.com/en-us/library/system.windows.forms.webbrowser.aspx System.Windows.Forms.WebBrowser] control class.
 
-= Constructor = 
+The GEWebBrowser control cannot be used by partially trusted code. For more information, see [http://msdn.microsoft.com/en-us/library/8skskf63.aspx Using Libraries from Partially Trusted Code]
 
-GEWebBrowser() - _Initializes a new instance of the GEWebBrowser class._
+== Constructor == 
 
-= Public events =
+_GEWebBrowser_ GEWebBrowser() <br><br>Initializes a new instance of the GEWebBrowser class.
 
-_GEWebBorwserEventHandeler_ *KmlLoaded* - _Raised when the plugin is ready_
+== Public events ==
 
-_GEWebBorwserEventHandeler_ *PluginReady* - _Raised when a kml/kmz file has loaded_
+_GEWebBorwserEventHandeler_ *KmlLoaded* <br><br>Raised when the plug-in is ready.
 
-_GEWebBorwserEventHandeler_ *ScriptError* - _Raised when there is a script error in the document_
+_GEWebBorwserEventHandeler_ *PluginReady* <br><br>Raised when a kml/kmz file has loaded.
 
-= Public methods = 
+_GEWebBorwserEventHandeler_ *ScriptError* <br><br>Raised when there is a script error in the document.
 
-_void_ *Ready*(IGEPlugin plugin) - _
-This method should be called from javascript when the plugin is ready. Ideally this would be done in the "google.earth.createInstance" callback function.<br>i.e. window.external.Ready(ge);_
+== Public methods == 
 
-_void_ *LoadKml*(string url) - _Loads a kml/kmz file specified by the url._
+_void_ *Ready*(IGEPlugin plugin) <br><br>
+This method should be called from javascript when the plugin is ready. Ideally this would be done in the "google.earth.createInstance" callback function.<br>i.e. window.external.Ready(ge);
 
-_void_ *LoadKmlCallBack*(IKmlFeature kmlFeature) - _This method should be called from javascript when a kml or kmz file has been successfully loaded. Ideally this is done in the "google.earth.fetchKml" callback function.<br>
-i.e. window.external.LoadKmlCallBack(kmlFeature);_
+_void_ *LoadKml*(_string_ url) <br><br>Loads a kml/kmz file specified by the url.
 
-_object_ *CreatePlacemark*(string id, string name, double lat, double lng, string description) - _Create a placemark and add it to the plugin_
+_void_ *LoadKmlCallBack*(IKmlFeature kmlFeature) <br><br>This method should be called from javascript when a kml or kmz file has been successfully loaded. Ideally this is done in the "google.earth.fetchKml" callback function.<br>
+i.e. window.external.LoadKmlCallBack(kmlFeature);.
 
-_object_ *CreatLookAt*(double lat, double lng, double alt, double range, int mode) - _Create a KmlLookAt object_
+_object_ *CreatePlacemark*(_string_ id, _string_ name, _double_ lat, _double_ lng, _string_ description) <br><br>Create a placemark and add it to the plug-in.
 
-_void_ *CreateHtmlStringBalloon*(string text) - _Create and display a Html String Balloon object in the plugin_
+_object_ *CreatLookAt*(_double_ lat, _double_ lng, _double_ alt, _double_ range, int mode) <br><br>Create a KmlLookAt object.
 
-_void_ *InjectJavascript*(string javascript) - _Injects a javascript element into the document head_
+_void_ *CreateHtml_string_Balloon*(_string_ text) <br><br>Create and display a Html _string_ Balloon object in the plug-in.
 
-_object_ *InvokeJavascript*(string function) - _Executes a script function defined in the currently loaded document._
+_void_ *InjectJavascript*(_string_ javascript) <br><br>Injects a javascript element into the document head.
 
-_object_ *InvokeJavascript*(string function, object[] args) - _Executes a script function defined in the currently loaded document using the supplied arguments_
+_object_ *InvokeJavascript*(_string_ function) <br><br>Executes a script function defined in the currently loaded document.
 
-_void_ *ModifyCss*(string elementId, string css, bool overwrite) - _Ammend or overwrite the css style of a DOM element_
+_object_ *InvokeJavascript*(_string_ function, _object[]_ args) <br><br>Executes a script function defined in the currently loaded document using the supplied arguments.
+
+_void_ *ModifyCss*(_string_ elementId, _string_ css, _bool_ overwrite) <br><br>Amend or overwrite the css style of a DOM element.
