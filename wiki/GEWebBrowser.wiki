@@ -1,0 +1,10 @@
+GEWebBrowser   
+
+= Introduction =
+
+The main control that holds the Google Earth Plugin 
+
+
+= Details =
+
+The GEWebBrowser inherits from the standard System.Windows.Forms.WebBrowser control 
