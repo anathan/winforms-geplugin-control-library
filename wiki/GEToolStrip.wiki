@@ -1,0 +1,12 @@
+GEToolStrip   
+
+= Introduction =
+
+The GEToolStrip control intergrates with the GEWebBrowser to provide controls for the basic options in the Google Earth Plugin. 
+
+
+= Details =
+
+The GEToolStrip inherits from the standard System.Windows.Forms.ToolStrip control 
+
+ 
