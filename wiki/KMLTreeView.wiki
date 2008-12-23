@@ -2,9 +2,27 @@
 
 = Introduction =
 
-The KMLTreeView control intergtes with the GEWebBrowser to display kml/kmz files in a standard tree view.
-
+The KMLTreeView control intergtes with the GEWebBrowser to display kml/kmz files in a standard tree structure. 
 
 = Details =
 
-The KMLTreeViewcontrol inherits from the standard System.Windows.Forms.TreeView control 
+The KMLTreeViewcontrol inherits from the standard [http://msdn.microsoft.com/en-us/library/system.web.ui.webcontrols.treeview.aspx System.Windows.Forms.TreeView] control class and has the same base members, methods, properties and events. 
+
+== Constructor == 
+
+_KMLTreeView_ KMLTreeView() <br><br>Initializes a new instance of the KMLTreeView class
+
+== Public properties ==
+
+_bool_ *!FlyToOnDoubleClickNode*<br><br>
+Gets or sets a value indicating whether the plugin should 'fly to' the location (if any) of the feature represented by the treenode (default is true)
+
+_bool_ *!OpenBalloonOnDoubleClickNode*<br><br>
+Gets or sets a value indicating whether to open the balloon (if any) when feature represented by the treenode is double clicked (default is true)
+
+
+== Public methods == 
+
+_void_ *ParsekmlObject*(_object_ kmlObject)<br><br>Recursively parses a kml object into the KmlTreeView
+
+_void_ *!SetPluginInstance*(_object_ ge)<br><br>Set an instance of the plugin to work with this should be the same object returned by GEWebBrowser !PluginReady
