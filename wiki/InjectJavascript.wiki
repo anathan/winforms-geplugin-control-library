@@ -37,6 +37,6 @@ Producing this markup
 
 == Remarks ==
 
-This method should only be used once a document has been loaded for it to have any meaning.
+This method should only be used once a document has been loaded in the GEWebBrowser for it to have any meaning.
 
 The overloaded 'partner' function InvokeJavascritpt can be used to call a javascript function once it has been injected.
