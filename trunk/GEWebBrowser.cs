@@ -70,12 +70,12 @@ namespace FC.GEPluginCtrls
         //// Public events
 
         /// <summary>
-        /// Rasied when the plugin is ready
+        /// Raised when the plugin is ready
         /// </summary>
         public event GEWebBorwserEventHandeler PluginReady;
 
         /// <summary>
-        /// Rasied when a kml/kmz file has loaded
+        /// Raised when a kml/kmz file has loaded
         /// </summary>
         public event GEWebBorwserEventHandeler KmlLoaded;
 
@@ -134,62 +134,6 @@ namespace FC.GEPluginCtrls
         public void LoadKmlCallBack(IKmlFeature kmlFeature)
         {
             this.OnKmlLoaded(kmlFeature, new GEEventArgs());
-        }
-
-        /// <summary>
-        /// Create a placemark and add it to the plugin
-        /// </summary>
-        /// <param name="id">An ID for the placemark</param>
-        /// <param name="name">Placemark name</param>
-        /// <param name="lat">latitude in decimal degrees</param>
-        /// <param name="lng">lonitude in decimal degrees</param>
-        /// <param name="description">Placemark description text</param>
-        /// <returns>The placemark object</returns>
-        public object CreatePlacemark(string id, string name, double lat, double lng, string description)
-        {
-            IKmlPlacemark placemark = this.geplugin.createPlacemark(id);
-            placemark.setName(name);
-            placemark.setDescription(description);
-            this.geplugin.getFeatures().appendChild(placemark);
-            IKmlPoint point = this.geplugin.createPoint(String.Empty);
-            point.setLatitude(lat);
-            point.setLongitude(lng);
-            placemark.setGeometry(point);
-            return placemark;
-        }
-
-        /// <summary>
-        /// Create a KmlLookAt object 
-        /// </summary>
-        /// <param name="lat">latitude in decimal degrees</param>
-        /// <param name="lng">longitude in decimal degrees</param>
-        /// <param name="alt">altitude in meters</param>
-        /// <param name="range">range in meters</param>
-        /// <param name="mode">GEPlugin Altitude Mode</param>
-        /// <returns>LookAt object</returns>
-        public object CreatLookAt(double lat, double lng, double alt, double range, int mode)
-        {
-            IKmlLookAt lookAt = this.geplugin.getView().copyAsLookAt(this.geplugin.ALTITUDE_RELATIVE_TO_GROUND);
-            lookAt.setRange(range);
-            lookAt.setLatitude(lat);
-            lookAt.setLongitude(lng);
-            lookAt.setAltitude(alt);
-            lookAt.setAltitudeMode(mode);
-            return lookAt;
-        }
-
-        /// <summary>
-        /// Create and display a Html String Balloon object in the plugin
-        /// </summary>
-        /// <param name="text">The message to display</param>
-        public void CreateHtmlStringBalloon(string text)
-        {
-            if (this.geplugin != null)
-            {
-                IGEHtmlStringBalloon balloon = this.geplugin.createHtmlStringBalloon(String.Empty);
-                balloon.setContentString(text);
-                this.geplugin.setBalloon(balloon);
-            }
         }
 
         /// <summary>
@@ -300,7 +244,7 @@ namespace FC.GEPluginCtrls
         }
 
         /// <summary>
-        /// Protected method for rasing the PluginReady event
+        /// Protected method for raising the PluginReady event
         /// </summary>
         /// <param name="plugin">The plugin object</param>
         /// <param name="e">Event arguments</param>
@@ -313,7 +257,7 @@ namespace FC.GEPluginCtrls
         }
 
         /// <summary>
-        /// Protected method for rasing the KmlLoaded event
+        /// Protected method for raising the KmlLoaded event
         /// </summary>
         /// <param name="kmlObject">The kmlObject object</param>
         /// <param name="e">Event arguments</param>
@@ -326,7 +270,7 @@ namespace FC.GEPluginCtrls
         }
 
         /// <summary>
-        /// Protected method for firing the ScriptError event
+        /// Protected method for raising the ScriptError event
         /// </summary>
         /// <param name="sender">The sending object</param>
         /// <param name="e">Event arguments</param>
@@ -341,7 +285,7 @@ namespace FC.GEPluginCtrls
         //// Private Methods
 
         /// <summary>
-        /// Fires when the document has finished loading
+        /// Called when the document has finished loading
         /// </summary>
         /// <param name="sender">Event object</param>
         /// <param name="e">Event arguments</param>
@@ -352,7 +296,7 @@ namespace FC.GEPluginCtrls
         }
 
         /// <summary>
-        /// Fires when there is a script error in the window
+        /// Called when there is a script error in the window
         /// </summary>
         /// <param name="sender">Event object</param>
         /// <param name="e">Event arguments</param>

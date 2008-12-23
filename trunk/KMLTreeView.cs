@@ -122,7 +122,7 @@ namespace FC.GEPluginCtrls
         }
 
         /// <summary>
-        /// Recursivly parses a kml object into the tree
+        /// Recursively parses a kml object into the tree
         /// </summary>
         /// <param name="kmlObject">The kml object to parse</param>
         public void ParsekmlObject(object kmlObject)
@@ -256,7 +256,7 @@ namespace FC.GEPluginCtrls
         }
 
         /// <summary>
-        /// Fires when a tree node is checked
+        /// Called when a tree node is checked
         /// </summary>
         /// <param name="sender">A tree node</param>
         /// <param name="e">Event Arugments</param>
@@ -280,7 +280,7 @@ namespace FC.GEPluginCtrls
         }
 
         /// <summary>
-        /// Fires when a tree node is double clicked
+        /// Called when a tree node is double clicked
         /// </summary>
         /// <param name="sender">The TreeView</param>
         /// <param name="e">Event Arugments</param>
@@ -348,7 +348,7 @@ namespace FC.GEPluginCtrls
         }
 
         /// <summary>
-        /// Fires after a tree node has expanded
+        /// Called after a tree node has expanded
         /// </summary>
         /// <param name="sender">The TreeView</param>
         /// <param name="e">Event Arugments</param>
@@ -370,7 +370,7 @@ namespace FC.GEPluginCtrls
         }
 
         /// <summary>
-        /// Fires after a tree node has collapsed
+        /// Called after a tree node has collapsed
         /// </summary>
         /// <param name="sender">The TreeView</param>
         /// <param name="e">Event Arugments</param>
