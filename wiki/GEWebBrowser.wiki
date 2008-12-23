@@ -1,5 +1,5 @@
+#summary GEWebBrowser control notes
 #labels Phase-Implementation
-GEWebBrowser   
 
 = Introduction =
 
