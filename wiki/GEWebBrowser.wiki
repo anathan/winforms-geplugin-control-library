@@ -17,26 +17,26 @@ _GEWebBrowser_ GEWebBrowser() <br><br>Initializes a new instance of the GEWebBro
 
 == Public events ==
 
-_GEWebBorwserEventHandeler_ *KmlLoaded* <br><br>Raised when the plug-in is ready.
+_GEWebBorwserEventHandeler_ *!KmlLoaded* <br><br>Raised when the plug-in is ready.
 
-_GEWebBorwserEventHandeler_ *PluginReady* <br><br>Raised when a kml/kmz file has loaded.
+_GEWebBorwserEventHandeler_ *!PluginReady* <br><br>Raised when a kml/kmz file has loaded.
 
-_GEWebBorwserEventHandeler_ *ScriptError* <br><br>Raised when there is a script error in the document.
+_GEWebBorwserEventHandeler_ *!ScriptError* <br><br>Raised when there is a script error in the document.
 
 == Public methods == 
 
 _void_ *Ready*(IGEPlugin plugin) <br><br>
 This method should be called from javascript when the plugin is ready. Ideally this would be done in the "google.earth.createInstance" callback function. e.g. window.external.Ready(ge);
 
-_void_ *LoadKml*(_string_ url) <br><br>Loads a kml/kmz file specified by the url.
+_void_ *!LoadKml*(_string_ url) <br><br>Loads a kml/kmz file specified by the url.
 
-_void_ *LoadKmlCallBack*(IKmlFeature kmlFeature) <br><br>This method should be called from javascript when a kml or kmz file has been successfully loaded. Ideally this is done in the "google.earth.fetchKml" callback function. e.g. window.external.LoadKmlCallBack(kmlFeature);
+_void_ *!LoadKmlCallBack*(IKmlFeature kmlFeature) <br><br>This method should be called from javascript when a kml or kmz file has been successfully loaded. Ideally this is done in the "google.earth.fetchKml" callback function. e.g. window.external.LoadKmlCallBack(kmlFeature);
 
-_object_ *CreatePlacemark*(_string_ id, _string_ name, _double_ lat, _double_ lng, _string_ description) <br><br>Create a placemark and add it to the plug-in.
+_object_ *!CreatePlacemark*(_string_ id, _string_ name, _double_ lat, _double_ lng, _string_ description) <br><br>Create a placemark and add it to the plug-in.
 
-_object_ *CreatLookAt*(_double_ lat, _double_ lng, _double_ alt, _double_ range, int mode) <br><br>Create a KmlLookAt object.
+_object_ *!CreatLookAt*(_double_ lat, _double_ lng, _double_ alt, _double_ range, int mode) <br><br>Create a !KmlLookAt object.
 
-_void_ *CreateHtml_string_Balloon*(_string_ text) <br><br>Create and display a Html _string_ Balloon object in the plug-in.
+_void_ *!CreateHtml_string_Balloon*(_string_ text) <br><br>Create and display a Html _string_ Balloon object in the plug-in.
 
 _void_ *InjectJavascript*(_string_ javascript) <br><br>Injects a javascript element into the document head.
 
@@ -44,4 +44,4 @@ _object_ *InvokeJavascript*(_string_ function) <br><br>Executes a script functio
 
 _object_ *InvokeJavascript*(_string_ function, _object[]_ args) <br><br>Executes a script function defined in the currently loaded document using the supplied arguments.
 
-_void_ *ModifyCss*(_string_ elementId, _string_ css, _bool_ overwrite) <br><br>Amend or overwrite the css style of a DOM element.
+_void_ *!ModifyCss*(_string_ elementId, _string_ css, _bool_ overwrite) <br><br>Amend or overwrite the css style of a DOM element.
