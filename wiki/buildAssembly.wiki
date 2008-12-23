@@ -7,6 +7,6 @@ The control library is compiled in to an assembly [http://code.google.com/p/winf
 
 There are a number of ways you can obtain the library.
 
-  # You can download the c# solution file and build the assembly using Visual Studio. This will do everything for you. Just load the solution and hit F5.
-  # You can build the Interop.GEPlugin.dll manually using [http://msdn.microsoft.com/en-us/library/tt0cf3sx(VS.80).aspx tlbimp.exe] and then add it as a reference to the FC.GEPluginCtrls.dll assembly. To do this you would build the FC.GEPluginCtrls.dll using [http://msdn.microsoft.com/en-us/library/78f4aasd.aspx csc.exe]. I have more detailed notes on this process, as well as make.bat file, I will upload these soon.
-  # You can just download the latest versions from the [http://code.google.com/p/winforms-geplugin-control-library/source/browse/trunk#trunk/bin/Release Release folder]
+ # You can download the c# solution file and build the assembly using Visual Studio. This will do everything for you. Just load the solution and hit F5.
+ # You can build the Interop.GEPlugin.dll manually using [http://msdn.microsoft.com/en-us/library/tt0cf3sx(VS.80).aspx tlbimp.exe] and then add it as a reference to the FC.GEPluginCtrls.dll assembly. To do this you would build the FC.GEPluginCtrls.dll using [http://msdn.microsoft.com/en-us/library/78f4aasd.aspx csc.exe]. I have more detailed notes on this process, as well as make.bat file, I will upload these soon.
+ # You can just download the latest versions from the [http://code.google.com/p/winforms-geplugin-control-library/source/browse/trunk#trunk/bin/Release Release folder]
