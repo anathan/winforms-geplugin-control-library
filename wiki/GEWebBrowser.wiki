@@ -7,7 +7,7 @@ The main control that holds the Google Earth Plug-in.
 
 = Details =
 
-The GEWebBrowser inherits from the standard [http://msdn.microsoft.com/en-us/library/system.windows.forms.webbrowser.aspx System.Windows.Forms.WebBrowser] control class.
+The GEWebBrowser inherits from the standard [http://msdn.microsoft.com/en-us/library/system.windows.forms.webbrowser.aspx System.Windows.Forms.WebBrowser] control class and has the same base members, methods, properties and events. 
 
 The GEWebBrowser control cannot be used by partially trusted code. For more information, see [http://msdn.microsoft.com/en-us/library/8skskf63.aspx Using Libraries from Partially Trusted Code]
 
@@ -17,11 +17,20 @@ _GEWebBrowser_ GEWebBrowser() <br><br>Initializes a new instance of the GEWebBro
 
 == Public events ==
 
-_GEWebBorwserEventHandeler_ *!KmlLoaded* <br><br>Raised when the plug-in is ready.
+ DataBinding Occurs when the server control binds to a data source. (Inherited from Control.) 
+ DataBound Occurs after the server control binds to a data source. (Inherited from BaseDataBoundControl.) 
+ Disposed Occurs when a server control is released from memory, which is the last stage of the server control lifecycle when an ASP.NET page is requested. (Inherited from Control.) 
+ Init Occurs when the server control is initialized, which is the first step in its lifecycle. (Inherited from Control.) 
+ Load Occurs when the server control is loaded into the Page object. (Inherited from Control.) 
+ PreRender Occurs after the Control object is loaded but prior to rendering. (Inherited from Control.) 
+ SelectedNodeChanged Occurs when a node is selected in the TreeView control.  
+ TreeNodeCheckChanged Occurs when a check box in the TreeView control changes state between posts to the server.  
+ TreeNodeCollapsed Occurs when a node is collapsed in the TreeView control.  
+ TreeNodeDataBound Occurs when a data item is bound to a node in the TreeView control.  
+ TreeNodeExpanded Occurs when a node is expanded in the TreeView control.  
+ TreeNodePopulate Occurs when a node with its PopulateOnDemand property set to true is expanded in the TreeView control.  
+ Unload Occurs when the server control is unloaded from memory. (Inherited from Control.) 
 
-_GEWebBorwserEventHandeler_ *!PluginReady* <br><br>Raised when a kml/kmz file has loaded.
-
-_GEWebBorwserEventHandeler_ *!ScriptError* <br><br>Raised when there is a script error in the document.
 
 == Public methods == 
 
