@@ -1,4 +1,4 @@
-KMLTreeView   
+#summary KMLTreeView control notes
 
 = Introduction =
 
