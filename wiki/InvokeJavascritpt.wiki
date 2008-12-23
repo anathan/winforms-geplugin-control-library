@@ -6,13 +6,17 @@ Executes an javascript function defined in the current document
 
 == Overload List ==
 
+{{{
 public object InvokeJavascript(string)
+}}}
 
+{{{
 public object InvokeJavascript(string, object[])
+}}}
         
 == Examples ==
 
-Imagine we have the following javscript function defiend in the current document
+Imagine we have the following javascript function defined in the current document
 
 {{{
 function jsEval(s) {
@@ -23,5 +27,7 @@ function jsEval(s) {
 We can use the InvokeJavascritpt method to call this function like so 
 
 {{{
-geWebBrowser1.InvokeJavascript("jsExec", new object[] { "alert("+result+"+1)" });//alert 3
+geWebBrowser1.InvokeJavascript("jsExec", new object[] { "alert(1+1)" });
 }}}
+
+Which would cause the GEWebBrowser to alert '2'
