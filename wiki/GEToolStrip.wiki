@@ -18,16 +18,16 @@ Initializes a new instance of the GEToolStrip class.
 
 == Public properties == 
 
-_bool_ *ShowNavigationItems*<br><br>Gets or sets a value indicating whether the Navigation items are visible
+_bool_ *!ShowNavigationItems*<br><br>Gets or sets a value indicating whether the Navigation items are visible
 
-_bool_ *ShowLayersDropDown*<br><br>Gets or sets a value indicating whether the Layers drop down is visible
+_bool_ *!ShowLayersDropDown*<br><br>Gets or sets a value indicating whether the Layers drop down is visible
 
-_bool_ *ShowOptionsDropDown*<br><br>Gets or sets a value indicating whether the Options drop down is visible
+_bool_ *!ShowOptionsDropDown*<br><br>Gets or sets a value indicating whether the Options drop down is visible
 
-_bool_ *ShowViewDropDown*<br><br>Gets or sets a value indicating whether the View drop down is visible
+_bool_ *!ShowViewDropDown*<br><br>Gets or sets a value indicating whether the View drop down is visible
 
 == Public methods ==
 
-_void_ *SetPluginInstance*(_object_ ge)<br><br>Set the plugin instance for the control to work with
+_void_ *!SetPluginInstance*(_object_ ge)<br><br>Set the plugin instance for the control to work with
 
-_void_ *SetDocumentInstance*(_HtmlDocument doc)<br><br>Set the html document for the control to work with
+_void_ *!SetDocumentInstance*(_!HtmlDocument doc)<br><br>Set the html document for the control to work with
