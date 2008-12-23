@@ -1,0 +1,27 @@
+#summary Using the InvokeJavascritpt method
+
+= Introduction =
+
+Executes an javascript function defined in the current document
+
+== Overload List ==
+
+public object InvokeJavascript(string)
+
+public object InvokeJavascript(string, object[])
+        
+== Examples ==
+
+Imagine we have the following javscript function defiend in the current document
+
+{{{
+function jsEval(s) {
+ return eval(s); 
+}
+}}}
+
+We can use the InvokeJavascritpt method to call this function like so 
+
+{{{
+geWebBrowser1.InvokeJavascript("jsExec", new object[] { "alert("+result+"+1)" });//alert 3
+}}}
