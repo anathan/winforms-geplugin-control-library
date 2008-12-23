@@ -1,5 +1,5 @@
+#summary GEToolStrip control notes
 #labels Phase-Implementation
-GEToolStrip   
 
 = Introduction =
 
@@ -31,4 +31,3 @@ _bool_ *ShowViewDropDown*<br><br>Gets or sets a value indicating whether the Vie
 _void_ *SetPluginInstance*(_object_ ge)<br><br>Set the plugin instance for the control to work with
 
 _void_ *SetDocumentInstance*(_HtmlDocument doc)<br><br>Set the html document for the control to work with
-
