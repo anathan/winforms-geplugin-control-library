@@ -31,7 +31,7 @@ _object_ *!CreatePlacemark*(_string_ id, _string_ name, _double_ lat, _double_ l
 
 _object_ *!CreatLookAt*(_double_ lat, _double_ lng, _double_ alt, _double_ range, int mode) <br><br>Create a !KmlLookAt object.
 
-_void_ *!CreateHtml_string_Balloon*(_string_ text) <br><br>Create and display a Html _string_ Balloon object in the plug-in.
+_void_ *!CreateHtmlstringBalloon*(_string_ text) <br><br>Create and display a Html _string_ Balloon object in the plug-in.
 
 _void_ *[InjectJavascript]*(_string_ javascript) <br><br>Injects a javascript element into the document head.
 
