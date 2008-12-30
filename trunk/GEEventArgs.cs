@@ -26,12 +26,12 @@ namespace FC.GEPluginCtrls
     public class GEEventArgs : EventArgs
     {
         /// <summary>
-        /// Error message
+        /// Event message
         /// </summary>
         private string message;
 
         /// <summary>
-        /// Error data
+        /// Event data
         /// </summary>
         private string data;
 

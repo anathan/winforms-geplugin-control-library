@@ -25,20 +25,26 @@ namespace FC.GEPluginCtrls
     using GEPlugin;
 
     /// <summary>
-    /// Custom event handler
+    /// Main delegate event handler
     /// </summary>
     /// <param name="sender">The sending object</param>
-    /// <param name="e">Any event arguments</param>
+    /// <param name="e">The event arguments</param>
     public delegate void GEWebBorwserEventHandeler(object sender, GEEventArgs e);
 
     /// <summary>
     /// This control simplifies working with the Google Earth Plugin
     /// </summary>
-    [System.Runtime.InteropServices.ComVisibleAttribute(true)]
     [PermissionSet(SecurityAction.Demand, Name = "FullTrust")]
     public partial class GEWebBrowser : WebBrowser
     {
-        //// Private fields
+        #region Private fields
+
+        /// <summary>
+        /// External is A COM Visible class that holds all the public methods
+        /// to be called from javascript. An instance of this is set
+        /// to the base object's ObjectForScripting property in the constuctor.
+        /// </summary>
+        private External external = null;
 
         /// <summary>
         /// Required designer variable.
@@ -51,7 +57,7 @@ namespace FC.GEPluginCtrls
         /// </summary>
         private IGEPlugin geplugin = null;
 
-        //// Constructors 
+        #endregion
 
         /// <summary>
         /// Initializes a new instance of the GEWebBrowser class.
@@ -59,15 +65,22 @@ namespace FC.GEPluginCtrls
         public GEWebBrowser()
             : base()
         {
+            this.external = new External();
+            this.external.KmlLoaded += new ExternalEventHandeler(external_KmlLoaded);
+            this.external.PluginReady += new ExternalEventHandeler(external_PluginReady);
+            this.external.ScriptError += new ExternalEventHandeler(external_ScriptError);
+
             this.AllowNavigation = false;
             this.IsWebBrowserContextMenuEnabled = false;
             this.ScrollBarsEnabled = false;
             this.WebBrowserShortcutsEnabled = false;
-            this.ObjectForScripting = this;
-            this.DocumentCompleted += new WebBrowserDocumentCompletedEventHandler(this.GEWebBrowser_DocumentCompleted);
+            this.ObjectForScripting = external;
+            this.DocumentCompleted += 
+                new WebBrowserDocumentCompletedEventHandler(this.GEWebBrowser_DocumentCompleted);
+
         }
 
-        //// Public events
+        #region Public events
 
         /// <summary>
         /// Raised when the plugin is ready
@@ -84,31 +97,14 @@ namespace FC.GEPluginCtrls
         /// </summary>
         public event GEWebBorwserEventHandeler ScriptError;
 
-        //// Public methods
 
-        /// <summary>
-        /// This method should be called when the plugin is ready
-        /// Ideally this would be done in the javascript "google.earth.createInstance" callback function.
-        /// i.e. window.external.Ready(ge);
-        /// notice we can pass the ge object as a managed type directly from javascipt
-        /// </summary>
-        /// <param name="plugin">The GEPlugin instance</param>
-        public void Ready(IGEPlugin plugin)
+        #endregion
+
+        #region Public methods
+
+        public IGEPlugin GetPlugin()
         {
-            this.geplugin = plugin;
-
-            GEEventArgs e = new GEEventArgs();
-
-            // the message holds the data format
-            e.Message = "ApiVersion:EarthVersion:PluginVersion";
-
-            // the data is just the version info
-            e.Data = this.geplugin.getApiVersion() +
-                ":" + this.geplugin.getEarthVersion() +
-                ":" + this.geplugin.getPluginVersion();
-
-            // Raise the ready event
-            this.OnPluginReady(this.geplugin, e);
+            return geplugin;
         }
 
         /// <summary>
@@ -123,17 +119,6 @@ namespace FC.GEPluginCtrls
             {
                 this.Document.InvokeScript("LoadKml", new object[] { url });
             }
-        }
-
-        /// <summary>
-        /// This method should be called when a kml or kmz file has been sucessfully loaded.
-        /// Ideally this is done in the javascript "google.earth.fetchKml" callback function.
-        /// i.e. window.external.LoadKmlCallBack(kmlFeature);
-        /// </summary>
-        /// <param name="kmlFeature">IKmlFeature COM interface</param>
-        public void LoadKmlCallBack(IKmlFeature kmlFeature)
-        {
-            this.OnKmlLoaded(kmlFeature, new GEEventArgs());
         }
 
         /// <summary>
@@ -164,35 +149,12 @@ namespace FC.GEPluginCtrls
         }
 
         /// <summary>
-        /// Ammend or overwirte the css style of a DOM element
-        /// </summary>
-        /// <param name="elementId">The ID of the element</param>
-        /// <param name="css">The Style to apply</param>
-        /// <param name="overwrite">Overwrite any existing style if true</param>
-        public void ModifyCss(string elementId, string css, bool overwrite)
-        {
-            HtmlElement element = this.Document.GetElementById(elementId);
-
-            if (element != null && element.TagName == "style")
-            {
-                if (overwrite)
-                {
-                    element.Style = css;
-                }
-                else
-                {
-                    element.Style += css;
-                }
-            }
-        }
-
-        /// <summary>
         /// Executes a script function defined in the currently loaded document. 
         /// </summary>
         /// <param name="function">The name of the function to invoke</param>
         /// <returns>The result of the evaluated function</returns>
         public object InvokeJavascript(string function)
-        { 
+        {
             if (this.Document != null)
             {
                 // see http://msdn.microsoft.com/en-us/library/4b1a88bz.aspx
@@ -201,7 +163,7 @@ namespace FC.GEPluginCtrls
             else
             {
                 return null;
-            }  
+            }
         }
 
         /// <summary>
@@ -227,7 +189,33 @@ namespace FC.GEPluginCtrls
             }
         }
 
-        //// Protected methods
+        /// <summary>
+        /// Ammend or overwirte the css style of a DOM element
+        /// </summary>
+        /// <param name="elementId">The ID of the element</param>
+        /// <param name="css">The Style to apply</param>
+        /// <param name="overwrite">Overwrite any existing style if true</param>
+        public void ModifyCss(string elementId, string css, bool overwrite)
+        {
+            HtmlElement element = this.Document.GetElementById(elementId);
+
+            if (element != null && element.TagName == "style")
+            {
+                if (overwrite)
+                {
+                    element.Style = css;
+                }
+                else
+                {
+                    element.Style += css;
+                }
+            }
+        }
+
+        
+        #endregion
+
+        #region Protected methods
 
         /// <summary>
         /// Clean up any resources being used.
@@ -252,7 +240,7 @@ namespace FC.GEPluginCtrls
         {
             if (this.PluginReady != null)
             {
-                this.PluginReady(plugin, e); 
+                this.PluginReady(plugin, e);
             }
         }
 
@@ -276,13 +264,56 @@ namespace FC.GEPluginCtrls
         /// <param name="e">Event arguments</param>
         protected virtual void OnScriptError(object sender, GEEventArgs e)
         {
-            if (this.ScriptError != null) 
+            if (this.ScriptError != null)
             {
                 this.ScriptError(sender, e);
             }
         }
+        
+        #endregion
 
-        //// Private Methods
+        #region Event handlers
+
+        /// <summary>
+        /// Called when the document has a ScriptError
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void external_ScriptError(object sender, GEEventArgs e)
+        {
+
+        }
+
+        /// <summary>
+        /// Called when the Plugin is Ready 
+        /// </summary>
+        /// <param name="plugin"></param>
+        /// <param name="e"></param>
+        private void external_PluginReady(object plugin, GEEventArgs e)
+        {
+            this.geplugin = (IGEPlugin)plugin;
+
+            // the message holds the data format
+            e.Message = "ApiVersion:EarthVersion:PluginVersion";
+
+            // the data is just the version info
+            e.Data = this.geplugin.getApiVersion() +
+                ":" + this.geplugin.getEarthVersion() +
+                ":" + this.geplugin.getPluginVersion();
+
+            // Raise the ready event
+            this.OnPluginReady(this.geplugin, e);
+        }
+
+        /// <summary>
+        /// Called when a kml/kmz file has been loaded
+        /// </summary>
+        /// <param name="kmlFeature"></param>
+        /// <param name="e"></param>
+        private void external_KmlLoaded(object kmlFeature, GEEventArgs e)
+        {
+            this.OnKmlLoaded(kmlFeature, e);
+        }
 
         /// <summary>
         /// Called when the document has finished loading
@@ -302,7 +333,7 @@ namespace FC.GEPluginCtrls
         /// <param name="e">Event arguments</param>
         private void Window_Error(object sender, HtmlElementErrorEventArgs e)
         {
-            // Handle the error
+            // Handle the original error
             e.Handled = true;
 
             // Copy the error data
@@ -313,5 +344,8 @@ namespace FC.GEPluginCtrls
             // Bubble the error
             this.OnScriptError(this, ea);
         }
+
+        #endregion
+
     }
 }

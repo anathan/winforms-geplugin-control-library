@@ -27,9 +27,9 @@ namespace FC.GEPluginCtrls
     /// <summary>
     /// The KmlTree view provides a quick way to display kml content
     /// </summary>
-    public partial class KmlTreeView : TreeView
+    public partial class KmlTreeView : TreeView, IGEControls
     {
-        //// Private fields
+        #region Private fields
 
         /// <summary>
         /// Required designer variable.
@@ -45,7 +45,17 @@ namespace FC.GEPluginCtrls
         /// Use the IGEPlugin COM interface. 
         /// Equivalent to QueryInterface for COM objects
         /// </summary>
-        private IGEPlugin geplugin;
+        private IGEPlugin geplugin = null;
+
+        /// <summary>
+        /// An instance of the current document
+        /// </summary>
+        private HtmlDocument htmlDocument = null;
+
+        /// <summary>
+        /// An instance of the current browser
+        /// </summary>
+        private GEWebBrowser gewebborwser = null;
 
         /// <summary>
         /// Indicates whether the plugin should 'fly to' the location
@@ -54,12 +64,23 @@ namespace FC.GEPluginCtrls
         private bool flyToOnDoubleClickNode = true;
 
         /// <summary>
+        /// Context menu for the treeview
+        /// </summary>
+        private ContextMenuStrip contextMenuStrip1;
+
+        /// <summary>
+        /// Context menu item
+        /// remove node from tree and plugin
+        /// </summary>
+        private ToolStripMenuItem RemoveNode;
+
+        /// <summary>
         /// Indicates whether the plugin should open the balloon
         /// When a tree node is double clicked
         /// </summary>
         private bool openBalloonOnDoubleClickNode = true;
-
-        //// Constructors
+        
+        #endregion
 
         /// <summary>
         /// Initializes a new instance of the KmlTreeView class.
@@ -69,11 +90,9 @@ namespace FC.GEPluginCtrls
         {
             this.InitializeComponent();
             this.ShowNodeToolTips = true;
-        }
+        } 
 
-        //// Public events    
-
-        //// Public properties
+        #region Public properties
 
         /// <summary>
         /// Gets or sets a value indicating whether the plugin should 'fly to' the location (if any) of the
@@ -103,22 +122,20 @@ namespace FC.GEPluginCtrls
             set { this.openBalloonOnDoubleClickNode = value; }
         }
 
-        //// Public methods
+        
+        #endregion
 
+        #region Public methods
+        
         /// <summary>
-        /// Set an instance of the plugin to work with
-        /// this should be the same object returned by GEWebBrowser.PluginReady
+        /// Set the browser instance for the control to work with
         /// </summary>
-        /// <param name="ge">the plugin object</param>
-        public void SetPluginInstance(object ge)
+        /// <param name="browser"></param>
+        public void SetBrowserInstance(GEWebBrowser browser)
         {
-            try
-            {
-                this.geplugin = (IGEPlugin)ge;
-            }
-            catch (InvalidCastException)
-            {
-            }
+            this.gewebborwser = browser;
+            this.geplugin = browser.GetPlugin();
+            this.htmlDocument = browser.Document;
         }
 
         /// <summary>
@@ -152,8 +169,10 @@ namespace FC.GEPluginCtrls
             {
             }
         }
+        
+        #endregion
 
-        //// Protected methods
+        #region Protected methods
 
         /// <summary> 
         /// Clean up any resources being used.
@@ -168,8 +187,10 @@ namespace FC.GEPluginCtrls
 
             base.Dispose(disposing);
         }
+        
+        #endregion
 
-        //// Private methods
+        #region Private methods
 
         /// <summary>
         /// Recursivly iterates through a Kml Container
@@ -219,13 +240,13 @@ namespace FC.GEPluginCtrls
             tn.Name = kmlFeature.getType();
             tn.ToolTipText = this.ShortenToolTip(kmlFeature.getDescription());
 
-            if (Convert.ToBoolean(kmlFeature.getOpen())) 
-            { 
-                tn.Expand(); 
+            if (Convert.ToBoolean(kmlFeature.getOpen()))
+            {
+                tn.Expand();
             }
 
             if (Convert.ToBoolean(kmlFeature.getVisibility()))
-            { 
+            {
                 tn.Checked = true;
 
                 // if feature is visible open the node by default??
@@ -243,7 +264,7 @@ namespace FC.GEPluginCtrls
                     tn.ImageKey = "flag";
                     tn.SelectedImageKey = "flag";
                     break;
-                case"KmlGroundOverlay":
+                case "KmlGroundOverlay":
                 case "KmlScreenOverlay":
                     tn.ImageKey = "overlay";
                     tn.SelectedImageKey = "overlay";
@@ -256,12 +277,122 @@ namespace FC.GEPluginCtrls
         }
 
         /// <summary>
+        /// Sets the checked state of any parent nodes to true
+        /// </summary>
+        /// <param name="tn">The tree node to check from</param>
+        private void CheckAllParentNodes(TreeNode tn)
+        {
+            if (tn.Parent != null)
+            {
+                tn.Parent.Checked = true;
+                this.CheckAllParentNodes(tn.Parent);
+            }
+        }
+
+        /// <summary>
+        /// Sets the checked state of any child nodes to false
+        /// </summary>
+        /// <param name="tn">The tree node to check from</param>
+        private void UncheckAllChildNodes(TreeNode tn)
+        {
+            if (tn.Nodes.Count > 0)
+            {
+                foreach (TreeNode child in tn.Nodes)
+                {
+                    child.Checked = false;
+                    this.UncheckAllChildNodes(child);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Trucates a any string over 200 chars
+        /// Appends an ellipsis (...)
+        /// </summary>
+        /// <param name="text">The text to truncated</param>
+        /// <returns>The truncated text</returns>
+        private string ShortenToolTip(string text)
+        {
+            if (text.Length > 200)
+            {
+                return text.Substring(0, 200) + "...";
+            }
+            else
+            {
+                return text;
+            }
+        }
+
+        /// <summary>
+        /// Required method for Designer support
+        /// </summary>
+        private void InitializeComponent()
+        {
+            this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(KmlTreeView));
+            this.imageList1 = new System.Windows.Forms.ImageList(this.components);
+            this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.RemoveNode = new System.Windows.Forms.ToolStripMenuItem();
+            this.contextMenuStrip1.SuspendLayout();
+            this.SuspendLayout();
+            // 
+            // imageList1
+            // 
+            this.imageList1.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageList1.ImageStream")));
+            this.imageList1.TransparentColor = System.Drawing.Color.Transparent;
+            this.imageList1.Images.SetKeyName(0, "ge");
+            this.imageList1.Images.SetKeyName(1, "kml");
+            this.imageList1.Images.SetKeyName(2, "folderClosed");
+            this.imageList1.Images.SetKeyName(3, "folderOpen");
+            this.imageList1.Images.SetKeyName(4, "flag");
+            this.imageList1.Images.SetKeyName(5, "overlay");
+            // 
+            // contextMenuStrip1
+            // 
+            this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.RemoveNode});
+            this.contextMenuStrip1.Name = "contextMenuStrip1";
+            this.contextMenuStrip1.Size = new System.Drawing.Size(125, 26);
+            // 
+            // RemoveNode
+            // 
+            this.RemoveNode.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.RemoveNode.Name = "RemoveNode";
+            this.RemoveNode.Size = new System.Drawing.Size(124, 22);
+            this.RemoveNode.Tag = "REMOVE";
+            this.RemoveNode.Text = "Remove";
+            this.RemoveNode.ToolTipText = "Remove this node from the tree";
+            this.RemoveNode.Click += new System.EventHandler(this.RemoveNode_Click);
+            // 
+            // KmlTreeView
+            // 
+            this.CheckBoxes = true;
+            this.ImageIndex = 0;
+            this.ImageList = this.imageList1;
+            this.LineColor = System.Drawing.Color.Black;
+            this.SelectedImageIndex = 0;
+            this.ShowNodeToolTips = true;
+            this.AfterCheck += new System.Windows.Forms.TreeViewEventHandler(this.KmlTree_AfterCheck);
+            this.AfterCollapse += new System.Windows.Forms.TreeViewEventHandler(this.KmlTreeView_AfterCollapse);
+            this.DoubleClick += new System.EventHandler(this.KmlTree_DoubleClick);
+            this.MouseUp += new System.Windows.Forms.MouseEventHandler(this.KmlTreeView_MouseUp);
+            this.AfterExpand += new System.Windows.Forms.TreeViewEventHandler(this.KmlTreeView_AfterExpand);
+            this.contextMenuStrip1.ResumeLayout(false);
+            this.ResumeLayout(false);
+
+        }
+        
+        #endregion
+
+        #region Event handlers
+
+        /// <summary>
         /// Called when a tree node is checked
         /// </summary>
         /// <param name="sender">A tree node</param>
         /// <param name="e">Event Arugments</param>
         private void KmlTree_AfterCheck(object sender, TreeViewEventArgs e)
-        {          
+        {
             IKmlFeature feature = (IKmlFeature)e.Node.Tag;
 
             if (feature != null)
@@ -392,84 +523,55 @@ namespace FC.GEPluginCtrls
         }
 
         /// <summary>
-        /// Sets the checked state of any parent nodes to true
+        /// Called if the user right clicks on 'remove' context menu item
         /// </summary>
-        /// <param name="tn">The tree node to check from</param>
-        private void CheckAllParentNodes(TreeNode tn)
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        void RemoveNode_Click(object sender, EventArgs e)
         {
-            if (tn.Parent != null)
+            if (geplugin != null && this.SelectedNode.Tag != null)
             {
-                tn.Parent.Checked = true;
-                this.CheckAllParentNodes(tn.Parent);
+                while (Convert.ToBoolean(geplugin.getFeatures().hasChildNodes()))
+                {
+                    geplugin.setBalloon(null);
+                    geplugin.getFeatures().removeChild(geplugin.getFeatures().getFirstChild());
+                    this.Nodes.Clear();
+                }
+                
             }
         }
 
-        /// <summary>
-        /// Sets the checked state of any child nodes to false
-        /// </summary>
-        /// <param name="tn">The tree node to check from</param>
-        private void UncheckAllChildNodes(TreeNode tn)
+        void KmlTreeView_MouseUp(object sender, MouseEventArgs e)
         {
-            if (tn.Nodes.Count > 0)
+            // Show menu only if the right mouse button is clicked.
+            if (e.Button == MouseButtons.Right)
             {
-                foreach (TreeNode child in tn.Nodes)
+                TreeNode currentNode;
+
+                // Point where the mouse is clicked.
+                Point p = new Point(e.X, e.Y);
+
+                // Get the node that the user has clicked.
+                TreeNode node = this.GetNodeAt(p);
+
+                if (node != null)
                 {
-                    child.Checked = false;
-                    this.UncheckAllChildNodes(child);
+                    // holder for the cuurent node
+                    //currentNode = this.SelectedNode;
+
+                    // Select the node the user has clicked.
+                    // The node appears selected until the menu is displayed on the screen.
+                    this.SelectedNode = node;
+                    contextMenuStrip1.Show(this, p);
+
+                    // Highlight the selected node.
+                    //this.SelectedNode = currentNode;
+                    //currentNode = null;
                 }
             }
+
         }
-
-        /// <summary>
-        /// Trucates a any string over 200 chars
-        /// Appends an ellipsis (...)
-        /// </summary>
-        /// <param name="text">The text to truncated</param>
-        /// <returns>The truncated text</returns>
-        private string ShortenToolTip(string text)
-        {
-            if (text.Length > 200)
-            {
-                return text.Substring(0, 200) + "...";
-            }
-            else
-            {
-                return text;
-            }
-        }
-
-        /// <summary>
-        /// Required method for Designer support
-        /// </summary>
-        private void InitializeComponent()
-        {
-            this.components = new Container();
-            ComponentResourceManager resources = new ComponentResourceManager(typeof(KmlTreeView));
-            this.imageList1 = new System.Windows.Forms.ImageList(this.components);
-            this.SuspendLayout();
-
-            // imageList1
-            this.imageList1.ImageStream = (ImageListStreamer)resources.GetObject("imageList1.ImageStream");
-            this.imageList1.TransparentColor = System.Drawing.Color.Transparent;
-            this.imageList1.Images.SetKeyName(0, "ge");
-            this.imageList1.Images.SetKeyName(1, "kml");
-            this.imageList1.Images.SetKeyName(2, "folderClosed");
-            this.imageList1.Images.SetKeyName(3, "folderOpen");
-            this.imageList1.Images.SetKeyName(4, "flag");
-            this.imageList1.Images.SetKeyName(5, "overlay");
-
-            // KmlTreeView
-            this.CheckBoxes = true;
-            this.ImageIndex = 0;
-            this.ImageList = this.imageList1;
-            this.LineColor = System.Drawing.Color.Black;
-            this.SelectedImageIndex = 0;
-            this.ShowNodeToolTips = true;
-            this.AfterCheck += new System.Windows.Forms.TreeViewEventHandler(this.KmlTree_AfterCheck);
-            this.AfterCollapse += new System.Windows.Forms.TreeViewEventHandler(this.KmlTreeView_AfterCollapse);
-            this.DoubleClick += new System.EventHandler(this.KmlTree_DoubleClick);
-            this.AfterExpand += new System.Windows.Forms.TreeViewEventHandler(this.KmlTreeView_AfterExpand);
-            this.ResumeLayout(false);
-        }
+        
+        #endregion
     }
 }
