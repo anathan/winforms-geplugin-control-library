@@ -11,21 +11,6 @@ The GEWebBrowser inherits from the standard [http://msdn.microsoft.com/en-us/lib
 
 The GEWebBrowser control cannot be used by partially trusted code. For more information, see [http://msdn.microsoft.com/en-us/library/8skskf63.aspx Using Libraries from Partially Trusted Code]
 
-== Constructor == 
+== Source == 
 
-_GEWebBrowser_ GEWebBrowser() <br><br>Initializes a new instance of the GEWebBrowser class.
-
-== Public events ==
-
-
-== Public methods == 
-
-_void_ *!LoadKml*(_string_ url) <br><br>Loads a kml/kmz file specified by the url.
-
-_void_ *[InjectJavascript]*(_string_ javascript) <br><br>Injects a javascript element into the document head.
-
-_object_ *[InvokeJavascript]*(_string_ function) <br><br>Executes a script function defined in the currently loaded document.
-
-_object_ *[InvokeJavascript]*(_string_ function, _object[]_ args) <br><br>Executes a script function defined in the currently loaded document using the supplied arguments.
-
-_void_ *!ModifyCss*(_string_ elementId, _string_ css, _bool_ overwrite) <br><br>Amend or overwrite the css style of a DOM element.
+[http://code.google.com/p/winforms-geplugin-control-library/source/browse/trunk/GEWebBrowser.cs GEWebBrowser.cs]
