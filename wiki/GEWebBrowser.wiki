@@ -20,12 +20,7 @@ _GEWebBrowser_ GEWebBrowser() <br><br>Initializes a new instance of the GEWebBro
 
 == Public methods == 
 
-_void_ *Ready*(IGEPlugin plugin) <br><br>
-This method should be called from javascript when the plugin is ready. Ideally this would be done in the "google.earth.createInstance" callback function. e.g. window.external.Ready(ge);
-
 _void_ *!LoadKml*(_string_ url) <br><br>Loads a kml/kmz file specified by the url.
-
-_void_ *!LoadKmlCallBack*(IKmlFeature kmlFeature) <br><br>This method should be called from javascript when a kml or kmz file has been successfully loaded. Ideally this is done in the "google.earth.fetchKml" callback function. e.g. window.external.LoadKmlCallBack(kmlFeature);
 
 _void_ *[InjectJavascript]*(_string_ javascript) <br><br>Injects a javascript element into the document head.
 
