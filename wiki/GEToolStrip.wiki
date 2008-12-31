@@ -11,23 +11,8 @@ The GEToolStrip control intergrates with the GEWebBrowser to provide controls fo
 The GEToolStrip inherits from the standard [http://msdn.microsoft.com/en-us/library/system.windows.forms.toolstrip.aspx System.Windows.Forms.ToolStrip] control class
 
 
-== Constructor == 
+== Source == 
 
-_GEToolStrip_ *GEToolStrip*()<br><br>
-Initializes a new instance of the GEToolStrip class. 
+[http://code.google.com/p/winforms-geplugin-control-library/source/browse/trunk/GEToolStrip.cs GEToolStrip.cs]
 
-== Public properties == 
-
-_bool_ *!ShowNavigationItems*<br><br>Gets or sets a value indicating whether the Navigation items are visible
-
-_bool_ *!ShowLayersDropDown*<br><br>Gets or sets a value indicating whether the Layers drop down is visible
-
-_bool_ *!ShowOptionsDropDown*<br><br>Gets or sets a value indicating whether the Options drop down is visible
-
-_bool_ *!ShowViewDropDown*<br><br>Gets or sets a value indicating whether the View drop down is visible
-
-== Public methods ==
-
-_void_ *!SetPluginInstance*(_object_ ge)<br><br>Set the plugin instance for the control to work with
-
-_void_ *!SetDocumentInstance*(_!HtmlDocument doc)<br><br>Set the html document for the control to work with
+[http://code.google.com/p/winforms-geplugin-control-library/source/browse/trunk/GEToolStrip.resx GEToolStrip.resx]
