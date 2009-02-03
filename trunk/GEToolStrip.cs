@@ -32,11 +32,6 @@ namespace FC.GEPluginCtrls
         #region Private fields
 
         /// <summary>
-        /// Required designer variable.
-        /// </summary>
-        private IContainer components = null;
-
-        /// <summary>
         /// Use the IGEPlugin COM interface. 
         /// Equivalent to QueryInterface for COM objects
         /// </summary>
@@ -50,7 +45,7 @@ namespace FC.GEPluginCtrls
         /// <summary>
         /// An instance of the current browser
         /// </summary>
-        private GEWebBrowser gewebborwser = null;
+        private GEWebBrowser gewb = null;
 
         /// <summary>
         /// Indicates whether the navigation items are visible
@@ -72,106 +67,6 @@ namespace FC.GEPluginCtrls
         /// </summary>
         private bool viewDropDownVisiblity = true;
 
-        /// <summary>
-        /// The navigation text box
-        /// </summary>
-        private ToolStripTextBox navigationTextBox;
-
-        /// <summary>
-        /// The navigation 'go' button
-        /// </summary>
-        private ToolStripButton goButton;
-
-        /// <summary>
-        /// The naviagtion seperator
-        /// </summary>
-        private ToolStripSeparator navigationSeparator;
-
-        /// <summary>
-        /// The view drop down button
-        /// </summary>
-        private ToolStripDropDownButton viewDropDownButton;
-
-        /// <summary>
-        /// The sky menu item
-        /// </summary>
-        private ToolStripMenuItem skyMenuItem;
-
-        /// <summary>
-        /// The sun menu item
-        /// </summary>
-        private ToolStripMenuItem sunMenuItem;
-
-        /// <summary>
-        /// The options drop down button
-        /// </summary>
-        private ToolStripDropDownButton optionsDropDownButton;
-
-        /// <summary>
-        /// The borders menu item
-        /// </summary>
-        private ToolStripMenuItem bordersMenuItem;
-
-        /// <summary>
-        /// The buildings menu item
-        /// </summary>
-        private ToolStripMenuItem buildingsMenuItem;
-
-        /// <summary>
-        /// The roads menu item
-        /// </summary>
-        private ToolStripMenuItem roadsMenuItem;
-
-        /// <summary>
-        /// The terrain menu item
-        /// </summary>
-        private ToolStripMenuItem terrainMenuItem;
-
-        /// <summary>
-        /// The layers menu item
-        /// </summary>
-        private ToolStripDropDownButton layersDropDownButton;
-
-        /// <summary>
-        /// The staus menu item
-        /// </summary>
-        private ToolStripMenuItem statusBarMenuItem;
-
-        /// <summary>
-        /// The grid menu item
-        /// </summary>
-        private ToolStripMenuItem gridMenuItem;
-
-        /// <summary>
-        /// The overview map menu item
-        /// </summary>
-        private ToolStripMenuItem overviewMapMenuItem;
-
-        /// <summary>
-        /// The scale legend menu item
-        /// </summary>
-        private ToolStripMenuItem scaleLegendMenuItem;
-
-        /// <summary>
-        /// The atmosphere menu item
-        /// </summary>
-        private ToolStripMenuItem atmosphereMenuItem;
-
-        /// <summary>
-        /// The refresh button
-        /// </summary>
-        private ToolStripButton refreshButton;
-
-        /// <summary>
-        /// The default image list
-        /// </summary>
-        private ImageList imageList1;
-
-        /// <summary>
-        /// The scale mouse navigation menu item
-        /// </summary>
-        private ToolStripMenuItem mouseNavigationMenuItem;
-
         #endregion
 
         /// <summary>
@@ -181,6 +76,7 @@ namespace FC.GEPluginCtrls
             : base()
         {
             this.InitializeComponent();
+            this.Enabled = false;
         }
 
         #region Public properties
@@ -202,7 +98,7 @@ namespace FC.GEPluginCtrls
             {
                 this.navigationItemsVisibility = value;
                 this.navigationTextBox.Visible = value;
-                this.goButton.Visible = value;
+                this.submitButton.Visible = value;
                 this.refreshButton.Visible = value;
                 this.navigationSeparator.Visible = value;
             }
@@ -268,7 +164,6 @@ namespace FC.GEPluginCtrls
             }
         }
 
-
         #endregion
 
         #region Public methods
@@ -276,317 +171,37 @@ namespace FC.GEPluginCtrls
         /// <summary>
         /// Set the browser instance for the control to work with
         /// </summary>
-        /// <param name="browser"></param>
+        /// <param name="browser">The GEWebBrowser instance</param>
         public void SetBrowserInstance(GEWebBrowser browser)
         {
-            this.gewebborwser = browser;
+            this.gewb = browser;
             this.geplugin = browser.GetPlugin();
             this.htmlDocument = browser.Document;
+            this.Enabled = true;
         }
 
         #endregion
 
         #region Protected methods
 
-        /// <summary>
-        /// Clean up any resources being used.
-        /// </summary>
-        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing && (this.components != null))
-            {
-                this.components.Dispose();
-            }
-
-            base.Dispose(disposing);
-        }
-
         #endregion
 
         #region Private methods
 
         /// <summary>
-        /// Required method for Designer support
-        /// </summary>
-        private void InitializeComponent()
-        {
-            this.components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources =
-                new System.ComponentModel.ComponentResourceManager(typeof(GEToolStrip));
-            this.navigationTextBox = new ToolStripTextBox();
-            this.goButton = new ToolStripButton();
-            this.navigationSeparator = new ToolStripSeparator();
-            this.viewDropDownButton = new ToolStripDropDownButton();
-            this.skyMenuItem = new ToolStripMenuItem();
-            this.sunMenuItem = new ToolStripMenuItem();
-            this.optionsDropDownButton = new ToolStripDropDownButton();
-            this.statusBarMenuItem = new ToolStripMenuItem();
-            this.gridMenuItem = new ToolStripMenuItem();
-            this.overviewMapMenuItem = new ToolStripMenuItem();
-            this.scaleLegendMenuItem = new ToolStripMenuItem();
-            this.atmosphereMenuItem = new ToolStripMenuItem();
-            this.mouseNavigationMenuItem = new ToolStripMenuItem();
-            this.layersDropDownButton = new ToolStripDropDownButton();
-            this.bordersMenuItem = new ToolStripMenuItem();
-            this.buildingsMenuItem = new ToolStripMenuItem();
-            this.roadsMenuItem = new ToolStripMenuItem();
-            this.terrainMenuItem = new ToolStripMenuItem();
-            this.refreshButton = new ToolStripButton();
-            this.imageList1 = new ImageList(this.components);
-            this.SuspendLayout();
-            // 
-            // navigationTextBox
-            // 
-            this.navigationTextBox.AutoSize = false;
-            this.navigationTextBox.Name = "navigationTextBox";
-            this.navigationTextBox.Size = new Size(100, 21);
-            this.navigationTextBox.Tag = "NAVIGATION";
-            this.navigationTextBox.ToolTipText = "Enter a location or the url of a kml\\kmz file";
-            this.navigationTextBox.KeyUp += new KeyEventHandler(this.NavigationTextBox_KeyUp);
-            // 
-            // goButton
-            // 
-            this.goButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            this.goButton.ImageKey = "go";
-            this.goButton.ImageTransparentColor = Color.Magenta;
-            this.goButton.Name = "goButton";
-            this.goButton.Size = new Size(23, 20);
-            this.goButton.ToolTipText = "Go!";
-            this.goButton.Click += new System.EventHandler(this.NavigationButton_Click);
-            // 
-            // navigationSeparator
-            // 
-            this.navigationSeparator.Name = "navigationSeparator";
-            this.navigationSeparator.Size = new Size(6, 6);
-            // 
-            // viewDropDownButton
-            // 
-            this.viewDropDownButton.DisplayStyle = ToolStripItemDisplayStyle.Text;
-            this.viewDropDownButton.DropDownItems.AddRange(new ToolStripItem[] {
-            this.skyMenuItem,
-            this.sunMenuItem});
-            this.viewDropDownButton.ImageTransparentColor = Color.Magenta;
-            this.viewDropDownButton.Name = "viewDropDownButton";
-            this.viewDropDownButton.Size = new Size(42, 17);
-            this.viewDropDownButton.Tag = "VIEW";
-            this.viewDropDownButton.Text = "View";
-            this.viewDropDownButton.ToolTipText = "Change the View settings";
-            // 
-            // skyMenuItem
-            // 
-            this.skyMenuItem.CheckOnClick = true;
-            this.skyMenuItem.Name = "skyMenuItem";
-            this.skyMenuItem.Size = new Size(131, 22);
-            this.skyMenuItem.Tag = "SKY";
-            this.skyMenuItem.Text = "Sky Mode";
-            this.skyMenuItem.ToolTipText = "Toggle Sky and Earth mode";
-            this.skyMenuItem.Click += new System.EventHandler(this.ViewItem_Clicked);
-            // 
-            // sunMenuItem
-            // 
-            this.sunMenuItem.CheckOnClick = true;
-            this.sunMenuItem.Name = "sunMenuItem";
-            this.sunMenuItem.Size = new Size(131, 22);
-            this.sunMenuItem.Tag = "SUN";
-            this.sunMenuItem.Text = "Sun";
-            this.sunMenuItem.ToolTipText = "Toggle the sun\'s visiblity";
-            this.sunMenuItem.Click += new System.EventHandler(this.ViewItem_Clicked);
-            // 
-            // optionsDropDownButton
-            // 
-            this.optionsDropDownButton.DisplayStyle = ToolStripItemDisplayStyle.Text;
-            this.optionsDropDownButton.DropDownItems.AddRange(new ToolStripItem[] {
-            this.statusBarMenuItem,
-            this.gridMenuItem,
-            this.overviewMapMenuItem,
-            this.scaleLegendMenuItem,
-            this.atmosphereMenuItem,
-            this.mouseNavigationMenuItem
-            });
-            this.optionsDropDownButton.ImageTransparentColor = Color.Magenta;
-            this.optionsDropDownButton.Name = "optionsDropDownButton";
-            this.optionsDropDownButton.Size = new Size(57, 17);
-            this.optionsDropDownButton.Tag = "OPTIONS";
-            this.optionsDropDownButton.Text = "Options";
-            this.optionsDropDownButton.ToolTipText = "Toggle the various options";
-            // 
-            // statusBarMenuItem
-            // 
-            this.statusBarMenuItem.CheckOnClick = true;
-            this.statusBarMenuItem.Name = "statusBarMenuItem";
-            this.statusBarMenuItem.Size = new Size(169, 22);
-            this.statusBarMenuItem.Tag = "STATUS";
-            this.statusBarMenuItem.Text = "Status bar";
-            this.statusBarMenuItem.ToolTipText = "Toggle the Status bar visiblity";
-            this.statusBarMenuItem.Click += new System.EventHandler(this.OptionsItem_Clicked);
-            // 
-            // gridMenuItem
-            // 
-            this.gridMenuItem.CheckOnClick = true;
-            this.gridMenuItem.Name = "gridMenuItem";
-            this.gridMenuItem.Size = new Size(169, 22);
-            this.gridMenuItem.Tag = "GRID";
-            this.gridMenuItem.Text = "Grid";
-            this.gridMenuItem.ToolTipText = "Toggle the Grid visiblity";
-            this.gridMenuItem.Click += new System.EventHandler(this.OptionsItem_Clicked);
-            // 
-            // overviewMapMenuItem
-            // 
-            this.overviewMapMenuItem.CheckOnClick = true;
-            this.overviewMapMenuItem.Name = "overviewMapMenuItem";
-            this.overviewMapMenuItem.Size = new Size(169, 22);
-            this.overviewMapMenuItem.Tag = "OVERVIEW";
-            this.overviewMapMenuItem.Text = "Overview map";
-            this.overviewMapMenuItem.ToolTipText = "Toggle the Overview map visiblity";
-            this.overviewMapMenuItem.Click += new System.EventHandler(this.OptionsItem_Clicked);
-            // 
-            // scaleLegendMenuItem
-            // 
-            this.scaleLegendMenuItem.CheckOnClick = true;
-            this.scaleLegendMenuItem.Name = "scaleLegendMenuItem";
-            this.scaleLegendMenuItem.Size = new Size(169, 22);
-            this.scaleLegendMenuItem.Tag = "SCALE";
-            this.scaleLegendMenuItem.Text = "Scale legend";
-            this.scaleLegendMenuItem.ToolTipText = "Toggle the Scale legend visiblity";
-            this.scaleLegendMenuItem.Click += new System.EventHandler(this.OptionsItem_Clicked);
-            // 
-            // atmosphereMenuItem
-            // 
-            this.atmosphereMenuItem.Checked = true;
-            this.atmosphereMenuItem.CheckOnClick = true;
-            this.atmosphereMenuItem.CheckState = CheckState.Checked;
-            this.atmosphereMenuItem.Name = "atmosphereMenuItem";
-            this.atmosphereMenuItem.Size = new Size(169, 22);
-            this.atmosphereMenuItem.Tag = "ATMOSPHERE";
-            this.atmosphereMenuItem.Text = "Atmosphere";
-            this.atmosphereMenuItem.ToolTipText = "Toggle the Atmosphere visiblity";
-            this.atmosphereMenuItem.Click += new System.EventHandler(this.OptionsItem_Clicked);
-            // 
-            // mouseNavigationMenuItem
-            // 
-            this.mouseNavigationMenuItem.Checked = true;
-            this.mouseNavigationMenuItem.CheckOnClick = true;
-            this.mouseNavigationMenuItem.CheckState = CheckState.Checked;
-            this.mouseNavigationMenuItem.Name = "mouseNavigationMenuItem";
-            this.mouseNavigationMenuItem.Size = new Size(169, 22);
-            this.mouseNavigationMenuItem.Tag = "MOUSE";
-            this.mouseNavigationMenuItem.Text = "Mouse navigation";
-            this.mouseNavigationMenuItem.ToolTipText = "Toggle Mouse navigation enabled";
-            this.mouseNavigationMenuItem.Click += new System.EventHandler(this.OptionsItem_Clicked);
-            // 
-            // layersDropDownButton
-            // 
-            this.layersDropDownButton.DisplayStyle = ToolStripItemDisplayStyle.Text;
-            this.layersDropDownButton.DropDownItems.AddRange(new ToolStripItem[] {
-            this.bordersMenuItem,
-            this.buildingsMenuItem,
-            this.roadsMenuItem,
-            this.terrainMenuItem
-            });
-            this.layersDropDownButton.ImageTransparentColor = Color.Magenta;
-            this.layersDropDownButton.Name = "layersDropDownButton";
-            this.layersDropDownButton.Size = new Size(52, 17);
-            this.layersDropDownButton.Tag = "LAYERS";
-            this.layersDropDownButton.Text = "Layers";
-            this.layersDropDownButton.ToolTipText = "Toggle the in-built layers";
-            // 
-            // bordersMenuItem
-            // 
-            this.bordersMenuItem.CheckOnClick = true;
-            this.bordersMenuItem.Name = "bordersMenuItem";
-            this.bordersMenuItem.Size = new Size(126, 22);
-            this.bordersMenuItem.Tag = "BORDERS";
-            this.bordersMenuItem.Text = "Borders";
-            this.bordersMenuItem.ToolTipText = "Toggle the Borders layer";
-            this.bordersMenuItem.Click += new System.EventHandler(this.LayersItem_Clicked);
-            // 
-            // buildingsMenuItem
-            // 
-            this.buildingsMenuItem.CheckOnClick = true;
-            this.buildingsMenuItem.Name = "buildingsMenuItem";
-            this.buildingsMenuItem.Size = new Size(126, 22);
-            this.buildingsMenuItem.Tag = "BUILDINGS";
-            this.buildingsMenuItem.Text = "Buildings";
-            this.buildingsMenuItem.ToolTipText = "Toggle the Buildings layer";
-            this.buildingsMenuItem.Click += new System.EventHandler(this.LayersItem_Clicked);
-            // 
-            // roadsMenuItem
-            // 
-            this.roadsMenuItem.CheckOnClick = true;
-            this.roadsMenuItem.Name = "roadsMenuItem";
-            this.roadsMenuItem.Size = new Size(126, 22);
-            this.roadsMenuItem.Tag = "ROADS";
-            this.roadsMenuItem.Text = "Roads";
-            this.roadsMenuItem.ToolTipText = "Toggle the Roads layer";
-            this.roadsMenuItem.Click += new System.EventHandler(this.LayersItem_Clicked);
-            // 
-            // terrainMenuItem
-            // 
-            this.terrainMenuItem.Checked = true;
-            this.terrainMenuItem.CheckOnClick = true;
-            this.terrainMenuItem.CheckState = CheckState.Checked;
-            this.terrainMenuItem.Name = "terrainMenuItem";
-            this.terrainMenuItem.Size = new Size(126, 22);
-            this.terrainMenuItem.Tag = "TERRAIN";
-            this.terrainMenuItem.Text = "Terrain";
-            this.terrainMenuItem.ToolTipText = "Toggle the Terrain layer";
-            this.terrainMenuItem.Click += new System.EventHandler(this.LayersItem_Clicked);
-            // 
-            // refreshButton
-            // 
-            this.refreshButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            this.refreshButton.ImageKey = "refresh";
-            this.refreshButton.Name = "refreshButton";
-            this.refreshButton.Size = new Size(23, 20);
-            this.refreshButton.Tag = "REFRESH";
-            this.refreshButton.Text = "refresh";
-            this.refreshButton.ToolTipText = "Refresh the plugin";
-            this.refreshButton.Click += new EventHandler(refreshButton_Click);
-            // 
-            // imageList1
-            // 
-            this.imageList1.ImageStream =
-                (ImageListStreamer)resources.GetObject("imageList1.ImageStream");
-            this.imageList1.TransparentColor = Color.Transparent;
-            this.imageList1.Images.SetKeyName(0, "go");
-            this.imageList1.Images.SetKeyName(1, "refresh");
-            // 
-            // GEToolStrip
-            // 
-            this.ImageList = this.imageList1;
-            this.Items.AddRange(
-                new ToolStripItem[] 
-                {
-                    this.navigationTextBox,
-                    this.goButton,
-                    this.refreshButton,
-                    this.navigationSeparator,
-                    this.viewDropDownButton,
-                    this.optionsDropDownButton,
-                    this.layersDropDownButton
-                });
-
-            this.Layout +=
-                new LayoutEventHandler(this.GEToolStrip_Layout);
-            this.ResumeLayout(false);
-        }
-
-        /// <summary>
-        /// Invokes the javascitp function 'doGeocode'
+        /// Invokes the javascript function 'doGeocode'
         /// Automatically flys to the location if one is found
         /// </summary>
         /// <param name="input">the location to geocode</param>
         /// <returns>the point object (if any)</returns>
-        private object InvokeDoGeocode(string input)
+        private IKmlPoint InvokeDoGeocode(string input)
         {
-            object result = null;
-            if (this.htmlDocument != null)
-            {
-                result = this.htmlDocument.InvokeScript("doGeocode", new object[] { input });
+            if (this.htmlDocument == null) 
+            { 
+                return null; 
             }
 
-            return result;
+            return (IKmlPoint)this.htmlDocument.InvokeScript("doGeocode", new object[] { input });
         }
 
         /// <summary>
@@ -596,12 +211,12 @@ namespace FC.GEPluginCtrls
         /// <returns>The resulting kml object (if any)</returns>
         private IKmlObject InvokeLoadKml(string url)
         {
-            IKmlObject result = null;
-            if (this.htmlDocument != null)
-            {
-                result = (IKmlObject)this.htmlDocument.InvokeScript("LoadKml", new object[] { url });
+            if (this.htmlDocument == null) 
+            { 
+                return null;
             }
-            return result;
+
+            return (IKmlObject)this.htmlDocument.InvokeScript("LoadKml", new object[] { url });
         }
 
         #endregion
@@ -620,6 +235,7 @@ namespace FC.GEPluginCtrls
             {
                 e.Handled = true;
                 e.SuppressKeyPress = true;
+
                 // handle the same as if the go button was clicked
                 this.NavigationButton_Click(this, EventArgs.Empty);
             }
@@ -658,13 +274,13 @@ namespace FC.GEPluginCtrls
         /// <summary>
         /// Called when the refresh button is clicked
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        void refreshButton_Click(object sender, EventArgs e)
+        /// <param name="sender">The sending object</param>
+         /// <param name="e">The Eveny arguments</param>
+        private void RefreshButton_Click(object sender, EventArgs e)
         {
-            if (this.gewebborwser != null)
+            if (this.gewb != null)
             {
-                this.gewebborwser.Refresh();
+                this.gewb.Refresh();
             }
         }
 
@@ -786,13 +402,31 @@ namespace FC.GEPluginCtrls
                     }
                 }
                 else
-                {
-                   
+                { 
                 }
             }
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine(ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Called when an item in the Screen grab button is clicked 
+        /// </summary>
+        /// <param name="sender">Screen grab button</param>
+        /// <param name="e">Event arguments</param>
+        private void ScreenGrabButton_Click(object sender, System.EventArgs e)
+        {
+            // Take a 'screen grab' of the plugin
+            System.Drawing.Bitmap image = this.gewb.ScreenGrab();
+
+            // Save the file with a dialog
+            SaveFileDialog dialog = new SaveFileDialog();
+            dialog.Filter = "JPEG files (*.jpg;*.jpeg)|*.jpg;*.jpeg|All files (*.*)|*.*";
+            if (dialog.ShowDialog() == DialogResult.OK)
+            {
+                image.Save(dialog.FileName, System.Drawing.Imaging.ImageFormat.Jpeg);
             }
         }
 

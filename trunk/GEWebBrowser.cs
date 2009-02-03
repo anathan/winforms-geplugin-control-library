@@ -20,6 +20,10 @@ namespace FC.GEPluginCtrls
 {
     using System;
     using System.ComponentModel;
+    using System.Drawing;
+    using System.Drawing.Imaging;
+    using System.IO;
+    using System.Reflection;
     using System.Security.Permissions;
     using System.Windows.Forms;
     using GEPlugin;
@@ -47,11 +51,6 @@ namespace FC.GEPluginCtrls
         private External external = null;
 
         /// <summary>
-        /// Required designer variable.
-        /// </summary>
-        private IContainer components = null;
-
-        /// <summary>
         /// Use the IGEPlugin COM interface. 
         /// Equivalent to QueryInterface for COM objects
         /// </summary>
@@ -65,19 +64,20 @@ namespace FC.GEPluginCtrls
         public GEWebBrowser()
             : base()
         {
+            // External - COM visible class
             this.external = new External();
-            this.external.KmlLoaded += new ExternalEventHandeler(external_KmlLoaded);
-            this.external.PluginReady += new ExternalEventHandeler(external_PluginReady);
-            this.external.ScriptError += new ExternalEventHandeler(external_ScriptError);
+            this.external.KmlLoaded += new ExternalEventHandeler(this.External_KmlLoaded);
+            this.external.PluginReady += new ExternalEventHandeler(this.External_PluginReady);
+            this.external.ScriptError += new ExternalEventHandeler(this.External_ScriptError);
 
+            // Setup the control
             this.AllowNavigation = false;
             this.IsWebBrowserContextMenuEnabled = false;
             this.ScrollBarsEnabled = false;
             this.WebBrowserShortcutsEnabled = false;
-            this.ObjectForScripting = external;
-            this.DocumentCompleted += 
+            this.ObjectForScripting = this.external;
+            this.DocumentCompleted +=
                 new WebBrowserDocumentCompletedEventHandler(this.GEWebBrowser_DocumentCompleted);
-
         }
 
         #region Public events
@@ -97,14 +97,47 @@ namespace FC.GEPluginCtrls
         /// </summary>
         public event GEWebBorwserEventHandeler ScriptError;
 
-
         #endregion
 
         #region Public methods
 
+        /// <summary>
+        /// Get the plugin instance associated with the control
+        /// </summary>
+        /// <returns>The plugin instance</returns>
         public IGEPlugin GetPlugin()
         {
-            return geplugin;
+            return this.geplugin;
+        }
+
+        /// <summary>
+        /// Load the embeded html document into the browser 
+        /// </summary>
+        public void LoadPlugin()
+        {
+            try
+            {
+                // Get the html string from the embebed reasource
+                string html = FC.GEPluginCtrls.Properties.Resources.Plugin;
+
+                // Create a temp file and get the full path
+                string path = Path.GetTempFileName();
+
+                // Write the html to the temp file
+                TextWriter tw = new StreamWriter(path);
+                tw.Write(html);
+
+                // Close the temp file
+                tw.Close();
+
+                // Navigate to the temp file
+                this.Navigate(path);
+
+                // NB: Windows deletes the temp file automatially when the Windows session quits.
+            }
+            catch (Exception)
+            {
+            }
         }
 
         /// <summary>
@@ -140,10 +173,9 @@ namespace FC.GEPluginCtrls
                 }
                 catch (Exception e)
                 {
-                    GEEventArgs ea = new GEEventArgs();
-                    ea.Message = e.Message;
-                    ea.Data = e.InnerException.ToString();
-                    this.OnScriptError(this, ea);
+                    this.OnScriptError(
+                        this,
+                        new GEEventArgs(e.Message, e.InnerException.ToString()));
                 }
             }
         }
@@ -162,7 +194,7 @@ namespace FC.GEPluginCtrls
             }
             else
             {
-                return null;
+                return new object { };
             }
         }
 
@@ -170,11 +202,7 @@ namespace FC.GEPluginCtrls
         /// Executes a script function that is defined in the currently loaded document. 
         /// </summary>
         /// <param name="function">The name of the function to invoke</param>
-        /// <param name="args">
-        /// The arguments to pass to the function
-        /// i.e.
-        /// new object[] { "arg1", "arg2" };
-        /// </param>
+        /// <param name="args">any arguments</param>
         /// <returns>The result of the evaluated function</returns>
         public object InvokeJavascript(string function, object[] args)
         {
@@ -185,51 +213,42 @@ namespace FC.GEPluginCtrls
             }
             else
             {
-                return null;
+                return new object { };
             }
         }
 
         /// <summary>
-        /// Ammend or overwirte the css style of a DOM element
+        /// Take a 'screen grab' of the current GEWebBrowser view
         /// </summary>
-        /// <param name="elementId">The ID of the element</param>
-        /// <param name="css">The Style to apply</param>
-        /// <param name="overwrite">Overwrite any existing style if true</param>
-        public void ModifyCss(string elementId, string css, bool overwrite)
+        /// <returns>bitmap image</returns>
+        public Bitmap ScreenGrab()
         {
-            HtmlElement element = this.Document.GetElementById(elementId);
-
-            if (element != null && element.TagName == "style")
+            try
             {
-                if (overwrite)
-                {
-                    element.Style = css;
-                }
-                else
-                {
-                    element.Style += css;
-                }
+                Rectangle rectangle = this.DisplayRectangle;
+                Bitmap bitmap =
+                    new Bitmap(
+                        rectangle.Width,
+                        rectangle.Height,
+                        PixelFormat.Format32bppArgb);
+                Graphics graphics = Graphics.FromImage(bitmap);
+                Point point = new Point();
+                graphics.CopyFromScreen(
+                    this.PointToScreen(point),
+                    point,
+                    new Size(rectangle.Width, rectangle.Height));
+                graphics.Dispose();
+                return bitmap;
+            }
+            catch (Exception)
+            {
+                return new Bitmap(0, 0);
             }
         }
 
-        
         #endregion
 
         #region Protected methods
-
-        /// <summary>
-        /// Clean up any resources being used.
-        /// </summary>
-        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing && (this.components != null))
-            {
-                this.components.Dispose();
-            }
-
-            base.Dispose(disposing);
-        }
 
         /// <summary>
         /// Protected method for raising the PluginReady event
@@ -269,7 +288,7 @@ namespace FC.GEPluginCtrls
                 this.ScriptError(sender, e);
             }
         }
-        
+
         #endregion
 
         #region Event handlers
@@ -277,48 +296,46 @@ namespace FC.GEPluginCtrls
         /// <summary>
         /// Called when the document has a ScriptError
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void external_ScriptError(object sender, GEEventArgs e)
+        /// <param name="sender">The sending object</param>
+        /// <param name="e">Event arguments</param>
+        private void External_ScriptError(object sender, GEEventArgs e)
         {
-
+            this.OnScriptError(sender, e);
         }
 
         /// <summary>
         /// Called when the Plugin is Ready 
         /// </summary>
-        /// <param name="plugin"></param>
-        /// <param name="e"></param>
-        private void external_PluginReady(object plugin, GEEventArgs e)
+        /// <param name="plugin">The plugin instance</param>
+        /// <param name="e">Event arguments</param>
+        private void External_PluginReady(object plugin, GEEventArgs e)
         {
             this.geplugin = (IGEPlugin)plugin;
 
-            // the message holds the data format
-            e.Message = "ApiVersion:EarthVersion:PluginVersion";
+            // A label for the data
+            e.Message = "ApiVersion";
 
-            // the data is just the version info
-            e.Data = this.geplugin.getApiVersion() +
-                ":" + this.geplugin.getEarthVersion() +
-                ":" + this.geplugin.getPluginVersion();
+            // The data is just the version info
+            e.Data = this.geplugin.getApiVersion();
 
             // Raise the ready event
             this.OnPluginReady(this.geplugin, e);
         }
 
         /// <summary>
-        /// Called when a kml/kmz file has been loaded
+        /// Called when a Kml/Kmz file has loaded
         /// </summary>
-        /// <param name="kmlFeature"></param>
-        /// <param name="e"></param>
-        private void external_KmlLoaded(object kmlFeature, GEEventArgs e)
+        /// <param name="kmlFeature">The kml feature</param>
+        /// <param name="e">Event arguments</param>
+        private void External_KmlLoaded(object kmlFeature, GEEventArgs e)
         {
             this.OnKmlLoaded(kmlFeature, e);
         }
 
         /// <summary>
-        /// Called when the document has finished loading
+        /// Called when the Html document has finished loading
         /// </summary>
-        /// <param name="sender">Event object</param>
+        /// <param name="sender">The sending object</param>
         /// <param name="e">Event arguments</param>
         private void GEWebBrowser_DocumentCompleted(object sender, WebBrowserDocumentCompletedEventArgs e)
         {
@@ -329,7 +346,7 @@ namespace FC.GEPluginCtrls
         /// <summary>
         /// Called when there is a script error in the window
         /// </summary>
-        /// <param name="sender">Event object</param>
+        /// <param name="sender">The sending object</param>
         /// <param name="e">Event arguments</param>
         private void Window_Error(object sender, HtmlElementErrorEventArgs e)
         {
@@ -346,6 +363,5 @@ namespace FC.GEPluginCtrls
         }
 
         #endregion
-
     }
 }
