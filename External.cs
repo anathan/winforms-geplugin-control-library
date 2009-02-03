@@ -22,13 +22,21 @@ namespace FC.GEPluginCtrls
     using System.Runtime.InteropServices;
     using GEPlugin;
 
+    /// <summary>
+    /// Event handler for methods called from Javascript
+    /// </summary>
+    /// <param name="sender">the sending object</param>
+    /// <param name="e">the event arguments</param>
     public delegate void ExternalEventHandeler(object sender, GEEventArgs e);
 
+    /// <summary>
+    /// This COM Visible class contains all the methods to be called from Javascript
+    /// </summary>
     [ComVisibleAttribute(true)]
     public class External
     {
         /// <summary>
-        /// Initializes a new instance of the COM Visible External class.
+        /// Initializes a new instance of the External class.
         /// </summary>
         public External()
         {
@@ -56,6 +64,15 @@ namespace FC.GEPluginCtrls
         #region Public methods
 
         /// <summary>
+        /// Called from javascripy when a kml/kmz file has been loaded
+        /// </summary>
+        /// <param name="kmlFeature">the loaded kml feature</param>
+        public void LoadKmlCallBack(IKmlFeature kmlFeature)
+        {
+            this.OnKmlLoaded(kmlFeature, new GEEventArgs());
+        }
+
+        /// <summary>
         /// Called from javascript when the plugin is ready
         /// </summary>
         /// <param name="ge">the plugin instance</param>
@@ -65,14 +82,14 @@ namespace FC.GEPluginCtrls
         }
 
         /// <summary>
-        /// Called from javascripy when a kml/kmz file has been loaded
+        /// Called from javascript when there is an error
         /// </summary>
-        /// <param name="kmlFeature">the loaded kml feature</param>
-        public void LoadKmlCallBack(IKmlFeature kmlFeature)
+        /// <param name="message">the error message</param>
+        public void Error(string message)
         {
-            this.OnKmlLoaded(kmlFeature, new GEEventArgs());
+            this.OnScriptError(this, new GEEventArgs(message));
         }
-        
+
         #endregion
 
         #region Protected methods
@@ -80,8 +97,8 @@ namespace FC.GEPluginCtrls
         /// <summary>
         /// Protected method for raising the PluginReady event
         /// </summary>
-        /// <param name="plugin">The plugin object</param>
-        /// <param name="e">Event arguments</param>
+        /// <param name="ge">The plugin object</param>
+        /// <param name="e">The Event arguments</param>
         protected virtual void OnPluginReady(IGEPlugin ge, GEEventArgs e)
         {
             if (this.PluginReady != null)
@@ -93,8 +110,8 @@ namespace FC.GEPluginCtrls
         /// <summary>
         /// Protected method for raising the KmlLoaded event
         /// </summary>
-        /// <param name="kmlObject">The kmlObject object</param>
-        /// <param name="e">Event arguments</param>
+        /// <param name="kmlFeature">The kmlFeature object</param>
+        /// <param name="e">The Event arguments</param>
         protected virtual void OnKmlLoaded(IKmlFeature kmlFeature, GEEventArgs e)
         {
             if (this.KmlLoaded != null)

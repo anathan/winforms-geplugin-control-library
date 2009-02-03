@@ -20,10 +20,14 @@ namespace FC.GEPluginCtrls
 {
     /// <summary>
     /// This interface should be inherited by all the controls
-    /// It allows the control to access the plugin and htmlDoument
+    /// It allows the control access to both the plugin and htmlDoument
     /// </summary>
     public interface IGEControls
     {
+        /// <summary>
+        /// Tell the control the instance of GEWebBrowser to work with
+        /// </summary>
+        /// <param name="instance">The GEWebBrowser instance</param>
         void SetBrowserInstance(GEWebBrowser instance);
     }
 }

@@ -23,7 +23,7 @@ namespace FC.GEPluginCtrls
     using System.Drawing;
     using System.Windows.Forms;
     using GEPlugin;
-    
+
     /// <summary>
     /// The KmlTree view provides a quick way to display kml content
     /// </summary>
@@ -32,54 +32,48 @@ namespace FC.GEPluginCtrls
         #region Private fields
 
         /// <summary>
-        /// Required designer variable.
-        /// </summary>
-        private IContainer components = null;
-
-        /// <summary>
-        /// The image list for the tree nodes
-        /// </summary>
-        private ImageList imageList1;
-
-        /// <summary>
-        /// Use the IGEPlugin COM interface. 
-        /// Equivalent to QueryInterface for COM objects
+        /// The plugin
         /// </summary>
         private IGEPlugin geplugin = null;
 
         /// <summary>
-        /// An instance of the current document
+        /// The current document
         /// </summary>
         private HtmlDocument htmlDocument = null;
 
         /// <summary>
-        /// An instance of the current browser
+        /// The current browser
         /// </summary>
-        private GEWebBrowser gewebborwser = null;
+        private GEWebBrowser gewb = null;
 
         /// <summary>
-        /// Indicates whether the plugin should 'fly to' the location
-        /// When a tree node is double clicked
+        /// The minimum width of any balloons triggered from the treeview
+        /// </summary>
+        private int balloonMinimumWidth = 250;
+
+        /// <summary>
+        /// The minimum height of any balloons triggered from the treeview
+        /// </summary>
+        private int balloonMinimumHeight = 100;
+
+        /// <summary>
+        /// Indicates if the tree view should expand all visible feature nodes
+        /// when parsing kml
+        /// </summary>
+        private bool expandVisibleFeatures = false;
+
+        /// <summary>
+        /// Indicates if the plugin should 'fly to' the location
+        /// when a tree node is double clicked
         /// </summary>
         private bool flyToOnDoubleClickNode = true;
 
         /// <summary>
-        /// Context menu for the treeview
-        /// </summary>
-        private ContextMenuStrip contextMenuStrip1;
-
-        /// <summary>
-        /// Context menu item
-        /// remove node from tree and plugin
-        /// </summary>
-        private ToolStripMenuItem RemoveNode;
-
-        /// <summary>
-        /// Indicates whether the plugin should open the balloon
-        /// When a tree node is double clicked
+        /// Indicates if the plugin should open the balloon
+        /// when a tree node is double clicked
         /// </summary>
         private bool openBalloonOnDoubleClickNode = true;
-        
+
         #endregion
 
         /// <summary>
@@ -90,17 +84,55 @@ namespace FC.GEPluginCtrls
         {
             this.InitializeComponent();
             this.ShowNodeToolTips = true;
-        } 
+        }
 
         #region Public properties
+        
+        /// <summary>
+        /// Gets or sets the minimum width of any balloons triggered from the control
+        /// </summary>
+        [Category("Control Options"),
+        Description("Gets or sets the minimum width of any balloons triggered from the control. Default 250"),
+        DefaultValueAttribute(250)]
+        public int BalloonMinimumWidth
+        {
+            get { return this.balloonMinimumWidth; }
+            set { this.balloonMinimumWidth = value; }
+        }
+
+        /// <summary>
+        /// Gets or sets the minimum height of any balloons triggered from the control
+        /// </summary>
+        [Category("Control Options"),
+        Description("Gets or sets the minimum height of any balloons triggered from the control. Default 100"),
+        DefaultValueAttribute(100)]
+        public int BalloonMinimumHeight
+        {
+            get { return this.balloonMinimumHeight; }
+            set { this.balloonMinimumHeight = value; }
+        }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether to expand the tree node
+        /// of features with the visible element set to true
+        /// The default setting is false
+        /// </summary>
+        [Category("Control Options"),
+        Description("Specifies if the treeview should expand visible feature nodes when they are loaded. Default false"),
+        DefaultValueAttribute(true)]
+        public bool ExpandVisibleFeatures
+        {
+            get { return this.expandVisibleFeatures; }
+            set { this.expandVisibleFeatures = value; }
+        }
 
         /// <summary>
         /// Gets or sets a value indicating whether the plugin should 'fly to' the location (if any) of the
         /// feature represented by the treenode
-        /// the default setting is true
+        /// The default setting is true
         /// </summary>
         [Category("Control Options"),
-        Description("Specifies if the plugin should 'fly to' the location of the feature on double click."),
+        Description("Specifies if the plugin should 'fly to' the location of the feature on double click. Default true"),
         DefaultValueAttribute(true)]
         public bool FlyToOnDoubleClickNode
         {
@@ -111,10 +143,10 @@ namespace FC.GEPluginCtrls
         /// <summary>
         /// Gets or sets a value indicating whether to open the balloon (if any) when
         /// feature represented by the treenode is double clicked
-        /// the default setting is true
+        /// The default setting is true
         /// </summary>
         [Category("Control Options"),
-        Description("Specifies if the plugin should open the feature balloon on double click."),
+        Description("Specifies if the plugin should open the feature balloon on double click. Default true"),
         DefaultValueAttribute(true)]
         public bool OpenBalloonOnDoubleClickNode
         {
@@ -122,18 +154,17 @@ namespace FC.GEPluginCtrls
             set { this.openBalloonOnDoubleClickNode = value; }
         }
 
-        
         #endregion
 
         #region Public methods
-        
+
         /// <summary>
         /// Set the browser instance for the control to work with
         /// </summary>
-        /// <param name="browser"></param>
+        /// <param name="browser">The GEWebBrowser instance</param>
         public void SetBrowserInstance(GEWebBrowser browser)
         {
-            this.gewebborwser = browser;
+            this.gewb = browser;
             this.geplugin = browser.GetPlugin();
             this.htmlDocument = browser.Document;
         }
@@ -169,25 +200,7 @@ namespace FC.GEPluginCtrls
             {
             }
         }
-        
-        #endregion
 
-        #region Protected methods
-
-        /// <summary> 
-        /// Clean up any resources being used.
-        /// </summary>
-        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing && (this.components != null))
-            {
-                this.components.Dispose();
-            }
-
-            base.Dispose(disposing);
-        }
-        
         #endregion
 
         #region Private methods
@@ -248,9 +261,10 @@ namespace FC.GEPluginCtrls
             if (Convert.ToBoolean(kmlFeature.getVisibility()))
             {
                 tn.Checked = true;
-
-                // if feature is visible open the node by default??
-                ////tn.Expand();
+                if (this.expandVisibleFeatures)
+                {
+                    tn.Expand();
+                }
             }
 
             switch (kmlFeature.getType())
@@ -323,65 +337,6 @@ namespace FC.GEPluginCtrls
             }
         }
 
-        /// <summary>
-        /// Required method for Designer support
-        /// </summary>
-        private void InitializeComponent()
-        {
-            this.components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(KmlTreeView));
-            this.imageList1 = new System.Windows.Forms.ImageList(this.components);
-            this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.RemoveNode = new System.Windows.Forms.ToolStripMenuItem();
-            this.contextMenuStrip1.SuspendLayout();
-            this.SuspendLayout();
-            // 
-            // imageList1
-            // 
-            this.imageList1.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageList1.ImageStream")));
-            this.imageList1.TransparentColor = System.Drawing.Color.Transparent;
-            this.imageList1.Images.SetKeyName(0, "ge");
-            this.imageList1.Images.SetKeyName(1, "kml");
-            this.imageList1.Images.SetKeyName(2, "folderClosed");
-            this.imageList1.Images.SetKeyName(3, "folderOpen");
-            this.imageList1.Images.SetKeyName(4, "flag");
-            this.imageList1.Images.SetKeyName(5, "overlay");
-            // 
-            // contextMenuStrip1
-            // 
-            this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.RemoveNode});
-            this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(125, 26);
-            // 
-            // RemoveNode
-            // 
-            this.RemoveNode.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.RemoveNode.Name = "RemoveNode";
-            this.RemoveNode.Size = new System.Drawing.Size(124, 22);
-            this.RemoveNode.Tag = "REMOVE";
-            this.RemoveNode.Text = "Remove";
-            this.RemoveNode.ToolTipText = "Remove this node from the tree";
-            this.RemoveNode.Click += new System.EventHandler(this.RemoveNode_Click);
-            // 
-            // KmlTreeView
-            // 
-            this.CheckBoxes = true;
-            this.ImageIndex = 0;
-            this.ImageList = this.imageList1;
-            this.LineColor = System.Drawing.Color.Black;
-            this.SelectedImageIndex = 0;
-            this.ShowNodeToolTips = true;
-            this.AfterCheck += new System.Windows.Forms.TreeViewEventHandler(this.KmlTree_AfterCheck);
-            this.AfterCollapse += new System.Windows.Forms.TreeViewEventHandler(this.KmlTreeView_AfterCollapse);
-            this.DoubleClick += new System.EventHandler(this.KmlTree_DoubleClick);
-            this.MouseUp += new System.Windows.Forms.MouseEventHandler(this.KmlTreeView_MouseUp);
-            this.AfterExpand += new System.Windows.Forms.TreeViewEventHandler(this.KmlTreeView_AfterExpand);
-            this.contextMenuStrip1.ResumeLayout(false);
-            this.ResumeLayout(false);
-
-        }
-        
         #endregion
 
         #region Event handlers
@@ -428,13 +383,12 @@ namespace FC.GEPluginCtrls
                     IKmlPlacemark placemark = (IKmlPlacemark)feature;
                     IKmlAbstractView view = placemark.getAbstractView();
                     IKmlGeometry geometry = placemark.getGeometry();
-                    IGEFeatureBalloon balloon = this.geplugin.createFeatureBalloon(String.Empty);
 
                     if (this.openBalloonOnDoubleClickNode)
                     {
-                        ////ge.setBalloon(null);
-                        balloon.setMinHeight(100);
-                        balloon.setMinWidth(100);
+                        IGEFeatureBalloon balloon = this.geplugin.createFeatureBalloon(String.Empty);
+                        balloon.setMinHeight(this.balloonMinimumHeight);
+                        balloon.setMinWidth(this.balloonMinimumWidth);
                         balloon.setFeature(placemark);
                         this.geplugin.setBalloon(balloon);
                     }
@@ -455,16 +409,30 @@ namespace FC.GEPluginCtrls
                                 case "KmlPoint":
                                     IKmlPoint point = (IKmlPoint)geometry;
                                     lookat = this.geplugin.createLookAt(String.Empty);
-                                    lookat.set(point.getLatitude(), point.getLongitude(), 100, this.geplugin.ALTITUDE_RELATIVE_TO_GROUND, 0, 0, 1000);
+                                    lookat.set(
+                                        point.getLatitude(),
+                                        point.getLongitude(),
+                                        100,
+                                        this.geplugin.ALTITUDE_RELATIVE_TO_GROUND,
+                                        0,
+                                        0,
+                                        1000);
                                     this.geplugin.getView().setAbstractView(lookat);
-                                    break;
+                                    return;
                                 case "KmlPolygon":
                                     IKmlPolygon polygon = (IKmlPolygon)geometry;
                                     IKmlCoord coord = polygon.getOuterBoundary().getCoordinates().get(0);
                                     lookat = this.geplugin.createLookAt(String.Empty);
-                                    lookat.set(coord.getLatitude(), coord.getLongitude(), 100, this.geplugin.ALTITUDE_RELATIVE_TO_GROUND, 0, 0, 1000);
+                                    lookat.set(
+                                        coord.getLatitude(),
+                                        coord.getLongitude(),
+                                        100,
+                                        this.geplugin.ALTITUDE_RELATIVE_TO_GROUND,
+                                        0,
+                                        0,
+                                        1000);
                                     this.geplugin.getView().setAbstractView(lookat);
-                                    break;
+                                    return;
                                 case "KmlLineString":
                                 ////IKmlLineString lineString = (IKmlLineString)geometry;
                                 case "KmlMultiGeometry":
@@ -485,18 +453,24 @@ namespace FC.GEPluginCtrls
         /// <param name="e">Event Arugments</param>
         private void KmlTreeView_AfterExpand(object sender, TreeViewEventArgs e)
         {
-            IKmlFeature feature = (IKmlFeature)e.Node.Tag;
-            if (feature != null)
+            try
             {
-                switch (feature.getType())
+                IKmlFeature feature = (IKmlFeature)e.Node.Tag;
+                if (feature != null)
                 {
-                    case "KmlDocument":
-                    case "KmlFolder":
-                        e.Node.ImageKey = "folderOpen";
-                        break;
-                    default:
-                        break;
+                    switch (feature.getType())
+                    {
+                        case "KmlDocument":
+                        case "KmlFolder":
+                            e.Node.ImageKey = "folderOpen";
+                            break;
+                        default:
+                            break;
+                    }
                 }
+            }
+            catch (InvalidCastException)
+            {
             }
         }
 
@@ -507,47 +481,55 @@ namespace FC.GEPluginCtrls
         /// <param name="e">Event Arugments</param>
         private void KmlTreeView_AfterCollapse(object sender, TreeViewEventArgs e)
         {
-            IKmlFeature feature = (IKmlFeature)e.Node.Tag;
-            if (feature != null)
+            try
             {
-                switch (feature.getType())
+                IKmlFeature feature = (IKmlFeature)e.Node.Tag;
+                if (feature != null)
                 {
-                    case "KmlDocument":
-                    case "KmlFolder":
-                        e.Node.ImageKey = "folderClosed";
-                        break;
-                    default:
-                        break;
+                    switch (feature.getType())
+                    {
+                        case "KmlDocument":
+                        case "KmlFolder":
+                            e.Node.ImageKey = "folderClosed";
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            }
+            catch (InvalidCastException)
+            {
+            }
+        }
+
+        /// <summary>
+        /// Called when the user clicks on 'remove' context menu item
+        /// </summary>
+        /// <param name="sender">The sending object</param>
+        /// <param name="e">The Eveny arguments</param>
+        private void RemoveNode_Click(object sender, EventArgs e)
+        {
+            if (this.geplugin != null && this.SelectedNode.Tag != null)
+            {
+                while (Convert.ToBoolean(this.geplugin.getFeatures().hasChildNodes()))
+                {
+                    this.geplugin.setBalloon(null);
+                    this.geplugin.getFeatures().removeChild(this.geplugin.getFeatures().getFirstChild());
+                    this.Nodes.Clear();
                 }
             }
         }
 
         /// <summary>
-        /// Called if the user right clicks on 'remove' context menu item
+        /// Called when the user clicks on the control
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        void RemoveNode_Click(object sender, EventArgs e)
-        {
-            if (geplugin != null && this.SelectedNode.Tag != null)
-            {
-                while (Convert.ToBoolean(geplugin.getFeatures().hasChildNodes()))
-                {
-                    geplugin.setBalloon(null);
-                    geplugin.getFeatures().removeChild(geplugin.getFeatures().getFirstChild());
-                    this.Nodes.Clear();
-                }
-                
-            }
-        }
-
-        void KmlTreeView_MouseUp(object sender, MouseEventArgs e)
+        /// <param name="sender">The sending object</param>
+        /// <param name="e">The Eveny arguments</param>
+        private void KmlTreeView_MouseUp(object sender, MouseEventArgs e)
         {
             // Show menu only if the right mouse button is clicked.
             if (e.Button == MouseButtons.Right)
             {
-                TreeNode currentNode;
-
                 // Point where the mouse is clicked.
                 Point p = new Point(e.X, e.Y);
 
@@ -557,21 +539,20 @@ namespace FC.GEPluginCtrls
                 if (node != null)
                 {
                     // holder for the cuurent node
-                    //currentNode = this.SelectedNode;
+                    ////currentNode = this.SelectedNode;
 
                     // Select the node the user has clicked.
                     // The node appears selected until the menu is displayed on the screen.
                     this.SelectedNode = node;
-                    contextMenuStrip1.Show(this, p);
+                    this.contextMenuStrip1.Show(this, p);
 
                     // Highlight the selected node.
-                    //this.SelectedNode = currentNode;
-                    //currentNode = null;
+                    ////this.SelectedNode = currentNode;
+                    ////currentNode = null;
                 }
             }
-
         }
-        
+
         #endregion
     }
 }
