@@ -17,15 +17,15 @@ _IGEPlugin_ GetPlugin()<br>
 Get the plugin instance associated with the control<br>
 *Return Value:* The plugin instance
 
-_Void_LoadPlugin()<br>
+_Void_ LoadPlugin()<br>
 Load the embeded html document into the browser<br>
 
-_Void_LoadKml(System.String)<br>
+_Void_ LoadKml(System.String)<br>
 Load a kml/kmz file This function requires a 'twin' LoadKml function in javascript this twin function will call "google.earth.fetchKml" <br>
 *Parameters*<br>
 url: path to a kml/kmz file<br>
 
-_Void_InjectJavascript(System.String)<br>
+_Void_ InjectJavascript(System.String)<br>
 Inject a javascript element into the document head <br>
 *Parameters*<br>
 javascript: the script code<br>
