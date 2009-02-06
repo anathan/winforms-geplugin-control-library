@@ -13,8 +13,8 @@ The GEWebBrowser control cannot be used by partially trusted code. For more info
 
 == Public Methods ==
 
-GetPlugin
-Get the plugin instance associated with the control 
+GetPlugin()<br>
+Get the plugin instance associated with the control<br>
 *Return Value:* The plugin instance
 
 LoadPlugin()<br>
