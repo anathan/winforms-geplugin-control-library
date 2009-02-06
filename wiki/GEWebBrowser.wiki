@@ -13,86 +13,88 @@ The GEWebBrowser control cannot be used by partially trusted code. For more info
 
 == Public Methods ==
 
-GetPlugin()<br>
+GetPlugin
 Get the plugin instance associated with the control 
-<br>*Return Value:* The plugin instance
+*Return Value:* The plugin instance
 
 LoadPlugin()<br>
-Load the embeded html document into the browser 
-LoadKml(System.String)
-Load a kml/kmz file This function requires a 'twin' LoadKml function in javascript this twin function will call "google.earth.fetchKml" 
-<br>*Parameters*
-url: path to a kml/kmz file
+Load the embeded html document into the browser<br>
+
+LoadKml(System.String)<br>
+Load a kml/kmz file This function requires a 'twin' LoadKml function in javascript this twin function will call "google.earth.fetchKml" <br>
+*Parameters*<br>
+url: path to a kml/kmz file<br>
 
 InjectJavascript(System.String)<br>
-Inject a javascript element into the document head 
-<br>*Parameters*
-javascript: the script code
+Inject a javascript element into the document head <br>
+*Parameters*<br>
+javascript: the script code<br>
 
 InvokeJavascript(System.String)<br>
-Executes a script function defined in the currently loaded document. 
-<br>*Parameters*
-function: The name of the function to invoke
-<br>*Return Value:* The result of the evaluated function
+Executes a script function defined in the currently loaded document.<br>
+*Parameters*<br>
+function: The name of the function to invoke<br>
+*Return Value:* The result of the evaluated function<br>
 
 InvokeJavascript(System.String,System.Object[])<br>
-Executes a script function that is defined in the currently loaded document. 
-<br>*Parameters*
-function: The name of the function to invoke
-args: any arguments
-<br>*Return Value:* The result of the evaluated function
+Executes a script function that is defined in the currently loaded document. <br>
+*Parameters*<br>
+function: The name of the function to invoke<br>
+args: any arguments<br>
+*Return Value:* The result of the evaluated function<br>
 
 ScreenGrab()<br>
-Take a 'screen grab' of the current GEWebBrowser view 
-<br>*Return Value:* bitmap image
+Take a 'screen grab' of the current GEWebBrowser view <br>
+*Return Value:* bitmap image<br>
 
 OnPluginReady(System.Object,FC.GEPluginCtrls.GEEventArgs)<br>
-Protected method for raising the PluginReady event 
-<br>*Parameters*
-plugin: The plugin object
-e: Event arguments
+Protected method for raising the PluginReady event <br>
+*Parameters*<br>
+plugin: The plugin object<br>
+e: Event arguments<br>
 
 OnKmlLoaded(System.Object,FC.GEPluginCtrls.GEEventArgs)<br>
-Protected method for raising the KmlLoaded event 
-<br>*Parameters*
-kmlObject: The kmlObject object
-e: Event arguments
+Protected method for raising the KmlLoaded event <br>
+*Parameters*<br>
+kmlObject: The kmlObject object<br>
+e: Event arguments<br>
 
 OnScriptError(System.Object,FC.GEPluginCtrls.GEEventArgs)<br>
-Protected method for raising the ScriptError event 
-<br>*Parameters*
-sender: The sending object
-e: Event arguments
+Protected method for raising the ScriptError event <br>
+*Parameters*<br>
+sender: The sending object<br>
+e: Event arguments<br>
 
 External_ScriptError(System.Object,FC.GEPluginCtrls.GEEventArgs)<br>
-Called when the document has a ScriptError 
-<br>*Parameters*
-sender: The sending object
-e: Event arguments
+Called when the document has a ScriptError <br>
+*Parameters*<br>
+sender: The sending object<br>
+e: Event arguments<br>
 
 External_PluginReady(System.Object,FC.GEPluginCtrls.GEEventArgs)<br>
-Called when the Plugin is Ready 
-<br>*Parameters*
-plugin: The plugin instance
-e: Event arguments
+Called when the Plugin is Ready <br>
+*Parameters*<br>
+plugin: The plugin instance<br>
+e: Event arguments<br>
 
 External_KmlLoaded(System.Object,FC.GEPluginCtrls.GEEventArgs)<br>
-Called when a Kml/Kmz file has loaded 
-<br>*Parameters*
-kmlFeature: The kml feature
-e: Event arguments
+Called when a Kml/Kmz file has loaded <br>
+*Parameters*<br>
+kmlFeature: The kml feature<br>
+e: Event arguments<br>
 
 GEWebBrowser_DocumentCompleted(System.Object,System.Windows.Forms.WebBrowserDocumentCompletedEventArgs)<br>
-Called when the Html document has finished loading 
-<br>*Parameters*
-sender: The sending object
-e: Event arguments
+Called when the Html document has finished loading <br>
+*Parameters*<br>
+sender: The sending object<br>
+e: Event arguments<br>
 
 Window_Error(System.Object,System.Windows.Forms.HtmlElementErrorEventArgs)<br>
-Called when there is a script error in the window 
-<br>*Parameters*
-sender: The sending object
-e: Event arguments
+Called when there is a script error in the window <br>
+*Parameters*<br>
+sender: The sending object<br>
+e: Event arguments<br>
+
 
 == Source == 
 
