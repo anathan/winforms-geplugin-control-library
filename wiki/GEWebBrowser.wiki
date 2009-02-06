@@ -11,6 +11,89 @@ The GEWebBrowser inherits from the standard [http://msdn.microsoft.com/en-us/lib
 
 The GEWebBrowser control cannot be used by partially trusted code. For more information, see [http://msdn.microsoft.com/en-us/library/8skskf63.aspx Using Libraries from Partially Trusted Code]
 
+== Public Methods ==
+
+GetPlugin()<br>
+Get the plugin instance associated with the control 
+<br>*Return Value:* The plugin instance
+
+LoadPlugin()<br>
+Load the embeded html document into the browser 
+LoadKml(System.String)
+Load a kml/kmz file This function requires a 'twin' LoadKml function in javascript this twin function will call "google.earth.fetchKml" 
+<br>*Parameters*
+url: path to a kml/kmz file
+
+InjectJavascript(System.String)<br>
+Inject a javascript element into the document head 
+<br>*Parameters*
+javascript: the script code
+
+InvokeJavascript(System.String)<br>
+Executes a script function defined in the currently loaded document. 
+<br>*Parameters*
+function: The name of the function to invoke
+<br>*Return Value:* The result of the evaluated function
+
+InvokeJavascript(System.String,System.Object[])<br>
+Executes a script function that is defined in the currently loaded document. 
+<br>*Parameters*
+function: The name of the function to invoke
+args: any arguments
+<br>*Return Value:* The result of the evaluated function
+
+ScreenGrab()<br>
+Take a 'screen grab' of the current GEWebBrowser view 
+<br>*Return Value:* bitmap image
+
+OnPluginReady(System.Object,FC.GEPluginCtrls.GEEventArgs)<br>
+Protected method for raising the PluginReady event 
+<br>*Parameters*
+plugin: The plugin object
+e: Event arguments
+
+OnKmlLoaded(System.Object,FC.GEPluginCtrls.GEEventArgs)<br>
+Protected method for raising the KmlLoaded event 
+<br>*Parameters*
+kmlObject: The kmlObject object
+e: Event arguments
+
+OnScriptError(System.Object,FC.GEPluginCtrls.GEEventArgs)<br>
+Protected method for raising the ScriptError event 
+<br>*Parameters*
+sender: The sending object
+e: Event arguments
+
+External_ScriptError(System.Object,FC.GEPluginCtrls.GEEventArgs)<br>
+Called when the document has a ScriptError 
+<br>*Parameters*
+sender: The sending object
+e: Event arguments
+
+External_PluginReady(System.Object,FC.GEPluginCtrls.GEEventArgs)<br>
+Called when the Plugin is Ready 
+<br>*Parameters*
+plugin: The plugin instance
+e: Event arguments
+
+External_KmlLoaded(System.Object,FC.GEPluginCtrls.GEEventArgs)<br>
+Called when a Kml/Kmz file has loaded 
+<br>*Parameters*
+kmlFeature: The kml feature
+e: Event arguments
+
+GEWebBrowser_DocumentCompleted(System.Object,System.Windows.Forms.WebBrowserDocumentCompletedEventArgs)<br>
+Called when the Html document has finished loading 
+<br>*Parameters*
+sender: The sending object
+e: Event arguments
+
+Window_Error(System.Object,System.Windows.Forms.HtmlElementErrorEventArgs)<br>
+Called when there is a script error in the window 
+<br>*Parameters*
+sender: The sending object
+e: Event arguments
+
 == Source == 
 
 [http://code.google.com/p/winforms-geplugin-control-library/source/browse/trunk/GEWebBrowser.cs GEWebBrowser.cs]
