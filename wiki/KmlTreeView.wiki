@@ -1,4 +1,5 @@
 #summary KMLTreeView control notes
+#labels Phase-Implementation
 
 = Introduction =
 
@@ -10,19 +11,34 @@ The KMLTreeViewcontrol inherits from the standard [http://msdn.microsoft.com/en-
 
 == Constructor == 
 
-_KMLTreeView_ KMLTreeView() <br><br>Initializes a new instance of the KMLTreeView class
+_KMLTreeView_ *KMLTreeView()*<br>
+Initializes a new instance of the KMLTreeView class
 
 == Public properties ==
 
-_bool_ *!FlyToOnDoubleClickNode*<br><br>
-Gets or sets a value indicating whether the plugin should 'fly to' the location (if any) of the feature represented by the treenode (default is true)
+_Int_ *BalloonMinimumWidth*<br>
+Gets or sets the minimum width of any balloons triggered from the control 
 
-_bool_ *!OpenBalloonOnDoubleClickNode*<br><br>
-Gets or sets a value indicating whether to open the balloon (if any) when feature represented by the treenode is double clicked (default is true)
+_Int_ *BalloonMinimumHeight*<br>
+Gets or sets the minimum height of any balloons triggered from the control 
 
+_Bool_ *ExpandVisibleFeatures*<br>
+Gets or sets a value indicating whether to expand the tree node of features with the visible element set to true The default setting is false 
+
+_Bool_ *FlyToOnDoubleClickNode*<br>
+Gets or sets a value indicating whether the plugin should 'fly to' the location (if any) of the feature represented by the treenode The default setting is true 
+
+_Bool_ *OpenBalloonOnDoubleClickNode*<br>
+Gets or sets a value indicating whether to open the balloon (if any) when feature represented by the treenode is double clicked The default setting is true 
 
 == Public methods == 
 
-_void_ *ParsekmlObject*(_object_ kmlObject)<br><br>Recursively parses a kml object into the KmlTreeView
+_Void_ *SetBrowserInstance*(FC.GEPluginCtrls.GEWebBrowser)<br>
+Set the browser instance for the control to work with <br>
+*Parameters*<br>
+browser: The GEWebBrowser instance<br>
 
-_void_ *!SetPluginInstance*(_object_ ge)<br><br>Set an instance of the plugin to work with this should be the same object returned by GEWebBrowser !PluginReady
+_Void_ *ParsekmlObject*(System.Object)<br>
+Recursively parses a kml object into the tree <br>
+*Parameters*<br>
+kmlObject: The kml object to parse<br>
