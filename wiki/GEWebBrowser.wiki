@@ -1,6 +1,8 @@
 #summary GEWebBrowser control notes
 #labels Phase-Implementation
 
+http://earthapi.googlepages.com/GEWebBrowser.jpg
+
 = Introduction =
 
 The main control that holds the Google Earth Plug-in. 
