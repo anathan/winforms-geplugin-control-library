@@ -1,6 +1,8 @@
 #summary KMLTreeView control notes
 #labels Phase-Implementation
 
+http://earthapi.googlepages.com/KmlTreeView.jpg
+
 = Introduction =
 
 The KMLTreeView control intergtes with the GEWebBrowser to display kml/kmz files in a standard tree structure. 
