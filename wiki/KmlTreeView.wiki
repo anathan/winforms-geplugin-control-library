@@ -44,3 +44,11 @@ _Void_ *ParsekmlObject*(System.Object)<br>
 Recursively parses a kml object into the tree <br>
 *Parameters*<br>
 kmlObject: The kml object to parse<br>
+
+== Source ==
+
+[http://code.google.com/p/winforms-geplugin-control-library/source/browse/trunk/KmlTreeView.cs KmlTreeView.cs]
+
+[http://code.google.com/p/winforms-geplugin-control-library/source/browse/trunk/KmlTreeView.Designer.cs KmlTreeView.Designer.cs]
+
+[http://code.google.com/p/winforms-geplugin-control-library/source/browse/trunk/KmlTreeView.resx KmlTreeViewresx]
