@@ -13,49 +13,49 @@ The GEWebBrowser control cannot be used by partially trusted code. For more info
 
 == Public Methods ==
 
-_IGEPlugin_ GetPlugin()<br>
+_IGEPlugin_ *GetPlugin()*<br>
 Get the plugin instance associated with the control<br>
 *Return Value:* The plugin instance
 
-_Void_ LoadPlugin()<br>
+_Void_ *LoadPlugin()*<br>
 Load the embeded html document into the browser<br>
 
-_Void_ LoadKml(System.String)<br>
+_Void_ *LoadKml(System.String)*<br>
 Load a kml/kmz file This function requires a 'twin' LoadKml function in javascript this twin function will call "google.earth.fetchKml" <br>
 *Parameters*<br>
 url: path to a kml/kmz file<br>
 
-_Void_ InjectJavascript(System.String)<br>
+_Void_ *InjectJavascript(System.String)*<br>
 Inject a javascript element into the document head <br>
 *Parameters*<br>
 javascript: the script code<br>
 
-_Object_ InvokeJavascript(System.String)<br>
+_Object_ *InvokeJavascript(System.String)*<br>
 Executes a script function defined in the currently loaded document.<br>
 *Parameters*<br>
 function: The name of the function to invoke<br>
 *Return Value:* The result of the evaluated function<br>
 
-_Object_ InvokeJavascript(System.String,System._Object_[])<br>
+_Object_ *InvokeJavascript(System.String,System._Object_[])*<br>
 Executes a script function that is defined in the currently loaded document. <br>
 *Parameters*<br>
 function: The name of the function to invoke<br>
 args: any arguments<br>
 *Return Value:* The result of the evaluated function<br>
 
-_Bitmap_ ScreenGrab()<br>
+_Bitmap_ *ScreenGrab()*<br>
 Take a 'screen grab' of the current GEWebBrowser view <br>
 *Return Value:* bitmap image<br>
 
 == Public Events ==
 
-_GEWebBorwserEventHandeler_ PluginReady<br>
+_GEWebBorwserEventHandeler_ *PluginReady*<br>
 Raised when the plugin is ready<br>
 
-_GEWebBorwserEventHandeler_ KmlLoaded<br>
+_GEWebBorwserEventHandeler_ *KmlLoaded*<br>
 Raised when a kml/kmz file has loaded<br>
 
-_GEWebBorwserEventHandeler_ ScriptError<br>
+_GEWebBorwserEventHandeler_ *ScriptError*<br>
 Raised when there is a script error in the document <br>
 
 == Source == 
