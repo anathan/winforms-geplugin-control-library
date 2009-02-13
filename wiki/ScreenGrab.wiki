@@ -1,0 +1,36 @@
+#summary Using the ScreenGrab method
+#labels Phase-Implementation
+
+= Introduction =
+
+Takes a 'Screen Grab' of the GEWebBrowser control
+
+== Syntax ==
+
+{{{
+public Bitmap ScreenGrab()
+}}}
+
+        
+== Examples ==
+
+This example takes a screen grab and then prompts the user to save the file in jpeg format.
+
+{{{
+// Get the image
+System.Drawing.Bitmap image = geWebBrowser1.ScreenGrab();
+ 
+// Save the file with a dialog
+SaveFileDialog dialog = new SaveFileDialog();
+dialog.Filter = "JPEG files (*.jpg;*.jpeg)|*.jpg;*.jpeg|All files (*.*)|*.*";
+if (dialog.ShowDialog() == DialogResult.OK)
+{
+  image.Save(dialog.FileName,
+        System.Drawing.Imaging.ImageFormat.Jpeg);
+}
+}}}
+
+
+== Remarks ===
+
+This is basically the functionality used by the GEToolStrip Screen Grab button
