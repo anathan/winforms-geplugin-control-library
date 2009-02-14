@@ -5,7 +5,14 @@ http://earthapi.googlepages.com/GEWebBrowser.jpg
 
 = Introduction =
 
-The main control that holds the Google Earth Plug-in. 
+The main control that holds the Google Earth Plugin. All other controls in the library interact with the plugin object hosted in this control.
+
+Key features
+
+  * Load the plugin from a hosted page or from an embeded file in the library
+  * Get the current plugin view as a Bitmap
+  * Load Kml or Kmz files into the plugin 
+  * Inject and invoke Javascript at runtime
 
 = Details =
 
