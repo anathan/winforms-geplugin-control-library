@@ -1,8 +1,6 @@
 #summary GEToolStrip control notes
 #labels Phase-Implementation
 
-<wiki:gadget url="http://earthapi.googlepages.com/ad.xml" border="0" width="728" height="90" />
-
 http://earthapi.googlepages.com/GEToolStrip.jpg
 
 = Introduction =
@@ -45,3 +43,7 @@ Set the browser instance for the control to work with
 [http://code.google.com/p/winforms-geplugin-control-library/source/browse/trunk/GEToolStrip.Designer.cs GEToolStrip.Designer.cs]
 
 [http://code.google.com/p/winforms-geplugin-control-library/source/browse/trunk/GEToolStrip.resx GEToolStrip.resx]
+
+== Ads ==
+
+<wiki:gadget url="http://earthapi.googlepages.com/ad.xml" border="0" width="728" height="90" />
