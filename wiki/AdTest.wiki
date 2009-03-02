@@ -1,0 +1,3 @@
+#summary Just an AdSense test page
+
+<wiki:gadget url="http://earthapi.googlepages.com/ad2.xml" border="0" width="336" height="280" />
