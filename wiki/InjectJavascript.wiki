@@ -1,6 +1,8 @@
 #summary Using the InjectJavscript method
 #labels Phase-Implementation
 
+<wiki:gadget url="http://earthapi.googlepages.com/ad.xml" border="0" width="728" height="90" />
+
 = Introduction =
 
 As you can probably guess by the name, this method allows you to insert javascript into the loaded document at run-time.
