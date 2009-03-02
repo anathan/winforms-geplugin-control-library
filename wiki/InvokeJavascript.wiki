@@ -1,5 +1,7 @@
 #summary Using the InvokeJavascript method
 
+<wiki:gadget url="http://earthapi.googlepages.com/ad.xml" border="0" width="728" height="90" />
+
 = Introduction =
 
 Invokes/executes a javascript function defined in the current document
