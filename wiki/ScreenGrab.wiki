@@ -1,8 +1,6 @@
 #summary Using the ScreenGrab method
 #labels Phase-Implementation
 
-<wiki:gadget url="http://earthapi.googlepages.com/ad.xml" border="0" width="728" height="90" />
-
 = Introduction =
 
 Takes a 'Screen Grab' of the GEWebBrowser control
@@ -36,3 +34,7 @@ if (dialog.ShowDialog() == DialogResult.OK)
 == Remarks ===
 
 This is basically the functionality used by the GEToolStrip Screen Grab button
+
+== Ads ==
+
+<wiki:gadget url="http://earthapi.googlepages.com/ad.xml" border="0" width="728" height="90" />
