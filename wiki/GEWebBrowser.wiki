@@ -1,8 +1,6 @@
 #summary GEWebBrowser control notes
 #labels Phase-Implementation
 
-<wiki:gadget url="http://earthapi.googlepages.com/ad.xml" border="0" width="728" height="90" />
-
 http://earthapi.googlepages.com/GEWebBrowser.jpg
 
 = Introduction =
@@ -72,3 +70,7 @@ Raised when there is a script error in the document <br>
 == Source == 
 
 [http://code.google.com/p/winforms-geplugin-control-library/source/browse/trunk/GEWebBrowser.cs GEWebBrowser.cs]
+
+== Ads ==
+
+<wiki:gadget url="http://earthapi.googlepages.com/ad.xml" border="0" width="728" height="90" />
