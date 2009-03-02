@@ -1,7 +1,5 @@
 #summary Using the InvokeJavascript method
 
-<wiki:gadget url="http://earthapi.googlepages.com/ad.xml" border="0" width="728" height="90" />
-
 = Introduction =
 
 Invokes/executes a javascript function defined in the current document
@@ -62,3 +60,7 @@ Which would display a message box showing '2.5'
 == Remarks ===
 
 These functions, along with the partner function InjectJavascript, allow you to run any javascript you may require without having to amend the hosted HTML document.
+
+== Ads ==
+
+<wiki:gadget url="http://earthapi.googlepages.com/ad.xml" border="0" width="728" height="90" />
