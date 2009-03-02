@@ -1,6 +1,8 @@
 #summary How to build the assembly
 #labels Phase-Deploy
 
+<wiki:gadget url="http://earthapi.googlepages.com/ad.xml" border="0" width="728" height="90" />
+
 = Introduction =
 
 The control library is compiled in to an assembly [http://code.google.com/p/winforms-geplugin-control-library/source/browse/trunk#trunk/bin/Release FC.GEPluginCtrls.dll] and it is this dynamic linking library (DLL) is linked to your program at run time.
@@ -15,3 +17,7 @@ There are a number of ways you can obtain the library.
 
 
 ^1^ _I have more detailed notes on this process, as well as make.bat file, I will upload these soon._
+
+== Ads ==
+
+<wiki:gadget url="http://earthapi.googlepages.com/ad.xml" border="0" width="728" height="90" />
