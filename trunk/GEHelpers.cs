@@ -3,7 +3,7 @@
 // </copyright>
 // <author>Fraser Chapman</author>
 // <email>fraser.chapman@gmail.com</email>
-// <date>2008-12-22</date>
+// <date>2009-03-02</date>
 // <summary>This program is part of FC.GEPluginCtrls
 // FC.GEPluginCtrls is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -28,15 +28,153 @@ namespace FC.GEPluginCtrls
     /// </summary>
     public static class GEHelpers
     {
-        /// <summary>
-        /// Earth's radius in km 
-        /// </summary>
-        private const int Radius = 6371;
+        public static IKmlPlacemark DrawLineString(IGEPlugin ge, IKmlPoint p1, IKmlPoint p2)
+        {
+            IKmlPlacemark lineStringPlacemark = ge.createPlacemark(String.Empty);
+            IKmlLineString lineString = ge.createLineString(String.Empty);
+            lineStringPlacemark.setGeometry(lineString);
+            lineString.setTessellate(1);
+            lineString.getCoordinates().pushLatLngAlt(p1.getLatitude(), p1.getLongitude(), 0);
+            lineString.getCoordinates().pushLatLngAlt(p2.getLatitude(), p2.getLongitude(), 0);
+            return lineStringPlacemark;
+        }
 
         /// <summary>
-        /// Miles To Kilometers Conversion Ratio
+        /// Get the current pluin view as a point object
         /// </summary>
-        private const double MilesToKilometersRatio = 0.621371192;
+        /// <param name="ge">the plugin</param>
+        /// <returns>Point set to the current view</returns>
+        public static IKmlPoint GetCurrentViewAsPoint(IGEPlugin ge)
+        {
+            IKmlLookAt lookat = ge.getView().copyAsLookAt(ge.ALTITUDE_RELATIVE_TO_GROUND);
+            IKmlPoint point = ge.createPoint(String.Empty);
+            point.set(
+                lookat.getLatitude(),
+                lookat.getLongitude(),
+                lookat.getAltitude(),
+                ge.ALTITUDE_RELATIVE_TO_GROUND,
+                0,
+                0);
+            return point;
+        }
+
+        /// <summary>
+        /// Get the type of a plugin object from a generic RCW .
+        /// </summary>
+        /// <param name="comObject">The com object wrapper</param>
+        /// <returns>The managed type</returns>
+        public static Type GetTypeFromRcw(object comObject)
+        {
+            string type = (string)comObject.GetType().InvokeMember(
+                "getType",
+                System.Reflection.BindingFlags.InvokeMethod,
+                null,
+                comObject,
+                null);
+
+            return Type.GetType(type);
+        }
+
+        /// <summary>
+        /// Look at the given coordinates
+        /// </summary>
+        /// <param name="ge">the plugin</param>
+        /// <param name="latitude">latitude in decimal degrees</param>
+        /// <param name="longitude">longitude in decimal degrees</param>
+        public static void LookAt(IGEPlugin ge, double latitude, double longitude)
+        {
+            IKmlLookAt lookat = ge.createLookAt(String.Empty);
+            lookat.set(
+                latitude,
+                longitude,
+                100,
+                ge.ALTITUDE_RELATIVE_TO_GROUND,
+                0,
+                0,
+                1000);
+            ge.getView().setAbstractView(lookat);
+        }
+
+        /// <summary>
+        /// Look at the given feature
+        /// </summary>
+        /// <param name="ge">the plugin</param>
+        /// <param name="feature">the feature to look at</param>
+        public static void LookAt(IGEPlugin ge, IKmlFeature feature)
+        {
+            switch (feature.getType())
+            {
+                case "KmlFolder":
+                case "KmlDocument":
+                case "KmlNetworkLink":
+                    if (feature.getAbstractView() != null)
+                    {
+                        ge.getView().setAbstractView(feature.getAbstractView());
+                    }
+
+                    break;
+                case "KmlPlacemark":
+                    if (feature.getAbstractView() != null)
+                    {
+                        ge.getView().setAbstractView(feature.getAbstractView());
+                    }
+                    else
+                    {
+                        IKmlPlacemark placemark = (IKmlPlacemark)feature;
+                        LookAt(ge, placemark.getGeometry());
+                    }
+
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// Look at the given geometry 
+        /// </summary>
+        /// <param name="ge">the plugin</param>
+        /// <param name="geometry">the geomerty to look at</param>
+        public static void LookAt(IGEPlugin ge, IKmlGeometry geometry)
+        {
+            if (null != ge && null != geometry)
+            {
+                switch (geometry.getType())
+                {
+                    case "KmlPoint":
+                        LookAt(ge, (IKmlPoint)geometry);
+                        break;
+                    case "KmlPolygon":
+                        IKmlPolygon polygon = (IKmlPolygon)geometry;
+                        LookAt(
+                            ge,
+                            polygon.getOuterBoundary().getCoordinates().get(0).getLatitude(),
+                            polygon.getOuterBoundary().getCoordinates().get(0).getLongitude());
+                        break;
+                    case "KmlLineString":
+                        IKmlLineString lineString = (IKmlLineString)geometry;
+                        LookAt(
+                            ge,
+                            lineString.getCoordinates().get(0).getLatitude(),
+                            lineString.getCoordinates().get(0).getLongitude());
+                        break;
+                    case "KmlMultiGeometry":
+                    ////IKmlMultiGeometry multiGeometry = (IKmlMultiGeometry)geometry;
+                    default:
+                        break;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Look at the given point
+        /// </summary>
+        /// <param name="ge">the plugin</param>
+        /// <param name="point">the point to look at</param>
+        public static void LookAt(IGEPlugin ge, IKmlPoint point)
+        {
+            LookAt(ge, point.getLatitude(), point.getLongitude());
+        }
 
         /// <summary>
         /// Remove all features from the plugin 
@@ -59,100 +197,13 @@ namespace FC.GEPluginCtrls
         /// <param name="id">The id of the element to remove</param>
         public static void RemoveFeatureById(IGEPlugin ge, string id)
         {
-            IGEFeatureContainer features = ge.getFeatures();
-            IKmlObject c = features.getFirstChild();
-            while (c != null)
+            while (Convert.ToBoolean(ge.getFeatures().hasChildNodes()))
             {
-                if (c.getId() == id)
+                if (ge.getFeatures().getFirstChild().getId() == id)
                 {
-                    features.removeChild(c);
-                    break;
+                    ge.getFeatures().removeChild(ge.getFeatures().getFirstChild());
                 }
             }
-        }
-
-        /// <summary>
-        /// Convert degrees to radians
-        /// </summary>
-        /// <param name="degrees">Decimal degrees</param>
-        /// <returns>Number of radians</returns>
-        public static double ConvertDegreesToRadians(double degrees)
-        {
-            return degrees * (Math.PI / 180.0);
-        }
-
-        /// <summary>
-        /// Convert radians to degrees
-        /// </summary>
-        /// <param name="radians">Number of radians</param>
-        /// <returns>Decimal degrees</returns>
-        public static double ConvertRadiansToDegrees(double radians)
-        {
-            return radians * (180.0 / Math.PI);
-        }
-
-        /// <summary>
-        /// Convert Kilometers To Miles 
-        /// </summary>
-        /// <param name="kilometers">distance in kilometeres</param>
-        /// <returns>distance in miles</returns>
-        public static double ConvertKilometersToMiles(double kilometers)
-        {
-            return kilometers * MilesToKilometersRatio;
-        }
-
-        /// <summary>
-        /// Convert Miles To Kilometers
-        /// </summary>
-        /// <param name="miles">distance in miles</param>
-        /// <returns>distance in kilometeres</returns>
-        public static double ConvertMilesToKilometers(double miles)
-        {
-            return miles / MilesToKilometersRatio;
-        }
-
-        /// <summary>
-        /// Find the intermediate point at a given factor between two points
-        /// </summary>
-        /// <param name="p1">first point</param>
-        /// <param name="p2">second point</param>
-        /// <param name="f">intermediate factor</param>
-        /// <returns>Ikmlpoint intermediate point</returns>
-        public static IKmlPoint InterpolateLocation(IKmlPoint p1, IKmlPoint p2, double f)
-        {
-            IKmlPoint p = p1;
-            p.setLatitude(p1.getLatitude() + (f * (p2.getLatitude() - p1.getLatitude())));
-            p.setLongitude(p1.getLongitude() + (f * (p2.getLongitude() - p1.getLongitude())));
-            return p;
-        }
-
-        /// <summary>
-        /// Find the intermediate point at a given factor between two points
-        /// </summary>
-        /// <param name="loc1">first point</param>
-        /// <param name="loc2">second point</param>
-        /// <param name="f">intermediate factor</param>
-        /// <returns>double intermediate point</returns>
-        public static double[] InterpolateLocation(double[] loc1, double[] loc2, double f)
-        {
-            return new double[]
-            {
-                loc1[0] + (f * (loc2[0] - loc1[0])),
-                loc1[1] + (f * (loc2[1] - loc1[1])) 
-            };
-        }
-
-        /// <summary>
-        /// Get the current pluin view as a point object
-        /// </summary>
-        /// <param name="ge">the plugin</param>
-        /// <returns>view as point</returns>
-        public static IKmlPoint GetCurrentViewAsPoint(IGEPlugin ge)
-        {
-            IKmlLookAt lookat = ge.getView().copyAsLookAt(ge.ALTITUDE_RELATIVE_TO_GROUND);
-            IKmlPoint point = ge.createPoint(String.Empty);
-            point.set(lookat.getLatitude(), lookat.getLongitude(), lookat.getAltitude(), ge.ALTITUDE_RELATIVE_TO_GROUND, 0, 0);
-            return point;
         }
     }
 }

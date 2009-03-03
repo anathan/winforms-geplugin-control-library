@@ -201,7 +201,7 @@ namespace FC.GEPluginCtrls
                 return null; 
             }
 
-            return (IKmlPoint)this.htmlDocument.InvokeScript("doGeocode", new object[] { input });
+            return (IKmlPoint)this.htmlDocument.InvokeScript("jsDoGeocode", new object[] { input });
         }
 
         /// <summary>
@@ -216,7 +216,7 @@ namespace FC.GEPluginCtrls
                 return null;
             }
 
-            return (IKmlObject)this.htmlDocument.InvokeScript("LoadKml", new object[] { url });
+            return (IKmlObject)this.htmlDocument.InvokeScript("jsFetchKml", new object[] { url });
         }
 
         #endregion
