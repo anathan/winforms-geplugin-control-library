@@ -144,7 +144,7 @@ namespace FC.GEPluginCtrls
         }
 
         /// <summary>
-        /// Computes the distance between two points using the Haversine formula
+        /// Calculates the great circle distance between two points using the Haversine formula
         /// </summary>
         /// <param name="origin">The first point</param>
         /// <param name="destination">The second point</param>
@@ -155,6 +155,7 @@ namespace FC.GEPluginCtrls
         }
 
         /// <summary>
+        /// Calculates the great circle distance between two points using the Vincenty formulae
         /// This function is based on the geodesy-library code by Mike Gavaghan 
         /// See http://www.gavaghan.org/blog/2007/08/06/c-gps-receivers-and-geocaching-vincentys-formula/
         /// </summary>
@@ -273,10 +274,10 @@ namespace FC.GEPluginCtrls
         }
 
         /// <summary>
-        /// 
+        /// Calculates the angular distance between teo points
         /// </summary>
-        /// <param name="point1"></param>
-        /// <param name="point2"></param>
+        /// <param name="point1">The fisrt point</param>
+        /// <param name="point2">The decond point</param>
         /// <returns></returns>
         public static double AngularDistance(IKmlPoint point1, IKmlPoint point2)
         {
@@ -292,11 +293,12 @@ namespace FC.GEPluginCtrls
         }
 
         /// <summary>
-        /// 
+        /// Calculates the initial heading/bearing at which an object at the start
+        /// point will need to travel to get to the destination point.
         /// </summary>
-        /// <param name="origin"></param>
-        /// <param name="destination"></param>
-        /// <returns></returns>
+        /// <param name="origin">The first point</param>
+        /// <param name="destination">The second point</param>
+        /// <returns>The initial heading required ibn degrees</returns>
         public static double Heading(IKmlPoint origin, IKmlPoint destination)
         {
             double phi1 = origin.getLatitude().DegreesToRadians();
@@ -351,12 +353,13 @@ namespace FC.GEPluginCtrls
         }
 
         /// <summary>
-        /// 
+        /// Calculates the destination point along a geodesic, given an initial point, heading and distance
+        /// see http://www.movable-type.co.uk/scripts/latlong.html
         /// </summary>
         /// <param name="origin">The first point</param>
-        /// <param name="heading"></param>
-        /// <param name="distance"></param>
-        /// <returns></returns>
+        /// <param name="heading">heading in degrees</param>
+        /// <param name="distance">distance in metres</param>
+        /// <returns>The point at the location along the geodesic</returns>
         public static IKmlPoint Destination(IKmlPoint origin, double heading, double distance)
         {
             double phi1 = origin.getLatitude().DegreesToRadians();
