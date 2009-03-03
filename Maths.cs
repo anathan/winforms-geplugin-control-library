@@ -23,6 +23,8 @@ namespace FC.GEPluginCtrls
 
     /// <summary>
     /// Various Geodesic methods to work with the plugin api
+	/// This class is based on the javascript library geojs by Roman Nurik
+    /// See http://code.google.com/p/geojs/
     /// </summary>
     public static class Maths
     {
