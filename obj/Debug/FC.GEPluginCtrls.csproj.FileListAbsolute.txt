@@ -10,3 +10,4 @@ E:\My Documents\Visual Studio 2008\Projects\FC.GEPluginCtrls\FC.GEPluginCtrls\ob
 E:\My Documents\Visual Studio 2008\Projects\FC.GEPluginCtrls\FC.GEPluginCtrls\obj\Debug\FC.GEPluginCtrls.dll
 E:\My Documents\Visual Studio 2008\Projects\FC.GEPluginCtrls\FC.GEPluginCtrls\obj\Debug\FC.GEPluginCtrls.pdb
 E:\My Documents\Visual Studio 2008\Projects\FC.GEPluginCtrls\FC.GEPluginCtrls\obj\Debug\FC.GEPluginCtrls.GEToolStrip.resources
+E:\My Documents\Visual Studio 2008\Projects\FC.GEPluginCtrls\FC.GEPluginCtrls\bin\Debug\Documentation.xml

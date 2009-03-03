@@ -50,6 +50,11 @@ namespace FC.GEPluginCtrls
         public event ExternalEventHandeler PluginReady;
 
         /// <summary>
+        /// Raised when there is a kml event
+        /// </summary>
+        public event ExternalEventHandeler KmlEvent;
+
+        /// <summary>
         /// Raised when a kml/kmz file has loaded
         /// </summary>
         public event ExternalEventHandeler KmlLoaded;
@@ -90,6 +95,16 @@ namespace FC.GEPluginCtrls
             this.OnScriptError(this, new GEEventArgs(message));
         }
 
+        /// <summary>
+        /// Called from javascript when there is a kml event
+        /// </summary>
+        /// <param name="kmlEvent">the kml event</param>
+        /// <param name="action">the event id</param>
+        public void KmlEventCallBack(IKmlEvent kmlEvent, string action)
+        {
+            this.OnKmlEvent(kmlEvent, new GEEventArgs(action));
+        }
+
         #endregion
 
         #region Protected methods
@@ -104,6 +119,19 @@ namespace FC.GEPluginCtrls
             if (this.PluginReady != null)
             {
                 this.PluginReady(ge, e);
+            }
+        }
+
+        /// <summary>
+        /// Protected method for raising the KmlEvent event
+        /// </summary>
+        /// <param name="kmlEvent">The kmlEvent object</param>
+        /// <param name="e">The Event arguments</param>
+        protected virtual void OnKmlEvent(IKmlEvent kmlEvent, GEEventArgs e)
+        {
+            if (this.KmlEvent != null)
+            {
+                this.KmlEvent(kmlEvent, e);
             }
         }
 

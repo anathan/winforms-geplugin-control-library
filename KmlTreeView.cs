@@ -87,7 +87,7 @@ namespace FC.GEPluginCtrls
         }
 
         #region Public properties
-        
+
         /// <summary>
         /// Gets or sets the minimum width of any balloons triggered from the control
         /// </summary>
@@ -198,6 +198,18 @@ namespace FC.GEPluginCtrls
             }
             catch (InvalidCastException)
             {
+            }
+        }
+
+        /// <summary>
+        /// Recursively parses a collection of kml object into the tree
+        /// </summary>
+        /// <param name="kmlObject">The kml object to parse</param>
+        public void ParsekmlObject(object[] kmlObjects)
+        {
+            foreach (object kmlObject in kmlObjects)
+            {
+                ParsekmlObject(kmlObject);
             }
         }
 
@@ -375,73 +387,20 @@ namespace FC.GEPluginCtrls
             if (this.SelectedNode != null && this.geplugin != null)
             {
                 this.SelectedNode.Checked = true;
-
                 IKmlFeature feature = (IKmlFeature)SelectedNode.Tag;
 
-                if (feature != null && feature.getType() == "KmlPlacemark")
+                if (feature.getType() == "KmlPlacemark" && this.openBalloonOnDoubleClickNode)
                 {
-                    IKmlPlacemark placemark = (IKmlPlacemark)feature;
-                    IKmlAbstractView view = placemark.getAbstractView();
-                    IKmlGeometry geometry = placemark.getGeometry();
+                    IGEFeatureBalloon balloon = this.geplugin.createFeatureBalloon(String.Empty);
+                    balloon.setMinHeight(this.balloonMinimumHeight);
+                    balloon.setMinWidth(this.balloonMinimumWidth);
+                    balloon.setFeature(feature);
+                    this.geplugin.setBalloon(balloon);
+                }
 
-                    if (this.openBalloonOnDoubleClickNode)
-                    {
-                        IGEFeatureBalloon balloon = this.geplugin.createFeatureBalloon(String.Empty);
-                        balloon.setMinHeight(this.balloonMinimumHeight);
-                        balloon.setMinWidth(this.balloonMinimumWidth);
-                        balloon.setFeature(placemark);
-                        this.geplugin.setBalloon(balloon);
-                    }
-
-                    if (this.flyToOnDoubleClickNode)
-                    {
-                        if (view != null)
-                        {
-                            this.geplugin.getView().setAbstractView(view);
-                            return;
-                        }
-                        else if (geometry != null)
-                        {
-                            IKmlLookAt lookat;
-                            ////System.Diagnostics.Debug.WriteLine(geometry.getType());
-                            switch (geometry.getType())
-                            {
-                                case "KmlPoint":
-                                    IKmlPoint point = (IKmlPoint)geometry;
-                                    lookat = this.geplugin.createLookAt(String.Empty);
-                                    lookat.set(
-                                        point.getLatitude(),
-                                        point.getLongitude(),
-                                        100,
-                                        this.geplugin.ALTITUDE_RELATIVE_TO_GROUND,
-                                        0,
-                                        0,
-                                        1000);
-                                    this.geplugin.getView().setAbstractView(lookat);
-                                    return;
-                                case "KmlPolygon":
-                                    IKmlPolygon polygon = (IKmlPolygon)geometry;
-                                    IKmlCoord coord = polygon.getOuterBoundary().getCoordinates().get(0);
-                                    lookat = this.geplugin.createLookAt(String.Empty);
-                                    lookat.set(
-                                        coord.getLatitude(),
-                                        coord.getLongitude(),
-                                        100,
-                                        this.geplugin.ALTITUDE_RELATIVE_TO_GROUND,
-                                        0,
-                                        0,
-                                        1000);
-                                    this.geplugin.getView().setAbstractView(lookat);
-                                    return;
-                                case "KmlLineString":
-                                ////IKmlLineString lineString = (IKmlLineString)geometry;
-                                case "KmlMultiGeometry":
-                                ////IKmlMultiGeometry multiGeometry = (IKmlMultiGeometry)geometry;
-                                default:
-                                    break;
-                            }
-                        }
-                    }
+                if (this.flyToOnDoubleClickNode)
+                {
+                    GEHelpers.LookAt(this.geplugin, feature);
                 }
             }
         }

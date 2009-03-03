@@ -69,6 +69,7 @@ namespace FC.GEPluginCtrls
             this.external.KmlLoaded += new ExternalEventHandeler(this.External_KmlLoaded);
             this.external.PluginReady += new ExternalEventHandeler(this.External_PluginReady);
             this.external.ScriptError += new ExternalEventHandeler(this.External_ScriptError);
+            this.external.KmlEvent += new ExternalEventHandeler(this.External_KmlEvent);
 
             // Setup the control
             this.AllowNavigation = false;
@@ -86,6 +87,11 @@ namespace FC.GEPluginCtrls
         /// Raised when the plugin is ready
         /// </summary>
         public event GEWebBorwserEventHandeler PluginReady;
+
+        /// <summary>
+        /// Raised when there is a kmlEvent
+        /// </summary>
+        public event GEWebBorwserEventHandeler KmlEvent;
 
         /// <summary>
         /// Raised when a kml/kmz file has loaded
@@ -113,7 +119,7 @@ namespace FC.GEPluginCtrls
         /// <summary>
         /// Load the embeded html document into the browser 
         /// </summary>
-        public void LoadPlugin()
+        public void LoadEmbededPlugin()
         {
             try
             {
@@ -146,11 +152,11 @@ namespace FC.GEPluginCtrls
         /// this twin function will call "google.earth.fetchKml"
         /// </summary>
         /// <param name="url">path to a kml/kmz file</param>
-        public void LoadKml(string url)
+        public void FetchKml(string url)
         {
             if (this.Document != null)
             {
-                this.Document.InvokeScript("LoadKml", new object[] { url });
+                this.Document.InvokeScript("jsFetchKml", new object[] { url });
             }
         }
 
@@ -218,6 +224,18 @@ namespace FC.GEPluginCtrls
         }
 
         /// <summary>
+        /// Wrapper for the the google.earth.addEventListener method
+        /// </summary>
+        /// <param name="feature">The target object</param>
+        /// <param name="action">The event Id</param>
+        public void AddEventListener(object feature, string action)
+        {
+            this.InvokeJavascript(
+                "jsAddEventListener",
+                new object[] { feature, action });
+        }
+
+        /// <summary>
         /// Take a 'screen grab' of the current GEWebBrowser view
         /// </summary>
         /// <returns>bitmap image</returns>
@@ -246,6 +264,20 @@ namespace FC.GEPluginCtrls
             }
         }
 
+        /// <summary>
+        /// Kills all running geplugin processes on the system
+        /// </summary>
+        public void KillAllPluginProcesses()
+        {
+            System.Diagnostics.Process[] gep =
+                System.Diagnostics.Process.GetProcessesByName("geplugin");
+
+            while (gep.Length > 0)
+            {
+                gep[gep.Length - 1].Kill();
+            }
+        }
+
         #endregion
 
         #region Protected methods
@@ -260,6 +292,19 @@ namespace FC.GEPluginCtrls
             if (this.PluginReady != null)
             {
                 this.PluginReady(plugin, e);
+            }
+        }
+
+        /// <summary>
+        /// Protected method for raising the KmlEvent event
+        /// </summary>
+        /// <param name="kmlEvent">the kml event</param>
+        /// <param name="e">The eventid</param>
+        protected virtual void OnKmlEvent(object kmlEvent, GEEventArgs e)
+        {
+            if (this.KmlEvent != null)
+            {
+                this.KmlEvent(kmlEvent, e);
             }
         }
 
@@ -320,6 +365,16 @@ namespace FC.GEPluginCtrls
 
             // Raise the ready event
             this.OnPluginReady(this.geplugin, e);
+        }
+
+        /// <summary>
+        /// Called when there is a Kml event 
+        /// </summary>
+        /// <param name="kmlEvent">the kml event</param>
+        /// <param name="e">The eventId</param>
+        private void External_KmlEvent(object kmlEvent, GEEventArgs e)
+        {
+            this.OnKmlEvent(kmlEvent, e);
         }
 
         /// <summary>

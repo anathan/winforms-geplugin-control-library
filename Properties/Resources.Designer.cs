@@ -65,20 +65,42 @@ namespace FC.GEPluginCtrls.Properties {
         ///	PUBLIC &quot;-//W3C//DTD XHTML 1.0 Strict//EN&quot;
         ///	&quot;http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd&quot;&gt;
         ///&lt;html xmlns=&quot;http://www.w3.org/1999/xhtml&quot;&gt;
-        ///&lt;head&gt;
-        ///	&lt;meta http-equiv=&quot;content-type&quot; content=&quot;text/html; charset=utf-8&quot; /&gt;
-        ///	&lt;meta name=&quot;Author&quot; content=&quot;Fraser Chapman&quot; /&gt;
-        ///	&lt;title&gt;plugin code&lt;/title&gt;
-        ///	&lt;script type=&quot;text/javascript&quot; src=&quot;http://www.google.com/jsapi?key=&quot;&gt;&lt;/script&gt;
-        ///	&lt;script type=&quot;text/javascript&quot;&gt;
-        ///	/* &lt;![CDATA[ */
-        ///	
-        ///	google.load(&quot;earth&quot;, &quot;1&quot;);
-        ///	google.load(&quot;maps&quot;, &quot;2.xx [rest of string was truncated]&quot;;.
+        ///&lt;!--
+        ///Copyright (c) 2008 Fraser Chapman
+        ///Author: Fraser Chapman
+        ///Email: fraser.chapman@gmail.com
+        ///Date: 2009-01-25
+        ///Summary:
+        ///This program is part of FC.GEPluginCtrls
+        ///FC.GEPluginCtrls is free software: you can redistribute it and/or modify
+        ///it under the terms of the GNU General Public License as published by
+        ///the Free Software Foundation, either ve [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string Plugin {
             get {
                 return ResourceManager.GetString("Plugin", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &lt;!DOCTYPE html PUBLIC &quot;-//W3C//DTD XHTML 1.0 Transitional//EN&quot;
+        ///                      &quot;http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd&quot;&gt;
+        ///&lt;html&gt;
+        ///  &lt;head&gt;
+        ///    &lt;meta http-equiv=&quot;content-type&quot; content=&quot;text/html; charset=utf-8&quot; /&gt;
+        ///    &lt;title&gt;Using Google Earth and Maps API&lt;/title&gt;
+        ///    &lt;script type=&quot;text/javascript&quot; src=&quot;http://maps.google.com/maps?file=api&amp;amp;v=2&amp;amp;key=&quot;&gt;&lt;/script&gt;
+        ///
+        ///    &lt;script type=&quot;text/javascript&quot;&gt;
+        ///
+        ///      /* &lt;![CDATA[ */
+        ///    
+        ///      function initialize() {
+        ///      var map  [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string PluginMap {
+            get {
+                return ResourceManager.GetString("PluginMap", resourceCulture);
             }
         }
     }
