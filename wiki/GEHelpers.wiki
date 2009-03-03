@@ -1,0 +1,23 @@
+#summary GEHelpers class notes
+#labels Phase-Implementation,Featured
+
+= Introduction =
+
+This class provides a very basic Google Earth plugin helpers. Most of the methods are based on the GEHelpers javasctipt library found at: 
+http://earth-api-samples.googlecode.com/svn/trunk/lib/geplugin-helpers.js
+
+= Details =
+
+To follow shortly...
+
+== Public Methods ==
+
+To follow shortly...
+
+== Source == 
+
+[http://code.google.com/p/winforms-geplugin-control-library/source/browse/trunk/GEHelpers.cs GEHelpers.cs]
+
+== Ads ==
+
+<wiki:gadget url="http://earthapi.googlepages.com/ad.xml" border="0" width="728" height="90" />
