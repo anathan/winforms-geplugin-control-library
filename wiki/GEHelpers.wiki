@@ -1,5 +1,5 @@
 #summary GEHelpers class notes
-#labels Phase-Implementation,Featured
+#labels Phase-Implementation
 
 = Introduction =
 
