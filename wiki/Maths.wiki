@@ -1,0 +1,22 @@
+#summary Maths class notes
+#labels Phase-Implementation,Featured
+
+= Introduction =
+
+This is a static class that holds useful geodesic methods to work with the plug-in and controls.
+
+= Details =
+
+To follow shortly...
+
+== Public Methods ==
+
+To follow shortly...
+
+== Source == 
+
+[http://code.google.com/p/winforms-geplugin-control-library/source/browse/trunk/Maths.cs Maths.cs]
+
+== Ads ==
+
+<wiki:gadget url="http://earthapi.googlepages.com/ad.xml" border="0" width="728" height="90" />
