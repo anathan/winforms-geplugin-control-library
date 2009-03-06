@@ -36,7 +36,7 @@ _Void_ *LoadPlugin()*<br>
 Load the embeded html document into the browser<br>
 
 _Void_ *FetchKml(System.String)*<br>
-Load a kml/kmz file This function requires a 'twin' function in javascript 'jsFetchKml' this function  calls "google.earth.fetchKml" <br>
+Wrapper for the the google.earth.fetchKml method<br>
 *Parameters*<br>
 string: path to a kml/kmz file<br>
 
