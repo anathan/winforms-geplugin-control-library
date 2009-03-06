@@ -22,6 +22,12 @@ The GEWebBrowser control cannot be used by partially trusted code. For more info
 
 == Public Methods ==
 
+_Void_ *AddEventListener(System.object, System.String)*<br>
+Wrapper for the the google.earth.addEventListener method<br>
+*Parameters*<br>
+object: The target object<br>
+string: The event Id<br>
+
 _IGEPlugin_ *GetPlugin()*<br>
 Get the plugin instance associated with the control<br>
 *Return Value:* The plugin instance
@@ -29,15 +35,15 @@ Get the plugin instance associated with the control<br>
 _Void_ *LoadPlugin()*<br>
 Load the embeded html document into the browser<br>
 
-_Void_ *LoadKml(System.String)*<br>
-Load a kml/kmz file This function requires a 'twin' LoadKml function in javascript this twin function will call "google.earth.fetchKml" <br>
+_Void_ *FetchKml(System.String)*<br>
+Load a kml/kmz file This function requires a 'twin' function in javascript 'jsFetchKml' this function  calls "google.earth.fetchKml" <br>
 *Parameters*<br>
-url: path to a kml/kmz file<br>
+string: path to a kml/kmz file<br>
 
 _Void_ *InjectJavascript(System.String)*<br>
 Inject a javascript element into the document head <br>
 *Parameters*<br>
-javascript: the script code<br>
+string: the script code<br>
 
 _Object_ *InvokeJavascript(System.String)*<br>
 Executes a script function defined in the currently loaded document.<br>
@@ -45,11 +51,11 @@ Executes a script function defined in the currently loaded document.<br>
 function: The name of the function to invoke<br>
 *Return Value:* The result of the evaluated function<br>
 
-_Object_ *InvokeJavascript(System.String,System._Object_[])*<br>
+_Object_ *InvokeJavascript(System.String, System._Object_[])*<br>
 Executes a script function that is defined in the currently loaded document. <br>
 *Parameters*<br>
-function: The name of the function to invoke<br>
-args: any arguments<br>
+string: The name of the function to invoke<br>
+object[]: any arguments<br>
 *Return Value:* The result of the evaluated function<br>
 
 _Bitmap_ *ScreenGrab()*<br>
