@@ -4,7 +4,7 @@
 // <author>Fraser Chapman</author>
 // <email>fraser.chapman@gmail.com</email>
 // <date>2009-03-02</date>
-// <summary>This program is part of FC.GEPluginCtrls
+// <summary>This file is part of FC.GEPluginCtrls
 // FC.GEPluginCtrls is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
@@ -14,7 +14,7 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 // You should have received a copy of the GNU General Public License
-// along with this program.  If not, see http://www.gnu.org/licenses/.
+// along with this program. If not, see http://www.gnu.org/licenses/.
 // </summary>
 namespace FC.GEPluginCtrls
 {
@@ -28,7 +28,53 @@ namespace FC.GEPluginCtrls
     /// </summary>
     public static class GEHelpers
     {
-        public static IKmlPlacemark DrawLineString(IGEPlugin ge, IKmlPoint p1, IKmlPoint p2)
+        /// <summary>
+        /// Creates a kml placemark
+        /// </summary>
+        /// <param name="ge">The plugin instance</param>
+        /// <param name="latitude">The placemark latitude in decimal degrees</param>
+        /// <param name="longitude">The placemark longitude in decimal degrees</param>
+        /// <returns>The placemark object</returns>
+        public static IKmlPlacemark CreatePlacemark(IGEPlugin ge, double latitude, double longitude)
+        {
+            IKmlPoint p = ge.createPoint(String.Empty);
+            p.setLatitude(latitude);
+            p.setLongitude(longitude);
+            p.setAltitudeMode(ge.ALTITUDE_RELATIVE_TO_GROUND);
+            IKmlPlacemark placemark = ge.createPlacemark(String.Empty);
+            placemark.setGeometry(p);
+
+            return placemark;
+        }
+
+        /// <summary>
+        /// Creates a kml placemark
+        /// </summary>
+        /// <param name="ge">The plugin instance</param>
+        /// <param name="id">The placemark id</param>
+        /// <param name="latitude">The placemark latitude in decimal degrees</param>
+        /// <param name="longitude">The placemark longitude in decimal degrees</param>
+        /// <returns>The placemark object</returns>
+        public static IKmlPlacemark CreatePlacemark(IGEPlugin ge, string id, double latitude, double longitude)
+        {
+            IKmlPoint p = ge.createPoint(String.Empty);
+            p.setLatitude(latitude);
+            p.setLongitude(longitude);
+            p.setAltitudeMode(ge.ALTITUDE_RELATIVE_TO_GROUND);
+            IKmlPlacemark placemark = ge.createPlacemark(id);
+            placemark.setGeometry(p);
+
+            return placemark;
+        }
+
+        /// <summary>
+        /// Draws a line string between the given points
+        /// </summary>
+        /// <param name="ge">The plugin instance</param>
+        /// <param name="p1">The first point</param>
+        /// <param name="p2">The second point</param>
+        /// <returns>A linestring placemark</returns>
+        public static IKmlPlacemark CreateLineString(IGEPlugin ge, IKmlPoint p1, IKmlPoint p2)
         {
             IKmlPlacemark lineStringPlacemark = ge.createPlacemark(String.Empty);
             IKmlLineString lineString = ge.createLineString(String.Empty);
@@ -61,15 +107,15 @@ namespace FC.GEPluginCtrls
         /// <summary>
         /// Get the type of a plugin object from a generic RCW .
         /// </summary>
-        /// <param name="comObject">The com object wrapper</param>
+        /// <param name="wrapper">The com object wrapper</param>
         /// <returns>The managed type</returns>
-        public static Type GetTypeFromRcw(object comObject)
+        public static Type GetTypeFromRcw(object wrapper)
         {
-            string type = (string)comObject.GetType().InvokeMember(
+            string type = (string)wrapper.GetType().InvokeMember(
                 "getType",
                 System.Reflection.BindingFlags.InvokeMethod,
                 null,
-                comObject,
+                wrapper,
                 null);
 
             return Type.GetType(type);

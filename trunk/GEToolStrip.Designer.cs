@@ -4,7 +4,7 @@
 // <author>Fraser Chapman</author>
 // <email>fraser.chapman@gmail.com</email>
 // <date>2009-01-30</date>
-// <summary>This program is part of FC.GEPluginCtrls
+// <summary>This file is part of FC.GEPluginCtrls
 // FC.GEPluginCtrls is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
@@ -14,7 +14,7 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 // You should have received a copy of the GNU General Public License
-// along with this program.  If not, see http://www.gnu.org/licenses/.
+// along with this program. If not, see http://www.gnu.org/licenses/.
 // </summary>
 namespace FC.GEPluginCtrls
 {
@@ -184,6 +184,7 @@ namespace FC.GEPluginCtrls
             this.imageList1 = new System.Windows.Forms.ImageList(this.components);
             this.dropDownSeparator = new System.Windows.Forms.ToolStripSeparator();
             this.screenGrabButton = new System.Windows.Forms.ToolStripButton();
+            this.buildingsGreyMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.SuspendLayout();
             // 
             // navigationTextBox
@@ -330,6 +331,7 @@ namespace FC.GEPluginCtrls
             this.layersDropDownButton.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.bordersMenuItem,
             this.buildingsMenuItem,
+            this.buildingsGreyMenuItem,
             this.roadsMenuItem,
             this.terrainMenuItem});
             this.layersDropDownButton.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -343,7 +345,7 @@ namespace FC.GEPluginCtrls
             // 
             this.bordersMenuItem.CheckOnClick = true;
             this.bordersMenuItem.Name = "bordersMenuItem";
-            this.bordersMenuItem.Size = new System.Drawing.Size(126, 22);
+            this.bordersMenuItem.Size = new System.Drawing.Size(167, 22);
             this.bordersMenuItem.Tag = "BORDERS";
             this.bordersMenuItem.Text = "Borders";
             this.bordersMenuItem.ToolTipText = "Toggle the Borders layer";
@@ -353,17 +355,27 @@ namespace FC.GEPluginCtrls
             // 
             this.buildingsMenuItem.CheckOnClick = true;
             this.buildingsMenuItem.Name = "buildingsMenuItem";
-            this.buildingsMenuItem.Size = new System.Drawing.Size(126, 22);
+            this.buildingsMenuItem.Size = new System.Drawing.Size(167, 22);
             this.buildingsMenuItem.Tag = "BUILDINGS";
             this.buildingsMenuItem.Text = "Buildings";
             this.buildingsMenuItem.ToolTipText = "Toggle the Buildings layer";
             this.buildingsMenuItem.Click += new System.EventHandler(this.LayersItem_Clicked);
             // 
+            // buildingsGreyMenuItem
+            // 
+            this.buildingsGreyMenuItem.CheckOnClick = true;
+            this.buildingsGreyMenuItem.Name = "buildingsGreyMenuItem";
+            this.buildingsGreyMenuItem.Size = new System.Drawing.Size(167, 22);
+            this.buildingsGreyMenuItem.Tag = "BUILDINGS_GREY";
+            this.buildingsGreyMenuItem.Text = "Buildings Low-res";
+            this.buildingsMenuItem.ToolTipText = "Toggle the Low Resolution Buildings layer";
+            this.buildingsGreyMenuItem.Click += new System.EventHandler(this.LayersItem_Clicked);
+            // 
             // roadsMenuItem
             // 
             this.roadsMenuItem.CheckOnClick = true;
             this.roadsMenuItem.Name = "roadsMenuItem";
-            this.roadsMenuItem.Size = new System.Drawing.Size(126, 22);
+            this.roadsMenuItem.Size = new System.Drawing.Size(167, 22);
             this.roadsMenuItem.Tag = "ROADS";
             this.roadsMenuItem.Text = "Roads";
             this.roadsMenuItem.ToolTipText = "Toggle the Roads layer";
@@ -375,7 +387,7 @@ namespace FC.GEPluginCtrls
             this.terrainMenuItem.CheckOnClick = true;
             this.terrainMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.terrainMenuItem.Name = "terrainMenuItem";
-            this.terrainMenuItem.Size = new System.Drawing.Size(126, 22);
+            this.terrainMenuItem.Size = new System.Drawing.Size(167, 22);
             this.terrainMenuItem.Tag = "TERRAIN";
             this.terrainMenuItem.Text = "Terrain";
             this.terrainMenuItem.ToolTipText = "Toggle the Terrain layer";
@@ -436,5 +448,7 @@ namespace FC.GEPluginCtrls
         }
 
         #endregion
+
+        private System.Windows.Forms.ToolStripMenuItem buildingsGreyMenuItem;
     }
 }

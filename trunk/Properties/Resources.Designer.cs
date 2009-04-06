@@ -71,7 +71,7 @@ namespace FC.GEPluginCtrls.Properties {
         ///Email: fraser.chapman@gmail.com
         ///Date: 2009-01-25
         ///Summary:
-        ///This program is part of FC.GEPluginCtrls
+        ///This file is part of FC.GEPluginCtrls
         ///FC.GEPluginCtrls is free software: you can redistribute it and/or modify
         ///it under the terms of the GNU General Public License as published by
         ///the Free Software Foundation, either ve [rest of string was truncated]&quot;;.

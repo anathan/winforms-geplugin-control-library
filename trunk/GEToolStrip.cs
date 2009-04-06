@@ -4,7 +4,7 @@
 // <author>Fraser Chapman</author>
 // <email>fraser.chapman@gmail.com</email>
 // <date>2008-12-22</date>
-// <summary>This program is part of FC.GEPluginCtrls
+// <summary>This file is part of FC.GEPluginCtrls
 // FC.GEPluginCtrls is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
@@ -14,7 +14,7 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 // You should have received a copy of the GNU General Public License
-// along with this program.  If not, see http://www.gnu.org/licenses/.
+// along with this program. If not, see http://www.gnu.org/licenses/.
 // </summary>
 namespace FC.GEPluginCtrls
 {
@@ -278,10 +278,8 @@ namespace FC.GEPluginCtrls
          /// <param name="e">The Eveny arguments</param>
         private void RefreshButton_Click(object sender, EventArgs e)
         {
-            if (this.gewb != null)
-            {
-                this.gewb.Refresh();
-            }
+
+            this.gewb.Refresh();
         }
 
         /// <summary>
@@ -307,12 +305,15 @@ namespace FC.GEPluginCtrls
                         case "BUILDINGS":
                             this.geplugin.getLayerRoot().enableLayerById(this.geplugin.LAYER_BUILDINGS, value);
                             break;
+                        case "BUILDINGS_GREY":
+                            this.geplugin.getLayerRoot().enableLayerById(this.geplugin.LAYER_BUILDINGS_LOW_RESOLUTION, value);
+                            break;
                         case "ROADS":
                             this.geplugin.getLayerRoot().enableLayerById(this.geplugin.LAYER_ROADS, value);
                             break;
                         case "TERRAIN":
                             this.geplugin.getLayerRoot().enableLayerById(this.geplugin.LAYER_TERRAIN, value);
-                            break;
+                            break;                
                         default:
                             break;
                     }
@@ -442,4 +443,4 @@ namespace FC.GEPluginCtrls
 
         #endregion
     }
-}
+} 
