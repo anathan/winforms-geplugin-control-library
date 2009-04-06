@@ -109,6 +109,12 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\Plugin.html" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\PluginMap.html" />
+  </ItemGroup>
+  <ItemGroup>
     <COMReference Include="GEPlugin">
       <Guid>{F9152AEC-3462-4632-8087-EEE3C3CDDA35}</Guid>
       <VersionMajor>1</VersionMajor>
@@ -119,16 +125,12 @@
     </COMReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\Plugin.html" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\PluginMap.html" />
-  </ItemGroup>
-  <ItemGroup>
     <Folder Include="bin\Debug\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!--Import Project="$(ProgramFiles)\MSBuild\Microsoft\StyleCop\v4.3\Microsoft.StyleCop.targets" /-->
+  <!--
+  <Import Project="$(ProgramFiles)\MSBuild\Microsoft\StyleCop\v4.3\Microsoft.StyleCop.targets" /> 
+  -->
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

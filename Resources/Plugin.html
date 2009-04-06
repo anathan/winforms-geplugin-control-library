@@ -1,6 +1,6 @@
 ﻿<!DOCTYPE html 
-	PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <!--
 Copyright (c) 2008 Fraser Chapman
@@ -8,7 +8,7 @@ Author: Fraser Chapman
 Email: fraser.chapman@gmail.com
 Date: 2009-01-25
 Summary:
-This program is part of FC.GEPluginCtrls
+This file is part of FC.GEPluginCtrls
 FC.GEPluginCtrls is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
@@ -21,19 +21,21 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see http://www.gnu.org/licenses/
 -->
 <head>
-	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
-	<meta name="Author" content="Fraser Chapman" />
-	<title>plugin code</title>
-	<script type="text/javascript" src="http://www.google.com/jsapi"></script>
-	<script type="text/javascript">
-	/* <![CDATA[ */
-	
-	google.load("earth", "1");
-	google.load("maps", "2.xx");
+  <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+  <meta name="Author" content="Fraser Chapman" />
+  <title>Google Earth Plugin Api - Test Page</title>
+  <!-- If you plan to use this file for anything other than testing purposes then
+  you should place it on a publicly accessible server and generate a valid API key for it -->
+  <script type="text/javascript" src="http://www.google.com/jsapi"></script>
+  <script type="text/javascript">
+  /* <![CDATA[ */
+  
+  google.load("earth", "1");
+  google.load("maps", "2.xx");
 
-	var ge = null;
-	var geocoder = null;
-	var application = null;
+  var ge = null;
+  var geocoder = null;
+  var application = null;
 
   /**
   *
@@ -42,36 +44,36 @@ along with this program.  If not, see http://www.gnu.org/licenses/
   *
   */
   
-	var init_ = function()
-	{
-		google.earth.createInstance("map3d", initCallback_, failureCallback_);
-		geocoder = new GClientGeocoder();
+  var init_ = function()
+  {
+    google.earth.createInstance("map3d", initCallback_, failureCallback_);
+    geocoder = new GClientGeocoder();
     application = window.external;
-	}
+  }
 
-	var failureCallback_ = function(object)
+  var failureCallback_ = function(object)
   {
     application.Error("Plugin failed to load");
   }
 
-	var initCallback_ = function(object)
-	{
-		ge = object;
-		ge.getWindow().setVisibility(true);
-		application.Ready(ge);
-	}
+  var initCallback_ = function(object)
+  {
+    ge = object;
+    ge.getWindow().setVisibility(true);
+    application.Ready(ge);
+  }
   
-	var loadKmlCallBack_ = function(kmlObject)
-	{
-		if (kmlObject)
+  var loadKmlCallBack_ = function(kmlObject)
+  {
+    if (kmlObject)
     {
-			application.LoadKmlCallBack(kmlObject);
-		}
+      application.LoadKmlCallBack(kmlObject);
+    }
     else
     {
       application.Error("Kml failed to load");
-		}
-	}
+    }
+  }
 
   /**
   *
@@ -118,47 +120,47 @@ along with this program.  If not, see http://www.gnu.org/licenses/
     }
   }
   
-	var jsFetchKml = function(url)
-	{
-		google.earth.fetchKml(ge, url, loadKmlCallBack_);
-	}
+  var jsFetchKml = function(url)
+  {
+    google.earth.fetchKml(ge, url, loadKmlCallBack_);
+  }
 
-	var jsDoGeocode = function(address)
-	{
-		geocoder.getLatLng(address, function(point)
-		{
-			if (point)
-			{
-				var lookat = ge.createLookAt("");
-				lookat.set(point.y, point.x, 100, ge.ALTITUDE_RELATIVE_TO_GROUND, 0, 0, 1000);
-				ge.getView().setAbstractView(lookat);
-				return(point);
-			} 
-		});
-	} 
+  var jsDoGeocode = function(address)
+  {
+    geocoder.getLatLng(address, function(point)
+    {
+      if (point)
+      {
+        var lookat = ge.createLookAt("");
+        lookat.set(point.y, point.x, 100, ge.ALTITUDE_RELATIVE_TO_GROUND, 0, 0, 1000);
+        ge.getView().setAbstractView(lookat);
+        return(point);
+      } 
+    });
+  } 
 
-	/* ]]> */
-	</script>
-	<style type="text/css">
-	html, body { 
-		margin:0px;
-	}
-	#map3d_container  { 
-		display:block;
-		position:absolute;
-		top:0;
-		left:0;
-		width:100%;
-		height:100%;
-	}
-	#map3d { 
-		height: 100%;
-	}
-	</style>
+  /* ]]> */
+  </script>
+  <style type="text/css">
+  html, body { 
+    margin:0px;
+  }
+  #map3d_container  { 
+    display:block;
+    position:absolute;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+  }
+  #map3d { 
+    height: 100%;
+  }
+  </style>
 </head>
 <body onload='init_();' id='body'>
-	<div id='map3d_container'>
-		<div id='map3d'></div>
-	</div>
+  <div id='map3d_container'>
+    <div id='map3d'></div>
+  </div>
 </body>
 </html>
