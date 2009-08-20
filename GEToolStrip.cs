@@ -182,10 +182,6 @@ namespace FC.GEPluginCtrls
 
         #endregion
 
-        #region Protected methods
-
-        #endregion
-
         #region Private methods
 
         /// <summary>
@@ -319,8 +315,9 @@ namespace FC.GEPluginCtrls
                     }
                 }
             }
-            catch (Exception)
+            catch (NullReferenceException nrex)
             {
+                System.Diagnostics.Debug.WriteLine(nrex.Message);
             }
         }
 
@@ -335,7 +332,7 @@ namespace FC.GEPluginCtrls
             {
                 try
                 {
-                    ToolStripMenuItem item = (ToolStripMenuItem)sender;
+                    ToolStripMenuItem item = sender as ToolStripMenuItem;
                     string type = item.Tag.ToString();
                     int value = Convert.ToInt32(item.Checked);
 
@@ -369,9 +366,9 @@ namespace FC.GEPluginCtrls
                         }
                     }
                 }
-                catch (Exception ex)
+                catch (NullReferenceException nrex)
                 {
-                    System.Diagnostics.Debug.WriteLine(ex.Message);
+                    System.Diagnostics.Debug.WriteLine(nrex.Message);
                 }
             }
         }
@@ -402,8 +399,54 @@ namespace FC.GEPluginCtrls
                             break;
                     }
                 }
-                else
-                { 
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine(ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Called when an item in the imagery menu is clicked 
+        /// </summary>
+        /// <param name="sender">imagery menu</param>
+        /// <param name="e">Event arguments</param>
+        private void ImageryItem_Clicked(object sender, EventArgs e)
+        {
+            try
+            {
+                ToolStripMenuItem item = sender as ToolStripMenuItem;
+                string type = item.Tag.ToString();
+                if (this.geplugin != null && item != null)
+                {
+                    switch (type)
+                    {
+                        case "MARS":
+                            this.marsMenuItem.Enabled = false;
+                            this.moonMenuItem.Enabled = true;
+                            this.earthMenuItem.Enabled = true;
+                            this.earthMenuItem.Checked = false;
+                            this.moonMenuItem.Checked = false;
+                            this.gewb.ChangeImagery("mars");
+                            break;
+                        case "MOON":
+                            this.moonMenuItem.Enabled = false;
+                            this.earthMenuItem.Enabled = true;
+                            this.marsMenuItem.Enabled = true;
+                            this.earthMenuItem.Checked = false;
+                            this.marsMenuItem.Checked = false;
+                            this.gewb.ChangeImagery("moon");
+                            break;
+                        case "EARTH":
+                        default:
+                            this.earthMenuItem.Enabled = false;
+                            this.moonMenuItem.Enabled = true;
+                            this.marsMenuItem.Enabled = true;
+                            this.marsMenuItem.Checked = false;
+                            this.moonMenuItem.Checked = false;
+                            this.gewb.ChangeImagery("earth");
+                            break;
+                    }
                 }
             }
             catch (Exception ex)

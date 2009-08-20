@@ -114,6 +114,27 @@ namespace FC.GEPluginCtrls
         private System.Windows.Forms.ToolStripMenuItem atmosphereMenuItem;
 
         /// <summary>
+        /// The imagery drop down button
+        /// </summary>
+        private System.Windows.Forms.ToolStripDropDownButton imageryDropDownButton;
+
+        /// <summary>
+        /// The earth menu item
+        /// </summary>
+        private System.Windows.Forms.ToolStripMenuItem earthMenuItem;
+
+        /// <summary>
+        /// The mars menu item
+        /// </summary>
+        private System.Windows.Forms.ToolStripMenuItem marsMenuItem;
+
+        /// <summary>
+        /// The moon menu item
+        /// </summary>
+        private System.Windows.Forms.ToolStripMenuItem moonMenuItem;
+
+        
+        /// <summary>
         /// The refresh button
         /// </summary>
         private System.Windows.Forms.ToolStripButton refreshButton;
@@ -162,12 +183,19 @@ namespace FC.GEPluginCtrls
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(GEToolStrip));
+            // general
+            this.imageList1 = new System.Windows.Forms.ImageList(this.components);
+            this.dropDownSeparator = new System.Windows.Forms.ToolStripSeparator();
+            this.screenGrabButton = new System.Windows.Forms.ToolStripButton();
             this.navigationTextBox = new System.Windows.Forms.ToolStripTextBox();
             this.submitButton = new System.Windows.Forms.ToolStripButton();
+            this.refreshButton = new System.Windows.Forms.ToolStripButton();
             this.navigationSeparator = new System.Windows.Forms.ToolStripSeparator();
+            // view
             this.viewDropDownButton = new System.Windows.Forms.ToolStripDropDownButton();
             this.skyMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.sunMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            // options
             this.optionsDropDownButton = new System.Windows.Forms.ToolStripDropDownButton();
             this.statusBarMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.gridMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -175,16 +203,19 @@ namespace FC.GEPluginCtrls
             this.scaleLegendMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.atmosphereMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mouseNavigationMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            // layers
             this.layersDropDownButton = new System.Windows.Forms.ToolStripDropDownButton();
             this.bordersMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.buildingsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.roadsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.terrainMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.refreshButton = new System.Windows.Forms.ToolStripButton();
-            this.imageList1 = new System.Windows.Forms.ImageList(this.components);
-            this.dropDownSeparator = new System.Windows.Forms.ToolStripSeparator();
-            this.screenGrabButton = new System.Windows.Forms.ToolStripButton();
             this.buildingsGreyMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            // imagery
+            this.imageryDropDownButton = new System.Windows.Forms.ToolStripDropDownButton();
+            this.earthMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.marsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.moonMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            //
             this.SuspendLayout();
             // 
             // navigationTextBox
@@ -393,6 +424,52 @@ namespace FC.GEPluginCtrls
             this.terrainMenuItem.ToolTipText = "Toggle the Terrain layer";
             this.terrainMenuItem.Click += new System.EventHandler(this.LayersItem_Clicked);
             // 
+            // imageryDropDownButton
+            // 
+            this.imageryDropDownButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.imageryDropDownButton.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.earthMenuItem,
+            this.marsMenuItem,
+            this.moonMenuItem});
+            this.imageryDropDownButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.imageryDropDownButton.Name = "imageryDropDownButton";
+            this.imageryDropDownButton.Size = new System.Drawing.Size(42, 17);
+            this.imageryDropDownButton.Tag = "IMAGERY";
+            this.imageryDropDownButton.Text = "Imagery";
+            this.imageryDropDownButton.ToolTipText = "Change the Imagery database settings";
+            // 
+            // earthMenuItem
+            // 
+            this.earthMenuItem.Enabled = false;
+            this.earthMenuItem.Checked = true;
+            this.earthMenuItem.CheckOnClick = true;
+            this.earthMenuItem.Name = "earthMenuItem";
+            this.earthMenuItem.Size = new System.Drawing.Size(131, 22);
+            this.earthMenuItem.Tag = "EARTH";
+            this.earthMenuItem.Text = "Earth";
+            this.earthMenuItem.ToolTipText = "Use the Earth imagery";
+            this.earthMenuItem.Click += new System.EventHandler(this.ImageryItem_Clicked);
+            // 
+            // marsMenuItem
+            // 
+            this.marsMenuItem.CheckOnClick = true;
+            this.marsMenuItem.Name = "marsMenuItem";
+            this.marsMenuItem.Size = new System.Drawing.Size(131, 22);
+            this.marsMenuItem.Tag = "MARS";
+            this.marsMenuItem.Text = "Mars";
+            this.marsMenuItem.ToolTipText = "Use the Mars imagery";
+            this.marsMenuItem.Click += new System.EventHandler(this.ImageryItem_Clicked);
+            // 
+            // moonMenuItem
+            // 
+            this.moonMenuItem.CheckOnClick = true;
+            this.moonMenuItem.Name = "moonMenuItem";
+            this.moonMenuItem.Size = new System.Drawing.Size(131, 22);
+            this.moonMenuItem.Tag = "MOON";
+            this.moonMenuItem.Text = "Moon";
+            this.moonMenuItem.ToolTipText = "Use the Moon imagery";
+            this.moonMenuItem.Click += new System.EventHandler(this.ImageryItem_Clicked);
+            // 
             // refreshButton
             // 
             this.refreshButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
@@ -440,6 +517,7 @@ namespace FC.GEPluginCtrls
             this.viewDropDownButton,
             this.optionsDropDownButton,
             this.layersDropDownButton,
+            this.imageryDropDownButton,
             this.dropDownSeparator,
             this.screenGrabButton});
             this.Layout += new System.Windows.Forms.LayoutEventHandler(this.GEToolStrip_Layout);

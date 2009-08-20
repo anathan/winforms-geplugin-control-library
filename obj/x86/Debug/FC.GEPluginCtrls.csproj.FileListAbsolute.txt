@@ -37,3 +37,16 @@ E:\My Stuff\Visual Studio 2008\Projects\FC.GEPluginCtrls\FC.GEPluginCtrls\obj\x8
 E:\My Stuff\Visual Studio 2008\Projects\FC.GEPluginCtrls\FC.GEPluginCtrls\obj\x86\Debug\FC.GEPluginCtrls.csproj.GenerateResource.Cache
 E:\My Stuff\Visual Studio 2008\Projects\FC.GEPluginCtrls\FC.GEPluginCtrls\obj\x86\Debug\FC.GEPluginCtrls.dll
 E:\My Stuff\Visual Studio 2008\Projects\FC.GEPluginCtrls\FC.GEPluginCtrls\obj\x86\Debug\FC.GEPluginCtrls.pdb
+C:\Users\fraser\Documents\Visual Studio 2008\Projects\FC.GEPluginCtrls\bin\Debug\FC.GEPluginCtrls.dll
+C:\Users\fraser\Documents\Visual Studio 2008\Projects\FC.GEPluginCtrls\bin\Debug\FC.GEPluginCtrls.pdb
+C:\Users\fraser\Documents\Visual Studio 2008\Projects\FC.GEPluginCtrls\bin\Debug\Documentation.xml
+C:\Users\fraser\Documents\Visual Studio 2008\Projects\FC.GEPluginCtrls\bin\Debug\Interop.GEPlugin.dll
+C:\Users\fraser\Documents\Visual Studio 2008\Projects\FC.GEPluginCtrls\obj\x86\Debug\ResolveAssemblyReference.cache
+C:\Users\fraser\Documents\Visual Studio 2008\Projects\FC.GEPluginCtrls\obj\x86\Debug\Interop.GEPlugin.dll
+C:\Users\fraser\Documents\Visual Studio 2008\Projects\FC.GEPluginCtrls\obj\x86\Debug\FC.GEPluginCtrls.csproj.ResolveComReference.cache
+C:\Users\fraser\Documents\Visual Studio 2008\Projects\FC.GEPluginCtrls\obj\x86\Debug\FC.GEPluginCtrls.GEToolStrip.resources
+C:\Users\fraser\Documents\Visual Studio 2008\Projects\FC.GEPluginCtrls\obj\x86\Debug\FC.GEPluginCtrls.KmlTreeView.resources
+C:\Users\fraser\Documents\Visual Studio 2008\Projects\FC.GEPluginCtrls\obj\x86\Debug\FC.GEPluginCtrls.Properties.Resources.resources
+C:\Users\fraser\Documents\Visual Studio 2008\Projects\FC.GEPluginCtrls\obj\x86\Debug\FC.GEPluginCtrls.csproj.GenerateResource.Cache
+C:\Users\fraser\Documents\Visual Studio 2008\Projects\FC.GEPluginCtrls\obj\x86\Debug\FC.GEPluginCtrls.dll
+C:\Users\fraser\Documents\Visual Studio 2008\Projects\FC.GEPluginCtrls\obj\x86\Debug\FC.GEPluginCtrls.pdb
