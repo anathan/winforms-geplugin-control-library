@@ -235,6 +235,13 @@ namespace FC.GEPluginCtrls
                 new object[] { feature, action });
         }
 
+        public void ChangeImagery(string database)
+        {
+            this.InvokeJavascript(
+                "jsImageryDatabase",
+                new object[] { database });
+        }
+
         /// <summary>
         /// Take a 'screen grab' of the current GEWebBrowser view
         /// </summary>

@@ -35,7 +35,7 @@ along with this program.  If not, see http://www.gnu.org/licenses/
 
   var ge = null;
   var geocoder = null;
-  var application = null;
+  var application = window.external;
 
   /**
   *
@@ -48,7 +48,6 @@ along with this program.  If not, see http://www.gnu.org/licenses/
   {
     google.earth.createInstance("map3d", initCallback_, failureCallback_);
     geocoder = new GClientGeocoder();
-    application = window.external;
   }
 
   var failureCallback_ = function(object)
@@ -138,7 +137,22 @@ along with this program.  If not, see http://www.gnu.org/licenses/
       } 
     });
   } 
-
+  
+  var jsImageryDatabase = function(name)
+  {
+    document.getElementById('map3d').innerHTML = '';
+    if(name == 'earth')
+    {
+      init_();
+      return;
+    }
+    else 
+    {
+      google.earth.createInstance('map3d', initCallback_, failureCallback_,
+        { database: 'http://khmdb.google.com/?db=' + name });
+    }
+  }
+  
   /* ]]> */
   </script>
   <style type="text/css">
