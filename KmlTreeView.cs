@@ -197,8 +197,9 @@ namespace FC.GEPluginCtrls
                         break;
                 }
             }
-            catch (InvalidCastException)
+            catch (InvalidCastException icex)
             {
+                System.Diagnostics.Debug.WriteLine(icex.ToString());         
             }
         }
 
@@ -429,8 +430,9 @@ namespace FC.GEPluginCtrls
                     }
                 }
             }
-            catch (InvalidCastException)
+            catch (InvalidCastException icex)
             {
+                System.Diagnostics.Debug.WriteLine(icex.ToString());
             }
         }
 
@@ -457,8 +459,9 @@ namespace FC.GEPluginCtrls
                     }
                 }
             }
-            catch (InvalidCastException)
+            catch (InvalidCastException icex)
             {
+                System.Diagnostics.Debug.WriteLine(icex.ToString());
             }
         }
 

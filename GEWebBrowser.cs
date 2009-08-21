@@ -179,6 +179,7 @@ namespace FC.GEPluginCtrls
             {
                 try
                 {
+                    
                     HtmlElement head = this.Document.GetElementsByTagName("head")[0];
                     HtmlElement script = this.Document.CreateElement("script");
                     script.SetAttribute("type", "text/javascript");
@@ -186,11 +187,13 @@ namespace FC.GEPluginCtrls
                     element.Text = "/* <![CDATA[ */ " + javascript + " /* ]]> */";
                     head.AppendChild(script);
                 }
-                catch (Exception e)
+                catch (InvalidOperationException ioex)
                 {
+                    //e.InnerException.ToString()
                     this.OnScriptError(
                         this,
-                        new GEEventArgs(e.Message, e.InnerException.ToString()));
+                        new GEEventArgs(ioex.Message, ioex.ToString()));
+                    throw;
                 }
             }
         }
@@ -257,8 +260,10 @@ namespace FC.GEPluginCtrls
 
                 // NB: Windows deletes the temp file automatially when the Windows session quits.
             }
-            catch (Exception)
+            catch (IOException ioex)
             {
+                System.Diagnostics.Debug.WriteLine(ioex.ToString());
+                throw;
             }
         }
 
@@ -285,9 +290,10 @@ namespace FC.GEPluginCtrls
                 graphics.Dispose();
                 return bitmap;
             }
-            catch (Exception)
+            catch (ArgumentNullException anex)
             {
-                return new Bitmap(0, 0);
+                System.Diagnostics.Debug.WriteLine(anex.ToString());
+                throw;
             }
         }
 
