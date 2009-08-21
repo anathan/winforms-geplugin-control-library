@@ -112,9 +112,6 @@
     <None Include="Resources\Plugin.html" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\PluginMap.html" />
-  </ItemGroup>
-  <ItemGroup>
     <COMReference Include="GEPlugin">
       <Guid>{F9152AEC-3462-4632-8087-EEE3C3CDDA35}</Guid>
       <VersionMajor>1</VersionMajor>
