@@ -67,6 +67,12 @@ namespace FC.GEPluginCtrls
         /// </summary>
         private bool viewDropDownVisiblity = true;
 
+        /// <summary>
+        /// Indicates whether the imagery items are visible
+        /// </summary>
+        private bool imageryDropDownVisiblity = true;
+
+
         #endregion
 
         /// <summary>
@@ -164,6 +170,26 @@ namespace FC.GEPluginCtrls
             }
         }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether the Imagery drop down is visible
+        /// </summary>
+        [Category("Control Options"),
+        Description("Specifies the visiblity of the Imagery drop down."),
+        DefaultValueAttribute(true)]
+        public bool ShowImageryDropDown
+        {
+            get
+            {
+                return this.imageryDropDownVisiblity;
+            }
+
+            set
+            {
+                this.imageryDropDownVisiblity = value;
+                this.imageryDropDownButton.Visible = value;
+            }
+        }
+
         #endregion
 
         #region Public methods
@@ -184,36 +210,7 @@ namespace FC.GEPluginCtrls
 
         #region Private methods
 
-        /// <summary>
-        /// Invokes the javascript function 'doGeocode'
-        /// Automatically flys to the location if one is found
-        /// </summary>
-        /// <param name="input">the location to geocode</param>
-        /// <returns>the point object (if any)</returns>
-        private IKmlPoint InvokeDoGeocode(string input)
-        {
-            if (this.htmlDocument == null) 
-            { 
-                return null; 
-            }
-
-            return (IKmlPoint)this.htmlDocument.InvokeScript("jsDoGeocode", new object[] { input });
-        }
-
-        /// <summary>
-        /// Invokes the javascitp function 'LoadKml'
-        /// </summary>
-        /// <param name="url">The url of the file to load</param>
-        /// <returns>The resulting kml object (if any)</returns>
-        private IKmlObject InvokeLoadKml(string url)
-        {
-            if (this.htmlDocument == null) 
-            { 
-                return null;
-            }
-
-            return (IKmlObject)this.htmlDocument.InvokeScript("jsFetchKml", new object[] { url });
-        }
+   
 
         #endregion
 
@@ -258,11 +255,11 @@ namespace FC.GEPluginCtrls
                         return;
                     }
 
-                    this.InvokeLoadKml(input);
+                    this.gewb.FetchKml(input);
                 }
                 else
                 {
-                    this.InvokeDoGeocode(input);
+                    this.gewb.InvokeDoGeocode(input);
                 }
             }
         }
@@ -419,34 +416,51 @@ namespace FC.GEPluginCtrls
                 string type = item.Tag.ToString();
                 if (this.geplugin != null && item != null)
                 {
+                    // the switch here is used to implement 'radio buttons'
+                    // as there are only three imagery databses it works well for now.
+                    // If more are added a toolStripRadioButton class would be needed.
                     switch (type)
                     {
                         case "MARS":
+                            this.earthMenuItem.Enabled = true;
                             this.marsMenuItem.Enabled = false;
                             this.moonMenuItem.Enabled = true;
-                            this.earthMenuItem.Enabled = true;
                             this.earthMenuItem.Checked = false;
                             this.moonMenuItem.Checked = false;
+                            this.layersDropDownButton.Enabled = false;
                             this.gewb.ChangeImagery("mars");
                             break;
                         case "MOON":
-                            this.moonMenuItem.Enabled = false;
                             this.earthMenuItem.Enabled = true;
                             this.marsMenuItem.Enabled = true;
+                            this.moonMenuItem.Enabled = false;
                             this.earthMenuItem.Checked = false;
                             this.marsMenuItem.Checked = false;
+                            this.layersDropDownButton.Enabled = false;
                             this.gewb.ChangeImagery("moon");
                             break;
                         case "EARTH":
                         default:
                             this.earthMenuItem.Enabled = false;
-                            this.moonMenuItem.Enabled = true;
                             this.marsMenuItem.Enabled = true;
+                            this.moonMenuItem.Enabled = true;
                             this.marsMenuItem.Checked = false;
                             this.moonMenuItem.Checked = false;
+                            this.layersDropDownButton.Enabled = true;
                             this.gewb.ChangeImagery("earth");
                             break;
                     }
+                    // reset the tool bar options to match the plugin.
+                    this.statusBarMenuItem.Checked = false;
+                    this.gridMenuItem.Checked = false;
+                    this.overviewMapMenuItem.Checked = false;
+                    this.scaleLegendMenuItem.Checked = false;
+                    this.atmosphereMenuItem.Checked = true; // default
+                    this.mouseNavigationMenuItem.Checked = true; // default
+                    this.scaleLegendMenuItem.Checked = false;
+                    this.overviewMapMenuItem.Checked = false;
+                    this.skyMenuItem.Checked = false;
+                    this.sunMenuItem.Checked = false;
                 }
             }
             catch (Exception ex)

@@ -108,42 +108,26 @@ namespace FC.GEPluginCtrls
         #region Public methods
 
         /// <summary>
-        /// Get the plugin instance associated with the control
+        /// Wrapper for the the google.earth.addEventListener method
         /// </summary>
-        /// <returns>The plugin instance</returns>
-        public IGEPlugin GetPlugin()
+        /// <param name="feature">The target object</param>
+        /// <param name="action">The event Id</param>
+        public void AddEventListener(object feature, string action)
         {
-            return this.geplugin;
+            this.InvokeJavascript(
+                "jsAddEventListener",
+                new object[] { feature, action });
         }
 
         /// <summary>
-        /// Load the embeded html document into the browser 
+        /// Changes the main imagery database to use with the plug-in
         /// </summary>
-        public void LoadEmbededPlugin()
+        /// <param name="database">database name (earth, mars, moon)</param>
+        public void ChangeImagery(string database)
         {
-            try
-            {
-                // Get the html string from the embebed reasource
-                string html = FC.GEPluginCtrls.Properties.Resources.Plugin;
-
-                // Create a temp file and get the full path
-                string path = Path.GetTempFileName();
-
-                // Write the html to the temp file
-                TextWriter tw = new StreamWriter(path);
-                tw.Write(html);
-
-                // Close the temp file
-                tw.Close();
-
-                // Navigate to the temp file
-                this.Navigate(path);
-
-                // NB: Windows deletes the temp file automatially when the Windows session quits.
-            }
-            catch (Exception)
-            {
-            }
+            this.InvokeJavascript(
+                "jsImageryDatabase",
+                new object[] { database });
         }
 
         /// <summary>
@@ -158,6 +142,31 @@ namespace FC.GEPluginCtrls
             {
                 this.Document.InvokeScript("jsFetchKml", new object[] { url });
             }
+        }
+
+        /// <summary>
+        /// Get the plugin instance associated with the control
+        /// </summary>
+        /// <returns>The plugin instance</returns>
+        public IGEPlugin GetPlugin()
+        {
+            return this.geplugin;
+        }
+        
+        /// <summary>
+        /// Invokes the javascript function 'doGeocode'
+        /// Automatically flys to the location if one is found
+        /// </summary>
+        /// <param name="input">the location to geocode</param>
+        /// <returns>the point object (if any)</returns>
+        public IKmlPoint InvokeDoGeocode(string input)
+        {
+            if (this.Document == null)
+            {
+                return null;
+            }
+
+            return (IKmlPoint)this.InvokeJavascript("jsDoGeocode", new object[] { input });
         }
 
         /// <summary>
@@ -224,22 +233,33 @@ namespace FC.GEPluginCtrls
         }
 
         /// <summary>
-        /// Wrapper for the the google.earth.addEventListener method
+        /// Load the embeded html document into the browser 
         /// </summary>
-        /// <param name="feature">The target object</param>
-        /// <param name="action">The event Id</param>
-        public void AddEventListener(object feature, string action)
+        public void LoadEmbededPlugin()
         {
-            this.InvokeJavascript(
-                "jsAddEventListener",
-                new object[] { feature, action });
-        }
+            try
+            {
+                // Get the html string from the embebed reasource
+                string html = FC.GEPluginCtrls.Properties.Resources.Plugin;
 
-        public void ChangeImagery(string database)
-        {
-            this.InvokeJavascript(
-                "jsImageryDatabase",
-                new object[] { database });
+                // Create a temp file and get the full path
+                string path = Path.GetTempFileName();
+
+                // Write the html to the temp file
+                TextWriter tw = new StreamWriter(path);
+                tw.Write(html);
+
+                // Close the temp file
+                tw.Close();
+
+                // Navigate to the temp file
+                this.Navigate(path);
+
+                // NB: Windows deletes the temp file automatially when the Windows session quits.
+            }
+            catch (Exception)
+            {
+            }
         }
 
         /// <summary>

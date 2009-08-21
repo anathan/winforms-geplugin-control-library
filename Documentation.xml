@@ -64,16 +64,18 @@
             Initializes a new instance of the GEWebBrowser class.
             </summary>
         </member>
-        <member name="M:FC.GEPluginCtrls.GEWebBrowser.GetPlugin">
+        <member name="M:FC.GEPluginCtrls.GEWebBrowser.AddEventListener(System.Object,System.String)">
             <summary>
-            Get the plugin instance associated with the control
+            Wrapper for the the google.earth.addEventListener method
             </summary>
-            <returns>The plugin instance</returns>
+            <param name="feature">The target object</param>
+            <param name="action">The event Id</param>
         </member>
-        <member name="M:FC.GEPluginCtrls.GEWebBrowser.LoadEmbededPlugin">
+        <member name="M:FC.GEPluginCtrls.GEWebBrowser.ChangeImagery(System.String)">
             <summary>
-            Load the embeded html document into the browser 
+            Changes the main imagery database to use with the plug-in
             </summary>
+            <param name="database">database name (earth, mars, moon)</param>
         </member>
         <member name="M:FC.GEPluginCtrls.GEWebBrowser.FetchKml(System.String)">
             <summary>
@@ -82,6 +84,20 @@
             this twin function will call "google.earth.fetchKml"
             </summary>
             <param name="url">path to a kml/kmz file</param>
+        </member>
+        <member name="M:FC.GEPluginCtrls.GEWebBrowser.GetPlugin">
+            <summary>
+            Get the plugin instance associated with the control
+            </summary>
+            <returns>The plugin instance</returns>
+        </member>
+        <member name="M:FC.GEPluginCtrls.GEWebBrowser.InvokeDoGeocode(System.String)">
+            <summary>
+            Invokes the javascript function 'doGeocode'
+            Automatically flys to the location if one is found
+            </summary>
+            <param name="input">the location to geocode</param>
+            <returns>the point object (if any)</returns>
         </member>
         <member name="M:FC.GEPluginCtrls.GEWebBrowser.InjectJavascript(System.String)">
             <summary>
@@ -104,12 +120,10 @@
             <param name="args">any arguments</param>
             <returns>The result of the evaluated function</returns>
         </member>
-        <member name="M:FC.GEPluginCtrls.GEWebBrowser.AddEventListener(System.Object,System.String)">
+        <member name="M:FC.GEPluginCtrls.GEWebBrowser.LoadEmbededPlugin">
             <summary>
-            Wrapper for the the google.earth.addEventListener method
+            Load the embeded html document into the browser 
             </summary>
-            <param name="feature">The target object</param>
-            <param name="action">The event Id</param>
         </member>
         <member name="M:FC.GEPluginCtrls.GEWebBrowser.ScreenGrab">
             <summary>
@@ -268,6 +282,11 @@
             Indicates whether the view items are visible
             </summary>
         </member>
+        <member name="F:FC.GEPluginCtrls.GEToolStrip.imageryDropDownVisiblity">
+            <summary>
+            Indicates whether the imagery items are visible
+            </summary>
+        </member>
         <member name="M:FC.GEPluginCtrls.GEToolStrip.#ctor">
             <summary>
             Initializes a new instance of the GEToolStrip class.
@@ -278,21 +297,6 @@
             Set the browser instance for the control to work with
             </summary>
             <param name="browser">The GEWebBrowser instance</param>
-        </member>
-        <member name="M:FC.GEPluginCtrls.GEToolStrip.InvokeDoGeocode(System.String)">
-            <summary>
-            Invokes the javascript function 'doGeocode'
-            Automatically flys to the location if one is found
-            </summary>
-            <param name="input">the location to geocode</param>
-            <returns>the point object (if any)</returns>
-        </member>
-        <member name="M:FC.GEPluginCtrls.GEToolStrip.InvokeLoadKml(System.String)">
-            <summary>
-            Invokes the javascitp function 'LoadKml'
-            </summary>
-            <param name="url">The url of the file to load</param>
-            <returns>The resulting kml object (if any)</returns>
         </member>
         <member name="M:FC.GEPluginCtrls.GEToolStrip.NavigationTextBox_KeyUp(System.Object,System.Windows.Forms.KeyEventArgs)">
             <summary>
@@ -522,6 +526,11 @@
         <member name="P:FC.GEPluginCtrls.GEToolStrip.ShowViewDropDown">
             <summary>
             Gets or sets a value indicating whether the View drop down is visible
+            </summary>
+        </member>
+        <member name="P:FC.GEPluginCtrls.GEToolStrip.ShowImageryDropDown">
+            <summary>
+            Gets or sets a value indicating whether the Imagery drop down is visible
             </summary>
         </member>
         <member name="T:FC.GEPluginCtrls.KmlTreeView">
