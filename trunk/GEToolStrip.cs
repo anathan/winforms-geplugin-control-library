@@ -206,6 +206,23 @@ namespace FC.GEPluginCtrls
             this.Enabled = true;
         }
 
+        /// <summary>
+        /// Resets the toolstrips menu items to match the default initialization state of the plug-in.
+        /// </summary>
+        public void ResetToolStripDefaults()
+        {
+            this.statusBarMenuItem.Checked = false;
+            this.gridMenuItem.Checked = false;
+            this.overviewMapMenuItem.Checked = false;
+            this.scaleLegendMenuItem.Checked = false;
+            this.atmosphereMenuItem.Checked = true;
+            this.mouseNavigationMenuItem.Checked = true;
+            this.scaleLegendMenuItem.Checked = false;
+            this.overviewMapMenuItem.Checked = false;
+            this.skyMenuItem.Checked = false;
+            this.sunMenuItem.Checked = false;
+        }
+
         #endregion
 
         #region Private methods
@@ -282,40 +299,34 @@ namespace FC.GEPluginCtrls
         /// <param name="e">Event arguments</param>
         private void LayersItem_Clicked(object sender, EventArgs e)
         {
-            try
+            ToolStripMenuItem item = sender as ToolStripMenuItem;
+            if (this.geplugin != null && item != null)
             {
-                ToolStripMenuItem item = sender as ToolStripMenuItem;
                 string type = item.Tag.ToString();
                 int value = Convert.ToInt32(item.Checked);
 
-                if (this.geplugin != null && item != null)
+                switch (type)
                 {
-                    switch (type)
-                    {
-                        case "BORDERS":
-                            this.geplugin.getLayerRoot().enableLayerById(this.geplugin.LAYER_BORDERS, value);
-                            break;
-                        case "BUILDINGS":
-                            this.geplugin.getLayerRoot().enableLayerById(this.geplugin.LAYER_BUILDINGS, value);
-                            break;
-                        case "BUILDINGS_GREY":
-                            this.geplugin.getLayerRoot().enableLayerById(this.geplugin.LAYER_BUILDINGS_LOW_RESOLUTION, value);
-                            break;
-                        case "ROADS":
-                            this.geplugin.getLayerRoot().enableLayerById(this.geplugin.LAYER_ROADS, value);
-                            break;
-                        case "TERRAIN":
-                            this.geplugin.getLayerRoot().enableLayerById(this.geplugin.LAYER_TERRAIN, value);
-                            break;                
-                        default:
-                            break;
-                    }
+                    case "BORDERS":
+                        this.geplugin.getLayerRoot().enableLayerById(this.geplugin.LAYER_BORDERS, value);
+                        break;
+                    case "BUILDINGS":
+                        this.geplugin.getLayerRoot().enableLayerById(this.geplugin.LAYER_BUILDINGS, value);
+                        break;
+                    case "BUILDINGS_GREY":
+                        this.geplugin.getLayerRoot().enableLayerById(this.geplugin.LAYER_BUILDINGS_LOW_RESOLUTION, value);
+                        break;
+                    case "ROADS":
+                        this.geplugin.getLayerRoot().enableLayerById(this.geplugin.LAYER_ROADS, value);
+                        break;
+                    case "TERRAIN":
+                        this.geplugin.getLayerRoot().enableLayerById(this.geplugin.LAYER_TERRAIN, value);
+                        break;
+                    default:
+                        break;
                 }
             }
-            catch (NullReferenceException nrex)
-            {
-                System.Diagnostics.Debug.WriteLine(nrex.Message);
-            }
+
         }
 
         /// <summary>
@@ -325,47 +336,37 @@ namespace FC.GEPluginCtrls
         /// <param name="e">Event arguments</param>
         private void OptionsItem_Clicked(object sender, EventArgs e)
         {
-            if (sender != null)
+            ToolStripMenuItem item = sender as ToolStripMenuItem;
+            if (this.geplugin != null && item != null)
             {
-                try
-                {
-                    ToolStripMenuItem item = sender as ToolStripMenuItem;
-                    string type = item.Tag.ToString();
-                    int value = Convert.ToInt32(item.Checked);
+                string type = item.Tag.ToString();
+                int value = Convert.ToInt32(item.Checked);
 
-                    if (this.geplugin != null && item != null)
-                    {
-                        switch (type)
-                        {
-                            case "ATMOSPHERE":
-                                this.geplugin.getOptions().setAtmosphereVisibility(value);
-                                break;
-                            case "CONTROLS":
-                                this.geplugin.getNavigationControl().setVisibility(value);
-                                break;
-                            case "GRID":
-                                this.geplugin.getOptions().setGridVisibility(value);
-                                break;
-                            case "MOUSE":
-                                this.geplugin.getOptions().setMouseNavigationEnabled(value);
-                                break;
-                            case "OVERVIEW":
-                                this.geplugin.getOptions().setOverviewMapVisibility(value);
-                                break;
-                            case "SCALE":
-                                this.geplugin.getOptions().setScaleLegendVisibility(value);
-                                break;
-                            case "STATUS":
-                                this.geplugin.getOptions().setStatusBarVisibility(value);
-                                break;
-                            default:
-                                break;
-                        }
-                    }
-                }
-                catch (NullReferenceException nrex)
+                switch (type)
                 {
-                    System.Diagnostics.Debug.WriteLine(nrex.Message);
+                    case "ATMOSPHERE":
+                        this.geplugin.getOptions().setAtmosphereVisibility(value);
+                        break;
+                    case "CONTROLS":
+                        this.geplugin.getNavigationControl().setVisibility(value);
+                        break;
+                    case "GRID":
+                        this.geplugin.getOptions().setGridVisibility(value);
+                        break;
+                    case "MOUSE":
+                        this.geplugin.getOptions().setMouseNavigationEnabled(value);
+                        break;
+                    case "OVERVIEW":
+                        this.geplugin.getOptions().setOverviewMapVisibility(value);
+                        break;
+                    case "SCALE":
+                        this.geplugin.getOptions().setScaleLegendVisibility(value);
+                        break;
+                    case "STATUS":
+                        this.geplugin.getOptions().setStatusBarVisibility(value);
+                        break;
+                    default:
+                        break;
                 }
             }
         }
@@ -377,29 +378,23 @@ namespace FC.GEPluginCtrls
         /// <param name="e">Event arguments</param>
         private void ViewItem_Clicked(object sender, EventArgs e)
         {
-            try
+            ToolStripMenuItem item = (ToolStripMenuItem)sender;
+            if (this.geplugin != null && item != null)
             {
-                ToolStripMenuItem item = (ToolStripMenuItem)sender;
                 string type = item.Tag.ToString();
                 int value = Convert.ToInt32(item.Checked);
-                if (this.geplugin != null && item != null)
+
+                switch (type)
                 {
-                    switch (type)
-                    {
-                        case "SKY":
-                            this.geplugin.getOptions().setMapType(value + 1);
-                            break;
-                        case "SUN":
-                            this.geplugin.getSun().setVisibility(value);
-                            break;
-                        default:
-                            break;
-                    }
+                    case "SKY":
+                        this.geplugin.getOptions().setMapType(value + 1);
+                        break;
+                    case "SUN":
+                        this.geplugin.getSun().setVisibility(value);
+                        break;
+                    default:
+                        break;
                 }
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine(ex.Message);
             }
         }
 
@@ -410,62 +405,38 @@ namespace FC.GEPluginCtrls
         /// <param name="e">Event arguments</param>
         private void ImageryItem_Clicked(object sender, EventArgs e)
         {
-            try
+            ToolStripMenuItem item = sender as ToolStripMenuItem;
+
+            if (this.geplugin != null && item != null)
             {
-                ToolStripMenuItem item = sender as ToolStripMenuItem;
                 string type = item.Tag.ToString();
-                if (this.geplugin != null && item != null)
+
+                ToolStripMenuItem[] imageryItems = { earthMenuItem, marsMenuItem, moonMenuItem };
+
+                foreach (ToolStripMenuItem imagery in imageryItems)
                 {
-                    // the switch here is used to implement 'radio buttons'
-                    // as there are only three imagery databses it works well for now.
-                    // If more are added a toolStripRadioButton class would be needed.
-                    switch (type)
-                    {
-                        case "MARS":
-                            this.earthMenuItem.Enabled = true;
-                            this.marsMenuItem.Enabled = false;
-                            this.moonMenuItem.Enabled = true;
-                            this.earthMenuItem.Checked = false;
-                            this.moonMenuItem.Checked = false;
-                            this.layersDropDownButton.Enabled = false;
-                            this.gewb.ChangeImagery("mars");
-                            break;
-                        case "MOON":
-                            this.earthMenuItem.Enabled = true;
-                            this.marsMenuItem.Enabled = true;
-                            this.moonMenuItem.Enabled = false;
-                            this.earthMenuItem.Checked = false;
-                            this.marsMenuItem.Checked = false;
-                            this.layersDropDownButton.Enabled = false;
-                            this.gewb.ChangeImagery("moon");
-                            break;
-                        case "EARTH":
-                        default:
-                            this.earthMenuItem.Enabled = false;
-                            this.marsMenuItem.Enabled = true;
-                            this.moonMenuItem.Enabled = true;
-                            this.marsMenuItem.Checked = false;
-                            this.moonMenuItem.Checked = false;
-                            this.layersDropDownButton.Enabled = true;
-                            this.gewb.ChangeImagery("earth");
-                            break;
-                    }
-                    // reset the tool bar options to match the plugin.
-                    this.statusBarMenuItem.Checked = false;
-                    this.gridMenuItem.Checked = false;
-                    this.overviewMapMenuItem.Checked = false;
-                    this.scaleLegendMenuItem.Checked = false;
-                    this.atmosphereMenuItem.Checked = true; // default
-                    this.mouseNavigationMenuItem.Checked = true; // default
-                    this.scaleLegendMenuItem.Checked = false;
-                    this.overviewMapMenuItem.Checked = false;
-                    this.skyMenuItem.Checked = false;
-                    this.sunMenuItem.Checked = false;
+                    imagery.Checked = false;
+                    imagery.Enabled = true;
                 }
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine(ex.Message);
+
+                item.Enabled = false;
+                item.Checked = true;
+                this.layersDropDownButton.Enabled = false;
+
+                switch (type)
+                {
+                    case "MARS":
+                    case "MOON":
+                        this.gewb.ChangeImagery(type.ToLower());
+                        break;
+                    case "EARTH":
+                    default:
+                        this.layersDropDownButton.Enabled = true;
+                        this.gewb.ChangeImagery("earth");
+                        break;
+                }
+
+                ResetToolStripDefaults();
             }
         }
 
