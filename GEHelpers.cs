@@ -19,6 +19,7 @@
 namespace FC.GEPluginCtrls
 {
     using System;
+    using System.Text;
     using GEPlugin;
 
     /// <summary>
@@ -105,11 +106,11 @@ namespace FC.GEPluginCtrls
         }
 
         /// <summary>
-        /// Get the type of a plugin object from a generic RCW .
+        /// Get the type of an active scripting object from a generic runtime callable wrapper.
         /// </summary>
         /// <param name="wrapper">The com object wrapper</param>
         /// <returns>The managed type</returns>
-        public static Type GetTypeFromRcw(object wrapper)
+        public static string GetTypeFromRcw(object wrapper)
         {
             string type = (string)wrapper.GetType().InvokeMember(
                 "getType",
@@ -117,8 +118,7 @@ namespace FC.GEPluginCtrls
                 null,
                 wrapper,
                 null);
-
-            return Type.GetType(type);
+            return type;
         }
 
         /// <summary>
@@ -250,6 +250,43 @@ namespace FC.GEPluginCtrls
                     ge.getFeatures().removeChild(ge.getFeatures().getFirstChild());
                 }
             }
+        }
+
+        /// <summary>
+        /// Displays the current plugin view in Google Maps using the default system browser
+        /// </summary>
+        /// <param name="ge">The plugin instance</param>
+        public static void ShowCurrentViewInMaps(IGEPlugin ge)
+        {
+            // Get the current view 
+            IKmlLookAt lookat = ge.getView().copyAsLookAt(ge.ALTITUDE_RELATIVE_TO_GROUND);
+            double range = lookat.getRange();
+
+            // calculate the equivelent zoom level from the given range
+            double zoom = Math.Round(26 - (Math.Log(lookat.getRange()) / Math.Log(2)));
+
+            // Google Maps have an integer "zoom level" which defines the resolution of the current view.
+            // Zoom levels between 0 (entire world on map) to 21+ (down to individual buildings) are possible.
+            if (zoom < 1)
+            {
+                zoom = 1;
+            }
+            else if (zoom > 21)
+            {
+                zoom = 21;
+            }
+
+            // Build the maps url
+            StringBuilder url =
+                new StringBuilder("http://maps.google.co.uk/maps?ll=");
+            url.Append(lookat.getLatitude());
+            url.Append(",");
+            url.Append(lookat.getLongitude());
+            url.Append("&z=");
+            url.Append(zoom);
+
+            // launch the default browser with the url
+            System.Diagnostics.Process.Start(url.ToString());
         }
     }
 }

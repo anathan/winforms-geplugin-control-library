@@ -35,8 +35,8 @@ along with this program.  If not, see http://www.gnu.org/licenses/
 
   var ge = null;
   var geocoder = null;
-  var application = window.external;
-
+  var application = null;
+  
   /**
   *
   * Internal methods called from javascript
@@ -48,6 +48,7 @@ along with this program.  If not, see http://www.gnu.org/licenses/
   {
     google.earth.createInstance("map3d", initCallback_, failureCallback_);
     geocoder = new GClientGeocoder();
+    application = window.external;
   }
 
   var failureCallback_ = function(object)
@@ -152,6 +153,8 @@ along with this program.  If not, see http://www.gnu.org/licenses/
         { database: 'http://khmdb.google.com/?db=' + name });
     }
   }
+  
+  
   
   /* ]]> */
   </script>
