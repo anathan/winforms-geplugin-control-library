@@ -180,12 +180,13 @@ namespace FC.GEPluginCtrls
                 try
                 {
                     
-                    HtmlElement head = this.Document.GetElementsByTagName("head")[0];
-                    HtmlElement script = this.Document.CreateElement("script");
-                    script.SetAttribute("type", "text/javascript");
-                    IHTMLScriptElement element = (IHTMLScriptElement)script.DomElement;
+                    HtmlElement headElement = this.Document.GetElementsByTagName("head")[0];
+                    HtmlElement scriptElement = this.Document.CreateElement("script");
+                    scriptElement.SetAttribute("type", "text/javascript");
+                    // use the custom mshtml interface to append the script to the element
+                    IHTMLScriptElement element = (IHTMLScriptElement)scriptElement.DomElement;
                     element.Text = "/* <![CDATA[ */ " + javascript + " /* ]]> */";
-                    head.AppendChild(script);
+                    headElement.AppendChild(scriptElement);
                 }
                 catch (InvalidOperationException ioex)
                 {
@@ -275,6 +276,7 @@ namespace FC.GEPluginCtrls
         {
             try
             {
+                // create a drawing object based on the webbrowser control
                 Rectangle rectangle = this.DisplayRectangle;
                 Bitmap bitmap =
                     new Bitmap(
@@ -283,11 +285,14 @@ namespace FC.GEPluginCtrls
                         PixelFormat.Format32bppArgb);
                 Graphics graphics = Graphics.FromImage(bitmap);
                 Point point = new Point();
+
+                // copy the current display as a bitmap
                 graphics.CopyFromScreen(
                     this.PointToScreen(point),
                     point,
                     new Size(rectangle.Width, rectangle.Height));
                 graphics.Dispose();
+
                 return bitmap;
             }
             catch (ArgumentNullException anex)
@@ -302,12 +307,22 @@ namespace FC.GEPluginCtrls
         /// </summary>
         public void KillAllPluginProcesses()
         {
-            System.Diagnostics.Process[] gep =
-                System.Diagnostics.Process.GetProcessesByName("geplugin");
-
-            while (gep.Length > 0)
+            try
             {
-                gep[gep.Length - 1].Kill();
+                // find all the running 'geplugin' processes 
+                System.Diagnostics.Process[] gep =
+                    System.Diagnostics.Process.GetProcessesByName("geplugin");
+
+                // whilst there are matching processes
+                while (gep.Length > 0)
+                {
+                    // terminate them
+                    gep[gep.Length - 1].Kill();
+                }
+            }
+            catch (InvalidOperationException ioex)
+            {
+                System.Diagnostics.Debug.WriteLine(ioex.ToString());
             }
         }
 
@@ -388,16 +403,33 @@ namespace FC.GEPluginCtrls
         /// <param name="e">Event arguments</param>
         private void External_PluginReady(object plugin, GEEventArgs e)
         {
-            this.geplugin = (IGEPlugin)plugin;
+            this.geplugin = plugin as IGEPlugin;
 
-            // A label for the data
-            e.Message = "ApiVersion";
-
-            // The data is just the version info
-             e.Data = this.geplugin.getApiVersion();
-
-            // Raise the ready event
-            this.OnPluginReady(this.geplugin, e);
+            try
+            {
+                // The data is just the version info
+                e.Message = "ApiVersion";          
+                e.Data = this.geplugin.getApiVersion();
+            }
+            catch (InvalidOperationException ioex)
+            {
+                // Possible problems with the interop assemby version and installed plug-in version
+                GEEventArgs exea = new GEEventArgs("InvalidOperationException", ioex.ToString());
+                System.Diagnostics.Debug.WriteLine(ioex.ToString());
+                this.OnScriptError(this.geplugin, e);
+            }
+            catch (AccessViolationException avex)
+            {
+                // Possible problems with the interop assemby version and installed plug-in version
+                GEEventArgs exea = new GEEventArgs("AccessViolationException", avex.ToString());
+                System.Diagnostics.Debug.WriteLine(avex.ToString());
+                this.OnScriptError(this.geplugin, exea);
+            }
+            finally
+            {
+                // Raise the ready event
+                this.OnPluginReady(this.geplugin, e);
+            }
         }
 
         /// <summary>

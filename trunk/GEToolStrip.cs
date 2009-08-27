@@ -72,6 +72,15 @@ namespace FC.GEPluginCtrls
         /// </summary>
         private bool imageryDropDownVisiblity = true;
 
+        /// <summary>
+        /// Indicates whether the screen grab button is visible
+        /// </summary>
+        private bool screenGrabButtonVisiblity = true;
+
+        /// <summary>
+        /// Indicates whether the view in maps button is visible
+        /// </summary>
+        private bool viewInMapsButtonVisiblity = true;
 
         #endregion
 
@@ -190,6 +199,47 @@ namespace FC.GEPluginCtrls
             }
         }
 
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the screen grab button is visible
+        /// </summary>
+        [Category("Control Options"),
+        Description("Specifies the visiblity of the screen grab button."),
+        DefaultValueAttribute(true)]
+        public bool ShowScreenGrabButton
+        {
+            get
+            {
+                return this.screenGrabButtonVisiblity;
+            }
+
+            set
+            {
+                this.screenGrabButtonVisiblity = value;
+                this.imageryDropDownButton.Visible = value;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the view in maps button is visible
+        /// </summary>
+        [Category("Control Options"),
+        Description("Specifies the visiblity of the show view in maps button."),
+        DefaultValueAttribute(true)]
+        public bool ShowViewInMapsButton
+        {
+            get
+            {
+                return this.viewInMapsButtonVisiblity;
+            }
+
+            set
+            {
+                this.viewInMapsButtonVisiblity = value;
+                this.viewInMapsButton.Visible = value;
+            }
+        }
+
         #endregion
 
         #region Public methods
@@ -226,8 +276,6 @@ namespace FC.GEPluginCtrls
         #endregion
 
         #region Private methods
-
-   
 
         #endregion
 
@@ -421,17 +469,20 @@ namespace FC.GEPluginCtrls
 
                 item.Enabled = false;
                 item.Checked = true;
-                this.layersDropDownButton.Enabled = false;
+            
 
                 switch (type)
                 {
                     case "MARS":
                     case "MOON":
+                        this.layersDropDownButton.Enabled = false;
+                        this.viewInMapsButton.Enabled = false;
                         this.gewb.ChangeImagery(type.ToLower());
                         break;
                     case "EARTH":
                     default:
                         this.layersDropDownButton.Enabled = true;
+                        this.viewInMapsButton.Enabled = true;
                         this.gewb.ChangeImagery("earth");
                         break;
                 }
@@ -441,11 +492,11 @@ namespace FC.GEPluginCtrls
         }
 
         /// <summary>
-        /// Called when an item in the Screen grab button is clicked 
+        /// Called when the Screen grab button is clicked 
         /// </summary>
         /// <param name="sender">Screen grab button</param>
         /// <param name="e">Event arguments</param>
-        private void ScreenGrabButton_Click(object sender, System.EventArgs e)
+        private void ScreenGrabButton_Click(object sender, EventArgs e)
         {
             // Take a 'screen grab' of the plugin
             System.Drawing.Bitmap image = this.gewb.ScreenGrab();
@@ -457,6 +508,16 @@ namespace FC.GEPluginCtrls
             {
                 image.Save(dialog.FileName, System.Drawing.Imaging.ImageFormat.Jpeg);
             }
+        }
+
+        /// <summary>
+        /// Called when the view in maps button is clicked
+        /// </summary>
+        /// <param name="sender">View in maps button</param>
+        /// <param name="e">Event arguments</param>
+        private void ViewInMapsButton_Click(object sender, EventArgs e)
+        {
+            GEHelpers.ShowCurrentViewInMaps(geplugin);
         }
 
         /// <summary>

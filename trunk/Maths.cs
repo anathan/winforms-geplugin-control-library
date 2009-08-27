@@ -250,13 +250,21 @@ namespace FC.GEPluginCtrls
                 B = u2 / 1024 * (256 + u2 * (-128 + u2 * (74 - 47 * u2)));
 
                 // eq. 6
-                d_sigma = B * sin_sigma * (cos2_sigmam + B / 4 * (cos_sigma * (-1 + 2 * cos2_sigmam2) - B / 6 * cos2_sigmam * (-3 + 4 * sin2_sigma) * (-3 + 4 * cos2_sigmam2)));
+                d_sigma = B * sin_sigma * 
+                    (cos2_sigmam + B / 4 * 
+                    (cos_sigma * (-1 + 2 * cos2_sigmam2) - B / 6 *
+                    cos2_sigmam * (-3 + 4 * sin2_sigma) *
+                    (-3 + 4 * cos2_sigmam2)));
 
                 // eq. 10
-                double C = f / 16 * cos2_alpha * (4 + f * (4 - 3 * cos2_alpha));
+                double C = f / 16 *
+                    cos2_alpha *
+                    (4 + f * (4 - 3 * cos2_alpha));
 
                 // eq. 11 (modified)
-                lambda = omega + (1 - C) * f * sin_alpha * (sigma + C * sin_sigma * (cos2_sigmam + C * cos_sigma * (-1 + 2 * cos2_sigmam2)));
+                lambda = omega + (1 - C) *
+                    f * sin_alpha *
+                    (sigma + C * sin_sigma * (cos2_sigmam + C * cos_sigma * (-1 + 2 * cos2_sigmam2)));
 
                 // see how much improvement there is
                 double change = Math.Abs((lambda - lambda0) / lambda);
