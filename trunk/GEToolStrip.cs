@@ -309,6 +309,9 @@ namespace FC.GEPluginCtrls
             string input = this.navigationTextBox.Text;
             if (input.Length > 1)
             {
+                // add the user input to the custom 'per-session' string collection
+                this.navigationTextBoxStringCollection.Add(input);
+                
                 if (input.StartsWith("http", true, System.Globalization.CultureInfo.CurrentCulture))
                 {
                     try

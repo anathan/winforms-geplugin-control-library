@@ -34,6 +34,11 @@ namespace FC.GEPluginCtrls
         private System.Windows.Forms.ToolStripTextBox navigationTextBox;
 
         /// <summary>
+        /// The string collection of entered terms in the navigationTextBox
+        /// </summary>
+        private System.Windows.Forms.AutoCompleteStringCollection navigationTextBoxStringCollection;
+
+        /// <summary>
         /// The navigation 'go' button
         /// </summary>
         private System.Windows.Forms.ToolStripButton submitButton;
@@ -203,6 +208,7 @@ namespace FC.GEPluginCtrls
             this.screenGrabButton = new System.Windows.Forms.ToolStripButton();
             this.viewInMapsButton = new System.Windows.Forms.ToolStripButton();
             this.navigationTextBox = new System.Windows.Forms.ToolStripTextBox();
+            this.navigationTextBoxStringCollection = new System.Windows.Forms.AutoCompleteStringCollection();
             this.submitButton = new System.Windows.Forms.ToolStripButton();
             this.refreshButton = new System.Windows.Forms.ToolStripButton();
             this.navigationSeparator = new System.Windows.Forms.ToolStripSeparator();
@@ -270,6 +276,9 @@ namespace FC.GEPluginCtrls
             // navigationTextBox
             // 
             this.navigationTextBox.AutoSize = false;
+            this.navigationTextBox.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.SuggestAppend;
+            this.navigationTextBox.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.CustomSource;
+            this.navigationTextBox.AutoCompleteCustomSource = navigationTextBoxStringCollection;
             this.navigationTextBox.Name = "navigationTextBox";
             this.navigationTextBox.Size = new System.Drawing.Size(100, 21);
             this.navigationTextBox.Tag = "NAVIGATION";
