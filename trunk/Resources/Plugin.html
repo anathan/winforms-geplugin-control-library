@@ -33,10 +33,10 @@ along with this program.  If not, see http://www.gnu.org/licenses/
   google.load("earth", "1");
   google.load("maps", "2.xx");
 
-  var ge = null;
-  var geocoder = null;
-  var application = null;
-  
+  var ge = null; //GEPlugin
+  var geocoder = null; //GClientGeocoder
+  var application = null; //External
+
   /**
   *
   * Internal methods called from javascript
@@ -46,9 +46,7 @@ along with this program.  If not, see http://www.gnu.org/licenses/
   
   var init_ = function()
   {
-    google.earth.createInstance("map3d", initCallback_, failureCallback_);
-    geocoder = new GClientGeocoder();
-    application = window.external;
+    jsCreateInstance('earth');
   }
 
   var failureCallback_ = function(object)
@@ -59,6 +57,8 @@ along with this program.  If not, see http://www.gnu.org/licenses/
   var initCallback_ = function(object)
   {
     ge = object;
+    geocoder = new GClientGeocoder();
+    application = window.external;
     ge.getWindow().setVisibility(true);
     application.Ready(ge);
   }
@@ -74,10 +74,18 @@ along with this program.  If not, see http://www.gnu.org/licenses/
       application.Error("Kml failed to load");
     }
   }
-
+  
+  var eventListner_ = function(kmlEvent) 
+  {
+    if(kmlEvent)
+    {
+      application.KmlEventCallBack(kmlEvent, kmlEvent.getType());
+    }
+  }
+      
   /**
   *
-  * Methods to be invoked from the c# application.
+  * Methods to be invoked from managed code.
   * jsPrefix
   *
   */
@@ -92,39 +100,39 @@ along with this program.  If not, see http://www.gnu.org/licenses/
     window.execScript(script);
   }
   
-  var jsAddEventListener = function(feature, action)
+  // google.earth.addEventListener wrapper
+  var jsAddEventListener = function(feature, action, callback)
   {
+    if(null == callback)
+    {
+      callback = eventListner_;
+    }
     if(ge)
     {
-      google.earth.addEventListener(feature, action, function(kmlEvent) 
-      {
-        if(kmlEvent)
-        {
-          application.KmlEventCallBack(kmlEvent, action);
-        }
-      });
+      google.earth.addEventListener(feature, action, eval(callback));
     }
   }
   
-  var jsRemoveEventListner = function(feature, action)
+  // google.earth.removeEventListener wrapper
+  var jsRemoveEventListner = function(feature, action, callback)
   {
+    if(null == callback)
+    {
+      callback = eventListner_;
+    }  
     if(ge)
     {
-      google.earth.removeEventListener(feature, action, function (kmlEvent) 
-      {
-        if(application && kmlEvent)
-        {
-          application.KmlEventCallBack(kmlEvent, action);
-        }
-      });
+      google.earth.removeEventListener(feature, action, eval(callback));
     }
   }
   
+  // google.earth.fetchKml wrapper
   var jsFetchKml = function(url)
   {
     google.earth.fetchKml(ge, url, loadKmlCallBack_);
   }
 
+  // getLatLng wrapper
   var jsDoGeocode = function(address)
   {
     geocoder.getLatLng(address, function(point)
@@ -139,22 +147,26 @@ along with this program.  If not, see http://www.gnu.org/licenses/
     });
   } 
   
-  var jsImageryDatabase = function(name)
+  // google.earth.createInstance wrapper
+  var jsCreateInstance = function(name)
   {
     document.getElementById('map3d').innerHTML = '';
-    if(name == 'earth')
+    var db = name.toLowerCase();
+    switch(db)
     {
-      init_();
-      return;
-    }
-    else 
-    {
-      google.earth.createInstance('map3d', initCallback_, failureCallback_,
-        { database: 'http://khmdb.google.com/?db=' + name });
+      case 'earth' :
+        google.earth.createInstance('map3d', initCallback_, failureCallback_);
+        return db;
+        break;
+      case 'mars' :
+      case 'moon' :
+        google.earth.createInstance('map3d', initCallback_, failureCallback_,
+          { database: 'http://khmdb.google.com/?db=' + db });
+        return db;
+      default :
+        return false;
     }
   }
-  
-  
   
   /* ]]> */
   </script>
@@ -174,7 +186,7 @@ along with this program.  If not, see http://www.gnu.org/licenses/
   }
   </style>
 </head>
-<body onload='init_();' id='body'>
+<body id='body' onload='init_()'>
   <div id='map3d_container'>
     <div id='map3d'></div>
   </div>

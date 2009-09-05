@@ -87,6 +87,27 @@ namespace FC.GEPluginCtrls
         }
 
         /// <summary>
+        /// Gets the Kml of all the features in the plug-in
+        /// </summary>
+        /// <param name="ge">The plugin</param>
+        /// <returns>String of Kml</returns>
+        public static string GetAllFeaturesKml(IGEPlugin ge)
+        {
+            StringBuilder kml = new StringBuilder();
+            IKmlObjectList children = ge.getFeatures().getChildNodes();
+            for (int i = 0; i < children.getLength(); i++)
+            {
+                IKmlFeature child = children.item(i) as IKmlFeature;
+                if (child != null)
+                {
+                    kml.Append(child.getKml());
+                }
+            }
+
+            return kml.ToString();
+        }
+
+        /// <summary>
         /// Get the current pluin view as a point object
         /// </summary>
         /// <param name="ge">the plugin</param>
@@ -288,5 +309,6 @@ namespace FC.GEPluginCtrls
             // launch the default browser with the url
             System.Diagnostics.Process.Start(url.ToString());
         }
+
     }
 }
