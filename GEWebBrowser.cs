@@ -33,7 +33,26 @@ namespace FC.GEPluginCtrls
     /// </summary>
     /// <param name="sender">The sending object</param>
     /// <param name="e">The event arguments</param>
-    public delegate void GEWebBorwserEventHandeler(object sender, GEEventArgs e);
+    public delegate void GEWebBrowserEventHandeler(object sender, GEEventArgs e);
+
+    /// <summary>
+    /// Pluign Imagery types enumeration
+    /// </summary>
+    public enum ImageryBase
+    {
+        /// <summary>
+        /// Earth database
+        /// </summary>
+        Earth,
+        /// <summary>
+        /// Mars database
+        /// </summary>
+        Mars,
+        /// <summary>
+        /// Moon database
+        /// </summary>
+        Moon
+    }
 
     /// <summary>
     /// This control simplifies working with the Google Earth Plugin
@@ -56,6 +75,11 @@ namespace FC.GEPluginCtrls
         /// </summary>
         private IGEPlugin geplugin = null;
 
+        /// <summary>
+        /// Current plug-in imagery database
+        /// </summary>
+        private ImageryBase imageryBase = ImageryBase.Earth;
+
         #endregion
 
         /// <summary>
@@ -70,11 +94,12 @@ namespace FC.GEPluginCtrls
             this.external.PluginReady += new ExternalEventHandeler(this.External_PluginReady);
             this.external.ScriptError += new ExternalEventHandeler(this.External_ScriptError);
             this.external.KmlEvent += new ExternalEventHandeler(this.External_KmlEvent);
-
-            // Setup the control
+            
+            // Setup the desired control defaults
             this.AllowNavigation = false;
             this.IsWebBrowserContextMenuEnabled = false;
             this.ScrollBarsEnabled = false;
+            this.ScriptErrorsSuppressed = true;
             this.WebBrowserShortcutsEnabled = false;
             this.ObjectForScripting = this.external;
             this.DocumentCompleted +=
@@ -86,22 +111,44 @@ namespace FC.GEPluginCtrls
         /// <summary>
         /// Raised when the plugin is ready
         /// </summary>
-        public event GEWebBorwserEventHandeler PluginReady;
+        public event GEWebBrowserEventHandeler PluginReady;
 
         /// <summary>
         /// Raised when there is a kmlEvent
         /// </summary>
-        public event GEWebBorwserEventHandeler KmlEvent;
+        public event GEWebBrowserEventHandeler KmlEvent;
 
         /// <summary>
         /// Raised when a kml/kmz file has loaded
         /// </summary>
-        public event GEWebBorwserEventHandeler KmlLoaded;
+        public event GEWebBrowserEventHandeler KmlLoaded;
 
         /// <summary>
         /// Raised when there is a script error in the document 
         /// </summary>
-        public event GEWebBorwserEventHandeler ScriptError;
+        public event GEWebBrowserEventHandeler ScriptError;
+
+        #endregion
+
+        #region Public properties
+
+        /// <summary>
+        /// Gets or sets the current imagery base for the plug-in
+        /// </summary>
+        [Category("Control Options"),
+        Description("Gets or sets the current imagery base for the plug-in."),
+        DefaultValueAttribute(ImageryBase.Earth)]
+        public ImageryBase ImageyBase
+        {
+            get
+            {
+                return this.imageryBase;
+            }
+            set
+            {
+                CreateInstance(imageryBase);
+            }
+        }
 
         #endregion
 
@@ -110,7 +157,7 @@ namespace FC.GEPluginCtrls
         /// <summary>
         /// Wrapper for the the google.earth.addEventListener method
         /// </summary>
-        /// <param name="feature">The target object</param>
+        /// <param name="feature">The target feature</param>
         /// <param name="action">The event Id</param>
         public void AddEventListener(object feature, string action)
         {
@@ -120,14 +167,32 @@ namespace FC.GEPluginCtrls
         }
 
         /// <summary>
+        /// Wrapper for the the google.earth.addEventListener method
+        /// </summary>
+        /// <param name="feature">The target feature</param>
+        /// <param name="action">The event Id</param>
+        /// <param name="callBackFunction">The callback function to use</param>
+        public void AddEventListener(object feature, string action, string callBackFunction)
+        {
+            this.InvokeJavascript(
+                "jsAddEventListener",
+                new object[] { feature, action, callBackFunction });
+        }
+
+        /// <summary>
         /// Changes the main imagery database to use with the plug-in
         /// </summary>
         /// <param name="database">database name (earth, mars, moon)</param>
-        public void ChangeImagery(string database)
+        public void CreateInstance(ImageryBase database)
         {
-            this.InvokeJavascript(
-                "jsImageryDatabase",
-                new object[] { database });
+            if (this.Document != null)
+            {
+                string name = Enum.GetName(typeof(ImageryBase), database);
+                this.InvokeJavascript(
+                    "jsCreateInstance",
+                    new string[] { name });
+                imageryBase = database;
+            }
         }
 
         /// <summary>
@@ -140,7 +205,9 @@ namespace FC.GEPluginCtrls
         {
             if (this.Document != null)
             {
-                this.Document.InvokeScript("jsFetchKml", new object[] { url });
+                this.Document.InvokeScript(
+                    "jsFetchKml",
+                    new string[] { url });
             }
         }
 
@@ -190,11 +257,9 @@ namespace FC.GEPluginCtrls
                 }
                 catch (InvalidOperationException ioex)
                 {
-                    //e.InnerException.ToString()
-                    this.OnScriptError(
-                        this,
-                        new GEEventArgs(ioex.Message, ioex.ToString()));
-                    throw;
+                    System.Diagnostics.Debug.WriteLine(ioex.ToString());
+                    this.OnScriptError(this, new
+                        GEEventArgs(ioex.Message, ioex.ToString()));
                 }
             }
         }
@@ -206,15 +271,7 @@ namespace FC.GEPluginCtrls
         /// <returns>The result of the evaluated function</returns>
         public object InvokeJavascript(string function)
         {
-            if (this.Document != null)
-            {
-                // see http://msdn.microsoft.com/en-us/library/4b1a88bz.aspx
-                return this.Document.InvokeScript(function, new object[] { });
-            }
-            else
-            {
-                return new object { };
-            }
+            return this.InvokeJavascript(function, new object[] { });
         }
 
         /// <summary>
@@ -237,6 +294,30 @@ namespace FC.GEPluginCtrls
         }
 
         /// <summary>
+        /// Kills all running geplugin processes on the system
+        /// </summary>
+        public void KillAllPluginProcesses()
+        {
+            try
+            {
+                // find all the running 'geplugin' processes 
+                System.Diagnostics.Process[] gep =
+                    System.Diagnostics.Process.GetProcessesByName("geplugin");
+
+                // whilst there are matching processes
+                while (gep.Length > 0)
+                {
+                    // terminate them
+                    gep[gep.Length - 1].Kill();
+                }
+            }
+            catch (InvalidOperationException ioex)
+            {
+                System.Diagnostics.Debug.WriteLine(ioex.ToString());
+            }
+        }
+
+        /// <summary>
         /// Load the embeded html document into the browser 
         /// </summary>
         public void LoadEmbededPlugin()
@@ -244,7 +325,7 @@ namespace FC.GEPluginCtrls
             try
             {
                 // Get the html string from the embebed reasource
-                string html = FC.GEPluginCtrls.Properties.Resources.Plugin;
+                string html = Properties.Resources.Plugin;
 
                 // Create a temp file and get the full path
                 string path = Path.GetTempFileName();
@@ -266,6 +347,18 @@ namespace FC.GEPluginCtrls
                 System.Diagnostics.Debug.WriteLine(ioex.ToString());
                 throw;
             }
+        }
+
+        /// <summary>
+        /// Wrapper for the the google.earth.removeEventListener method
+        /// </summary>
+        /// <param name="feature">The target feature</param>
+        /// <param name="action">The event Id</param>
+        public void RemoveEventListener(object feature, string action)
+        {
+            this.InvokeJavascript(
+                "jsRemoveEventListner",
+                new object[] { feature, action });
         }
 
         /// <summary>
@@ -299,30 +392,6 @@ namespace FC.GEPluginCtrls
             {
                 System.Diagnostics.Debug.WriteLine(anex.ToString());
                 throw;
-            }
-        }
-
-        /// <summary>
-        /// Kills all running geplugin processes on the system
-        /// </summary>
-        public void KillAllPluginProcesses()
-        {
-            try
-            {
-                // find all the running 'geplugin' processes 
-                System.Diagnostics.Process[] gep =
-                    System.Diagnostics.Process.GetProcessesByName("geplugin");
-
-                // whilst there are matching processes
-                while (gep.Length > 0)
-                {
-                    // terminate them
-                    gep[gep.Length - 1].Kill();
-                }
-            }
-            catch (InvalidOperationException ioex)
-            {
-                System.Diagnostics.Debug.WriteLine(ioex.ToString());
             }
         }
 
@@ -473,13 +542,13 @@ namespace FC.GEPluginCtrls
             // Handle the original error
             e.Handled = true;
 
-            // Copy the error data
+            // Build the error data
             GEEventArgs ea = new GEEventArgs();
-            ea.Message = e.Description;
-            ea.Data = e.LineNumber.ToString();
+            ea.Message = "line " +e.LineNumber.ToString() + " - " +e.Description;
+            ea.Data = "Document Error";
 
             // Bubble the error
-            this.OnScriptError(this, ea);
+            this.OnScriptError(e.ToString(), ea);
         }
 
         #endregion
