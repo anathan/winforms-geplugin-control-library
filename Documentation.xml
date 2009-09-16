@@ -322,7 +322,7 @@
             Indicates whether the view in maps button is visible
             </summary>
         </member>
-        <member name="F:FC.GEPluginCtrls.GEToolStrip.useAutoCompleate">
+        <member name="F:FC.GEPluginCtrls.GEToolStrip.useAutoCompleteSugestions">
             <summary>
             Indicates if auto compleate should be used in the navigaton text box
             </summary>
@@ -637,7 +637,7 @@
             Gets or sets a value indicating whether the view in maps button is visible
             </summary>
         </member>
-        <member name="P:FC.GEPluginCtrls.GEToolStrip.UseAutoCompleateSugestions">
+        <member name="P:FC.GEPluginCtrls.GEToolStrip.UseAutoCompleteSugestions">
             <summary>
             Gets or sets a value indicating whether the navigation textbox uses autocomplete suggestions
             </summary>

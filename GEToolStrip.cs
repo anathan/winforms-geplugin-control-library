@@ -85,7 +85,7 @@ namespace FC.GEPluginCtrls
         /// <summary>
         /// Indicates if auto compleate should be used in the navigaton text box
         /// </summary>
-        private bool useAutoCompleate = true;
+        private bool useAutoCompleteSugestions = true;
 
         #endregion
 
@@ -250,15 +250,15 @@ namespace FC.GEPluginCtrls
         [Category("Control Options"),
         Description("Specifies whether the navigation textbox uses autocomplete suggestions."),
         DefaultValueAttribute(true)]
-        public bool UseAutoCompleateSugestions
+        public bool UseAutoCompleteSugestions
         {
             get
             {
-                return useAutoCompleate;
+                return useAutoCompleteSugestions;
             }
             set
             {
-                useAutoCompleate = value;
+                useAutoCompleteSugestions = value;
                 if (value)
                 {
                     navigationTextBox.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
@@ -426,7 +426,7 @@ namespace FC.GEPluginCtrls
             string input = this.navigationTextBox.Text;
             if (input.Length > 1)
             {
-                if (UseAutoCompleateSugestions)
+                if (UseAutoCompleteSugestions)
                 {
                     // add the user input to the custom 'per-session' string collection
                     this.navigationTextBoxStringCollection.Add(input);
