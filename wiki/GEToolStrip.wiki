@@ -46,12 +46,12 @@ Gets or sets a value indicating whether the navigation box should use auto-compl
 == Public methods ==
 
 _void_ *AddAutoCompleteSuggestions(System.string[] suggestions)*<br>
-Adds multiple sting entries to the Auto Complete suggestion list
+Adds multiple sting entries to the Auto Complete suggestion list<br>
 *Parameters*<br>
 suggestions: The collection of entries to add<br>
 
 _void_ *AddAutoCompleteSuggestions(System.string suggestion)*<br>
-Adds a string entry to the Auto Compleate suggestion list
+Adds a string entry to the Auto Compleate suggestion list<br>
 *Parameters*<br>
 suggestion: The entry to add<br>
 
@@ -59,7 +59,7 @@ _void_ *ClearAutoCompleteSuggestions()*<br>
 Removes all entries from the Auto Compleate suggestion list
 
 _void_ *SetBrowserInstance(FC.GEPluginCtrls.GEWebBrowser browser)*<br>
-Set the browser instance for the control to work with
+Set the browser instance for the control to work with<br>
 *Parameters*<br>
 browser: The GEWebBrowser instance to associate with the control<br>
 
