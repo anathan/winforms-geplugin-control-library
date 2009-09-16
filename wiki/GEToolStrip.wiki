@@ -23,13 +23,25 @@ _Bool_ *ShowNavigationItems*<br>
 Gets or sets a value indicating whether the navigation items are visible <br>
 
 _Bool_ *ShowLayersDropDown*<br>
-Gets or sets a value indicating whether the Layers drop down is visible <br>
+Gets or sets a value indicating whether the Layers drop down menu is visible <br>
 
 _Bool_ *ShowOptionsDropDown*<br>
-Gets or sets a value indicating whether the Options drop down is visible <br>
+Gets or sets a value indicating whether the Options drop down menu is visible <br>
 
 _Bool_ *ShowViewDropDown*<br>
-Gets or sets a value indicating whether the View drop down is visible <br>
+Gets or sets a value indicating whether the View drop down menu is visible <br>
+
+_Bool_ *ShowImageryDropDown*<br>
+Gets or sets a value indicating whether the Imagery drop down menu is visible <br>
+
+_Bool_ *ShowScreenGrabButton*<br>
+Gets or sets a value indicating whether the screen grab button is visible <br>
+
+_Bool_ *ShowViewInMapsButton*<br>
+Gets or sets a value indicating whether the show in maps button is visible <br>
+
+_Bool_ * UseAutoCompleteSugestions*<br>
+Gets or sets a value indicating whether the navigation box should use auto-complete<br>
 
 == Public methods ==
 
