@@ -1,7 +1,7 @@
 #summary GEToolStrip control notes
 #labels Phase-Implementation
 
-http://earthapi.googlepages.com/GEToolStrip.jpg
+http://earthapi.googlepages.com/GEToolStrip_6.jpg
 
 = Introduction =
 
