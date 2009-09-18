@@ -21,7 +21,7 @@ namespace FC.GEPluginCtrls
     using System;
     using System.Text;
     using GEPlugin;
-
+    
     /// <summary>
     /// This class provides a very basic Google Earth plugin helpers
     /// It is based on the GEHelpers javasctipt library at:

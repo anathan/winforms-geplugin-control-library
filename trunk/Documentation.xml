@@ -26,7 +26,8 @@
             Designer file
             </summary>
             <summary>
-            This control simplifies working with the Google Earth Plugin
+            This browser control holds the Google Earth Plug-in,
+            it also provides wrapper methods to work with the Google.Earth namespace
             </summary>
         </member>
         <member name="F:FC.GEPluginCtrls.GEWebBrowser.components">
@@ -86,9 +87,9 @@
         </member>
         <member name="M:FC.GEPluginCtrls.GEWebBrowser.CreateInstance(FC.GEPluginCtrls.ImageryBase)">
             <summary>
-            Changes the main imagery database to use with the plug-in
+            Sets the imagery database to use with the plug-in
             </summary>
-            <param name="database">database name (earth, mars, moon)</param>
+            <param name="database">The database name</param>
         </member>
         <member name="M:FC.GEPluginCtrls.GEWebBrowser.FetchKml(System.String)">
             <summary>
