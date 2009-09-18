@@ -55,7 +55,8 @@ namespace FC.GEPluginCtrls
     }
 
     /// <summary>
-    /// This control simplifies working with the Google Earth Plugin
+    /// This browser control holds the Google Earth Plug-in,
+    /// it also provides wrapper methods to work with the Google.Earth namespace
     /// </summary>
     [PermissionSet(SecurityAction.Demand, Name = "FullTrust")]
     public partial class GEWebBrowser : WebBrowser
@@ -180,9 +181,9 @@ namespace FC.GEPluginCtrls
         }
 
         /// <summary>
-        /// Changes the main imagery database to use with the plug-in
+        /// Sets the imagery database to use with the plug-in
         /// </summary>
-        /// <param name="database">database name (earth, mars, moon)</param>
+        /// <param name="database">The database name</param>
         public void CreateInstance(ImageryBase database)
         {
             if (this.Document != null)

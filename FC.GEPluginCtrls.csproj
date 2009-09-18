@@ -107,6 +107,7 @@
     <Compile Include="GEToolStrip.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Resources\ImageryBase.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Plugin.html" />
