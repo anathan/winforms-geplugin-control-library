@@ -308,7 +308,7 @@ namespace FC.GEPluginCtrls
         {
             this.gewb = browser;
             this.geplugin = browser.GetPlugin();
-            if (this.geplugin != null)
+            if (gewb.PluginIsReady)
             {
                 this.SynchronizeOptions();
                 this.htmlDocument = browser.Document;
@@ -343,7 +343,7 @@ namespace FC.GEPluginCtrls
         /// </summary>
         private void SynchronizeOptions()
         {
-            if (geplugin != null)
+            if (gewb.PluginIsReady)
             {
                 // options
 
@@ -375,7 +375,6 @@ namespace FC.GEPluginCtrls
 
                 if (this.gewb.ImageyBase == ImageryBase.Earth)
                 {
-
                     this.geplugin.getLayerRoot().enableLayerById(
                         this.geplugin.LAYER_BORDERS, Convert.ToInt16(this.bordersMenuItem.Checked));
 
@@ -470,7 +469,8 @@ namespace FC.GEPluginCtrls
         private void LayersItem_Clicked(object sender, EventArgs e)
         {
             ToolStripMenuItem item = sender as ToolStripMenuItem;
-            if (this.geplugin != null && item != null)
+
+            if (gewb.PluginIsReady && (item != null))
             {
                 string type = item.Tag.ToString();
                 int value = Convert.ToInt32(item.Checked);
@@ -507,7 +507,8 @@ namespace FC.GEPluginCtrls
         private void OptionsItem_Clicked(object sender, EventArgs e)
         {
             ToolStripMenuItem item = sender as ToolStripMenuItem;
-            if (this.geplugin != null && item != null)
+
+            if (gewb.PluginIsReady && (item != null))
             {
                 string type = item.Tag.ToString();
                 int value = Convert.ToInt32(item.Checked);
@@ -549,7 +550,8 @@ namespace FC.GEPluginCtrls
         private void ViewItem_Clicked(object sender, EventArgs e)
         {
             ToolStripMenuItem item = (ToolStripMenuItem)sender;
-            if (this.geplugin != null && item != null)
+
+            if (gewb.PluginIsReady && (item != null))
             {
                 string type = item.Tag.ToString();
                 int value = Convert.ToInt32(item.Checked);
@@ -577,7 +579,7 @@ namespace FC.GEPluginCtrls
         {
             ToolStripMenuItem selectedItem = sender as ToolStripMenuItem;
 
-            if (this.geplugin != null && selectedItem != null)
+            if (gewb.PluginIsReady && (selectedItem != null))
             {
                 string type = selectedItem.Tag.ToString();
                 ToolStripItemCollection imageryItems = imageryDropDownButton.DropDownItems;
@@ -622,15 +624,18 @@ namespace FC.GEPluginCtrls
         /// <param name="e">Event arguments</param>
         private void ScreenGrabButton_Click(object sender, EventArgs e)
         {
-            // Take a 'screen grab' of the plugin
-            System.Drawing.Bitmap image = this.gewb.ScreenGrab();
-
-            // Save the file with a dialog
-            SaveFileDialog dialog = new SaveFileDialog();
-            dialog.Filter = "JPEG files (*.jpg;*.jpeg)|*.jpg;*.jpeg|All files (*.*)|*.*";
-            if (dialog.ShowDialog() == DialogResult.OK)
+            if (gewb.PluginIsReady)
             {
-                image.Save(dialog.FileName, System.Drawing.Imaging.ImageFormat.Jpeg);
+                // Take a 'screen grab' of the plugin
+                System.Drawing.Bitmap image = this.gewb.ScreenGrab();
+
+                // Save the file with a dialog
+                SaveFileDialog dialog = new SaveFileDialog();
+                dialog.Filter = "JPEG files (*.jpg;*.jpeg)|*.jpg;*.jpeg|All files (*.*)|*.*";
+                if (dialog.ShowDialog() == DialogResult.OK)
+                {
+                    image.Save(dialog.FileName, System.Drawing.Imaging.ImageFormat.Jpeg);
+                }
             }
         }
 
@@ -641,7 +646,10 @@ namespace FC.GEPluginCtrls
         /// <param name="e">Event arguments</param>
         private void ViewInMapsButton_Click(object sender, EventArgs e)
         {
-            GEHelpers.ShowCurrentViewInMaps(geplugin);
+            if (gewb.PluginIsReady)
+            {
+                GEHelpers.ShowCurrentViewInMaps(geplugin);
+            }
         }
 
         /// <summary>
