@@ -1,0 +1,57 @@
+#summary GEStatusStrip control notes
+#labels Phase-Implementation,Featured
+
+http://earthapi.googlepages.com/GEStatusStrip.jpg
+
+= Introduction =
+
+The GEStatusStrip control intergrates with the GEWebBrowser to provide useful data such as the api, plugin and browser versions as well as data streaming information.
+
+
+= Details =
+
+The GEToolStrip inherits from the standard [http://msdn.microsoft.com/en-us/library/system.windows.forms.statusstrip.aspx System.Windows.Forms.StatusStrip] control class
+
+== Constructor == 
+
+_ GEStatusStrip_ *GEStatusStrip()*<br>
+Initializes a new instance of the GEStatusStrip class
+
+== Public Properties ==
+
+_Bool_ *ShowStreamingProgressBar*<br>
+Gets or sets a value indicating whether the streaming progress bar is visible <br>
+
+_Bool_ *ShowStreamingStatusLabel*<br>
+Gets or sets a value indicating whether the streaming status label is visible <br>
+
+_Bool_ *ShowBrowserVersionStatusLabel*<br>
+Gets or sets a value indicating whether the browser version label is visible <br>
+
+_Bool_ *ShowApiVersionStatusLabel*<br>
+Gets or sets a value indicating whether the api version label is visible <br>
+
+_Bool_ *ShowPluginVersionStatusLabel*<br>
+Gets or sets a value indicating whether the plug-in version label is visible <br>
+
+_Int_ *Interval*<br>
+Gets or sets the timer interval for polling data in milliseconds <br>
+
+== Public methods ==
+
+_void_ *SetBrowserInstance(FC.GEPluginCtrls.GEWebBrowser browser)*<br>
+Set the browser instance for the control to work with<br>
+*Parameters*<br>
+browser: The GEWebBrowser instance to associate with the control<br>
+
+== Source == 
+
+[http://code.google.com/p/winforms-geplugin-control-library/source/browse/trunk/GEStatusStrip.cs GEToolStrip.cs]
+
+[http://code.google.com/p/winforms-geplugin-control-library/source/browse/trunk/GEStatusStrip.Designer.cs GEStatusStrip.Designer.cs]
+
+[http://code.google.com/p/winforms-geplugin-control-library/source/browse/trunk/GEStatusStrip.resx GEStatusStrip.resx]
+
+== Ads ==
+
+<wiki:gadget url="http://earthapi.googlepages.com/ad.xml" border="0" width="728" height="90" />
