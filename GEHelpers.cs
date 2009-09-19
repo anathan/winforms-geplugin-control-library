@@ -33,36 +33,66 @@ namespace FC.GEPluginCtrls
         /// Creates a kml placemark
         /// </summary>
         /// <param name="ge">The plugin instance</param>
-        /// <param name="latitude">The placemark latitude in decimal degrees</param>
-        /// <param name="longitude">The placemark longitude in decimal degrees</param>
+        /// <param name="latLngAlt">The latitude and longitude in decimal degrees</param>
+        /// <param name="data">Optional data (id, name, description)</param>
         /// <returns>The placemark object</returns>
-        public static IKmlPlacemark CreatePlacemark(IGEPlugin ge, double latitude, double longitude)
+        public static IKmlPlacemark CreatePlacemark(IGEPlugin ge, double[] latLngAlt, params string[] data)
         {
-            IKmlPoint p = ge.createPoint(String.Empty);
-            p.setLatitude(latitude);
-            p.setLongitude(longitude);
-            p.setAltitudeMode(ge.ALTITUDE_RELATIVE_TO_GROUND);
-            IKmlPlacemark placemark = ge.createPlacemark(String.Empty);
-            placemark.setGeometry(p);
+            int agrs1 = latLngAlt.Length;
 
-            return placemark;
+            if (agrs1 < 2)
+            {
+                IKmlLookAt la = ge.getView().copyAsLookAt(ge.ALTITUDE_CLAMP_TO_GROUND);
+                latLngAlt = new double[] { la.getLatitude(), la.getLongitude(), la.getAltitude() };
+            }
+            else if (agrs1 == 2)
+            {
+                latLngAlt = new double[] { latLngAlt[0], latLngAlt[1], 0 };
+            }
+
+            int args2 = data.Length;
+
+            switch (args2)
+            {
+                case 1:
+                    return CreatePlacemark(ge, latLngAlt[0], latLngAlt[1], latLngAlt[2], data[0], string.Empty, string.Empty);
+                case 2:
+                    return CreatePlacemark(ge, latLngAlt[0], latLngAlt[1], latLngAlt[2], data[0], data[1], string.Empty);
+                case 3:
+                    return CreatePlacemark(ge, latLngAlt[0], latLngAlt[1], latLngAlt[2], data[0], data[1], data[2]);
+                case 0:
+                default:
+                    return CreatePlacemark(ge, latLngAlt[0], latLngAlt[1], latLngAlt[2], string.Empty, string.Empty, string.Empty);
+            }
         }
-
+  
         /// <summary>
         /// Creates a kml placemark
         /// </summary>
         /// <param name="ge">The plugin instance</param>
-        /// <param name="id">The placemark id</param>
         /// <param name="latitude">The placemark latitude in decimal degrees</param>
         /// <param name="longitude">The placemark longitude in decimal degrees</param>
+        /// <param name="altitude">The placemark altitude in metres</param>
+        /// <param name="id">The placemark Id</param>
+        /// <param name="name">The name of the placemark</param>
+        /// <param name="description">The placemark description text</param>
         /// <returns>The placemark object</returns>
-        public static IKmlPlacemark CreatePlacemark(IGEPlugin ge, string id, double latitude, double longitude)
+        public static IKmlPlacemark CreatePlacemark(IGEPlugin ge,
+            double latitude,
+            double longitude,
+            double altitude,
+            string id,
+            string name,
+            string description)
         {
             IKmlPoint p = ge.createPoint(String.Empty);
             p.setLatitude(latitude);
             p.setLongitude(longitude);
+            p.setAltitude(altitude);
             p.setAltitudeMode(ge.ALTITUDE_RELATIVE_TO_GROUND);
             IKmlPlacemark placemark = ge.createPlacemark(id);
+            placemark.setName(name);
+            placemark.setDescription(description);
             placemark.setGeometry(p);
 
             return placemark;

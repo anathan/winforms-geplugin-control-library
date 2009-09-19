@@ -36,20 +36,22 @@ namespace FC.GEPluginCtrls
     public delegate void GEWebBrowserEventHandeler(object sender, GEEventArgs e);
 
     /// <summary>
-    /// Pluign Imagery types enumeration
+    /// The available imagery bases for the plug-in
     /// </summary>
     public enum ImageryBase
     {
         /// <summary>
-        /// Earth database
+        /// Earth imagery base
         /// </summary>
         Earth,
+
         /// <summary>
-        /// Mars database
+        /// Mars imagery base
         /// </summary>
         Mars,
+
         /// <summary>
-        /// Moon database
+        /// Moon imagery base
         /// </summary>
         Moon
     }
@@ -80,6 +82,8 @@ namespace FC.GEPluginCtrls
         /// Current plug-in imagery database
         /// </summary>
         private ImageryBase imageryBase = ImageryBase.Earth;
+
+        private bool pluginIsReady = false;
 
         #endregion
 
@@ -148,6 +152,17 @@ namespace FC.GEPluginCtrls
             set
             {
                 CreateInstance(imageryBase);
+            }
+        }
+
+        /// <summary>
+        /// Gets the ready state of the plug-in
+        /// </summary>
+        public bool PluginIsReady
+        {
+            get
+            {
+                return pluginIsReady;
             }
         }
 
@@ -247,7 +262,6 @@ namespace FC.GEPluginCtrls
             {
                 try
                 {
-                    
                     HtmlElement headElement = this.Document.GetElementsByTagName("head")[0];
                     HtmlElement scriptElement = this.Document.CreateElement("script");
                     scriptElement.SetAttribute("type", "text/javascript");
@@ -396,6 +410,15 @@ namespace FC.GEPluginCtrls
             }
         }
 
+        /// <summary>
+        /// Reloads the document currently displayed in the control
+        /// </summary>
+        public override void Refresh()
+        {
+            this.pluginIsReady = false;
+            base.Refresh();
+        }
+
         #endregion
 
         #region Protected methods
@@ -497,6 +520,7 @@ namespace FC.GEPluginCtrls
             }
             finally
             {
+                this.pluginIsReady = true;
                 // Raise the ready event
                 this.OnPluginReady(this.geplugin, e);
             }

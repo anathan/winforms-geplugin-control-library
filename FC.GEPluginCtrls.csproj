@@ -59,6 +59,12 @@
     <Compile Include="External.cs" />
     <Compile Include="GEEventArgs.cs" />
     <Compile Include="GEHelpers.cs" />
+    <Compile Include="GEStatusStrip.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="GEStatusStrip.Designer.cs">
+      <DependentUpon>GEStatusStrip.cs</DependentUpon>
+    </Compile>
     <Compile Include="Maths.cs" />
     <Compile Include="GEToolStrip.Designer.cs">
       <DependentUpon>GEToolStrip.cs</DependentUpon>
@@ -107,7 +113,6 @@
     <Compile Include="GEToolStrip.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Resources\ImageryBase.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Plugin.html" />

@@ -157,6 +157,11 @@
             </summary>
             <returns>bitmap image</returns>
         </member>
+        <member name="M:FC.GEPluginCtrls.GEWebBrowser.Refresh">
+            <summary>
+            Reloads the document currently displayed in the control
+            </summary>
+        </member>
         <member name="M:FC.GEPluginCtrls.GEWebBrowser.OnPluginReady(System.Object,FC.GEPluginCtrls.GEEventArgs)">
             <summary>
             Protected method for raising the PluginReady event
@@ -252,12 +257,14 @@
             Gets or sets the current imagery base for the plug-in
             </summary>
         </member>
-        <member name="T:FC.GEPluginCtrls.GEToolStrip">
+        <member name="P:FC.GEPluginCtrls.GEWebBrowser.PluginIsReady">
             <summary>
-            The GEToolStrip provides a quick way to access and set the plugin options
+            Gets the ready state of the plug-in
             </summary>
+        </member>
+        <member name="T:FC.GEPluginCtrls.GEStatusStrip">
             <summary>
-            Designer file
+            The GEStatusStrip shows various information about the plug-in
             </summary>
         </member>
         <member name="T:FC.GEPluginCtrls.IGEControls">
@@ -271,6 +278,143 @@
             Tell the control the instance of GEWebBrowser to work with
             </summary>
             <param name="instance">The GEWebBrowser instance</param>
+        </member>
+        <member name="F:FC.GEPluginCtrls.GEStatusStrip.geplugin">
+            <summary>
+            Use the IGEPlugin COM interface. 
+            Equivalent to QueryInterface for COM objects
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.GEStatusStrip.gewb">
+            <summary>
+            An instance of the current browser
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.GEStatusStrip.interval">
+            <summary>
+            Timer interval in miliseconds
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.GEStatusStrip.timer">
+            <summary>
+            Timer used when polling data
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.GEStatusStrip.streamingStatusLabelVisible">
+            <summary>
+            Indicates whether the streaming status label is visible
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.GEStatusStrip.streamingProgressBarVisible">
+            <summary>
+            Indicates whether the streaming progress bar is visible
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.GEStatusStrip.apiVersionStatusLabelVisible">
+            <summary>
+            Indicates whether the api version label is visible
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.GEStatusStrip.pluginVersionStatusLabelVisible">
+            <summary>
+            Indicates whether the plug-in version label is visible
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.GEStatusStrip.browserVersionStatusLabelVisible">
+            <summary>
+            Indicates whether the browser version label is visible
+            </summary>
+        </member>
+        <member name="M:FC.GEPluginCtrls.GEStatusStrip.#ctor">
+            <summary>
+            Initializes a new instance of the GEStatusStrip class.
+            </summary>
+        </member>
+        <member name="M:FC.GEPluginCtrls.GEStatusStrip.SetBrowserInstance(FC.GEPluginCtrls.GEWebBrowser)">
+            <summary>
+            Set the browser instance for the control to work with
+            </summary>
+            <param name="browser">The GEWebBrowser instance</param>
+        </member>
+        <member name="F:FC.GEPluginCtrls.GEStatusStrip.components">
+            <summary> 
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.GEStatusStrip.apiVersionStatusLabel">
+            <summary>
+            The api version status label
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.GEStatusStrip.browserVersionStatusLabel">
+            <summary>
+            The browser version status label
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.GEStatusStrip.pluginVersionStatusLabel">
+            <summary>
+            The plug-in version status label
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.GEStatusStrip.streamingProgressBar">
+            <summary>
+            The streaming progress bar
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.GEStatusStrip.streamingStatusLabel">
+            <summary>
+            The streaming status label
+            </summary>
+        </member>
+        <member name="M:FC.GEPluginCtrls.GEStatusStrip.Dispose(System.Boolean)">
+            <summary> 
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:FC.GEPluginCtrls.GEStatusStrip.InitializeComponent">
+            <summary> 
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="P:FC.GEPluginCtrls.GEStatusStrip.Interval">
+            <summary>
+            Gets or sets the timer interval for polling data
+            </summary>
+        </member>
+        <member name="P:FC.GEPluginCtrls.GEStatusStrip.ShowStreamingProgressBar">
+            <summary>
+            Gets or sets a value indicating whether the progress bar is visible
+            </summary>
+        </member>
+        <member name="P:FC.GEPluginCtrls.GEStatusStrip.ShowStreamingStatusLabel">
+            <summary>
+            Gets or sets a value indicating whether the streaming label is visible
+            </summary>
+        </member>
+        <member name="P:FC.GEPluginCtrls.GEStatusStrip.ShowBrowserVersionStatusLabel">
+            <summary>
+            Gets or sets a value indicating whether the browser version label is visible
+            </summary>
+        </member>
+        <member name="P:FC.GEPluginCtrls.GEStatusStrip.ShowApiVersionStatusLabel">
+            <summary>
+            Gets or sets a value indicating whether the api version label is visible
+            </summary>
+        </member>
+        <member name="P:FC.GEPluginCtrls.GEStatusStrip.ShowPluginVersionStatusLabel">
+            <summary>
+            Gets or sets a value indicating whether the plug-in version label is visible
+            </summary>
+        </member>
+        <member name="T:FC.GEPluginCtrls.GEToolStrip">
+            <summary>
+            The GEToolStrip provides a quick way to access and set the plugin options
+            </summary>
+            <summary>
+            Designer file
+            </summary>
         </member>
         <member name="F:FC.GEPluginCtrls.GEToolStrip.geplugin">
             <summary>
@@ -1165,23 +1309,26 @@
             http://earth-api-samples.googlecode.com/svn/trunk/lib/geplugin-helpers.js
             </summary>
         </member>
-        <member name="M:FC.GEPluginCtrls.GEHelpers.CreatePlacemark(GEPlugin.IGEPlugin,System.Double,System.Double)">
+        <member name="M:FC.GEPluginCtrls.GEHelpers.CreatePlacemark(GEPlugin.IGEPlugin,System.Double[],System.String[])">
             <summary>
             Creates a kml placemark
             </summary>
             <param name="ge">The plugin instance</param>
-            <param name="latitude">The placemark latitude in decimal degrees</param>
-            <param name="longitude">The placemark longitude in decimal degrees</param>
+            <param name="latLngAlt">The latitude and longitude in decimal degrees</param>
+            <param name="data">Optional data (id, name, description)</param>
             <returns>The placemark object</returns>
         </member>
-        <member name="M:FC.GEPluginCtrls.GEHelpers.CreatePlacemark(GEPlugin.IGEPlugin,System.String,System.Double,System.Double)">
+        <member name="M:FC.GEPluginCtrls.GEHelpers.CreatePlacemark(GEPlugin.IGEPlugin,System.Double,System.Double,System.Double,System.String,System.String,System.String)">
             <summary>
             Creates a kml placemark
             </summary>
             <param name="ge">The plugin instance</param>
-            <param name="id">The placemark id</param>
             <param name="latitude">The placemark latitude in decimal degrees</param>
             <param name="longitude">The placemark longitude in decimal degrees</param>
+            <param name="altitude">The placemark altitude in metres</param>
+            <param name="id">The placemark Id</param>
+            <param name="name">The name of the placemark</param>
+            <param name="description">The placemark description text</param>
             <returns>The placemark object</returns>
         </member>
         <member name="M:FC.GEPluginCtrls.GEHelpers.CreateLineString(GEPlugin.IGEPlugin,GEPlugin.IKmlPoint,GEPlugin.IKmlPoint)">
@@ -1271,22 +1418,22 @@
         </member>
         <member name="T:FC.GEPluginCtrls.ImageryBase">
             <summary>
-            Pluign Imagery types enumeration
+            The available imagery bases for the plug-in
             </summary>
         </member>
         <member name="F:FC.GEPluginCtrls.ImageryBase.Earth">
             <summary>
-            Earth database
+            Earth imagery base
             </summary>
         </member>
         <member name="F:FC.GEPluginCtrls.ImageryBase.Mars">
             <summary>
-            Mars database
+            Mars imagery base
             </summary>
         </member>
         <member name="F:FC.GEPluginCtrls.ImageryBase.Moon">
             <summary>
-            Moon database
+            Moon imagery base
             </summary>
         </member>
     </members>
