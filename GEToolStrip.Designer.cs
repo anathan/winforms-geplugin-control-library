@@ -147,7 +147,6 @@ namespace FC.GEPluginCtrls
         /// The moon menu item
         /// </summary>
         private System.Windows.Forms.ToolStripMenuItem moonMenuItem;
-
         
         /// <summary>
         /// The refresh button
@@ -569,9 +568,6 @@ namespace FC.GEPluginCtrls
             this.ResumeLayout(false);
 
         }
-
         #endregion
-
-       
     }
 }

@@ -65,6 +65,11 @@
             Current plug-in imagery database
             </summary>
         </member>
+        <member name="F:FC.GEPluginCtrls.GEWebBrowser.pluginIsReady">
+            <summary>
+            Indicates whether the plug-in is ready to use
+            </summary>
+        </member>
         <member name="M:FC.GEPluginCtrls.GEWebBrowser.#ctor">
             <summary>
             Initializes a new instance of the GEWebBrowser class.
@@ -156,6 +161,11 @@
             Take a 'screen grab' of the current GEWebBrowser view
             </summary>
             <returns>bitmap image</returns>
+        </member>
+        <member name="M:FC.GEPluginCtrls.GEWebBrowser.Refresh">
+            <summary>
+            Reloads the document currently displayed in the control
+            </summary>
         </member>
         <member name="M:FC.GEPluginCtrls.GEWebBrowser.OnPluginReady(System.Object,FC.GEPluginCtrls.GEEventArgs)">
             <summary>
@@ -252,9 +262,17 @@
             Gets or sets the current imagery base for the plug-in
             </summary>
         </member>
+        <member name="P:FC.GEPluginCtrls.GEWebBrowser.PluginIsReady">
+            <summary>
+            Gets a value indicating whether the plug-in is ready
+            </summary>
+        </member>
         <member name="T:FC.GEPluginCtrls.GEStatusStrip">
             <summary>
             The GEStatusStrip shows various information about the plug-in
+            </summary>
+            <summary>
+            Designer file
             </summary>
         </member>
         <member name="T:FC.GEPluginCtrls.IGEControls">
@@ -292,12 +310,27 @@
         </member>
         <member name="F:FC.GEPluginCtrls.GEStatusStrip.streamingStatusLabelVisible">
             <summary>
-            
+            Indicates whether the streaming status label is visible
             </summary>
         </member>
         <member name="F:FC.GEPluginCtrls.GEStatusStrip.streamingProgressBarVisible">
             <summary>
-            
+            Indicates whether the streaming progress bar is visible
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.GEStatusStrip.apiVersionStatusLabelVisible">
+            <summary>
+            Indicates whether the api version label is visible
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.GEStatusStrip.pluginVersionStatusLabelVisible">
+            <summary>
+            Indicates whether the plug-in version label is visible
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.GEStatusStrip.browserVersionStatusLabelVisible">
+            <summary>
+            Indicates whether the browser version label is visible
             </summary>
         </member>
         <member name="M:FC.GEPluginCtrls.GEStatusStrip.#ctor">
@@ -311,9 +344,41 @@
             </summary>
             <param name="browser">The GEWebBrowser instance</param>
         </member>
+        <member name="M:FC.GEPluginCtrls.GEStatusStrip.Timer_Tick(System.Object,System.EventArgs)">
+            <summary>
+            Timer tick callback function
+            </summary>
+            <param name="sender">The sender</param>
+            <param name="e">Event arguments</param>
+        </member>
         <member name="F:FC.GEPluginCtrls.GEStatusStrip.components">
             <summary> 
             Required designer variable.
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.GEStatusStrip.apiVersionStatusLabel">
+            <summary>
+            The api version status label
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.GEStatusStrip.browserVersionStatusLabel">
+            <summary>
+            The browser version status label
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.GEStatusStrip.pluginVersionStatusLabel">
+            <summary>
+            The plug-in version status label
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.GEStatusStrip.streamingProgressBar">
+            <summary>
+            The streaming progress bar
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.GEStatusStrip.streamingStatusLabel">
+            <summary>
+            The streaming status label
             </summary>
         </member>
         <member name="M:FC.GEPluginCtrls.GEStatusStrip.Dispose(System.Boolean)">
@@ -341,6 +406,21 @@
         <member name="P:FC.GEPluginCtrls.GEStatusStrip.ShowStreamingStatusLabel">
             <summary>
             Gets or sets a value indicating whether the streaming label is visible
+            </summary>
+        </member>
+        <member name="P:FC.GEPluginCtrls.GEStatusStrip.ShowBrowserVersionStatusLabel">
+            <summary>
+            Gets or sets a value indicating whether the browser version label is visible
+            </summary>
+        </member>
+        <member name="P:FC.GEPluginCtrls.GEStatusStrip.ShowApiVersionStatusLabel">
+            <summary>
+            Gets or sets a value indicating whether the api version label is visible
+            </summary>
+        </member>
+        <member name="P:FC.GEPluginCtrls.GEStatusStrip.ShowPluginVersionStatusLabel">
+            <summary>
+            Gets or sets a value indicating whether the plug-in version label is visible
             </summary>
         </member>
         <member name="T:FC.GEPluginCtrls.GEToolStrip">
@@ -944,17 +1024,17 @@
             See http://code.google.com/p/geojs/
             </summary>
         </member>
-        <member name="F:FC.GEPluginCtrls.Maths.EARTH_RADIUS">
+        <member name="F:FC.GEPluginCtrls.Maths.EarthRadius">
             <summary>
             Earth's radius in metres
             </summary>
         </member>
-        <member name="F:FC.GEPluginCtrls.Maths.EPSILON">
+        <member name="F:FC.GEPluginCtrls.Maths.Epslilon">
             <summary>
             Smallest significant value 
             </summary>
         </member>
-        <member name="F:FC.GEPluginCtrls.Maths.MILES_TO_KILOMETRES">
+        <member name="F:FC.GEPluginCtrls.Maths.MilesToKilometres">
             <summary>
             Miles To Kilometres Conversion Ratio
             </summary>
@@ -973,28 +1053,28 @@
             <param name="angle">Longitude to fix</param>
             <returns>The angle in range</returns>
         </member>
-        <member name="M:FC.GEPluginCtrls.Maths.DegreesToRadians(System.Double)">
+        <member name="M:FC.GEPluginCtrls.Maths.ConvertDegreesToRadians(System.Double)">
             <summary>
             Converts decimal degrees to radians
             </summary>
             <param name="degrees">value in degrees</param>
             <returns>value in radians</returns>
         </member>
-        <member name="M:FC.GEPluginCtrls.Maths.RadiansToDegrees(System.Double)">
+        <member name="M:FC.GEPluginCtrls.Maths.ConvertRadiansToDegrees(System.Double)">
             <summary>
             Converts radians to decimal degrees
             </summary>
             <param name="radains">value in radians</param>
             <returns>value in degrees</returns>
         </member>
-        <member name="M:FC.GEPluginCtrls.Maths.KilometresToMiles(System.Double)">
+        <member name="M:FC.GEPluginCtrls.Maths.ConvertKilometresToMiles(System.Double)">
             <summary>
             Convert Kilometres To Miles 
             </summary>
             <param name="kilometres">distance in kilometrees</param>
             <returns>distance in miles</returns>
         </member>
-        <member name="M:FC.GEPluginCtrls.Maths.MilesToKilometres(System.Double)">
+        <member name="M:FC.GEPluginCtrls.Maths.ConvertMilesToKilometres(System.Double)">
             <summary>
             Convert Miles To Kilometres
             </summary>
@@ -1237,26 +1317,6 @@
             Raised when there is a script error in the document 
             </summary>
         </member>
-        <member name="T:FC.GEPluginCtrls.ImageryBase">
-            <summary>
-            Pluign Imagery types enumeration
-            </summary>
-        </member>
-        <member name="F:FC.GEPluginCtrls.ImageryBase.Earth">
-            <summary>
-            Earth database
-            </summary>
-        </member>
-        <member name="F:FC.GEPluginCtrls.ImageryBase.Mars">
-            <summary>
-            Mars database
-            </summary>
-        </member>
-        <member name="F:FC.GEPluginCtrls.ImageryBase.Moon">
-            <summary>
-            Moon database
-            </summary>
-        </member>
         <member name="T:FC.GEPluginCtrls.GEHelpers">
             <summary>
             This class provides a very basic Google Earth plugin helpers
@@ -1370,6 +1430,26 @@
             </summary>
             <param name="sender">The sending object</param>
             <param name="e">The event arguments</param>
+        </member>
+        <member name="T:FC.GEPluginCtrls.ImageryBase">
+            <summary>
+            The available imagery bases for the plug-in
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.ImageryBase.Earth">
+            <summary>
+            Earth imagery base
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.ImageryBase.Mars">
+            <summary>
+            Mars imagery base
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.ImageryBase.Moon">
+            <summary>
+            Moon imagery base
+            </summary>
         </member>
     </members>
 </doc>

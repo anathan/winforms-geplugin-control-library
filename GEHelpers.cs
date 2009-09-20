@@ -77,7 +77,8 @@ namespace FC.GEPluginCtrls
         /// <param name="name">The name of the placemark</param>
         /// <param name="description">The placemark description text</param>
         /// <returns>The placemark object</returns>
-        public static IKmlPlacemark CreatePlacemark(IGEPlugin ge,
+        public static IKmlPlacemark CreatePlacemark(
+            IGEPlugin ge,
             double latitude,
             double longitude,
             double altitude,
@@ -339,6 +340,5 @@ namespace FC.GEPluginCtrls
             // launch the default browser with the url
             System.Diagnostics.Process.Start(url.ToString());
         }
-
     }
 }

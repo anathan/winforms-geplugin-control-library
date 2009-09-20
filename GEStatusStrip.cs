@@ -79,6 +79,16 @@ namespace FC.GEPluginCtrls
 
         #endregion
 
+        /// <summary>
+        /// Initializes a new instance of the GEStatusStrip class.
+        /// </summary>
+        public GEStatusStrip()
+            : base()
+        {
+            InitializeComponent();
+            this.Enabled = false;
+        }
+
         #region Public properties
 
         /// <summary>
@@ -91,15 +101,16 @@ namespace FC.GEPluginCtrls
         {
             get
             {
-                return interval;
+                return this.interval;
             }
+
             set
             {
-                interval = value;
-                timer = new Timer();
-                timer.Interval = interval;
-                timer.Start();
-                timer.Tick += new EventHandler(timer_Tick);
+                this.interval = value;
+                this.timer = new Timer();
+                this.timer.Interval = this.interval;
+                this.timer.Start();
+                this.timer.Tick += new EventHandler(this.Timer_Tick);
             }
         }
 
@@ -187,7 +198,7 @@ namespace FC.GEPluginCtrls
 
             set
             {
-                if (!value && !browserVersionStatusLabelVisible)
+                if (!value && !this.browserVersionStatusLabelVisible)
                 {
                     pluginVersionStatusLabel.Spring = true;
                 }
@@ -220,19 +231,8 @@ namespace FC.GEPluginCtrls
                 this.pluginVersionStatusLabel.Visible = value;
             }
         }
-
-        
+       
         #endregion
-
-        /// <summary>
-        /// Initializes a new instance of the GEStatusStrip class.
-        /// </summary>
-        public GEStatusStrip()
-            : base()
-        {
-            InitializeComponent();
-            this.Enabled = false;
-        }
 
         #region public methods
 
@@ -246,17 +246,17 @@ namespace FC.GEPluginCtrls
             this.geplugin = browser.GetPlugin();
             this.Enabled = true;
 
-            if (gewb.PluginIsReady)
+            if (this.gewb.PluginIsReady)
             {
                 this.timer = new Timer();
-                this.timer.Interval = interval;
+                this.timer.Interval = this.interval;
                 this.timer.Start();
-                this.timer.Tick += new EventHandler(timer_Tick);
+                this.timer.Tick += new EventHandler(this.Timer_Tick);
 
                 this.Enabled = true;
-                this.browserVersionStatusLabel.Text = "ie " + gewb.Version.ToString();
-                this.apiVersionStatusLabel.Text = "api " + geplugin.getApiVersion();
-                this.pluginVersionStatusLabel.Text = "plugin " + geplugin.getPluginVersion();
+                this.browserVersionStatusLabel.Text = "ie " + this.gewb.Version.ToString();
+                this.apiVersionStatusLabel.Text = "api " + this.geplugin.getApiVersion();
+                this.pluginVersionStatusLabel.Text = "plugin " + this.geplugin.getPluginVersion();
             }
         }
 
@@ -264,13 +264,18 @@ namespace FC.GEPluginCtrls
 
         #region Event handlers
 
-        private void timer_Tick(object sender, EventArgs e)
+        /// <summary>
+        /// Timer tick callback function
+        /// </summary>
+        /// <param name="sender">The sender</param>
+        /// <param name="e">Event arguments</param>
+        private void Timer_Tick(object sender, EventArgs e)
         {
-            if (gewb.PluginIsReady)
+            if (this.gewb.PluginIsReady)
             {
                 try
                 {
-                    int percent = (int)geplugin.getStreamingPercent();
+                    int percent = (int)this.geplugin.getStreamingPercent();
                     this.streamingProgressBar.Value = percent;
                     this.streamingStatusLabel.Text = percent + "%";
 
