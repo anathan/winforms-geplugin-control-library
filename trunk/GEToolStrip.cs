@@ -254,18 +254,20 @@ namespace FC.GEPluginCtrls
         {
             get
             {
-                return useAutoCompleteSugestions;
+                return this.useAutoCompleteSugestions;
             }
+
             set
             {
-                useAutoCompleteSugestions = value;
+                this.useAutoCompleteSugestions = value;
+
                 if (value)
                 {
-                    navigationTextBox.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
+                    this.navigationTextBox.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
                 }
                 else
                 {
-                    navigationTextBox.AutoCompleteMode = AutoCompleteMode.None;
+                    this.navigationTextBox.AutoCompleteMode = AutoCompleteMode.None;
                 }
             }
         }
@@ -308,7 +310,7 @@ namespace FC.GEPluginCtrls
         {
             this.gewb = browser;
             this.geplugin = browser.GetPlugin();
-            if (gewb.PluginIsReady)
+            if (this.gewb.PluginIsReady)
             {
                 this.SynchronizeOptions();
                 this.htmlDocument = browser.Document;
@@ -343,10 +345,9 @@ namespace FC.GEPluginCtrls
         /// </summary>
         private void SynchronizeOptions()
         {
-            if (gewb.PluginIsReady)
+            if (this.gewb.PluginIsReady)
             {
                 // options
-
                 IGEOptions options = this.geplugin.getOptions();
 
                 options.setStatusBarVisibility(Convert.ToInt16(this.statusBarMenuItem.Checked));
@@ -372,7 +373,6 @@ namespace FC.GEPluginCtrls
                 this.geplugin.getNavigationControl().setVisibility(Convert.ToInt16(this.controlsMenuItem.Checked));
 
                 // layers 
-
                 if (this.gewb.ImageyBase == ImageryBase.Earth)
                 {
                     this.geplugin.getLayerRoot().enableLayerById(
@@ -425,7 +425,7 @@ namespace FC.GEPluginCtrls
             string input = this.navigationTextBox.Text;
             if (input.Length > 1)
             {
-                if (UseAutoCompleteSugestions)
+                if (this.UseAutoCompleteSugestions)
                 {
                     // add the user input to the custom 'per-session' string collection
                     this.navigationTextBoxStringCollection.Add(input);
@@ -470,7 +470,7 @@ namespace FC.GEPluginCtrls
         {
             ToolStripMenuItem item = sender as ToolStripMenuItem;
 
-            if (gewb.PluginIsReady && (item != null))
+            if (this.gewb.PluginIsReady && (item != null))
             {
                 string type = item.Tag.ToString();
                 int value = Convert.ToInt32(item.Checked);
@@ -496,7 +496,6 @@ namespace FC.GEPluginCtrls
                         break;
                 }
             }
-
         }
 
         /// <summary>
@@ -508,7 +507,7 @@ namespace FC.GEPluginCtrls
         {
             ToolStripMenuItem item = sender as ToolStripMenuItem;
 
-            if (gewb.PluginIsReady && (item != null))
+            if (this.gewb.PluginIsReady && (item != null))
             {
                 string type = item.Tag.ToString();
                 int value = Convert.ToInt32(item.Checked);
@@ -551,7 +550,7 @@ namespace FC.GEPluginCtrls
         {
             ToolStripMenuItem item = (ToolStripMenuItem)sender;
 
-            if (gewb.PluginIsReady && (item != null))
+            if (this.gewb.PluginIsReady && (item != null))
             {
                 string type = item.Tag.ToString();
                 int value = Convert.ToInt32(item.Checked);
@@ -579,7 +578,7 @@ namespace FC.GEPluginCtrls
         {
             ToolStripMenuItem selectedItem = sender as ToolStripMenuItem;
 
-            if (gewb.PluginIsReady && (selectedItem != null))
+            if (this.gewb.PluginIsReady && (selectedItem != null))
             {
                 string type = selectedItem.Tag.ToString();
                 ToolStripItemCollection imageryItems = imageryDropDownButton.DropDownItems;
@@ -624,7 +623,7 @@ namespace FC.GEPluginCtrls
         /// <param name="e">Event arguments</param>
         private void ScreenGrabButton_Click(object sender, EventArgs e)
         {
-            if (gewb.PluginIsReady)
+            if (this.gewb.PluginIsReady)
             {
                 // Take a 'screen grab' of the plugin
                 System.Drawing.Bitmap image = this.gewb.ScreenGrab();
@@ -646,9 +645,9 @@ namespace FC.GEPluginCtrls
         /// <param name="e">Event arguments</param>
         private void ViewInMapsButton_Click(object sender, EventArgs e)
         {
-            if (gewb.PluginIsReady)
+            if (this.gewb.PluginIsReady)
             {
-                GEHelpers.ShowCurrentViewInMaps(geplugin);
+                GEHelpers.ShowCurrentViewInMaps(this.geplugin);
             }
         }
 

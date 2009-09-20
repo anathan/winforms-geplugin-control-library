@@ -1,4 +1,4 @@
-﻿// <copyright file="GEStatusStrip..Designer.cs" company="FC">
+﻿// <copyright file="GEStatusStrip.Designer.cs" company="FC">
 // Copyright (c) 2008 Fraser Chapman
 // </copyright>
 // <author>Fraser Chapman</author>
@@ -18,7 +18,10 @@
 // </summary>
 namespace FC.GEPluginCtrls
 {
-    partial class GEStatusStrip
+    /// <summary>
+    /// Designer file
+    /// </summary>
+    public partial class GEStatusStrip
     {
         /// <summary> 
         /// Required designer variable.
@@ -56,10 +59,11 @@ namespace FC.GEPluginCtrls
         /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
         {
-            if (disposing && (components != null))
+            if (disposing && (this.components != null))
             {
-                components.Dispose();
+                this.components.Dispose();
             }
+
             base.Dispose(disposing);
         }
 

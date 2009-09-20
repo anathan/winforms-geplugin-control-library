@@ -83,6 +83,9 @@ namespace FC.GEPluginCtrls
         /// </summary>
         private ImageryBase imageryBase = ImageryBase.Earth;
 
+        /// <summary>
+        /// Indicates whether the plug-in is ready to use
+        /// </summary>
         private bool pluginIsReady = false;
 
         #endregion
@@ -149,20 +152,21 @@ namespace FC.GEPluginCtrls
             {
                 return this.imageryBase;
             }
+
             set
             {
-                CreateInstance(imageryBase);
+               this.CreateInstance(this.imageryBase);
             }
         }
 
         /// <summary>
-        /// Gets the ready state of the plug-in
+        /// Gets a value indicating whether the plug-in is ready
         /// </summary>
         public bool PluginIsReady
         {
             get
             {
-                return pluginIsReady;
+                return this.pluginIsReady;
             }
         }
 
@@ -207,7 +211,7 @@ namespace FC.GEPluginCtrls
                 this.InvokeJavascript(
                     "jsCreateInstance",
                     new string[] { name });
-                imageryBase = database;
+                this.imageryBase = database;
             }
         }
 
@@ -265,6 +269,7 @@ namespace FC.GEPluginCtrls
                     HtmlElement headElement = this.Document.GetElementsByTagName("head")[0];
                     HtmlElement scriptElement = this.Document.CreateElement("script");
                     scriptElement.SetAttribute("type", "text/javascript");
+
                     // use the custom mshtml interface to append the script to the element
                     IHTMLScriptElement element = (IHTMLScriptElement)scriptElement.DomElement;
                     element.Text = "/* <![CDATA[ */ " + javascript + " /* ]]> */";
@@ -273,8 +278,7 @@ namespace FC.GEPluginCtrls
                 catch (InvalidOperationException ioex)
                 {
                     System.Diagnostics.Debug.WriteLine(ioex.ToString());
-                    this.OnScriptError(this, new
-                        GEEventArgs(ioex.Message, ioex.ToString()));
+                    this.OnScriptError(this, new GEEventArgs(ioex.Message, ioex.ToString()));
                 }
             }
         }
@@ -521,6 +525,7 @@ namespace FC.GEPluginCtrls
             finally
             {
                 this.pluginIsReady = true;
+
                 // Raise the ready event
                 this.OnPluginReady(this.geplugin, e);
             }
@@ -569,7 +574,7 @@ namespace FC.GEPluginCtrls
 
             // Build the error data
             GEEventArgs ea = new GEEventArgs();
-            ea.Message = "line " +e.LineNumber.ToString() + " - " +e.Description;
+            ea.Message = "line " + e.LineNumber.ToString() + " - " + e.Description;
             ea.Data = "Document Error";
 
             // Bubble the error
