@@ -20,6 +20,14 @@ The GEWebBrowser inherits from the standard [http://msdn.microsoft.com/en-us/lib
 
 The GEWebBrowser control cannot be used by partially trusted code. For more information, see [http://msdn.microsoft.com/en-us/library/8skskf63.aspx Using Libraries from Partially Trusted Code]
 
+== Public Properties ==
+
+_ImageryBase_ *ImageryBase*<br>
+Gets or sets a value indicating the current plug-in imagery base<br>
+
+_Bool_ *PluginIsReady*<br>
+Gets a value indicating if the plug-in is ready to use<br>
+
 == Public Methods ==
 
 _Void_ *AddEventListener(System.object, System.String)*<br>
