@@ -74,7 +74,16 @@ namespace FC.GEPluginCtrls
         /// <param name="kmlFeature">the loaded kml feature</param>
         public void LoadKmlCallBack(IKmlFeature kmlFeature)
         {
-            this.OnKmlLoaded(kmlFeature, new GEEventArgs());
+            try
+            {
+                this.OnKmlLoaded(kmlFeature,
+                    new GEEventArgs());
+            }
+            catch (COMException cex)
+            {
+                System.Diagnostics.Debug.WriteLine(cex.ToString());
+                throw;
+            }
         }
 
         /// <summary>
@@ -83,7 +92,16 @@ namespace FC.GEPluginCtrls
         /// <param name="ge">the plugin instance</param>
         public void Ready(IGEPlugin ge)
         {
-            this.OnPluginReady(ge, new GEEventArgs());
+            try
+            {
+                this.OnPluginReady(ge,
+                    new GEEventArgs(ge.getApiVersion(), ge.getPluginVersion()));
+            }
+            catch(COMException cex)
+            {
+                System.Diagnostics.Debug.WriteLine(cex.ToString());
+                throw;
+            }
         }
 
         /// <summary>
@@ -92,7 +110,8 @@ namespace FC.GEPluginCtrls
         /// <param name="message">the error message</param>
         public void Error(string message)
         {
-            this.OnScriptError(this, new GEEventArgs(message));
+            this.OnScriptError(this, 
+                new GEEventArgs(message));
         }
 
         /// <summary>
@@ -102,7 +121,16 @@ namespace FC.GEPluginCtrls
         /// <param name="action">the event id</param>
         public void KmlEventCallBack(IKmlEvent kmlEvent, string action)
         {
-            this.OnKmlEvent(kmlEvent, new GEEventArgs(action));
+            try
+            {
+                this.OnKmlEvent(kmlEvent,
+                    new GEEventArgs(kmlEvent.getType(), action));
+            }
+            catch (COMException cex)
+            {
+                System.Diagnostics.Debug.WriteLine(cex.ToString());
+                throw;
+            }
         }
 
         #endregion

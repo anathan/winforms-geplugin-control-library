@@ -104,12 +104,14 @@ namespace FC.GEPluginCtrls
             // 
             this.streamingProgressBar.Name = "streamingProgressBar";
             this.streamingProgressBar.Size = new System.Drawing.Size(100, 16);
+            this.streamingProgressBar.Minimum = 0;
+            this.streamingProgressBar.Maximum = 100;
             // 
             // streamingStatusLabel
             // 
             this.streamingStatusLabel.Name = "streamingStatusLabel";
             this.streamingStatusLabel.Size = new System.Drawing.Size(23, 17);
-            this.streamingStatusLabel.Text = "0%";
+            this.streamingStatusLabel.Text = "idle";
             //
             // pluginVersionStatusLabel
             //

@@ -45,7 +45,7 @@ namespace FC.GEPluginCtrls
         /// <summary>
         /// Timer interval in miliseconds
         /// </summary>
-        private int interval = 500;
+        private int interval = 100;
 
         /// <summary>
         /// Timer used when polling data
@@ -96,7 +96,7 @@ namespace FC.GEPluginCtrls
         /// </summary>
         [Category("Control Options"),
         Description("Gets or sets the timer interval for polling data."),
-        DefaultValueAttribute(500)]
+        DefaultValueAttribute(100)]
         public int Interval
         {
             get
@@ -107,10 +107,6 @@ namespace FC.GEPluginCtrls
             set
             {
                 this.interval = value;
-                this.timer = new Timer();
-                this.timer.Interval = this.interval;
-                this.timer.Start();
-                this.timer.Tick += new EventHandler(this.Timer_Tick);
             }
         }
 
@@ -182,7 +178,7 @@ namespace FC.GEPluginCtrls
                 this.browserVersionStatusLabel.Visible = value;
             }
         }
-               
+
         /// <summary>
         /// Gets or sets a value indicating whether the api version label is visible
         /// </summary>
@@ -231,7 +227,7 @@ namespace FC.GEPluginCtrls
                 this.pluginVersionStatusLabel.Visible = value;
             }
         }
-       
+
         #endregion
 
         #region public methods
@@ -240,6 +236,7 @@ namespace FC.GEPluginCtrls
         /// Set the browser instance for the control to work with
         /// </summary>
         /// <param name="browser">The GEWebBrowser instance</param>
+        /// <example>GEToolStrip.SetBrowserInstance(GEWebBrowser)</example>
         public void SetBrowserInstance(GEWebBrowser browser)
         {
             this.gewb = browser;
@@ -248,12 +245,11 @@ namespace FC.GEPluginCtrls
 
             if (this.gewb.PluginIsReady)
             {
+                this.Enabled = true;
                 this.timer = new Timer();
                 this.timer.Interval = this.interval;
                 this.timer.Start();
                 this.timer.Tick += new EventHandler(this.Timer_Tick);
-
-                this.Enabled = true;
                 this.browserVersionStatusLabel.Text = "ie " + this.gewb.Version.ToString();
                 this.apiVersionStatusLabel.Text = "api " + this.geplugin.getApiVersion();
                 this.pluginVersionStatusLabel.Text = "plugin " + this.geplugin.getPluginVersion();
@@ -276,22 +272,24 @@ namespace FC.GEPluginCtrls
                 try
                 {
                     int percent = (int)this.geplugin.getStreamingPercent();
-                    this.streamingProgressBar.Value = percent;
-                    this.streamingStatusLabel.Text = percent + "%";
 
-                    if (100 == percent)
+                    if (100 == percent || 0 == percent)
                     {
                         this.streamingStatusLabel.ForeColor = Color.Gray;
                         this.streamingStatusLabel.Text = "idle";
+                        this.streamingProgressBar.Value = 0;
                     }
                     else
                     {
                         this.streamingStatusLabel.ForeColor = Color.Black;
+                        this.streamingProgressBar.Value = percent;
+                        this.streamingStatusLabel.Text = percent + "%";
                     }
                 }
                 catch (System.Runtime.InteropServices.COMException cex)
                 {
                     System.Diagnostics.Debug.WriteLine(cex.ToString());
+                    throw;
                 }
             }
         }

@@ -185,7 +185,7 @@ namespace FC.GEPluginCtrls
             lookat.set(
                 latitude,
                 longitude,
-                100,
+                0,
                 ge.ALTITUDE_RELATIVE_TO_GROUND,
                 0,
                 0,
@@ -205,14 +205,14 @@ namespace FC.GEPluginCtrls
                 case "KmlFolder":
                 case "KmlDocument":
                 case "KmlNetworkLink":
-                    if (feature.getAbstractView() != null)
+                    if (null != feature.getAbstractView())
                     {
                         ge.getView().setAbstractView(feature.getAbstractView());
                     }
 
                     break;
                 case "KmlPlacemark":
-                    if (feature.getAbstractView() != null)
+                    if (null != feature.getAbstractView())
                     {
                         ge.getView().setAbstractView(feature.getAbstractView());
                     }
@@ -257,7 +257,9 @@ namespace FC.GEPluginCtrls
                             lineString.getCoordinates().get(0).getLongitude());
                         break;
                     case "KmlMultiGeometry":
-                    ////IKmlMultiGeometry multiGeometry = (IKmlMultiGeometry)geometry;
+                       ////IKmlMultiGeometry multiGeometry = (IKmlMultiGeometry)geometry;
+                       ////multiGeometry.getGeometries().getFirstChild().getType();
+                       break;
                     default:
                         break;
                 }
@@ -272,6 +274,30 @@ namespace FC.GEPluginCtrls
         public static void LookAt(IGEPlugin ge, IKmlPoint point)
         {
             LookAt(ge, point.getLatitude(), point.getLongitude());
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="ge"></param>
+        /// <param name="feature"></param>
+        public static void OpenFeatureBalloon(IGEPlugin ge, IKmlFeature feature)
+        {
+            IGEFeatureBalloon balloon = ge.getBalloon() as IGEFeatureBalloon;
+
+            if (null != balloon)
+            {
+                balloon = ge.createFeatureBalloon(String.Empty);
+                balloon.setFeature(feature);
+                ge.setBalloon(balloon);
+            }
+            else
+            {
+                balloon.setFeature(feature);
+                ge.setBalloon(balloon);
+            }
+            
+            
         }
 
         /// <summary>

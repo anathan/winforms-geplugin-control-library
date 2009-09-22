@@ -280,6 +280,7 @@ namespace FC.GEPluginCtrls
         /// Adds multiple entries to the Auto Compleate suggestion list
         /// </summary>
         /// <param name="suggestions">The suggestions to be entered</param>
+        /// <example>GEToolStrip.AddAutoCompleteSuggestions(new string[] { "London", "Paris", "Rome" });</example>
         public void AddAutoCompleteSuggestions(string[] suggestions)
         {
             this.navigationTextBoxStringCollection.AddRange(suggestions);
@@ -289,6 +290,7 @@ namespace FC.GEPluginCtrls
         /// Adds an entry to the Auto Compleate suggestion list
         /// </summary>
         /// <param name="suggestion">The suggestion entry</param>
+        /// <example>GEToolStrip.AddAutoCompleteSuggestions("London");</example>
         public void AddAutoCompleteSuggestions(string suggestion)
         {
             this.navigationTextBoxStringCollection.Add(suggestion);
@@ -297,6 +299,7 @@ namespace FC.GEPluginCtrls
         /// <summary>
         /// Removes all entries from the Auto Compleate suggestion list
         /// </summary>
+        /// <example>GEToolStrip.ClearAutoCompleteSuggestions()</example>
         public void ClearAutoCompleteSuggestions()
         {
             this.navigationTextBoxStringCollection.Clear();
@@ -306,6 +309,7 @@ namespace FC.GEPluginCtrls
         /// Set the browser instance for the control to work with
         /// </summary>
         /// <param name="browser">The GEWebBrowser instance</param>
+        /// <example>GEToolStrip.SetBrowserInstance(GEWebBrowser)</example>
         public void SetBrowserInstance(GEWebBrowser browser)
         {
             this.gewb = browser;
@@ -315,6 +319,7 @@ namespace FC.GEPluginCtrls
                 this.SynchronizeOptions();
                 this.htmlDocument = browser.Document;
                 this.Enabled = true;
+                this.roadsMenuItem.Tag = geplugin.LAYER_ROADS;
             }
         }
 
@@ -327,6 +332,9 @@ namespace FC.GEPluginCtrls
         /// </summary>
         private void ResetToolStripDefaults()
         {
+            this.earthMenuItem.Checked = true;
+            this.marsMenuItem.Checked = false;
+            this.moonMenuItem.Checked = false;
             this.statusBarMenuItem.Checked = false;
             this.gridMenuItem.Checked = false;
             this.overviewMapMenuItem.Checked = false;
@@ -341,7 +349,7 @@ namespace FC.GEPluginCtrls
         }
 
         /// <summary>
-        /// synchronizes the plug-in and tool strip options
+        /// Force the plug-in to confom to the tool-strip settings
         /// </summary>
         private void SynchronizeOptions()
         {
@@ -349,47 +357,43 @@ namespace FC.GEPluginCtrls
             {
                 // options
                 IGEOptions options = this.geplugin.getOptions();
-
                 options.setStatusBarVisibility(Convert.ToInt16(this.statusBarMenuItem.Checked));
-
                 options.setGridVisibility(Convert.ToInt16(this.gridMenuItem.Checked));
-
                 options.setOverviewMapVisibility(Convert.ToInt16(this.overviewMapMenuItem.Checked));
-
                 options.setScaleLegendVisibility(Convert.ToInt16(this.scaleLegendMenuItem.Checked));
-
                 options.setAtmosphereVisibility(Convert.ToInt16(this.atmosphereMenuItem.Checked));
-
                 options.setMouseNavigationEnabled(Convert.ToInt16(this.mouseNavigationMenuItem.Checked));
-
                 options.setScaleLegendVisibility(Convert.ToInt16(this.scaleLegendMenuItem.Checked));
-
                 options.setOverviewMapVisibility(Convert.ToInt16(this.overviewMapMenuItem.Checked));
-
                 options.setMapType(Convert.ToInt16(this.skyMenuItem.Checked) + 1);
 
+                // sun
                 this.geplugin.getSun().setVisibility(Convert.ToInt16(this.sunMenuItem.Checked));
 
+                // controls
                 this.geplugin.getNavigationControl().setVisibility(Convert.ToInt16(this.controlsMenuItem.Checked));
 
-                // layers 
                 if (this.gewb.ImageyBase == ImageryBase.Earth)
                 {
-                    this.geplugin.getLayerRoot().enableLayerById(
-                        this.geplugin.LAYER_BORDERS, Convert.ToInt16(this.bordersMenuItem.Checked));
+                    // layers 
+                    IKmlLayerRoot root = this.geplugin.getLayerRoot();
+                    root.enableLayerById(this.geplugin.LAYER_BORDERS, Convert.ToInt16(this.bordersMenuItem.Checked));
+                    root.enableLayerById(this.geplugin.LAYER_BUILDINGS, Convert.ToInt16(this.buildingsMenuItem.Checked));
+                    root.enableLayerById(this.geplugin.LAYER_BUILDINGS_LOW_RESOLUTION, Convert.ToInt16(this.buildingsGreyMenuItem.Checked));
+                    root.enableLayerById(this.geplugin.LAYER_ROADS, Convert.ToInt16(this.roadsMenuItem.Checked));
+                    root.enableLayerById(this.geplugin.LAYER_TERRAIN, Convert.ToInt16(this.terrainMenuItem.Checked));
 
-                    this.geplugin.getLayerRoot().enableLayerById(
-                        this.geplugin.LAYER_BUILDINGS, Convert.ToInt16(this.buildingsMenuItem.Checked));
+                    // imagery 
+                    foreach (ToolStripMenuItem item in imageryDropDownButton.DropDownItems)
+                    {
+                        item.Enabled = true;
+                        item.Checked = false;
+                    }
 
-                    this.geplugin.getLayerRoot().enableLayerById(
-                        this.geplugin.LAYER_BUILDINGS_LOW_RESOLUTION, Convert.ToInt16(this.buildingsGreyMenuItem.Checked));
-
-                    this.geplugin.getLayerRoot().enableLayerById(
-                        this.geplugin.LAYER_ROADS, Convert.ToInt16(this.roadsMenuItem.Checked));
-
-                    this.geplugin.getLayerRoot().enableLayerById(
-                        this.geplugin.LAYER_TERRAIN, Convert.ToInt16(this.terrainMenuItem.Checked));
+                    this.earthMenuItem.Checked = true;
+                    this.earthMenuItem.Enabled = true;
                 }
+
             }
         }
 
@@ -455,7 +459,7 @@ namespace FC.GEPluginCtrls
         /// Called when the refresh button is clicked
         /// </summary>
         /// <param name="sender">The sending object</param>
-         /// <param name="e">The Eveny arguments</param>
+         /// <param name="e">The Event arguments</param>
         private void RefreshButton_Click(object sender, EventArgs e)
         {
             this.gewb.Refresh();   
@@ -473,7 +477,8 @@ namespace FC.GEPluginCtrls
             if (this.gewb.PluginIsReady && (item != null))
             {
                 string type = item.Tag.ToString();
-                int value = Convert.ToInt32(item.Checked);
+
+                int value = Convert.ToInt16(item.Checked);
 
                 switch (type)
                 {
@@ -483,7 +488,7 @@ namespace FC.GEPluginCtrls
                     case "BUILDINGS":
                         this.geplugin.getLayerRoot().enableLayerById(this.geplugin.LAYER_BUILDINGS, value);
                         break;
-                    case "BUILDINGS_GREY":
+                    case "BUILDINGS_GREY_LOW_RES":
                         this.geplugin.getLayerRoot().enableLayerById(this.geplugin.LAYER_BUILDINGS_LOW_RESOLUTION, value);
                         break;
                     case "ROADS":
@@ -510,7 +515,7 @@ namespace FC.GEPluginCtrls
             if (this.gewb.PluginIsReady && (item != null))
             {
                 string type = item.Tag.ToString();
-                int value = Convert.ToInt32(item.Checked);
+                int value = Convert.ToInt16(item.Checked);
 
                 switch (type)
                 {
@@ -553,7 +558,7 @@ namespace FC.GEPluginCtrls
             if (this.gewb.PluginIsReady && (item != null))
             {
                 string type = item.Tag.ToString();
-                int value = Convert.ToInt32(item.Checked);
+                int value = Convert.ToInt16(item.Checked);
 
                 switch (type)
                 {
