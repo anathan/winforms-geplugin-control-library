@@ -81,6 +81,7 @@
             </summary>
             <param name="feature">The target feature</param>
             <param name="action">The event Id</param>
+            <example>GEWebBrowser.AddEventListener(object, "click");</example>
         </member>
         <member name="M:FC.GEPluginCtrls.GEWebBrowser.AddEventListener(System.Object,System.String,System.String)">
             <summary>
@@ -88,13 +89,15 @@
             </summary>
             <param name="feature">The target feature</param>
             <param name="action">The event Id</param>
-            <param name="callBackFunction">The callback function to use</param>
+            <param name="callBackFunction">The name of javascript callback function to use</param>
+            <example>GEWebBrowser.AddEventListener(object, "click", "function(event){alert(event.getType);}");</example>
         </member>
         <member name="M:FC.GEPluginCtrls.GEWebBrowser.CreateInstance(FC.GEPluginCtrls.ImageryBase)">
             <summary>
             Sets the imagery database to use with the plug-in
             </summary>
             <param name="database">The database name</param>
+            <example>GEWebBrowser.CreateInstance(ImageryBase.Moon);</example>
         </member>
         <member name="M:FC.GEPluginCtrls.GEWebBrowser.FetchKml(System.String)">
             <summary>
@@ -103,6 +106,7 @@
             this twin function will call "google.earth.fetchKml"
             </summary>
             <param name="url">path to a kml/kmz file</param>
+            <example>GEWebBrowser.FetchKml("http://www.site.com/file.kml");</example>
         </member>
         <member name="M:FC.GEPluginCtrls.GEWebBrowser.GetPlugin">
             <summary>
@@ -117,12 +121,14 @@
             </summary>
             <param name="input">the location to geocode</param>
             <returns>the point object (if any)</returns>
+            <example>GEWebBrowser.InvokeDoGeocode("London");</example>
         </member>
         <member name="M:FC.GEPluginCtrls.GEWebBrowser.InjectJavascript(System.String)">
             <summary>
             Inject a javascript element into the document head
             </summary>
             <param name="javascript">the script code</param>
+            <example>GEWebBrowser.InjectJavascript("var say=function(msg){alert(msg);}");</example>
         </member>
         <member name="M:FC.GEPluginCtrls.GEWebBrowser.InvokeJavascript(System.String)">
             <summary>
@@ -130,6 +136,7 @@
             </summary>
             <param name="function">The name of the function to invoke</param>
             <returns>The result of the evaluated function</returns>
+            <example>GEWebBrowser.InvokeJavascript("say");</example>
         </member>
         <member name="M:FC.GEPluginCtrls.GEWebBrowser.InvokeJavascript(System.String,System.Object[])">
             <summary>
@@ -138,6 +145,7 @@
             <param name="function">The name of the function to invoke</param>
             <param name="args">any arguments</param>
             <returns>The result of the evaluated function</returns>
+            <example>GEWebBrowser.InvokeJavascript("say", new object[] { "hello" });</example>
         </member>
         <member name="M:FC.GEPluginCtrls.GEWebBrowser.KillAllPluginProcesses">
             <summary>
@@ -277,7 +285,7 @@
         </member>
         <member name="T:FC.GEPluginCtrls.IGEControls">
             <summary>
-            This interface should be inherited by all the controls
+            This interface should be inherited by all the controls that work with the browser
             It allows the control access to both the plugin and htmlDoument
             </summary>
         </member>
@@ -343,6 +351,7 @@
             Set the browser instance for the control to work with
             </summary>
             <param name="browser">The GEWebBrowser instance</param>
+            <example>GEToolStrip.SetBrowserInstance(GEWebBrowser)</example>
         </member>
         <member name="M:FC.GEPluginCtrls.GEStatusStrip.Timer_Tick(System.Object,System.EventArgs)">
             <summary>
@@ -497,23 +506,27 @@
             Adds multiple entries to the Auto Compleate suggestion list
             </summary>
             <param name="suggestions">The suggestions to be entered</param>
+            <example>GEToolStrip.AddAutoCompleteSuggestions(new string[] { "London", "Paris", "Rome" });</example>
         </member>
         <member name="M:FC.GEPluginCtrls.GEToolStrip.AddAutoCompleteSuggestions(System.String)">
             <summary>
             Adds an entry to the Auto Compleate suggestion list
             </summary>
             <param name="suggestion">The suggestion entry</param>
+            <example>GEToolStrip.AddAutoCompleteSuggestions("London");</example>
         </member>
         <member name="M:FC.GEPluginCtrls.GEToolStrip.ClearAutoCompleteSuggestions">
             <summary>
             Removes all entries from the Auto Compleate suggestion list
             </summary>
+            <example>GEToolStrip.ClearAutoCompleteSuggestions()</example>
         </member>
         <member name="M:FC.GEPluginCtrls.GEToolStrip.SetBrowserInstance(FC.GEPluginCtrls.GEWebBrowser)">
             <summary>
             Set the browser instance for the control to work with
             </summary>
             <param name="browser">The GEWebBrowser instance</param>
+            <example>GEToolStrip.SetBrowserInstance(GEWebBrowser)</example>
         </member>
         <member name="M:FC.GEPluginCtrls.GEToolStrip.ResetToolStripDefaults">
             <summary>
@@ -522,7 +535,7 @@
         </member>
         <member name="M:FC.GEPluginCtrls.GEToolStrip.SynchronizeOptions">
             <summary>
-            synchronizes the plug-in and tool strip options
+            Force the plug-in to confom to the tool-strip settings
             </summary>
         </member>
         <member name="M:FC.GEPluginCtrls.GEToolStrip.NavigationTextBox_KeyUp(System.Object,System.Windows.Forms.KeyEventArgs)">
@@ -544,7 +557,7 @@
             Called when the refresh button is clicked
             </summary>
             <param name="sender">The sending object</param>
-            <param name="e">The Eveny arguments</param>
+            <param name="e">The Event arguments</param>
         </member>
         <member name="M:FC.GEPluginCtrls.GEToolStrip.LayersItem_Clicked(System.Object,System.EventArgs)">
             <summary>
@@ -820,17 +833,6 @@
             The image list for the tree nodes
             </summary>
         </member>
-        <member name="F:FC.GEPluginCtrls.KmlTreeView.contextMenuStrip1">
-            <summary>
-            Context menu for the treeview
-            </summary>
-        </member>
-        <member name="F:FC.GEPluginCtrls.KmlTreeView.removeNode">
-            <summary>
-            Context menu item
-            remove node from tree and plugin
-            </summary>
-        </member>
         <member name="M:FC.GEPluginCtrls.KmlTreeView.Dispose(System.Boolean)">
             <summary>
             Clean up any resources being used.
@@ -972,19 +974,12 @@
             <param name="sender">The TreeView</param>
             <param name="e">Event Arugments</param>
         </member>
-        <member name="M:FC.GEPluginCtrls.KmlTreeView.RemoveNode_Click(System.Object,System.EventArgs)">
-            <summary>
-            Called when the user clicks on 'remove' context menu item
-            </summary>
-            <param name="sender">The sending object</param>
-            <param name="e">The Eveny arguments</param>
-        </member>
         <member name="M:FC.GEPluginCtrls.KmlTreeView.KmlTreeView_MouseUp(System.Object,System.Windows.Forms.MouseEventArgs)">
             <summary>
-            Called when the user clicks on the control
+            Called when the user clicks on the control (TODO)
             </summary>
             <param name="sender">The sending object</param>
-            <param name="e">The Eveny arguments</param>
+            <param name="e">The Event arguments</param>
         </member>
         <member name="P:FC.GEPluginCtrls.KmlTreeView.BalloonMinimumWidth">
             <summary>
@@ -1227,6 +1222,26 @@
             the Free Software Foundation, either ver [rest of string was truncated]&quot;;.
              </summary>
         </member>
+        <member name="T:FC.GEPluginCtrls.ImageryBase">
+            <summary>
+            Enumeration of the available imagery bases for the plug-in
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.ImageryBase.Earth">
+            <summary>
+            Earth imagery base
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.ImageryBase.Mars">
+            <summary>
+            Mars imagery base
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.ImageryBase.Moon">
+            <summary>
+            Moon imagery base
+            </summary>
+        </member>
         <member name="T:FC.GEPluginCtrls.ExternalEventHandeler">
             <summary>
             Event handler for methods called from Javascript
@@ -1405,6 +1420,13 @@
             <param name="ge">the plugin</param>
             <param name="point">the point to look at</param>
         </member>
+        <member name="M:FC.GEPluginCtrls.GEHelpers.OpenFeatureBalloon(GEPlugin.IGEPlugin,GEPlugin.IKmlFeature)">
+            <summary>
+            
+            </summary>
+            <param name="ge"></param>
+            <param name="feature"></param>
+        </member>
         <member name="M:FC.GEPluginCtrls.GEHelpers.RemoveAllFeatures(GEPlugin.IGEPlugin)">
             <summary>
             Remove all features from the plugin 
@@ -1430,26 +1452,6 @@
             </summary>
             <param name="sender">The sending object</param>
             <param name="e">The event arguments</param>
-        </member>
-        <member name="T:FC.GEPluginCtrls.ImageryBase">
-            <summary>
-            The available imagery bases for the plug-in
-            </summary>
-        </member>
-        <member name="F:FC.GEPluginCtrls.ImageryBase.Earth">
-            <summary>
-            Earth imagery base
-            </summary>
-        </member>
-        <member name="F:FC.GEPluginCtrls.ImageryBase.Mars">
-            <summary>
-            Mars imagery base
-            </summary>
-        </member>
-        <member name="F:FC.GEPluginCtrls.ImageryBase.Moon">
-            <summary>
-            Moon imagery base
-            </summary>
         </member>
     </members>
 </doc>

@@ -36,27 +36,6 @@ namespace FC.GEPluginCtrls
     public delegate void GEWebBrowserEventHandeler(object sender, GEEventArgs e);
 
     /// <summary>
-    /// The available imagery bases for the plug-in
-    /// </summary>
-    public enum ImageryBase
-    {
-        /// <summary>
-        /// Earth imagery base
-        /// </summary>
-        Earth,
-
-        /// <summary>
-        /// Mars imagery base
-        /// </summary>
-        Mars,
-
-        /// <summary>
-        /// Moon imagery base
-        /// </summary>
-        Moon
-    }
-
-    /// <summary>
     /// This browser control holds the Google Earth Plug-in,
     /// it also provides wrapper methods to work with the Google.Earth namespace
     /// </summary>
@@ -179,6 +158,7 @@ namespace FC.GEPluginCtrls
         /// </summary>
         /// <param name="feature">The target feature</param>
         /// <param name="action">The event Id</param>
+        /// <example>GEWebBrowser.AddEventListener(object, "click");</example>
         public void AddEventListener(object feature, string action)
         {
             this.InvokeJavascript(
@@ -191,7 +171,8 @@ namespace FC.GEPluginCtrls
         /// </summary>
         /// <param name="feature">The target feature</param>
         /// <param name="action">The event Id</param>
-        /// <param name="callBackFunction">The callback function to use</param>
+        /// <param name="callBackFunction">The name of javascript callback function to use</param>
+        /// <example>GEWebBrowser.AddEventListener(object, "click", "function(event){alert(event.getType);}");</example>
         public void AddEventListener(object feature, string action, string callBackFunction)
         {
             this.InvokeJavascript(
@@ -203,10 +184,12 @@ namespace FC.GEPluginCtrls
         /// Sets the imagery database to use with the plug-in
         /// </summary>
         /// <param name="database">The database name</param>
+        /// <example>GEWebBrowser.CreateInstance(ImageryBase.Moon);</example>
         public void CreateInstance(ImageryBase database)
         {
             if (this.Document != null)
             {
+                this.pluginIsReady = false;
                 string name = Enum.GetName(typeof(ImageryBase), database);
                 this.InvokeJavascript(
                     "jsCreateInstance",
@@ -221,6 +204,7 @@ namespace FC.GEPluginCtrls
         /// this twin function will call "google.earth.fetchKml"
         /// </summary>
         /// <param name="url">path to a kml/kmz file</param>
+        /// <example>GEWebBrowser.FetchKml("http://www.site.com/file.kml");</example>
         public void FetchKml(string url)
         {
             if (this.Document != null)
@@ -246,6 +230,7 @@ namespace FC.GEPluginCtrls
         /// </summary>
         /// <param name="input">the location to geocode</param>
         /// <returns>the point object (if any)</returns>
+        /// <example>GEWebBrowser.InvokeDoGeocode("London");</example>
         public IKmlPoint InvokeDoGeocode(string input)
         {
             if (this.Document == null)
@@ -260,6 +245,7 @@ namespace FC.GEPluginCtrls
         /// Inject a javascript element into the document head
         /// </summary>
         /// <param name="javascript">the script code</param>
+        /// <example>GEWebBrowser.InjectJavascript("var say=function(msg){alert(msg);}");</example>
         public void InjectJavascript(string javascript)
         {
             if (this.Document != null)
@@ -288,6 +274,7 @@ namespace FC.GEPluginCtrls
         /// </summary>
         /// <param name="function">The name of the function to invoke</param>
         /// <returns>The result of the evaluated function</returns>
+        /// <example>GEWebBrowser.InvokeJavascript("say");</example>
         public object InvokeJavascript(string function)
         {
             return this.InvokeJavascript(function, new object[] { });
@@ -299,6 +286,7 @@ namespace FC.GEPluginCtrls
         /// <param name="function">The name of the function to invoke</param>
         /// <param name="args">any arguments</param>
         /// <returns>The result of the evaluated function</returns>
+        /// <example>GEWebBrowser.InvokeJavascript("say", new object[] { "hello" });</example>
         public object InvokeJavascript(string function, object[] args)
         {
             if (this.Document != null)
@@ -357,9 +345,8 @@ namespace FC.GEPluginCtrls
                 tw.Close();
 
                 // Navigate to the temp file
+                // Windows deletes the temp file automatially when the current session quits.
                 this.Navigate(path);
-
-                // NB: Windows deletes the temp file automatially when the Windows session quits.
             }
             catch (IOException ioex)
             {
@@ -524,6 +511,7 @@ namespace FC.GEPluginCtrls
             }
             finally
             {
+                // set the ready property
                 this.pluginIsReady = true;
 
                 // Raise the ready event

@@ -84,6 +84,7 @@ namespace FC.GEPluginCtrls
         {
             this.InitializeComponent();
             this.ShowNodeToolTips = true;
+            this.ShowLines = false;
         }
 
         #region Public properties
@@ -176,10 +177,13 @@ namespace FC.GEPluginCtrls
         /// <param name="kmlObject">The kml object to parse</param>
         public void ParsekmlObject(object kmlObject)
         {
-            try
+            IKmlObject obj = kmlObject as IKmlObject;
+
+            if (null != obj)
             {
-                IKmlObject obj = (IKmlObject)kmlObject;
-                switch (obj.getType())
+                string type = obj.getType();
+
+                switch (type)
                 {
                     case "KmlDocument":
                     case "KmlFolder":
@@ -190,16 +194,14 @@ namespace FC.GEPluginCtrls
                     case "KmlGroundOverlay":
                     case "KmlScreenOverlay":
                     case "KmlPlacemark":
+                    case "KmlTour":
+                    case "KmlPhotoOverlay":
                         this.Nodes.Add(
                             this.CreateTreeNodeFromKmlFeature((IKmlFeature)obj));
                         break;
                     default:
                         break;
                 }
-            }
-            catch (InvalidCastException icex)
-            {
-                System.Diagnostics.Debug.WriteLine(icex.ToString());         
             }
         }
 
@@ -261,10 +263,12 @@ namespace FC.GEPluginCtrls
         /// <returns>The created tree node of the feature</returns>
         private TreeNode CreateTreeNodeFromKmlFeature(IKmlFeature kmlFeature)
         {
+            string type = kmlFeature.getType();
+
             TreeNode tn = new TreeNode();
             tn.Text = kmlFeature.getName();
             tn.Tag = kmlFeature;
-            tn.Name = kmlFeature.getType();
+            tn.Name = type;
             tn.ToolTipText = this.ShortenToolTip(kmlFeature.getDescription());
 
             if (Convert.ToBoolean(kmlFeature.getOpen()))
@@ -275,13 +279,14 @@ namespace FC.GEPluginCtrls
             if (Convert.ToBoolean(kmlFeature.getVisibility()))
             {
                 tn.Checked = true;
+
                 if (this.expandVisibleFeatures)
                 {
                     tn.Expand();
                 }
             }
 
-            switch (kmlFeature.getType())
+            switch (type)
             {
                 case "KmlDocument":
                 case "KmlFolder":
@@ -296,6 +301,14 @@ namespace FC.GEPluginCtrls
                 case "KmlScreenOverlay":
                     tn.ImageKey = "overlay";
                     tn.SelectedImageKey = "overlay";
+                    break;
+                case "KmlPhotoOverlay":
+                    tn.ImageKey = "photo";
+                    tn.SelectedImageKey = "photo";
+                    break;
+                case "KmlTour":
+                    tn.ImageKey = "tour";
+                    tn.SelectedImageKey = "tour";
                     break;
                 default:
                     break;
@@ -362,7 +375,9 @@ namespace FC.GEPluginCtrls
         /// <param name="e">Event Arugments</param>
         private void KmlTree_AfterCheck(object sender, TreeViewEventArgs e)
         {
-            IKmlFeature feature = (IKmlFeature)e.Node.Tag;
+            IKmlFeature feature = e.Node.Tag as IKmlFeature;
+
+            string type = feature.getType();
 
             if (feature != null)
             {
@@ -370,11 +385,25 @@ namespace FC.GEPluginCtrls
                 {
                     feature.setVisibility(1);
                     this.CheckAllParentNodes(e.Node);
+
+                    if ("KmlTour" == type)
+                    {
+                        geplugin.getTourPlayer().setTour(feature);
+                    }
                 }
                 else
                 {
                     feature.setVisibility(0);
                     this.UncheckAllChildNodes(e.Node);
+
+                    if ("KmlTour" == type)
+                    {
+                        geplugin.getTourPlayer().setTour(null);
+                    }
+                    else if ("KmlPhotoOverlay" == type)
+                    {
+                        geplugin.getPhotoOverlayViewer().setPhotoOverlay(null);
+                    }
                 }
             }
         }
@@ -386,23 +415,44 @@ namespace FC.GEPluginCtrls
         /// <param name="e">Event Arugments</param>
         private void KmlTree_DoubleClick(object sender, EventArgs e)
         {
-            if (this.SelectedNode != null && this.geplugin != null)
+            if (this.SelectedNode != null)
             {
+                IKmlFeature feature = SelectedNode.Tag as IKmlFeature;
+
                 this.SelectedNode.Checked = true;
-                IKmlFeature feature = (IKmlFeature)SelectedNode.Tag;
 
-                if (feature.getType() == "KmlPlacemark" && this.openBalloonOnDoubleClickNode)
+                if (null != feature)
                 {
-                    IGEFeatureBalloon balloon = this.geplugin.createFeatureBalloon(String.Empty);
-                    balloon.setMinHeight(this.balloonMinimumHeight);
-                    balloon.setMinWidth(this.balloonMinimumWidth);
-                    balloon.setFeature(feature);
-                    this.geplugin.setBalloon(balloon);
-                }
+                    string type = feature.getType();
 
-                if (this.flyToOnDoubleClickNode)
-                {
-                    GEHelpers.LookAt(this.geplugin, feature);
+                    switch (type)
+                    {
+                        case "KmlPlaceMark":
+                            if (this.openBalloonOnDoubleClickNode)
+                            {
+                                IGEFeatureBalloon balloon = this.geplugin.createFeatureBalloon(String.Empty);
+                                balloon.setMinHeight(this.balloonMinimumHeight);
+                                balloon.setMinWidth(this.balloonMinimumWidth);
+                                balloon.setFeature(feature);
+                                this.geplugin.setBalloon(balloon);
+                            }
+
+                            break;
+                        case "KmlTour":
+                            geplugin.getTourPlayer().setTour(feature);
+                            geplugin.getTourPlayer().play();
+                            break;
+                        case "KmlPhotoOverlay":
+                            geplugin.getPhotoOverlayViewer().setPhotoOverlay(feature);
+                            break;
+                        default:
+                            break;
+                    }
+
+                    if (this.flyToOnDoubleClickNode)
+                    {
+                        GEHelpers.LookAt(this.geplugin, feature);
+                    }
                 }
             }
         }
@@ -414,25 +464,21 @@ namespace FC.GEPluginCtrls
         /// <param name="e">Event Arugments</param>
         private void KmlTreeView_AfterExpand(object sender, TreeViewEventArgs e)
         {
-            try
+            IKmlFeature feature = e.Node.Tag as IKmlFeature;
+
+            if (null != feature)
             {
-                IKmlFeature feature = (IKmlFeature)e.Node.Tag;
-                if (feature != null)
+                string type = feature.getType();
+
+                switch (type)
                 {
-                    switch (feature.getType())
-                    {
-                        case "KmlDocument":
-                        case "KmlFolder":
-                            e.Node.ImageKey = "folderOpen";
-                            break;
-                        default:
-                            break;
-                    }
+                    case "KmlDocument":
+                    case "KmlFolder":
+                        e.Node.ImageKey = "folderOpen";
+                        break;
+                    default:
+                        break;
                 }
-            }
-            catch (InvalidCastException icex)
-            {
-                System.Diagnostics.Debug.WriteLine(icex.ToString());
             }
         }
 
@@ -466,28 +512,10 @@ namespace FC.GEPluginCtrls
         }
 
         /// <summary>
-        /// Called when the user clicks on 'remove' context menu item
+        /// Called when the user clicks on the control (TODO)
         /// </summary>
         /// <param name="sender">The sending object</param>
-        /// <param name="e">The Eveny arguments</param>
-        private void RemoveNode_Click(object sender, EventArgs e)
-        {
-            if (this.geplugin != null && this.SelectedNode.Tag != null)
-            {
-                while (Convert.ToBoolean(this.geplugin.getFeatures().hasChildNodes()))
-                {
-                    this.geplugin.setBalloon(null);
-                    this.geplugin.getFeatures().removeChild(this.geplugin.getFeatures().getFirstChild());
-                    this.Nodes.Clear();
-                }
-            }
-        }
-
-        /// <summary>
-        /// Called when the user clicks on the control
-        /// </summary>
-        /// <param name="sender">The sending object</param>
-        /// <param name="e">The Eveny arguments</param>
+        /// <param name="e">The Event arguments</param>
         private void KmlTreeView_MouseUp(object sender, MouseEventArgs e)
         {
             // Show menu only if the right mouse button is clicked.
@@ -507,7 +535,6 @@ namespace FC.GEPluginCtrls
                     // Select the node the user has clicked.
                     // The node appears selected until the menu is displayed on the screen.
                     this.SelectedNode = node;
-                    this.contextMenuStrip1.Show(this, p);
 
                     // Highlight the selected node.
                     ////this.SelectedNode = currentNode;

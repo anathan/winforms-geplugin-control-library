@@ -1,9 +1,9 @@
-﻿// <copyright file="IGEControls.cs" company="FC">
+﻿// <copyright file="ImageryBase.cs" company="FC">
 // Copyright (c) 2008 Fraser Chapman
 // </copyright>
 // <author>Fraser Chapman</author>
 // <email>fraser.chapman@gmail.com</email>
-// <date>2008-12-22</date>
+// <date>2009-09-21</date>
 // <summary>This file is part of FC.GEPluginCtrls
 // FC.GEPluginCtrls is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -19,16 +19,23 @@
 namespace FC.GEPluginCtrls
 {
     /// <summary>
-    /// This interface should be inherited by all the controls that work with the browser
-    /// It allows the control access to both the plugin and htmlDoument
+    /// Enumeration of the available imagery bases for the plug-in
     /// </summary>
-    public interface IGEControls
+    public enum ImageryBase
     {
         /// <summary>
-        /// Tell the control the instance of GEWebBrowser to work with
+        /// Earth imagery base
         /// </summary>
-        /// <param name="instance">The GEWebBrowser instance</param>
-        void SetBrowserInstance(GEWebBrowser instance);
+        Earth,
+
+        /// <summary>
+        /// Mars imagery base
+        /// </summary>
+        Mars,
+
+        /// <summary>
+        /// Moon imagery base
+        /// </summary>
+        Moon
     }
 }
-

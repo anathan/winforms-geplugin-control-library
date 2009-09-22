@@ -476,7 +476,7 @@ namespace FC.GEPluginCtrls
             this.buildingsGreyMenuItem.CheckOnClick = true;
             this.buildingsGreyMenuItem.Name = "buildingsGreyMenuItem";
             this.buildingsGreyMenuItem.Size = new System.Drawing.Size(168, 22);
-            this.buildingsGreyMenuItem.Tag = "BUILDINGS_GREY";
+            this.buildingsGreyMenuItem.Tag = "BUILDINGS_GREY_LOW_RES";
             this.buildingsGreyMenuItem.Text = "Buildings Low-res";
             this.buildingsGreyMenuItem.Click += new System.EventHandler(this.LayersItem_Clicked);
             // 
