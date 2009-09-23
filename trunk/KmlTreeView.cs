@@ -49,12 +49,12 @@ namespace FC.GEPluginCtrls
         /// <summary>
         /// The minimum width of any balloons triggered from the treeview
         /// </summary>
-        private int balloonMinimumWidth = 250;
+        private int balloonMinimumWidth = 200;
 
         /// <summary>
         /// The minimum height of any balloons triggered from the treeview
         /// </summary>
-        private int balloonMinimumHeight = 100;
+        private int balloonMinimumHeight = 200;
 
         /// <summary>
         /// Indicates if the tree view should expand all visible feature nodes
@@ -120,7 +120,7 @@ namespace FC.GEPluginCtrls
         /// </summary>
         [Category("Control Options"),
         Description("Specifies if the treeview should expand visible feature nodes when they are loaded. Default false"),
-        DefaultValueAttribute(true)]
+        DefaultValueAttribute(false)]
         public bool ExpandVisibleFeatures
         {
             get { return this.expandVisibleFeatures; }
@@ -427,16 +427,15 @@ namespace FC.GEPluginCtrls
 
                     switch (type)
                     {
-                        case "KmlPlaceMark":
+                        case "KmlPlacemark":
                             if (this.openBalloonOnDoubleClickNode)
                             {
                                 IGEFeatureBalloon balloon = this.geplugin.createFeatureBalloon(String.Empty);
                                 balloon.setMinHeight(this.balloonMinimumHeight);
                                 balloon.setMinWidth(this.balloonMinimumWidth);
                                 balloon.setFeature(feature);
-                                this.geplugin.setBalloon(balloon);
+                                this.geplugin.setBalloon(balloon);           
                             }
-
                             break;
                         case "KmlTour":
                             geplugin.getTourPlayer().setTour(feature);
