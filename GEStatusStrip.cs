@@ -8,7 +8,7 @@
 // FC.GEPluginCtrls is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
+// (at your option) any later version.using System.Diagnostics;
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -20,7 +20,9 @@ namespace FC.GEPluginCtrls
 {
     using System;
     using System.ComponentModel;
+    using System.Diagnostics;
     using System.Drawing;
+    using System.Runtime.InteropServices;
     using System.Windows.Forms;
     using GEPlugin;
 
@@ -269,27 +271,30 @@ namespace FC.GEPluginCtrls
         {
             if (this.gewb.PluginIsReady)
             {
+                int percent = 0;
+
                 try
                 {
-                    int percent = (int)this.geplugin.getStreamingPercent();
-
-                    if (100 == percent || 0 == percent)
-                    {
-                        this.streamingStatusLabel.ForeColor = Color.Gray;
-                        this.streamingStatusLabel.Text = "idle";
-                        this.streamingProgressBar.Value = 0;
-                    }
-                    else
-                    {
-                        this.streamingStatusLabel.ForeColor = Color.Black;
-                        this.streamingProgressBar.Value = percent;
-                        this.streamingStatusLabel.Text = percent + "%";
-                    }
+                    percent = (int)this.geplugin.getStreamingPercent();
                 }
-                catch (System.Runtime.InteropServices.COMException cex)
+                catch (COMException cex)
                 {
-                    System.Diagnostics.Debug.WriteLine(cex.ToString());
+                    this.timer.Stop();
+                    Debug.WriteLine("Timer_Tick: " + cex.ToString());
                     throw;
+                }
+
+                if (100 == percent || 0 == percent)
+                {
+                    this.streamingStatusLabel.ForeColor = Color.Gray;
+                    this.streamingStatusLabel.Text = "idle";
+                    this.streamingProgressBar.Value = 0;
+                }
+                else
+                {
+                    this.streamingStatusLabel.ForeColor = Color.Black;
+                    this.streamingProgressBar.Value = percent;
+                    this.streamingStatusLabel.Text = percent + "%";
                 }
             }
         }

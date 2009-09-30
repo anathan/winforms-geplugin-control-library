@@ -20,6 +20,7 @@ namespace FC.GEPluginCtrls
 {
     using System;
     using System.ComponentModel;
+    using System.Diagnostics;
     using System.Drawing;
     using System.Drawing.Imaging;
     using System.IO;
@@ -66,6 +67,11 @@ namespace FC.GEPluginCtrls
         /// Indicates whether the plug-in is ready to use
         /// </summary>
         private bool pluginIsReady = false;
+
+        /// <summary>
+        /// The parent form, if any, that is hosting the control 
+        /// </summary>
+        private Form parentForm = null;
 
         #endregion
 
@@ -146,6 +152,23 @@ namespace FC.GEPluginCtrls
             get
             {
                 return this.pluginIsReady;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets a value representing the parent form holding the control
+        /// </summary>
+        public Form ParentForm
+        {
+            get
+            {
+                return this.parentForm;
+            }
+
+            set
+            {
+                this.parentForm = value;
+                this.parentForm.FormClosing += new FormClosingEventHandler(this.ParentForm_FormClosing);
             }
         }
 
@@ -263,8 +286,9 @@ namespace FC.GEPluginCtrls
                 }
                 catch (InvalidOperationException ioex)
                 {
-                    System.Diagnostics.Debug.WriteLine(ioex.ToString());
+                    Debug.WriteLine(ioex.ToString());
                     this.OnScriptError(this, new GEEventArgs(ioex.Message, ioex.ToString()));
+                    throw;
                 }
             }
         }
@@ -320,7 +344,8 @@ namespace FC.GEPluginCtrls
             }
             catch (InvalidOperationException ioex)
             {
-                System.Diagnostics.Debug.WriteLine(ioex.ToString());
+                Debug.WriteLine(ioex.ToString());
+                throw;
             }
         }
 
@@ -350,7 +375,7 @@ namespace FC.GEPluginCtrls
             }
             catch (IOException ioex)
             {
-                System.Diagnostics.Debug.WriteLine(ioex.ToString());
+                Debug.WriteLine(ioex.ToString());
                 throw;
             }
         }
@@ -396,7 +421,7 @@ namespace FC.GEPluginCtrls
             }
             catch (ArgumentNullException anex)
             {
-                System.Diagnostics.Debug.WriteLine(anex.ToString());
+                Debug.WriteLine(anex.ToString());
                 throw;
             }
         }
@@ -499,15 +524,17 @@ namespace FC.GEPluginCtrls
             {
                 // Possible problems with the interop assemby version and installed plug-in version
                 GEEventArgs exea = new GEEventArgs("InvalidOperationException", ioex.ToString());
-                System.Diagnostics.Debug.WriteLine(ioex.ToString());
+                Debug.WriteLine(ioex.ToString());
                 this.OnScriptError(this.geplugin, e);
+                throw;
             }
             catch (AccessViolationException avex)
             {
                 // Possible problems with the interop assemby version and installed plug-in version
                 GEEventArgs exea = new GEEventArgs("AccessViolationException", avex.ToString());
-                System.Diagnostics.Debug.WriteLine(avex.ToString());
+                Debug.WriteLine(avex.ToString());
                 this.OnScriptError(this.geplugin, exea);
+                throw;
             }
             finally
             {
@@ -548,6 +575,18 @@ namespace FC.GEPluginCtrls
         {
             // Set up the error handler for a loaded Document
             this.Document.Window.Error += new HtmlElementErrorEventHandler(this.Window_Error);
+        }
+
+        /// <summary>
+        /// Called when the parent form of the control is closing.
+        /// This requires that the ParentForm property has been correctly set
+        /// </summary>
+        /// <param name="sender">The sending object</param>
+        /// <param name="e">The event arguments</param>
+        private void ParentForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            this.pluginIsReady = false;
+            Debug.WriteLine("ParentForm_FormClosing: " + this.parentForm.Name);
         }
 
         /// <summary>

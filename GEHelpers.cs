@@ -19,9 +19,11 @@
 namespace FC.GEPluginCtrls
 {
     using System;
+    using System.Diagnostics;
+    using System.Runtime.InteropServices;
     using System.Text;
     using GEPlugin;
-    
+
     /// <summary>
     /// This class provides a very basic Google Earth plugin helpers
     /// It is based on the GEHelpers javasctipt library at:
@@ -42,8 +44,15 @@ namespace FC.GEPluginCtrls
 
             if (agrs1 < 2)
             {
-                IKmlLookAt la = ge.getView().copyAsLookAt(ge.ALTITUDE_CLAMP_TO_GROUND);
-                latLngAlt = new double[] { la.getLatitude(), la.getLongitude(), la.getAltitude() };
+                try
+                {
+                    IKmlLookAt la = ge.getView().copyAsLookAt(ge.ALTITUDE_CLAMP_TO_GROUND);
+                    latLngAlt = new double[] { la.getLatitude(), la.getLongitude(), la.getAltitude() };
+                }
+                catch (COMException cex)
+                {
+                    Debug.WriteLine("CreatePlacemark: " + cex.ToString());
+                }
             }
             else if (agrs1 == 2)
             {
@@ -65,7 +74,7 @@ namespace FC.GEPluginCtrls
                     return CreatePlacemark(ge, latLngAlt[0], latLngAlt[1], latLngAlt[2], string.Empty, string.Empty, string.Empty);
             }
         }
-  
+
         /// <summary>
         /// Creates a kml placemark
         /// </summary>
@@ -86,15 +95,26 @@ namespace FC.GEPluginCtrls
             string name,
             string description)
         {
-            IKmlPoint p = ge.createPoint(String.Empty);
-            p.setLatitude(latitude);
-            p.setLongitude(longitude);
-            p.setAltitude(altitude);
-            p.setAltitudeMode(ge.ALTITUDE_RELATIVE_TO_GROUND);
-            IKmlPlacemark placemark = ge.createPlacemark(id);
-            placemark.setName(name);
-            placemark.setDescription(description);
-            placemark.setGeometry(p);
+            IKmlPlacemark placemark = new KmlPlacemarkCoClass();
+
+            try
+            {
+                placemark = ge.createPlacemark(id);
+                placemark.setName(name);
+                placemark.setDescription(description);
+
+                IKmlPoint p = ge.createPoint(String.Empty);
+                p.setLatitude(latitude);
+                p.setLongitude(longitude);
+                p.setAltitude(altitude);
+                p.setAltitudeMode(ge.ALTITUDE_RELATIVE_TO_GROUND);
+
+                placemark.setGeometry(p);
+            }
+            catch (COMException cex)
+            {
+                Debug.WriteLine("CreatePlacemark: " + cex.ToString());
+            }
 
             return placemark;
         }
@@ -108,12 +128,22 @@ namespace FC.GEPluginCtrls
         /// <returns>A linestring placemark</returns>
         public static IKmlPlacemark CreateLineString(IGEPlugin ge, IKmlPoint p1, IKmlPoint p2)
         {
-            IKmlPlacemark lineStringPlacemark = ge.createPlacemark(String.Empty);
-            IKmlLineString lineString = ge.createLineString(String.Empty);
-            lineStringPlacemark.setGeometry(lineString);
-            lineString.setTessellate(1);
-            lineString.getCoordinates().pushLatLngAlt(p1.getLatitude(), p1.getLongitude(), 0);
-            lineString.getCoordinates().pushLatLngAlt(p2.getLatitude(), p2.getLongitude(), 0);
+            IKmlPlacemark lineStringPlacemark = new KmlPlacemarkCoClass();
+
+            try
+            {
+                lineStringPlacemark = ge.createPlacemark(String.Empty);
+                IKmlLineString lineString = ge.createLineString(String.Empty);
+                lineStringPlacemark.setGeometry(lineString);
+                lineString.setTessellate(1);
+                lineString.getCoordinates().pushLatLngAlt(p1.getLatitude(), p1.getLongitude(), 0);
+                lineString.getCoordinates().pushLatLngAlt(p2.getLatitude(), p2.getLongitude(), 0);
+            }
+            catch (COMException cex)
+            {
+                Debug.WriteLine("CreateLineString: " + cex.ToString());
+            }
+
             return lineStringPlacemark;
         }
 
@@ -125,14 +155,22 @@ namespace FC.GEPluginCtrls
         public static string GetAllFeaturesKml(IGEPlugin ge)
         {
             StringBuilder kml = new StringBuilder();
-            IKmlObjectList children = ge.getFeatures().getChildNodes();
-            for (int i = 0; i < children.getLength(); i++)
+
+            try
             {
-                IKmlFeature child = children.item(i) as IKmlFeature;
-                if (child != null)
+                IKmlObjectList children = ge.getFeatures().getChildNodes();
+                for (int i = 0; i < children.getLength(); i++)
                 {
-                    kml.Append(child.getKml());
+                    IKmlFeature child = children.item(i) as IKmlFeature;
+                    if (child != null)
+                    {
+                        kml.Append(child.getKml());
+                    }
                 }
+            }
+            catch (COMException cex)
+            {
+                Debug.WriteLine("GetAllFeaturesKml: " + cex.ToString());    
             }
 
             return kml.ToString();
@@ -145,15 +183,25 @@ namespace FC.GEPluginCtrls
         /// <returns>Point set to the current view</returns>
         public static IKmlPoint GetCurrentViewAsPoint(IGEPlugin ge)
         {
-            IKmlLookAt lookat = ge.getView().copyAsLookAt(ge.ALTITUDE_RELATIVE_TO_GROUND);
-            IKmlPoint point = ge.createPoint(String.Empty);
-            point.set(
-                lookat.getLatitude(),
-                lookat.getLongitude(),
-                lookat.getAltitude(),
-                ge.ALTITUDE_RELATIVE_TO_GROUND,
-                0,
-                0);
+            IKmlPoint point = new KmlPointCoClass();
+
+            try
+            {
+                IKmlLookAt lookat = lookat = ge.getView().copyAsLookAt(ge.ALTITUDE_RELATIVE_TO_GROUND);
+                point = ge.createPoint(String.Empty);
+                point.set(
+                    lookat.getLatitude(),
+                    lookat.getLongitude(),
+                    lookat.getAltitude(),
+                    ge.ALTITUDE_RELATIVE_TO_GROUND,
+                    0,
+                    0);
+            }
+            catch (COMException cex)
+            {
+                Debug.WriteLine("GetCurrentViewAsPoint: " + cex.ToString());                
+            }
+
             return point;
         }
 
@@ -181,16 +229,23 @@ namespace FC.GEPluginCtrls
         /// <param name="longitude">longitude in decimal degrees</param>
         public static void LookAt(IGEPlugin ge, double latitude, double longitude)
         {
-            IKmlLookAt lookat = ge.createLookAt(String.Empty);
-            lookat.set(
-                latitude,
-                longitude,
-                0,
-                ge.ALTITUDE_RELATIVE_TO_GROUND,
-                0,
-                0,
-                1000);
-            ge.getView().setAbstractView(lookat);
+            try
+            {
+                IKmlLookAt lookat = ge.createLookAt(String.Empty);
+                lookat.set(
+                    latitude,
+                    longitude,
+                    0,
+                    ge.ALTITUDE_RELATIVE_TO_GROUND,
+                    0,
+                    0,
+                    1000);
+                ge.getView().setAbstractView(lookat);
+            }
+            catch (COMException cex)
+            {
+                Debug.WriteLine("LookAt: " + cex.ToString());
+            }
         }
 
         /// <summary>
@@ -200,31 +255,38 @@ namespace FC.GEPluginCtrls
         /// <param name="feature">the feature to look at</param>
         public static void LookAt(IGEPlugin ge, IKmlFeature feature)
         {
-            switch (feature.getType())
+            try
             {
-                case "KmlFolder":
-                case "KmlDocument":
-                case "KmlNetworkLink":
-                    if (null != feature.getAbstractView())
-                    {
-                        ge.getView().setAbstractView(feature.getAbstractView());
-                    }
+                switch (feature.getType())
+                {
+                    case "KmlFolder":
+                    case "KmlDocument":
+                    case "KmlNetworkLink":
+                        if (null != feature.getAbstractView())
+                        {
+                            ge.getView().setAbstractView(feature.getAbstractView());
+                        }
 
-                    break;
-                case "KmlPlacemark":
-                    if (null != feature.getAbstractView())
-                    {
-                        ge.getView().setAbstractView(feature.getAbstractView());
-                    }
-                    else
-                    {
-                        IKmlPlacemark placemark = (IKmlPlacemark)feature;
-                        LookAt(ge, placemark.getGeometry());
-                    }
+                        break;
+                    case "KmlPlacemark":
+                        if (null != feature.getAbstractView())
+                        {
+                            ge.getView().setAbstractView(feature.getAbstractView());
+                        }
+                        else
+                        {
+                            IKmlPlacemark placemark = (IKmlPlacemark)feature;
+                            LookAt(ge, placemark.getGeometry());
+                        }
 
-                    break;
-                default:
-                    break;
+                        break;
+                    default:
+                        break;
+                }
+            }
+            catch (COMException cex)
+            {
+                Debug.WriteLine("LookAt: " + cex.ToString());
             }
         }
 
@@ -237,31 +299,38 @@ namespace FC.GEPluginCtrls
         {
             if (null != ge && null != geometry)
             {
-                switch (geometry.getType())
+                try
                 {
-                    case "KmlPoint":
-                        LookAt(ge, (IKmlPoint)geometry);
-                        break;
-                    case "KmlPolygon":
-                        IKmlPolygon polygon = (IKmlPolygon)geometry;
-                        LookAt(
-                            ge,
-                            polygon.getOuterBoundary().getCoordinates().get(0).getLatitude(),
-                            polygon.getOuterBoundary().getCoordinates().get(0).getLongitude());
-                        break;
-                    case "KmlLineString":
-                        IKmlLineString lineString = (IKmlLineString)geometry;
-                        LookAt(
-                            ge,
-                            lineString.getCoordinates().get(0).getLatitude(),
-                            lineString.getCoordinates().get(0).getLongitude());
-                        break;
-                    case "KmlMultiGeometry":
-                       ////IKmlMultiGeometry multiGeometry = (IKmlMultiGeometry)geometry;
-                       ////multiGeometry.getGeometries().getFirstChild().getType();
-                       break;
-                    default:
-                        break;
+                    switch (geometry.getType())
+                    {
+                        case "KmlPoint":
+                            LookAt(ge, (IKmlPoint)geometry);
+                            break;
+                        case "KmlPolygon":
+                            IKmlPolygon polygon = (IKmlPolygon)geometry;
+                            LookAt(
+                                ge,
+                                polygon.getOuterBoundary().getCoordinates().get(0).getLatitude(),
+                                polygon.getOuterBoundary().getCoordinates().get(0).getLongitude());
+                            break;
+                        case "KmlLineString":
+                            IKmlLineString lineString = (IKmlLineString)geometry;
+                            LookAt(
+                                ge,
+                                lineString.getCoordinates().get(0).getLatitude(),
+                                lineString.getCoordinates().get(0).getLongitude());
+                            break;
+                        case "KmlMultiGeometry":
+                            ////IKmlMultiGeometry multiGeometry = (IKmlMultiGeometry)geometry;
+                            ////multiGeometry.getGeometries().getFirstChild().getType();
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                catch (COMException cex)
+                {
+                    Debug.WriteLine("LookAt: " + cex.ToString());
                 }
             }
         }
@@ -277,27 +346,32 @@ namespace FC.GEPluginCtrls
         }
 
         /// <summary>
-        /// 
+        /// Opens a balloon for the given feature
         /// </summary>
-        /// <param name="ge"></param>
-        /// <param name="feature"></param>
+        /// <param name="ge">the plugin</param>
+        /// <param name="feature">the feature</param>
         public static void OpenFeatureBalloon(IGEPlugin ge, IKmlFeature feature)
         {
-            IGEFeatureBalloon balloon = ge.getBalloon() as IGEFeatureBalloon;
+            try
+            {
+                IGEFeatureBalloon balloon = ge.getBalloon() as IGEFeatureBalloon;
 
-            if (null != balloon)
-            {
-                balloon = ge.createFeatureBalloon(String.Empty);
-                balloon.setFeature(feature);
-                ge.setBalloon(balloon);
+                if (null != balloon)
+                {
+                    balloon = ge.createFeatureBalloon(String.Empty);
+                    balloon.setFeature(feature);
+                    ge.setBalloon(balloon);
+                }
+                else
+                {
+                    balloon.setFeature(feature);
+                    ge.setBalloon(balloon);
+                }
             }
-            else
+            catch (COMException cex)
             {
-                balloon.setFeature(feature);
-                ge.setBalloon(balloon);
+                Debug.WriteLine("OpenFeatureBalloon: " + cex.ToString());
             }
-            
-            
         }
 
         /// <summary>
@@ -306,11 +380,18 @@ namespace FC.GEPluginCtrls
         /// <param name="ge">The plugin instance</param>
         public static void RemoveAllFeatures(IGEPlugin ge)
         {
-            IGEFeatureContainer features = ge.getFeatures();
-            IKmlObject feature = features.getFirstChild();
-            while (feature != null)
+            try
             {
-                features.removeChild(feature);
+                IGEFeatureContainer features = ge.getFeatures();
+                IKmlObject feature = features.getFirstChild();
+                while (feature != null)
+                {
+                    features.removeChild(feature);
+                }
+            }
+            catch (COMException cex)
+            {
+                Debug.WriteLine("RemoveAllFeatures: " + cex.ToString());
             }
         }
 
@@ -321,12 +402,19 @@ namespace FC.GEPluginCtrls
         /// <param name="id">The id of the element to remove</param>
         public static void RemoveFeatureById(IGEPlugin ge, string id)
         {
-            while (Convert.ToBoolean(ge.getFeatures().hasChildNodes()))
+            try
             {
-                if (ge.getFeatures().getFirstChild().getId() == id)
+                while (Convert.ToBoolean(ge.getFeatures().hasChildNodes()))
                 {
-                    ge.getFeatures().removeChild(ge.getFeatures().getFirstChild());
+                    if (ge.getFeatures().getFirstChild().getId() == id)
+                    {
+                        ge.getFeatures().removeChild(ge.getFeatures().getFirstChild());
+                    }
                 }
+            }
+            catch (COMException cex)
+            {
+                Debug.WriteLine("RemoveFeatureById: " + cex.ToString());
             }
         }
 
@@ -336,35 +424,42 @@ namespace FC.GEPluginCtrls
         /// <param name="ge">The plugin instance</param>
         public static void ShowCurrentViewInMaps(IGEPlugin ge)
         {
-            // Get the current view 
-            IKmlLookAt lookat = ge.getView().copyAsLookAt(ge.ALTITUDE_RELATIVE_TO_GROUND);
-            double range = lookat.getRange();
-
-            // calculate the equivelent zoom level from the given range
-            double zoom = Math.Round(26 - (Math.Log(lookat.getRange()) / Math.Log(2)));
-
-            // Google Maps have an integer "zoom level" which defines the resolution of the current view.
-            // Zoom levels between 0 (entire world on map) to 21+ (down to individual buildings) are possible.
-            if (zoom < 1)
+            try
             {
-                zoom = 1;
+                // Get the current view 
+                IKmlLookAt lookat = ge.getView().copyAsLookAt(ge.ALTITUDE_RELATIVE_TO_GROUND);
+                double range = lookat.getRange();
+
+                // calculate the equivelent zoom level from the given range
+                double zoom = Math.Round(26 - (Math.Log(lookat.getRange()) / Math.Log(2)));
+
+                // Google Maps have an integer "zoom level" which defines the resolution of the current view.
+                // Zoom levels between 0 (entire world on map) to 21+ (down to individual buildings) are possible.
+                if (zoom < 1)
+                {
+                    zoom = 1;
+                }
+                else if (zoom > 21)
+                {
+                    zoom = 21;
+                }
+
+                // Build the maps url
+                StringBuilder url =
+                    new StringBuilder("http://maps.google.co.uk/maps?ll=");
+                url.Append(lookat.getLatitude());
+                url.Append(",");
+                url.Append(lookat.getLongitude());
+                url.Append("&z=");
+                url.Append(zoom);
+
+                // launch the default browser with the url
+                System.Diagnostics.Process.Start(url.ToString());
             }
-            else if (zoom > 21)
+            catch (COMException cex)
             {
-                zoom = 21;
+                Debug.WriteLine("ShowCurrentViewInMaps: " + cex.ToString());
             }
-
-            // Build the maps url
-            StringBuilder url =
-                new StringBuilder("http://maps.google.co.uk/maps?ll=");
-            url.Append(lookat.getLatitude());
-            url.Append(",");
-            url.Append(lookat.getLongitude());
-            url.Append("&z=");
-            url.Append(zoom);
-
-            // launch the default browser with the url
-            System.Diagnostics.Process.Start(url.ToString());
         }
     }
 }

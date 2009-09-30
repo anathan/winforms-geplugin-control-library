@@ -26,16 +26,16 @@ namespace FC.GEPluginCtrls
         /// <summary>
         /// Earth imagery base
         /// </summary>
-        Earth,
+        Earth = 0,
 
         /// <summary>
         /// Mars imagery base
         /// </summary>
-        Mars,
+        Mars = 1,
 
         /// <summary>
         /// Moon imagery base
         /// </summary>
-        Moon
+        Moon = 2
     }
 }

@@ -524,7 +524,7 @@ namespace FC.GEPluginCtrls
             this.earthMenuItem.Enabled = false;
             this.earthMenuItem.Name = "earthMenuItem";
             this.earthMenuItem.Size = new System.Drawing.Size(106, 22);
-            this.earthMenuItem.Tag = "EARTH";
+            this.earthMenuItem.Tag = ImageryBase.Earth;
             this.earthMenuItem.Text = "Earth";
             this.earthMenuItem.ToolTipText = "Use the Earth imagery";
             this.earthMenuItem.Click += new System.EventHandler(this.ImageryItem_Clicked);
@@ -534,7 +534,7 @@ namespace FC.GEPluginCtrls
             this.marsMenuItem.CheckOnClick = true;
             this.marsMenuItem.Name = "marsMenuItem";
             this.marsMenuItem.Size = new System.Drawing.Size(106, 22);
-            this.marsMenuItem.Tag = "MARS";
+            this.marsMenuItem.Tag = ImageryBase.Mars;
             this.marsMenuItem.Text = "Mars";
             this.marsMenuItem.ToolTipText = "Use the Mars imagery";
             this.marsMenuItem.Click += new System.EventHandler(this.ImageryItem_Clicked);
@@ -544,7 +544,7 @@ namespace FC.GEPluginCtrls
             this.moonMenuItem.CheckOnClick = true;
             this.moonMenuItem.Name = "moonMenuItem";
             this.moonMenuItem.Size = new System.Drawing.Size(106, 22);
-            this.moonMenuItem.Tag = "MOON";
+            this.moonMenuItem.Tag = ImageryBase.Moon;
             this.moonMenuItem.Text = "Moon";
             this.moonMenuItem.ToolTipText = "Use the Moon imagery";
             this.moonMenuItem.Click += new System.EventHandler(this.ImageryItem_Clicked);

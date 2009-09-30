@@ -20,7 +20,9 @@ namespace FC.GEPluginCtrls
 {
     using System;
     using System.ComponentModel;
+    using System.Diagnostics;
     using System.Drawing;
+    using System.Runtime.InteropServices;
     using System.Windows.Forms;
     using GEPlugin;
 
@@ -181,14 +183,24 @@ namespace FC.GEPluginCtrls
 
             if (null != obj)
             {
-                string type = obj.getType();
+                string type = string.Empty;
+
+                try
+                {
+                    type = obj.getType();
+                }
+                catch (COMException cex)
+                {
+                    Debug.WriteLine("ParsekmlObject: " + cex.ToString());
+                    throw;
+                }
 
                 switch (type)
                 {
                     case "KmlDocument":
                     case "KmlFolder":
                         this.Nodes.Add(
-                            this.ParsekmlContainer((IKmlContainer)obj));
+                            this.ParsekmlContainer(obj as IKmlContainer));
                         break;
                     case "KmlNetworkLink":
                     case "KmlGroundOverlay":
@@ -197,7 +209,7 @@ namespace FC.GEPluginCtrls
                     case "KmlTour":
                     case "KmlPhotoOverlay":
                         this.Nodes.Add(
-                            this.CreateTreeNodeFromKmlFeature((IKmlFeature)obj));
+                            this.CreateTreeNodeFromKmlFeature(obj as IKmlFeature));
                         break;
                     default:
                         break;
@@ -229,31 +241,43 @@ namespace FC.GEPluginCtrls
         /// <returns>The current tree node</returns>
         private TreeNode ParsekmlContainer(IKmlContainer kmlContainer)
         {
-            TreeNode tn = this.CreateTreeNodeFromKmlFeature((IKmlFeature)kmlContainer);
-            TreeNode node;
+            TreeNode parentNode = this.CreateTreeNodeFromKmlFeature(kmlContainer as IKmlFeature);
 
-            if (Convert.ToBoolean(kmlContainer.getFeatures().hasChildNodes()))
+            try
             {
-                IKmlObjectList subNodes = kmlContainer.getFeatures().getChildNodes();
-                for (int i = 0; i < subNodes.getLength(); i++)
+                if (Convert.ToBoolean(kmlContainer.getFeatures().hasChildNodes()))
                 {
-                    IKmlObject subNode = subNodes.item(i);
-                    switch (subNode.getType())
-                    {
-                        case "KmlDocument":
-                        case "KmlFolder":
-                            node = this.ParsekmlContainer((IKmlContainer)subNode);
-                            break;
-                        default:
-                            node = this.CreateTreeNodeFromKmlFeature((IKmlFeature)subNode);
-                            break;
-                    }
+                    TreeNode childNode = new TreeNode();
 
-                    tn.Nodes.Add(node);
+                    IKmlObjectList subNodes = kmlContainer.getFeatures().getChildNodes();
+
+                    for (int i = 0; i < subNodes.getLength(); i++)
+                    {
+                        IKmlObject subNode = subNodes.item(i);
+                        string type = subNode.getType();
+
+                        switch (type)
+                        {
+                            case "KmlDocument":
+                            case "KmlFolder":
+                                childNode = this.ParsekmlContainer(subNode as IKmlContainer);
+                                break;
+                            default:
+                                childNode = this.CreateTreeNodeFromKmlFeature(subNode as IKmlFeature);
+                                break;
+                        }
+
+                        parentNode.Nodes.Add(childNode);
+                    }
                 }
             }
+            catch (COMException cex)
+            {
+                Debug.WriteLine("ParsekmlContainer: " + cex.ToString());
+                throw;
+            }
 
-            return tn;
+            return parentNode;
         }
 
         /// <summary>
@@ -263,82 +287,94 @@ namespace FC.GEPluginCtrls
         /// <returns>The created tree node of the feature</returns>
         private TreeNode CreateTreeNodeFromKmlFeature(IKmlFeature kmlFeature)
         {
-            string type = kmlFeature.getType();
+            TreeNode treenode = new TreeNode();
+            string type = string.Empty;
 
-            TreeNode tn = new TreeNode();
-            tn.Text = kmlFeature.getName();
-            tn.Tag = kmlFeature;
-            tn.Name = type;
-            tn.ToolTipText = this.ShortenToolTip(kmlFeature.getDescription());
-
-            if (Convert.ToBoolean(kmlFeature.getOpen()))
+            try
             {
-                tn.Expand();
-            }
+                type = kmlFeature.getType();
 
-            if (Convert.ToBoolean(kmlFeature.getVisibility()))
-            {
-                tn.Checked = true;
+                treenode.Text = kmlFeature.getName();
+                treenode.Tag = kmlFeature;
+                treenode.Name = type;
 
-                if (this.expandVisibleFeatures)
+                // TODO: and length as property
+                treenode.ToolTipText = this.ShortenToolTip(kmlFeature.getDescription(), 200);
+
+                if (Convert.ToBoolean(kmlFeature.getOpen()))
                 {
-                    tn.Expand();
+                    treenode.Expand();
                 }
+
+                if (Convert.ToBoolean(kmlFeature.getVisibility()))
+                {
+                    treenode.Checked = true;
+
+                    if (this.expandVisibleFeatures)
+                    {
+                        treenode.Expand();
+                    }
+                }
+            }
+            catch (COMException cex)
+            {
+                Debug.WriteLine("CreateTreeNodeFromKmlFeature:" + cex.ToString());
+                throw;
             }
 
             switch (type)
             {
                 case "KmlDocument":
                 case "KmlFolder":
-                    tn.ImageKey = "folderClosed";
-                    tn.SelectedImageKey = "folderClosed";
+                    treenode.ImageKey = "folderClosed";
+                    treenode.SelectedImageKey = "folderClosed";
                     break;
                 case "KmlPlacemark":
-                    tn.ImageKey = "flag";
-                    tn.SelectedImageKey = "flag";
+                    treenode.ImageKey = "flag";
+                    treenode.SelectedImageKey = "flag";
                     break;
                 case "KmlGroundOverlay":
                 case "KmlScreenOverlay":
-                    tn.ImageKey = "overlay";
-                    tn.SelectedImageKey = "overlay";
+                    treenode.ImageKey = "overlay";
+                    treenode.SelectedImageKey = "overlay";
                     break;
                 case "KmlPhotoOverlay":
-                    tn.ImageKey = "photo";
-                    tn.SelectedImageKey = "photo";
+                    treenode.ImageKey = "photo";
+                    treenode.SelectedImageKey = "photo";
                     break;
                 case "KmlTour":
-                    tn.ImageKey = "tour";
-                    tn.SelectedImageKey = "tour";
+                    treenode.ImageKey = "tour";
+                    treenode.SelectedImageKey = "tour";
                     break;
                 default:
                     break;
             }
 
-            return tn;
+            return treenode;
         }
 
         /// <summary>
         /// Sets the checked state of any parent nodes to true
         /// </summary>
-        /// <param name="tn">The tree node to check from</param>
-        private void CheckAllParentNodes(TreeNode tn)
+        /// <param name="treeNode">The starting node to check from</param>
+        private void CheckAllParentNodes(TreeNode treeNode)
         {
-            if (tn.Parent != null)
+            if (treeNode.Parent != null)
             {
-                tn.Parent.Checked = true;
-                this.CheckAllParentNodes(tn.Parent);
+                treeNode.Parent.Checked = true;
+                this.CheckAllParentNodes(treeNode.Parent);
             }
         }
 
         /// <summary>
         /// Sets the checked state of any child nodes to false
         /// </summary>
-        /// <param name="tn">The tree node to check from</param>
-        private void UncheckAllChildNodes(TreeNode tn)
+        /// <param name="treeNode">The starting node to check from</param>
+        private void UncheckAllChildNodes(TreeNode treeNode)
         {
-            if (tn.Nodes.Count > 0)
+            if (treeNode.Nodes.Count > 0)
             {
-                foreach (TreeNode child in tn.Nodes)
+                foreach (TreeNode child in treeNode.Nodes)
                 {
                     child.Checked = false;
                     this.UncheckAllChildNodes(child);
@@ -347,16 +383,17 @@ namespace FC.GEPluginCtrls
         }
 
         /// <summary>
-        /// Trucates a any string over 200 chars
+        /// Trucates a any string over the given number of chars
         /// Appends an ellipsis (...)
         /// </summary>
         /// <param name="text">The text to truncated</param>
+        /// <param name="length">The maximum string length </param>
         /// <returns>The truncated text</returns>
-        private string ShortenToolTip(string text)
+        private string ShortenToolTip(string text, int length)
         {
-            if (text.Length > 200)
+            if (text.Length > length)
             {
-                return text.Substring(0, 200) + "...";
+                return text.Substring(0, length) + "...";
             }
             else
             {
@@ -388,7 +425,7 @@ namespace FC.GEPluginCtrls
 
                     if ("KmlTour" == type)
                     {
-                        geplugin.getTourPlayer().setTour(feature);
+                       this.geplugin.getTourPlayer().setTour(feature);
                     }
                 }
                 else
@@ -398,11 +435,11 @@ namespace FC.GEPluginCtrls
 
                     if ("KmlTour" == type)
                     {
-                        geplugin.getTourPlayer().setTour(null);
+                        this.geplugin.getTourPlayer().setTour(null);
                     }
                     else if ("KmlPhotoOverlay" == type)
                     {
-                        geplugin.getPhotoOverlayViewer().setPhotoOverlay(null);
+                        this.geplugin.getPhotoOverlayViewer().setPhotoOverlay(null);
                     }
                 }
             }
@@ -436,13 +473,14 @@ namespace FC.GEPluginCtrls
                                 balloon.setFeature(feature);
                                 this.geplugin.setBalloon(balloon);           
                             }
+
                             break;
                         case "KmlTour":
-                            geplugin.getTourPlayer().setTour(feature);
-                            geplugin.getTourPlayer().play();
+                            this.geplugin.getTourPlayer().setTour(feature);
+                            this.geplugin.getTourPlayer().play();
                             break;
                         case "KmlPhotoOverlay":
-                            geplugin.getPhotoOverlayViewer().setPhotoOverlay(feature);
+                            this.geplugin.getPhotoOverlayViewer().setPhotoOverlay(feature);
                             break;
                         default:
                             break;
@@ -506,7 +544,8 @@ namespace FC.GEPluginCtrls
             }
             catch (InvalidCastException icex)
             {
-                System.Diagnostics.Debug.WriteLine(icex.ToString());
+                Debug.WriteLine(icex.ToString());
+                throw;
             }
         }
 
