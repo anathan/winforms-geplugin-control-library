@@ -322,6 +322,7 @@ namespace FC.GEPluginCtrls
                 this.SynchronizeOptions();
                 this.htmlDocument = browser.Document;
                 this.Enabled = true;
+                this.gewb.PluginReady += new GEWebBrowserEventHandeler(Gewb_PluginReady);
             }
         }
 
@@ -617,14 +618,19 @@ namespace FC.GEPluginCtrls
 
                 foreach (ToolStripMenuItem menuItem in imageryItems)
                 {
-                    // uncheck and disable all items
-                    menuItem.Checked = false;
-                    menuItem.Enabled = true;
+                    if (menuItem != selectedItem)
+                    {
+                        // uncheck and disable all items
+                        menuItem.Checked = false;
+                        menuItem.Enabled = true;
+                    }
+                    else
+                    {
+                        // check and enable the selected item
+                        selectedItem.Checked = true;
+                        selectedItem.Enabled = false;
+                    }
                 }
-
-                // check and enable the selected item
-                selectedItem.Checked = true;
-                selectedItem.Enabled = false;
 
                 try
                 {
@@ -698,6 +704,11 @@ namespace FC.GEPluginCtrls
         private void GEToolStrip_Layout(object sender, LayoutEventArgs e)
         {
             this.navigationTextBox.Width = this.Width / 2;
+        }
+
+        private void Gewb_PluginReady(object sender, GEEventArgs e)
+        {
+            this.SynchronizeOptions();
         }
 
         #endregion        

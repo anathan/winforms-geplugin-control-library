@@ -188,31 +188,45 @@ namespace FC.GEPluginCtrls
                 try
                 {
                     type = obj.getType();
+
+                    switch (type)
+                    {
+                        case "KmlDocument":
+                        case "KmlFolder":
+
+                            // patch from blairuk
+                            // issue 10
+                            // Allow KmlTreeView to accept ListStyle checkHideChildren property
+                            if (obj.getOwnerDocument().getComputedStyle().getListStyle().getListItemType() !=
+                                geplugin.LIST_ITEM_CHECK_HIDE_CHILDREN)
+                            {
+                                this.Nodes.Add(
+                                    this.ParsekmlContainer(obj as IKmlContainer));
+                            }
+                            else
+                            {
+                                this.Nodes.Add(
+                                    this.CreateTreeNodeFromKmlFeature(obj as IKmlFeature));
+                            }
+
+                            break;
+                        case "KmlNetworkLink":
+                        case "KmlGroundOverlay":
+                        case "KmlScreenOverlay":
+                        case "KmlPlacemark":
+                        case "KmlTour":
+                        case "KmlPhotoOverlay":
+                            this.Nodes.Add(
+                                this.CreateTreeNodeFromKmlFeature(obj as IKmlFeature));
+                            break;
+                        default:
+                            break;
+                    }
                 }
                 catch (COMException cex)
                 {
                     Debug.WriteLine("ParsekmlObject: " + cex.ToString());
                     throw;
-                }
-
-                switch (type)
-                {
-                    case "KmlDocument":
-                    case "KmlFolder":
-                        this.Nodes.Add(
-                            this.ParsekmlContainer(obj as IKmlContainer));
-                        break;
-                    case "KmlNetworkLink":
-                    case "KmlGroundOverlay":
-                    case "KmlScreenOverlay":
-                    case "KmlPlacemark":
-                    case "KmlTour":
-                    case "KmlPhotoOverlay":
-                        this.Nodes.Add(
-                            this.CreateTreeNodeFromKmlFeature(obj as IKmlFeature));
-                        break;
-                    default:
-                        break;
                 }
             }
         }
@@ -288,6 +302,7 @@ namespace FC.GEPluginCtrls
         private TreeNode CreateTreeNodeFromKmlFeature(IKmlFeature kmlFeature)
         {
             TreeNode treenode = new TreeNode();
+
             string type = string.Empty;
 
             try

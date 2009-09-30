@@ -432,6 +432,7 @@ namespace FC.GEPluginCtrls
         public override void Refresh()
         {
             this.pluginIsReady = false;
+            this.imageryBase = ImageryBase.Earth;
             base.Refresh();
         }
 
@@ -442,13 +443,13 @@ namespace FC.GEPluginCtrls
         /// <summary>
         /// Protected method for raising the PluginReady event
         /// </summary>
-        /// <param name="plugin">The plugin object</param>
+        /// <param name="sender">The browser instance holding the plugin</param>
         /// <param name="e">Event arguments</param>
-        protected virtual void OnPluginReady(object plugin, GEEventArgs e)
+        protected virtual void OnPluginReady(object sender, GEEventArgs e)
         {
             if (this.PluginReady != null)
             {
-                this.PluginReady(plugin, e);
+                this.PluginReady(sender, e);
             }
         }
 
@@ -506,44 +507,27 @@ namespace FC.GEPluginCtrls
         }
 
         /// <summary>
-        /// Called when the Plugin is Ready 
+        /// Called when the Plugin is Ready, rasies OnPluginReady 
         /// </summary>
         /// <param name="plugin">The plugin instance</param>
         /// <param name="e">Event arguments</param>
         private void External_PluginReady(object plugin, GEEventArgs e)
         {
+            // plugin is the 'ge' object passed from javascript
             this.geplugin = plugin as IGEPlugin;
 
-            try
+            if (null != this.geplugin)
             {
                 // The data is just the version info
-                e.Message = "ApiVersion";          
-                e.Data = this.geplugin.getApiVersion();
+                e.Message = "PluginVersion";
+                e.Data = this.geplugin.getPluginVersion();
             }
-            catch (InvalidOperationException ioex)
-            {
-                // Possible problems with the interop assemby version and installed plug-in version
-                GEEventArgs exea = new GEEventArgs("InvalidOperationException", ioex.ToString());
-                Debug.WriteLine(ioex.ToString());
-                this.OnScriptError(this.geplugin, e);
-                throw;
-            }
-            catch (AccessViolationException avex)
-            {
-                // Possible problems with the interop assemby version and installed plug-in version
-                GEEventArgs exea = new GEEventArgs("AccessViolationException", avex.ToString());
-                Debug.WriteLine(avex.ToString());
-                this.OnScriptError(this.geplugin, exea);
-                throw;
-            }
-            finally
-            {
-                // set the ready property
-                this.pluginIsReady = true;
 
-                // Raise the ready event
-                this.OnPluginReady(this.geplugin, e);
-            }
+            // set the ready property
+            this.pluginIsReady = true;
+
+            // Raise the ready event
+            this.OnPluginReady(this, e);
         }
 
         /// <summary>
