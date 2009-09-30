@@ -72,13 +72,13 @@ Take a 'screen grab' of the current GEWebBrowser view <br>
 
 == Public Events ==
 
-_GEWebBorwserEventHandeler_ *PluginReady*<br>
+_GEWebBorwserEventHandeler_ *PluginReady(GEWebBrowser sender, GEEventArgs e)*<br>
 Raised when the plugin is ready<br>
 
-_GEWebBorwserEventHandeler_ *KmlLoaded*<br>
+_GEWebBorwserEventHandeler_ *KmlLoaded*(KmlObject sender, GEEventArgs e)<br>
 Raised when a kml/kmz file has loaded<br>
 
-_GEWebBorwserEventHandeler_ *ScriptError*<br>
+_GEWebBorwserEventHandeler_ *ScriptError(GEWebBrowser sender, GEEventArgs e)*<br>
 Raised when there is a script error in the document <br>
 
 == Source == 
