@@ -184,7 +184,7 @@
             <summary>
             Protected method for raising the PluginReady event
             </summary>
-            <param name="plugin">The plugin object</param>
+            <param name="sender">The browser instance holding the plugin</param>
             <param name="e">Event arguments</param>
         </member>
         <member name="M:FC.GEPluginCtrls.GEWebBrowser.OnKmlEvent(System.Object,FC.GEPluginCtrls.GEEventArgs)">
@@ -217,7 +217,7 @@
         </member>
         <member name="M:FC.GEPluginCtrls.GEWebBrowser.External_PluginReady(System.Object,FC.GEPluginCtrls.GEEventArgs)">
             <summary>
-            Called when the Plugin is Ready 
+            Called when the Plugin is Ready, rasies OnPluginReady 
             </summary>
             <param name="plugin">The plugin instance</param>
             <param name="e">Event arguments</param>
