@@ -19,6 +19,7 @@
 namespace FC.GEPluginCtrls
 {
     using System;
+    using System.Diagnostics;
     using System.Runtime.InteropServices;
     using GEPlugin;
 
@@ -76,12 +77,13 @@ namespace FC.GEPluginCtrls
         {
             try
             {
-                this.OnKmlLoaded(kmlFeature,
+                this.OnKmlLoaded(
+                    kmlFeature,
                     new GEEventArgs());
             }
             catch (COMException cex)
             {
-                System.Diagnostics.Debug.WriteLine(cex.ToString());
+                Debug.WriteLine("LoadKmlCallBack: " + cex.ToString());
                 throw;
             }
         }
@@ -94,12 +96,13 @@ namespace FC.GEPluginCtrls
         {
             try
             {
-                this.OnPluginReady(ge,
+                this.OnPluginReady(
+                    ge,
                     new GEEventArgs(ge.getApiVersion(), ge.getPluginVersion()));
             }
-            catch(COMException cex)
+            catch (COMException cex)
             {
-                System.Diagnostics.Debug.WriteLine(cex.ToString());
+                Debug.WriteLine("Ready: " + cex.ToString());
                 throw;
             }
         }
@@ -110,7 +113,8 @@ namespace FC.GEPluginCtrls
         /// <param name="message">the error message</param>
         public void Error(string message)
         {
-            this.OnScriptError(this, 
+            this.OnScriptError(
+                this, 
                 new GEEventArgs(message));
         }
 
@@ -123,12 +127,13 @@ namespace FC.GEPluginCtrls
         {
             try
             {
-                this.OnKmlEvent(kmlEvent,
+                this.OnKmlEvent(
+                    kmlEvent,
                     new GEEventArgs(kmlEvent.getType(), action));
             }
             catch (COMException cex)
             {
-                System.Diagnostics.Debug.WriteLine(cex.ToString());
+                Debug.WriteLine("KmlEventCallBack: " + cex.ToString());
                 throw;
             }
         }

@@ -20,7 +20,10 @@ namespace FC.GEPluginCtrls
 {
     using System;
     using System.ComponentModel;
+    using System.Diagnostics;
     using System.Drawing;
+    using System.Drawing.Imaging;
+    using System.Runtime.InteropServices;
     using System.Windows.Forms;
     using GEPlugin;
 
@@ -319,7 +322,6 @@ namespace FC.GEPluginCtrls
                 this.SynchronizeOptions();
                 this.htmlDocument = browser.Document;
                 this.Enabled = true;
-                this.roadsMenuItem.Tag = geplugin.LAYER_ROADS;
             }
         }
 
@@ -393,7 +395,6 @@ namespace FC.GEPluginCtrls
                     this.earthMenuItem.Checked = true;
                     this.earthMenuItem.Enabled = true;
                 }
-
             }
         }
 
@@ -408,7 +409,6 @@ namespace FC.GEPluginCtrls
         /// <param name="e">KeyEvent arguments</param>
         private void NavigationTextBox_KeyUp(object sender, KeyEventArgs e)
         {
-            string input = this.navigationTextBox.Text;
             if (e.KeyCode == Keys.Enter)
             {
                 e.Handled = true;
@@ -427,6 +427,7 @@ namespace FC.GEPluginCtrls
         private void NavigationButton_Click(object sender, EventArgs e)
         {
             string input = this.navigationTextBox.Text;
+
             if (input.Length > 1)
             {
                 if (this.UseAutoCompleteSugestions)
@@ -480,25 +481,33 @@ namespace FC.GEPluginCtrls
 
                 int value = Convert.ToInt16(item.Checked);
 
-                switch (type)
+                try
                 {
-                    case "BORDERS":
-                        this.geplugin.getLayerRoot().enableLayerById(this.geplugin.LAYER_BORDERS, value);
-                        break;
-                    case "BUILDINGS":
-                        this.geplugin.getLayerRoot().enableLayerById(this.geplugin.LAYER_BUILDINGS, value);
-                        break;
-                    case "BUILDINGS_GREY_LOW_RES":
-                        this.geplugin.getLayerRoot().enableLayerById(this.geplugin.LAYER_BUILDINGS_LOW_RESOLUTION, value);
-                        break;
-                    case "ROADS":
-                        this.geplugin.getLayerRoot().enableLayerById(this.geplugin.LAYER_ROADS, value);
-                        break;
-                    case "TERRAIN":
-                        this.geplugin.getLayerRoot().enableLayerById(this.geplugin.LAYER_TERRAIN, value);
-                        break;
-                    default:
-                        break;
+                    switch (type)
+                    {
+                        case "BORDERS":
+                            this.geplugin.getLayerRoot().enableLayerById(this.geplugin.LAYER_BORDERS, value);
+                            break;
+                        case "BUILDINGS":
+                            this.geplugin.getLayerRoot().enableLayerById(this.geplugin.LAYER_BUILDINGS, value);
+                            break;
+                        case "BUILDINGS_GREY_LOW_RES":
+                            this.geplugin.getLayerRoot().enableLayerById(this.geplugin.LAYER_BUILDINGS_LOW_RESOLUTION, value);
+                            break;
+                        case "ROADS":
+                            this.geplugin.getLayerRoot().enableLayerById(this.geplugin.LAYER_ROADS, value);
+                            break;
+                        case "TERRAIN":
+                            this.geplugin.getLayerRoot().enableLayerById(this.geplugin.LAYER_TERRAIN, value);
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                catch (COMException cex)
+                {
+                    Debug.WriteLine("LayersItem_Clicked: " + cex.ToString());
+                    throw;
                 }
             }
         }
@@ -515,33 +524,42 @@ namespace FC.GEPluginCtrls
             if (this.gewb.PluginIsReady && (item != null))
             {
                 string type = item.Tag.ToString();
+
                 int value = Convert.ToInt16(item.Checked);
 
-                switch (type)
+                try
                 {
-                    case "ATMOSPHERE":
-                        this.geplugin.getOptions().setAtmosphereVisibility(value);
-                        break;
-                    case "CONTROLS":
-                        this.geplugin.getNavigationControl().setVisibility(value);
-                        break;
-                    case "GRID":
-                        this.geplugin.getOptions().setGridVisibility(value);
-                        break;
-                    case "MOUSE":
-                        this.geplugin.getOptions().setMouseNavigationEnabled(value);
-                        break;
-                    case "OVERVIEW":
-                        this.geplugin.getOptions().setOverviewMapVisibility(value);
-                        break;
-                    case "SCALE":
-                        this.geplugin.getOptions().setScaleLegendVisibility(value);
-                        break;
-                    case "STATUS":
-                        this.geplugin.getOptions().setStatusBarVisibility(value);
-                        break;
-                    default:
-                        break;
+                    switch (type)
+                    {
+                        case "ATMOSPHERE":
+                            this.geplugin.getOptions().setAtmosphereVisibility(value);
+                            break;
+                        case "CONTROLS":
+                            this.geplugin.getNavigationControl().setVisibility(value);
+                            break;
+                        case "GRID":
+                            this.geplugin.getOptions().setGridVisibility(value);
+                            break;
+                        case "MOUSE":
+                            this.geplugin.getOptions().setMouseNavigationEnabled(value);
+                            break;
+                        case "OVERVIEW":
+                            this.geplugin.getOptions().setOverviewMapVisibility(value);
+                            break;
+                        case "SCALE":
+                            this.geplugin.getOptions().setScaleLegendVisibility(value);
+                            break;
+                        case "STATUS":
+                            this.geplugin.getOptions().setStatusBarVisibility(value);
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                catch (COMException cex)
+                {
+                    Debug.WriteLine("ImageryItem_Clicked: " + cex.ToString());
+                    throw;
                 }
             }
         }
@@ -560,16 +578,24 @@ namespace FC.GEPluginCtrls
                 string type = item.Tag.ToString();
                 int value = Convert.ToInt16(item.Checked);
 
-                switch (type)
+                try
                 {
-                    case "SKY":
-                        this.geplugin.getOptions().setMapType(value + 1);
-                        break;
-                    case "SUN":
-                        this.geplugin.getSun().setVisibility(value);
-                        break;
-                    default:
-                        break;
+                    switch (type)
+                    {
+                        case "SKY":
+                            this.geplugin.getOptions().setMapType(value + 1);
+                            break;
+                        case "SUN":
+                            this.geplugin.getSun().setVisibility(value);
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                catch (COMException cex)
+                {
+                    Debug.WriteLine("OptionsItem_Clicked: " + cex.ToString());
+                    throw;
                 }
             }
         }
@@ -585,13 +611,14 @@ namespace FC.GEPluginCtrls
 
             if (this.gewb.PluginIsReady && (selectedItem != null))
             {
-                string type = selectedItem.Tag.ToString();
+                ImageryBase type = (ImageryBase)selectedItem.Tag;
+
                 ToolStripItemCollection imageryItems = imageryDropDownButton.DropDownItems;
 
                 foreach (ToolStripMenuItem menuItem in imageryItems)
                 {
                     // uncheck and disable all items
-                    menuItem.Checked = false; 
+                    menuItem.Checked = false;
                     menuItem.Enabled = true;
                 }
 
@@ -599,21 +626,28 @@ namespace FC.GEPluginCtrls
                 selectedItem.Checked = true;
                 selectedItem.Enabled = false;
 
-                switch (type)
+                try
                 {
-                    case "MARS":
-                    case "MOON":
-                        this.layersDropDownButton.Enabled = false;
-                        this.viewInMapsButton.Enabled = false;
-                        ImageryBase b = (ImageryBase)Enum.Parse(typeof(ImageryBase), type, true);
-                        this.gewb.CreateInstance(b);
-                        break;
-                    case "EARTH":
-                    default:
-                        this.layersDropDownButton.Enabled = true;
-                        this.viewInMapsButton.Enabled = true;
-                        this.gewb.CreateInstance(ImageryBase.Earth);
-                        break;
+                    switch (type)
+                    {
+                        case ImageryBase.Mars:
+                        case ImageryBase.Moon:
+                            this.layersDropDownButton.Enabled = false;
+                            this.viewInMapsButton.Enabled = false;
+                            this.gewb.CreateInstance(type);
+                            break;
+                        case ImageryBase.Earth:
+                        default:
+                            this.layersDropDownButton.Enabled = true;
+                            this.viewInMapsButton.Enabled = true;
+                            this.gewb.CreateInstance(ImageryBase.Earth);
+                            break;
+                    }
+                }
+                catch (COMException cex)
+                {
+                    Debug.WriteLine("ImageryItem_Clicked: " + cex.ToString());
+                    throw;
                 }
 
                 // reset the default options to match the default view
@@ -638,7 +672,7 @@ namespace FC.GEPluginCtrls
                 dialog.Filter = "JPEG files (*.jpg;*.jpeg)|*.jpg;*.jpeg|All files (*.*)|*.*";
                 if (dialog.ShowDialog() == DialogResult.OK)
                 {
-                    image.Save(dialog.FileName, System.Drawing.Imaging.ImageFormat.Jpeg);
+                    image.Save(dialog.FileName, ImageFormat.Jpeg);
                 }
             }
         }

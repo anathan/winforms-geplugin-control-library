@@ -30,7 +30,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("FC")]
 [assembly: AssemblyProduct("FC.GEPluginCtrls")]
-[assembly: AssemblyCopyright("Copyright © Fraser Chapman 2008")]
+[assembly: AssemblyCopyright("Copyright © Fraser Chapman 2008-2009")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

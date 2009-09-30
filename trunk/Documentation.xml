@@ -70,6 +70,11 @@
             Indicates whether the plug-in is ready to use
             </summary>
         </member>
+        <member name="F:FC.GEPluginCtrls.GEWebBrowser.parentForm">
+            <summary>
+            The parent form, if any, that is hosting the control 
+            </summary>
+        </member>
         <member name="M:FC.GEPluginCtrls.GEWebBrowser.#ctor">
             <summary>
             Initializes a new instance of the GEWebBrowser class.
@@ -238,6 +243,14 @@
             <param name="sender">The sending object</param>
             <param name="e">Event arguments</param>
         </member>
+        <member name="M:FC.GEPluginCtrls.GEWebBrowser.ParentForm_FormClosing(System.Object,System.Windows.Forms.FormClosingEventArgs)">
+            <summary>
+            Called when the parent form of the control is closing.
+            This requires that the ParentForm property has been correctly set
+            </summary>
+            <param name="sender">The sending object</param>
+            <param name="e">The event arguments</param>
+        </member>
         <member name="M:FC.GEPluginCtrls.GEWebBrowser.Window_Error(System.Object,System.Windows.Forms.HtmlElementErrorEventArgs)">
             <summary>
             Called when there is a script error in the window
@@ -273,6 +286,11 @@
         <member name="P:FC.GEPluginCtrls.GEWebBrowser.PluginIsReady">
             <summary>
             Gets a value indicating whether the plug-in is ready
+            </summary>
+        </member>
+        <member name="P:FC.GEPluginCtrls.GEWebBrowser.ParentForm">
+            <summary>
+            Gets or sets a value representing the parent form holding the control
             </summary>
         </member>
         <member name="T:FC.GEPluginCtrls.GEStatusStrip">
@@ -930,20 +948,21 @@
             <summary>
             Sets the checked state of any parent nodes to true
             </summary>
-            <param name="tn">The tree node to check from</param>
+            <param name="treeNode">The starting node to check from</param>
         </member>
         <member name="M:FC.GEPluginCtrls.KmlTreeView.UncheckAllChildNodes(System.Windows.Forms.TreeNode)">
             <summary>
             Sets the checked state of any child nodes to false
             </summary>
-            <param name="tn">The tree node to check from</param>
+            <param name="treeNode">The starting node to check from</param>
         </member>
-        <member name="M:FC.GEPluginCtrls.KmlTreeView.ShortenToolTip(System.String)">
+        <member name="M:FC.GEPluginCtrls.KmlTreeView.ShortenToolTip(System.String,System.Int32)">
             <summary>
-            Trucates a any string over 200 chars
+            Trucates a any string over the given number of chars
             Appends an ellipsis (...)
             </summary>
             <param name="text">The text to truncated</param>
+            <param name="length">The maximum string length </param>
             <returns>The truncated text</returns>
         </member>
         <member name="M:FC.GEPluginCtrls.KmlTreeView.KmlTree_AfterCheck(System.Object,System.Windows.Forms.TreeViewEventArgs)">
@@ -1422,10 +1441,10 @@
         </member>
         <member name="M:FC.GEPluginCtrls.GEHelpers.OpenFeatureBalloon(GEPlugin.IGEPlugin,GEPlugin.IKmlFeature)">
             <summary>
-            
+            Opens a balloon for the given feature
             </summary>
-            <param name="ge"></param>
-            <param name="feature"></param>
+            <param name="ge">the plugin</param>
+            <param name="feature">the feature</param>
         </member>
         <member name="M:FC.GEPluginCtrls.GEHelpers.RemoveAllFeatures(GEPlugin.IGEPlugin)">
             <summary>
