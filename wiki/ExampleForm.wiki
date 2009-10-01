@@ -1,0 +1,63 @@
+#labels Phase-Implementation
+#A simple form example
+
+= Introduction =
+
+Imagine we have all the controls on a form.
+
+{{{
+
+GEToolStrip geToolStrip1;
+GEWebBrowser geWebBrowser1;
+KmlTreeView kmlTreeView1;
+GEStatusStrip geStatusStrip1;
+
+}}}
+
+= Details =
+
+{{{
+ public partial class Form1 : Form
+    {
+        private IGEPlugin ge;
+
+        public Form1()
+        {
+            InitializeComponent();
+              
+            // load the test page
+            geWebBrowser1.LoadEmbededPlugin();
+
+            // set up some event handlers
+            geWebBrowser1.PluginReady += new GEWebBrowserEventHandeler(geWebBrowser1_PluginReady);
+            geWebBrowser1.KmlLoaded += new GEWebBrowserEventHandeler(geWebBrowser1_KmlLoaded);
+            
+        }
+
+        void geWebBrowser1_KmlLoaded(object sender, GEEventArgs e)
+        {
+            IKmlObject kml = sender as IKmlObject;
+            if (null != kml)
+            {
+                // add the kml to the tree view and plug-in
+                ge.getFeatures().appendChild(kml);
+                kmlTreeView1.ParsekmlObject(kml);
+            }
+        }
+
+        void geWebBrowser1_PluginReady(object sender, GEEventArgs e)
+        {
+            GEWebBrowser browser = sender as GEWebBrowser;
+
+            // register the controls with the plug-in
+            kmlTreeView1.SetBrowserInstance(browser);
+            geToolStrip1.SetBrowserInstance(browser);
+            geStatusStrip1.SetBrowserInstance(browser);
+
+            // reference to te plug-in object
+            ge = browser.GetPlugin();
+            
+        }
+    }
+
+}}}
