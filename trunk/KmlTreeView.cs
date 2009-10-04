@@ -193,12 +193,12 @@ namespace FC.GEPluginCtrls
                     {
                         case "KmlDocument":
                         case "KmlFolder":
-
+                            
                             // patch from blairuk
                             // issue 10
                             // Allow KmlTreeView to accept ListStyle checkHideChildren property
                             if (obj.getOwnerDocument().getComputedStyle().getListStyle().getListItemType() !=
-                                geplugin.LIST_ITEM_CHECK_HIDE_CHILDREN)
+                                this.geplugin.LIST_ITEM_CHECK_HIDE_CHILDREN)
                             {
                                 this.Nodes.Add(
                                     this.ParsekmlContainer(obj as IKmlContainer));
@@ -272,10 +272,13 @@ namespace FC.GEPluginCtrls
 
                         switch (type)
                         {
+                            // features that implement the IkmlContainer interface
                             case "KmlDocument":
                             case "KmlFolder":
                                 childNode = this.ParsekmlContainer(subNode as IKmlContainer);
                                 break;
+
+                            // all other features
                             default:
                                 childNode = this.CreateTreeNodeFromKmlFeature(subNode as IKmlFeature);
                                 break;
@@ -486,7 +489,7 @@ namespace FC.GEPluginCtrls
                                 balloon.setMinHeight(this.balloonMinimumHeight);
                                 balloon.setMinWidth(this.balloonMinimumWidth);
                                 balloon.setFeature(feature);
-                                this.geplugin.setBalloon(balloon);           
+                                this.geplugin.setBalloon(balloon);
                             }
 
                             break;

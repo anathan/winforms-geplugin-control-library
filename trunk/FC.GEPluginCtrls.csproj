@@ -66,6 +66,7 @@
       <DependentUpon>GEStatusStrip.cs</DependentUpon>
     </Compile>
     <Compile Include="ImageryBase.cs" />
+    <Compile Include="KmlHelpers.cs" />
     <Compile Include="Maths.cs" />
     <Compile Include="GEToolStrip.Designer.cs">
       <DependentUpon>GEToolStrip.cs</DependentUpon>
@@ -132,7 +133,7 @@
     <Folder Include="bin\Debug\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- Uncomment the foloowing line to allow StyleCop to run during the build -->
+  <!-- Uncomment the folowing line to allow StyleCop to run during the build -->
   <!-- <Import Project="$(ProgramFiles)\MSBuild\Microsoft\StyleCop\v4.3\Microsoft.StyleCop.targets" /> -->
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
