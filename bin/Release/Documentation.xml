@@ -288,11 +288,6 @@
             Gets a value indicating whether the plug-in is ready
             </summary>
         </member>
-        <member name="P:FC.GEPluginCtrls.GEWebBrowser.ParentForm">
-            <summary>
-            Gets or sets a value representing the parent form holding the control
-            </summary>
-        </member>
         <member name="T:FC.GEPluginCtrls.GEStatusStrip">
             <summary>
             The GEStatusStrip shows various information about the plug-in
@@ -625,6 +620,13 @@
             </summary>
             <param name="sender">The ToolStrip</param>
             <param name="e">LayoutEvent arguments</param>
+        </member>
+        <member name="M:FC.GEPluginCtrls.GEToolStrip.Gewb_PluginReady(System.Object,FC.GEPluginCtrls.GEEventArgs)">
+            <summary>
+            Called whenever the Ready event is raised by the assoicated GEWebBorwser
+            </summary>
+            <param name="sender">The GEWebBorwser instance</param>
+            <param name="e">The event arguments</param>
         </member>
         <member name="F:FC.GEPluginCtrls.GEToolStrip.components">
             <summary>
@@ -1261,6 +1263,25 @@
             Moon imagery base
             </summary>
         </member>
+        <member name="T:FC.GEPluginCtrls.KmlHelpers">
+            <summary>
+            This class provides basic Kml helper methods
+            </summary>
+        </member>
+        <member name="M:FC.GEPluginCtrls.KmlHelpers.WalkKmlDom(GEPlugin.IKmlObject,FC.GEPluginCtrls.KmlHelpers.CallBack)">
+            <summary>
+            Based on kmldomwalk.js
+            see: http://code.google.com/p/earth-api-samples/source/browse/trunk/lib/kmldomwalk.js
+            </summary>
+            <param name="kmlObject">The kml object to parse</param>
+            <param name="callBack">The funciton to call on each node</param>
+        </member>
+        <member name="T:FC.GEPluginCtrls.KmlHelpers.CallBack">
+            <summary>
+            A callback delegate for all items iterated over in WalkKmlDom
+            </summary>
+            <param name="kmlObject">The current KmlObject</param>
+        </member>
         <member name="T:FC.GEPluginCtrls.ExternalEventHandeler">
             <summary>
             Event handler for methods called from Javascript
@@ -1417,6 +1438,7 @@
             <param name="ge">the plugin</param>
             <param name="latitude">latitude in decimal degrees</param>
             <param name="longitude">longitude in decimal degrees</param>
+            <returns>true on success</returns>
         </member>
         <member name="M:FC.GEPluginCtrls.GEHelpers.LookAt(GEPlugin.IGEPlugin,GEPlugin.IKmlFeature)">
             <summary>
@@ -1424,6 +1446,7 @@
             </summary>
             <param name="ge">the plugin</param>
             <param name="feature">the feature to look at</param>
+            <returns>true on success</returns>
         </member>
         <member name="M:FC.GEPluginCtrls.GEHelpers.LookAt(GEPlugin.IGEPlugin,GEPlugin.IKmlGeometry)">
             <summary>
@@ -1431,6 +1454,7 @@
             </summary>
             <param name="ge">the plugin</param>
             <param name="geometry">the geomerty to look at</param>
+            <returns>true on success</returns>
         </member>
         <member name="M:FC.GEPluginCtrls.GEHelpers.LookAt(GEPlugin.IGEPlugin,GEPlugin.IKmlPoint)">
             <summary>
@@ -1438,6 +1462,7 @@
             </summary>
             <param name="ge">the plugin</param>
             <param name="point">the point to look at</param>
+            <returns>true on success</returns>
         </member>
         <member name="M:FC.GEPluginCtrls.GEHelpers.OpenFeatureBalloon(GEPlugin.IGEPlugin,GEPlugin.IKmlFeature)">
             <summary>

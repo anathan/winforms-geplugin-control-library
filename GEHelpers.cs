@@ -227,7 +227,8 @@ namespace FC.GEPluginCtrls
         /// <param name="ge">the plugin</param>
         /// <param name="latitude">latitude in decimal degrees</param>
         /// <param name="longitude">longitude in decimal degrees</param>
-        public static void LookAt(IGEPlugin ge, double latitude, double longitude)
+        /// <returns>true on success</returns>
+        public static bool LookAt(IGEPlugin ge, double latitude, double longitude)
         {
             try
             {
@@ -241,10 +242,12 @@ namespace FC.GEPluginCtrls
                     0,
                     1000);
                 ge.getView().setAbstractView(lookat);
+                return true;
             }
             catch (COMException cex)
             {
                 Debug.WriteLine("LookAt: " + cex.ToString());
+                return false;
             }
         }
 
@@ -253,7 +256,8 @@ namespace FC.GEPluginCtrls
         /// </summary>
         /// <param name="ge">the plugin</param>
         /// <param name="feature">the feature to look at</param>
-        public static void LookAt(IGEPlugin ge, IKmlFeature feature)
+        /// <returns>true on success</returns>
+        public static bool LookAt(IGEPlugin ge, IKmlFeature feature)
         {
             try
             {
@@ -265,28 +269,33 @@ namespace FC.GEPluginCtrls
                         if (null != feature.getAbstractView())
                         {
                             ge.getView().setAbstractView(feature.getAbstractView());
+                            return true;
+                        }
+                        else
+                        {
+                            return false;
                         }
 
-                        break;
                     case "KmlPlacemark":
                         if (null != feature.getAbstractView())
                         {
                             ge.getView().setAbstractView(feature.getAbstractView());
+                            return true;
                         }
                         else
                         {
                             IKmlPlacemark placemark = (IKmlPlacemark)feature;
-                            LookAt(ge, placemark.getGeometry());
+                            return LookAt(ge, placemark.getGeometry());
                         }
 
-                        break;
                     default:
-                        break;
+                        return false;
                 }
             }
             catch (COMException cex)
             {
                 Debug.WriteLine("LookAt: " + cex.ToString());
+                return false;
             }
         }
 
@@ -295,7 +304,8 @@ namespace FC.GEPluginCtrls
         /// </summary>
         /// <param name="ge">the plugin</param>
         /// <param name="geometry">the geomerty to look at</param>
-        public static void LookAt(IGEPlugin ge, IKmlGeometry geometry)
+        /// <returns>true on success</returns>
+        public static bool LookAt(IGEPlugin ge, IKmlGeometry geometry)
         {
             if (null != ge && null != geometry)
             {
@@ -304,34 +314,38 @@ namespace FC.GEPluginCtrls
                     switch (geometry.getType())
                     {
                         case "KmlPoint":
-                            LookAt(ge, (IKmlPoint)geometry);
-                            break;
+                            return LookAt(ge, (IKmlPoint)geometry);
                         case "KmlPolygon":
                             IKmlPolygon polygon = (IKmlPolygon)geometry;
                             LookAt(
                                 ge,
                                 polygon.getOuterBoundary().getCoordinates().get(0).getLatitude(),
                                 polygon.getOuterBoundary().getCoordinates().get(0).getLongitude());
-                            break;
+                            return true;
                         case "KmlLineString":
                             IKmlLineString lineString = (IKmlLineString)geometry;
                             LookAt(
                                 ge,
                                 lineString.getCoordinates().get(0).getLatitude(),
                                 lineString.getCoordinates().get(0).getLongitude());
-                            break;
+                            return true;
                         case "KmlMultiGeometry":
                             ////IKmlMultiGeometry multiGeometry = (IKmlMultiGeometry)geometry;
                             ////multiGeometry.getGeometries().getFirstChild().getType();
-                            break;
+                            return false;
                         default:
-                            break;
+                            return false;
                     }
                 }
                 catch (COMException cex)
                 {
                     Debug.WriteLine("LookAt: " + cex.ToString());
+                    return false;
                 }
+            }
+            else
+            {
+                return false;
             }
         }
 
@@ -340,9 +354,10 @@ namespace FC.GEPluginCtrls
         /// </summary>
         /// <param name="ge">the plugin</param>
         /// <param name="point">the point to look at</param>
-        public static void LookAt(IGEPlugin ge, IKmlPoint point)
+        /// <returns>true on success</returns>
+        public static bool LookAt(IGEPlugin ge, IKmlPoint point)
         {
-            LookAt(ge, point.getLatitude(), point.getLongitude());
+            return LookAt(ge, point.getLatitude(), point.getLongitude());
         }
 
         /// <summary>

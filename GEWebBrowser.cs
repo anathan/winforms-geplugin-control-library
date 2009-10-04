@@ -155,23 +155,6 @@ namespace FC.GEPluginCtrls
             }
         }
 
-        /// <summary>
-        /// Gets or sets a value representing the parent form holding the control
-        /// </summary>
-        public Form ParentForm
-        {
-            get
-            {
-                return this.parentForm;
-            }
-
-            set
-            {
-                this.parentForm = value;
-                this.parentForm.FormClosing += new FormClosingEventHandler(this.ParentForm_FormClosing);
-            }
-        }
-
         #endregion
 
         #region Public methods

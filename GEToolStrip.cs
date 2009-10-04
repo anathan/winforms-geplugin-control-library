@@ -322,7 +322,7 @@ namespace FC.GEPluginCtrls
                 this.SynchronizeOptions();
                 this.htmlDocument = browser.Document;
                 this.Enabled = true;
-                this.gewb.PluginReady += new GEWebBrowserEventHandeler(Gewb_PluginReady);
+                this.gewb.PluginReady += new GEWebBrowserEventHandeler(this.Gewb_PluginReady);
             }
         }
 
@@ -706,6 +706,11 @@ namespace FC.GEPluginCtrls
             this.navigationTextBox.Width = this.Width / 2;
         }
 
+        /// <summary>
+        /// Called whenever the Ready event is raised by the assoicated GEWebBorwser
+        /// </summary>
+        /// <param name="sender">The GEWebBorwser instance</param>
+        /// <param name="e">The event arguments</param>
         private void Gewb_PluginReady(object sender, GEEventArgs e)
         {
             this.SynchronizeOptions();
