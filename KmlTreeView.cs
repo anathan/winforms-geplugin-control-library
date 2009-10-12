@@ -76,6 +76,12 @@ namespace FC.GEPluginCtrls
         /// </summary>
         private bool openBalloonOnDoubleClickNode = true;
 
+        /// <summary>
+        /// Indicates if the treeview should check all child nodes
+        /// when a parent tree node is checked
+        /// </summary>
+        private bool checkAllChildren = true;
+
         #endregion
 
         /// <summary>
@@ -90,6 +96,19 @@ namespace FC.GEPluginCtrls
         }
 
         #region Public properties
+        
+        /// <summary>
+        /// Gets or sets a value ndicating if the treeview should check all child nodes
+        /// when a parent tree node is checked
+        /// </summary>
+        [Category("Control Options"),
+        Description("Gets or sets a value ndicating if the treeview should check all child nodes. Default True"),
+        DefaultValueAttribute(true)]
+        public bool CheckAllChildrenOnParentChecked
+        {
+            get { return this.checkAllChildren; }
+            set { this.checkAllChildren = value; }
+        }
 
         /// <summary>
         /// Gets or sets the minimum width of any balloons triggered from the control
@@ -372,6 +391,22 @@ namespace FC.GEPluginCtrls
         }
 
         /// <summary>
+        /// Sets the checked state of any child nodes to true
+        /// </summary>
+        /// <param name="treeNode">The starting node to check from</param>
+        private void CheckAllChildNodes(TreeNode treeNode)
+        {
+            if (treeNode.Nodes.Count > 0)
+            {
+                foreach (TreeNode child in treeNode.Nodes)
+                {
+                    child.Checked = true;
+                    this.CheckAllChildNodes(child);
+                }
+            }
+        }
+
+        /// <summary>
         /// Sets the checked state of any parent nodes to true
         /// </summary>
         /// <param name="treeNode">The starting node to check from</param>
@@ -439,7 +474,15 @@ namespace FC.GEPluginCtrls
                 if (e.Node.Checked)
                 {
                     feature.setVisibility(1);
-                    this.CheckAllParentNodes(e.Node);
+
+                    if (e.Action != TreeViewAction.Unknown)
+                    {
+                        if (checkAllChildren)
+                        {
+                            this.CheckAllChildNodes(e.Node);
+                        }
+                        this.CheckAllParentNodes(e.Node);
+                    }
 
                     if ("KmlTour" == type)
                     {

@@ -109,6 +109,11 @@ namespace FC.GEPluginCtrls
             set
             {
                 this.interval = value;
+
+                if (null != this.timer)
+                {
+                    this.timer.Interval = value;
+                }
             }
         }
 
@@ -252,9 +257,18 @@ namespace FC.GEPluginCtrls
                 this.timer.Interval = this.interval;
                 this.timer.Start();
                 this.timer.Tick += new EventHandler(this.Timer_Tick);
-                this.browserVersionStatusLabel.Text = "ie " + this.gewb.Version.ToString();
-                this.apiVersionStatusLabel.Text = "api " + this.geplugin.getApiVersion();
-                this.pluginVersionStatusLabel.Text = "plugin " + this.geplugin.getPluginVersion();
+
+                try
+                {
+                    this.browserVersionStatusLabel.Text = "ie " + this.gewb.Version.ToString();
+                    this.apiVersionStatusLabel.Text = "api " + this.geplugin.getApiVersion();
+                    this.pluginVersionStatusLabel.Text = "plugin " + this.geplugin.getPluginVersion();
+                }
+                catch (COMException cex)
+                {
+                    Debug.WriteLine("SetBrowserInstance: " + cex.ToString());
+                    throw;
+                }
             }
         }
 
