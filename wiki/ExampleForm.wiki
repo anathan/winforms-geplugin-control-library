@@ -50,13 +50,16 @@ GEStatusStrip geStatusStrip1;
         {
             GEWebBrowser browser = sender as GEWebBrowser;
 
-            // set a reference to the plug-in object
-            ge = browser.GetPlugin();
-
-            // register the controls with the plug-in
-            kmlTreeView1.SetBrowserInstance(browser);
-            geToolStrip1.SetBrowserInstance(browser);
-            geStatusStrip1.SetBrowserInstance(browser);            
+            if(null != browser)
+            {
+              // set a reference to the plug-in object
+              ge = browser.GetPlugin();
+ 
+              // register the controls with the plug-in
+              kmlTreeView1.SetBrowserInstance(browser);
+              geToolStrip1.SetBrowserInstance(browser);
+              geStatusStrip1.SetBrowserInstance(browser);
+            }
         }
     }
 
