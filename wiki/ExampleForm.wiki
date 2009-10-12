@@ -37,6 +37,7 @@ GEStatusStrip geStatusStrip1;
         void geWebBrowser1_KmlLoaded(object sender, GEEventArgs e)
         {
             IKmlObject kml = sender as IKmlObject;
+
             if (null != kml)
             {
                 // add the kml to the tree view and plug-in
@@ -49,14 +50,13 @@ GEStatusStrip geStatusStrip1;
         {
             GEWebBrowser browser = sender as GEWebBrowser;
 
+            // set a reference to the plug-in object
+            ge = browser.GetPlugin();
+
             // register the controls with the plug-in
             kmlTreeView1.SetBrowserInstance(browser);
             geToolStrip1.SetBrowserInstance(browser);
-            geStatusStrip1.SetBrowserInstance(browser);
-
-            // reference to te plug-in object
-            ge = browser.GetPlugin();
-            
+            geStatusStrip1.SetBrowserInstance(browser);            
         }
     }
 
