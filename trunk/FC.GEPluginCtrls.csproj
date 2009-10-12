@@ -65,6 +65,7 @@
     <Compile Include="GEStatusStrip.Designer.cs">
       <DependentUpon>GEStatusStrip.cs</DependentUpon>
     </Compile>
+    <Compile Include="IExternal.cs" />
     <Compile Include="ImageryBase.cs" />
     <Compile Include="KmlHelpers.cs" />
     <Compile Include="Maths.cs" />

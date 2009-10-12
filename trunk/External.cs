@@ -24,7 +24,7 @@ namespace FC.GEPluginCtrls
     using GEPlugin;
 
     /// <summary>
-    /// Event handler for methods called from Javascript
+    /// Event handler for methods to be called from javascript
     /// </summary>
     /// <param name="sender">the sending object</param>
     /// <param name="e">the event arguments</param>
@@ -34,7 +34,7 @@ namespace FC.GEPluginCtrls
     /// This COM Visible class contains all the methods to be called from Javascript
     /// </summary>
     [ComVisibleAttribute(true)]
-    public class External
+    public class External : IExternal
     {
         /// <summary>
         /// Initializes a new instance of the External class.
@@ -72,13 +72,13 @@ namespace FC.GEPluginCtrls
         /// <summary>
         /// Called from javascript when a kml/kmz file has been loaded
         /// </summary>
-        /// <param name="kmlFeature">the loaded kml feature</param>
-        public void LoadKmlCallBack(IKmlFeature kmlFeature)
+        /// <param name="kmlObject">the loaded kml object</param>
+        public void LoadKmlCallBack(IKmlObject kmlObject)
         {
             try
             {
                 this.OnKmlLoaded(
-                    kmlFeature,
+                    kmlObject,
                     new GEEventArgs());
             }
             catch (COMException cex)
@@ -171,13 +171,13 @@ namespace FC.GEPluginCtrls
         /// <summary>
         /// Protected method for raising the KmlLoaded event
         /// </summary>
-        /// <param name="kmlFeature">The kmlFeature object</param>
+        /// <param name="kmlObject">The kml object</param>
         /// <param name="e">The Event arguments</param>
-        protected virtual void OnKmlLoaded(IKmlFeature kmlFeature, GEEventArgs e)
+        protected virtual void OnKmlLoaded(IKmlObject kmlObject, GEEventArgs e)
         {
             if (this.KmlLoaded != null)
             {
-                this.KmlLoaded(kmlFeature, e);
+                this.KmlLoaded(kmlObject, e);
             }
         }
 
