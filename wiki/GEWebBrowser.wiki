@@ -1,5 +1,5 @@
 #summary GEWebBrowser control notes
-#labels Phase-Implementation
+#labels Phase-Implementation,Featured
 
 http://earthapi.googlepages.com/GEWebBrowser.jpg
 
