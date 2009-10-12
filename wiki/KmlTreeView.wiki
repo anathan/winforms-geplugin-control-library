@@ -1,5 +1,5 @@
 #summary KMLTreeView control notes
-#labels Phase-Implementation
+#labels Phase-Implementation,Featured
 
 http://earthapi.googlepages.com/KmlTreeView.jpg
 
@@ -17,6 +17,9 @@ _KMLTreeView_ *KMLTreeView()*<br>
 Initializes a new instance of the KMLTreeView class
 
 == Public properties ==
+
+_Bool_ *CheckAllChildrenOnParentChecked*<br>
+Gets or sets a value ndicating if the treeview should check all child nodes when the parent is checked. 
 
 _Int_ *BalloonMinimumWidth*<br>
 Gets or sets the minimum width of any balloons triggered from the control 
