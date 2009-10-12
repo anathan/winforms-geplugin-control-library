@@ -185,6 +185,7 @@
         <member name="M:FC.GEPluginCtrls.GEWebBrowser.Refresh">
             <summary>
             Reloads the document currently displayed in the control
+            Overides the default WebBrowser Refresh method
             </summary>
         </member>
         <member name="M:FC.GEPluginCtrls.GEWebBrowser.OnPluginReady(System.Object,FC.GEPluginCtrls.GEEventArgs)">
@@ -914,6 +915,12 @@
             when a tree node is double clicked
             </summary>
         </member>
+        <member name="F:FC.GEPluginCtrls.KmlTreeView.checkAllChildren">
+            <summary>
+            Indicates if the treeview should check all child nodes
+            when a parent tree node is checked
+            </summary>
+        </member>
         <member name="M:FC.GEPluginCtrls.KmlTreeView.#ctor">
             <summary>
             Initializes a new instance of the KmlTreeView class.
@@ -951,6 +958,12 @@
             </summary>
             <param name="kmlFeature">The feature to add</param>
             <returns>The created tree node of the feature</returns>
+        </member>
+        <member name="M:FC.GEPluginCtrls.KmlTreeView.CheckAllChildNodes(System.Windows.Forms.TreeNode)">
+            <summary>
+            Sets the checked state of any child nodes to true
+            </summary>
+            <param name="treeNode">The starting node to check from</param>
         </member>
         <member name="M:FC.GEPluginCtrls.KmlTreeView.CheckAllParentNodes(System.Windows.Forms.TreeNode)">
             <summary>
@@ -1007,6 +1020,12 @@
             </summary>
             <param name="sender">The sending object</param>
             <param name="e">The Event arguments</param>
+        </member>
+        <member name="P:FC.GEPluginCtrls.KmlTreeView.CheckAllChildrenOnParentChecked">
+            <summary>
+            Gets or sets a value ndicating if the treeview should check all child nodes
+            when a parent tree node is checked
+            </summary>
         </member>
         <member name="P:FC.GEPluginCtrls.KmlTreeView.BalloonMinimumWidth">
             <summary>

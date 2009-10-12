@@ -93,7 +93,7 @@ namespace FC.GEPluginCtrls
             this.AllowNavigation = false;
             this.IsWebBrowserContextMenuEnabled = false;
             this.ScrollBarsEnabled = false;
-            this.ScriptErrorsSuppressed = true;
+            this.ScriptErrorsSuppressed = false;
             this.WebBrowserShortcutsEnabled = false;
             this.DocumentCompleted +=
                 new WebBrowserDocumentCompletedEventHandler(this.GEWebBrowser_DocumentCompleted);
@@ -222,7 +222,8 @@ namespace FC.GEPluginCtrls
         /// <example>GEWebBrowser.FetchKml("http://www.site.com/file.kml");</example>
         public void FetchKml(string url)
         {
-            if (url.EndsWith("kml") || url.EndsWith("kmz"))
+            if (url.EndsWith("kml", true, System.Globalization.CultureInfo.CurrentCulture)
+                || url.EndsWith("kmz", true, System.Globalization.CultureInfo.CurrentCulture))
             {
                 if (this.Document != null)
                 {
@@ -285,12 +286,14 @@ namespace FC.GEPluginCtrls
         /// <example>GEWebBrowser.InvokeDoGeocode("London");</example>
         public IKmlPoint InvokeDoGeocode(string input)
         {
-            if (this.Document == null)
+            if (null != this.Document)
+            {
+                return (IKmlPoint)this.InvokeJavascript("jsDoGeocode", new object[] { input });
+            }
+            else
             {
                 return null;
             }
-
-            return (IKmlPoint)this.InvokeJavascript("jsDoGeocode", new object[] { input });
         }
 
         /// <summary>
@@ -300,7 +303,7 @@ namespace FC.GEPluginCtrls
         /// <example>GEWebBrowser.InjectJavascript("var say=function(msg){alert(msg);}");</example>
         public void InjectJavascript(string javascript)
         {
-            if (this.Document != null)
+            if (null != this.Document)
             {
                 try
                 {
@@ -342,7 +345,7 @@ namespace FC.GEPluginCtrls
         /// <example>GEWebBrowser.InvokeJavascript("say", new object[] { "hello" });</example>
         public object InvokeJavascript(string function, object[] args)
         {
-            if (this.Document != null)
+            if (null != this.Document)
             {
                 // see http://msdn.microsoft.com/en-us/library/4b1a88bz.aspx
                 return this.Document.InvokeScript(function, args);
@@ -465,6 +468,7 @@ namespace FC.GEPluginCtrls
 
         /// <summary>
         /// Reloads the document currently displayed in the control
+        /// Overides the default WebBrowser Refresh method
         /// </summary>
         public override void Refresh()
         {
@@ -630,8 +634,11 @@ namespace FC.GEPluginCtrls
 
             // Build the error data
             GEEventArgs ea = new GEEventArgs();
-            ea.Message = "line " + e.LineNumber.ToString() + " - " + e.Description;
-            ea.Data = "Document Error";
+
+            ea.Message = "Document Error";
+            ea.Data = "line " + e.LineNumber.ToString() + " - " + e.Description;
+
+            ////string badline = Properties.Resources.Plugin.Split('\n')[e.LineNumber - 1];
 
             // Bubble the error
             this.OnScriptError(e.ToString(), ea);
