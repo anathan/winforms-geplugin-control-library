@@ -19,8 +19,7 @@
 namespace FC.GEPluginCtrls
 {
     /// <summary>
-    /// This interface should be inherited by all the controls that work with the browser
-    /// It allows the control access to both the plugin and htmlDoument
+    /// This interface should be implemented by any controls that work with the browser
     /// </summary>
     public interface IGEControls
     {

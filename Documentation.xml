@@ -106,12 +106,19 @@
         </member>
         <member name="M:FC.GEPluginCtrls.GEWebBrowser.FetchKml(System.String)">
             <summary>
-            Load a kml/kmz file 
+            Load a remote kml/kmz file 
             This function requires a 'twin' LoadKml function in javascript
             this twin function will call "google.earth.fetchKml"
             </summary>
             <param name="url">path to a kml/kmz file</param>
             <example>GEWebBrowser.FetchKml("http://www.site.com/file.kml");</example>
+        </member>
+        <member name="M:FC.GEPluginCtrls.GEWebBrowser.FetchKmlLocal(System.String)">
+            <summary>
+            Loads a local kml file 
+            </summary>
+            <param name="path">path to a local kml file</param>
+            <example>GWEebBrower.FetchKml("C:\file.kml");</example>
         </member>
         <member name="M:FC.GEPluginCtrls.GEWebBrowser.GetPlugin">
             <summary>
@@ -298,8 +305,7 @@
         </member>
         <member name="T:FC.GEPluginCtrls.IGEControls">
             <summary>
-            This interface should be inherited by all the controls that work with the browser
-            It allows the control access to both the plugin and htmlDoument
+            This interface should be implemented by any controls that work with the browser
             </summary>
         </member>
         <member name="M:FC.GEPluginCtrls.IGEControls.SetBrowserInstance(FC.GEPluginCtrls.GEWebBrowser)">
@@ -1033,6 +1039,57 @@
             The default setting is true
             </summary>
         </member>
+        <member name="T:FC.GEPluginCtrls.IExternal">
+            <summary>
+            This interface should be implemented by any object
+            that is designed to act as the interface between javascript and managed code
+            </summary>
+        </member>
+        <member name="M:FC.GEPluginCtrls.IExternal.LoadKmlCallBack(GEPlugin.IKmlObject)">
+            <summary>
+            Should be called from javascript when a kml/kmz file has been loaded
+            </summary>
+            <param name="kmlObject">the loaded kml object</param>
+        </member>
+        <member name="M:FC.GEPluginCtrls.IExternal.Ready(GEPlugin.IGEPlugin)">
+            <summary>
+            Should be called from javascript when the plugin is ready
+            </summary>
+            <param name="ge">the plugin instance</param>
+        </member>
+        <member name="M:FC.GEPluginCtrls.IExternal.Error(System.String)">
+            <summary>
+            Should be called from javascript when there is an error
+            </summary>
+            <param name="message">the error message</param>
+        </member>
+        <member name="M:FC.GEPluginCtrls.IExternal.KmlEventCallBack(GEPlugin.IKmlEvent,System.String)">
+            <summary>
+            Should be called from javascript when there is a kml event
+            </summary>
+            <param name="kmlEvent">the kml event</param>
+            <param name="action">the event id</param>
+        </member>
+        <member name="E:FC.GEPluginCtrls.IExternal.PluginReady">
+            <summary>
+            Raised when the plugin is ready
+            </summary>
+        </member>
+        <member name="E:FC.GEPluginCtrls.IExternal.KmlEvent">
+            <summary>
+            Raised when there is a kml event
+            </summary>
+        </member>
+        <member name="E:FC.GEPluginCtrls.IExternal.KmlLoaded">
+            <summary>
+            Raised when a kml/kmz file has loaded
+            </summary>
+        </member>
+        <member name="E:FC.GEPluginCtrls.IExternal.ScriptError">
+            <summary>
+            Raised when there is a script error in the document 
+            </summary>
+        </member>
         <member name="T:FC.GEPluginCtrls.Maths">
             <summary>
             Various Geodesic methods to work with the plugin api
@@ -1284,7 +1341,7 @@
         </member>
         <member name="T:FC.GEPluginCtrls.ExternalEventHandeler">
             <summary>
-            Event handler for methods called from Javascript
+            Event handler for methods to be called from javascript
             </summary>
             <param name="sender">the sending object</param>
             <param name="e">the event arguments</param>
@@ -1299,11 +1356,11 @@
             Initializes a new instance of the External class.
             </summary>
         </member>
-        <member name="M:FC.GEPluginCtrls.External.LoadKmlCallBack(GEPlugin.IKmlFeature)">
+        <member name="M:FC.GEPluginCtrls.External.LoadKmlCallBack(GEPlugin.IKmlObject)">
             <summary>
             Called from javascript when a kml/kmz file has been loaded
             </summary>
-            <param name="kmlFeature">the loaded kml feature</param>
+            <param name="kmlObject">the loaded kml object</param>
         </member>
         <member name="M:FC.GEPluginCtrls.External.Ready(GEPlugin.IGEPlugin)">
             <summary>
@@ -1338,11 +1395,11 @@
             <param name="kmlEvent">The kmlEvent object</param>
             <param name="e">The Event arguments</param>
         </member>
-        <member name="M:FC.GEPluginCtrls.External.OnKmlLoaded(GEPlugin.IKmlFeature,FC.GEPluginCtrls.GEEventArgs)">
+        <member name="M:FC.GEPluginCtrls.External.OnKmlLoaded(GEPlugin.IKmlObject,FC.GEPluginCtrls.GEEventArgs)">
             <summary>
             Protected method for raising the KmlLoaded event
             </summary>
-            <param name="kmlFeature">The kmlFeature object</param>
+            <param name="kmlObject">The kml object</param>
             <param name="e">The Event arguments</param>
         </member>
         <member name="M:FC.GEPluginCtrls.External.OnScriptError(System.Object,FC.GEPluginCtrls.GEEventArgs)">

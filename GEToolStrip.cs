@@ -436,8 +436,14 @@ namespace FC.GEPluginCtrls
                     // add the user input to the custom 'per-session' string collection
                     this.navigationTextBoxStringCollection.Add(input);
                 }
-                
-                if (input.StartsWith("http", true, System.Globalization.CultureInfo.CurrentCulture))
+
+                if (System.IO.File.Exists(input) &&
+                    input.EndsWith("kml", true, System.Globalization.CultureInfo.CurrentCulture))
+                {
+                    // input is a local kml file
+                    this.gewb.FetchKmlLocal(input);
+                }
+                else if (input.StartsWith("http", true, System.Globalization.CultureInfo.CurrentCulture))
                 {
                     try
                     {
@@ -448,10 +454,12 @@ namespace FC.GEPluginCtrls
                         return;
                     }
 
+                    // input is a remote file
                     this.gewb.FetchKml(input);
                 }
                 else
                 {
+                    // attempt to gecode the input
                     this.gewb.InvokeDoGeocode(input);
                 }
             }

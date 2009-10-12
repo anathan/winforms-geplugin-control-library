@@ -20,6 +20,8 @@ namespace FC.GEPluginCtrls
 {
     using System;
     using System.Runtime.InteropServices;
+    using System.IO;
+    using System.IO.Compression;
     using GEPlugin;
 
     /// <summary>
@@ -55,8 +57,8 @@ namespace FC.GEPluginCtrls
                         for (int i = 0; i < subNodes.getLength(); i++)
                         {
                             IKmlObject subNode = subNodes.item(i);
-                            callBack(subNode);
                             WalkKmlDom(subNode, callBack);
+                            callBack(subNode);
                         }
                     }
 

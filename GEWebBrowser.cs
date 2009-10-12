@@ -25,6 +25,7 @@ namespace FC.GEPluginCtrls
     using System.Drawing.Imaging;
     using System.IO;
     using System.Reflection;
+    using System.Runtime.InteropServices;
     using System.Security.Permissions;
     using System.Windows.Forms;
     using GEPlugin;
@@ -94,9 +95,17 @@ namespace FC.GEPluginCtrls
             this.ScrollBarsEnabled = false;
             this.ScriptErrorsSuppressed = true;
             this.WebBrowserShortcutsEnabled = false;
-            this.ObjectForScripting = this.external;
             this.DocumentCompleted +=
                 new WebBrowserDocumentCompletedEventHandler(this.GEWebBrowser_DocumentCompleted);
+
+            try
+            {
+                this.ObjectForScripting = this.external;
+            }
+            catch (ArgumentException aex)
+            {
+                Debug.WriteLine("GEWebBrowser: " + aex.ToString());
+            }           
         }
 
         #region Public events
@@ -205,7 +214,7 @@ namespace FC.GEPluginCtrls
         }
 
         /// <summary>
-        /// Load a kml/kmz file 
+        /// Load a remote kml/kmz file 
         /// This function requires a 'twin' LoadKml function in javascript
         /// this twin function will call "google.earth.fetchKml"
         /// </summary>
@@ -213,14 +222,51 @@ namespace FC.GEPluginCtrls
         /// <example>GEWebBrowser.FetchKml("http://www.site.com/file.kml");</example>
         public void FetchKml(string url)
         {
-            if (this.Document != null)
+            if (url.EndsWith("kml") || url.EndsWith("kmz"))
             {
-                this.Document.InvokeScript(
-                    "jsFetchKml",
-                    new string[] { url });
+                if (this.Document != null)
+                {
+                    this.Document.InvokeScript(
+                        "jsFetchKml",
+                        new string[] { url });
+                }
             }
         }
 
+        /// <summary>
+        /// Loads a local kml file 
+        /// </summary>
+        /// <param name="path">path to a local kml file</param>
+        /// <example>GWEebBrower.FetchKml("C:\file.kml");</example>
+        public void FetchKmlLocal(string path)
+        {
+            if (File.Exists(path) && path.EndsWith("kml", true, System.Globalization.CultureInfo.CurrentCulture))
+            {
+                try
+                {
+                    FileStream stream = File.Open(path, FileMode.Open, FileAccess.Read);
+                    StreamReader reader = new StreamReader(stream);
+                    IKmlObject kml = geplugin.parseKml(reader.ReadToEnd());
+                    external.LoadKmlCallBack(kml as IKmlFeature);
+                }
+                catch (FileNotFoundException fnfex)
+                {
+                    Debug.WriteLine(fnfex.ToString());
+                    throw;
+                }
+                catch (UnauthorizedAccessException uaex)
+                {
+                    Debug.WriteLine(uaex.ToString());
+                    throw;
+                }
+                catch (COMException cex)
+                {
+                    Debug.WriteLine(cex.ToString());
+                    throw;
+                }
+            }
+        }
+        
         /// <summary>
         /// Get the plugin instance associated with the control
         /// </summary>
@@ -321,8 +367,16 @@ namespace FC.GEPluginCtrls
                 // whilst there are matching processes
                 while (gep.Length > 0)
                 {
-                    // terminate them
-                    gep[gep.Length - 1].Kill();
+                    try
+                    {
+                        // terminate them
+                        gep[gep.Length - 1].Kill();
+                    }
+                    catch (InvalidOperationException ioex)
+                    {
+                        Debug.WriteLine(ioex.ToString());
+                        throw;
+                    }
                 }
             }
             catch (InvalidOperationException ioex)
@@ -503,7 +557,15 @@ namespace FC.GEPluginCtrls
             {
                 // The data is just the version info
                 e.Message = "PluginVersion";
-                e.Data = this.geplugin.getPluginVersion();
+                try
+                {
+                    e.Data = this.geplugin.getPluginVersion();
+                }
+                catch (COMException cex)
+                {
+                    Debug.WriteLine(cex.ToString());
+                    throw;
+                }
             }
 
             // set the ready property
