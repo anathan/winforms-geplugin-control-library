@@ -48,6 +48,11 @@ Wrapper for the the google.earth.fetchKml method<br>
 *Parameters*<br>
 string: path to a kml/kmz file<br>
 
+_Void_ *FetchKmlLocal(System.String)*<br>
+Wrapper for the the google.earth.fetchKml method that allows local kml files<br>
+*Parameters*<br>
+string: path to a local kml file<br>
+
 _Void_ *InjectJavascript(System.String)*<br>
 Inject a javascript element into the document head <br>
 *Parameters*<br>
