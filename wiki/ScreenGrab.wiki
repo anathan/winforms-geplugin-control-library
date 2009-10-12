@@ -1,5 +1,5 @@
 #summary Using the ScreenGrab method
-#labels Phase-Implementation,Featured
+#labels Phase-Implementation
 
 = Introduction =
 
