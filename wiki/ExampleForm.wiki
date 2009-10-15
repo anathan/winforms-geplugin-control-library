@@ -1,7 +1,5 @@
-#labels Phase-Implementation,Featured
-<wiki:gadget url="http://earthapi.googlepages.com/ad.xml" border="0" width="728" height="90" />
-
 #summary A simple winform example
+#labels Phase-Implementation,Featured
 
 = Introduction =
 
@@ -66,3 +64,5 @@ GEStatusStrip geStatusStrip1;
     }
 
 }}}
+
+<wiki:gadget url="http://earthapi.googlepages.com/ad.xml" border="0" width="728" height="90" />
