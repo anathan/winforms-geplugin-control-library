@@ -322,7 +322,7 @@ namespace FC.GEPluginCtrls
                 this.SynchronizeOptions();
                 this.htmlDocument = browser.Document;
                 this.Enabled = true;
-                this.gewb.PluginReady += new GEWebBrowserEventHandeler(this.Gewb_PluginReady);
+                this.gewb.PluginReady += new GEWebBrowserEventHandler(this.Gewb_PluginReady);
             }
         }
 

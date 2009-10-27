@@ -35,7 +35,7 @@ namespace FC.GEPluginCtrls
     /// </summary>
     /// <param name="sender">The sending object</param>
     /// <param name="e">The event arguments</param>
-    public delegate void GEWebBrowserEventHandeler(object sender, GEEventArgs e);
+    public delegate void GEWebBrowserEventHandler(object sender, GEEventArgs e);
 
     /// <summary>
     /// This browser control holds the Google Earth Plug-in,
@@ -84,10 +84,10 @@ namespace FC.GEPluginCtrls
         {
             // External - COM visible class
             this.external = new External();
-            this.external.KmlLoaded += new ExternalEventHandeler(this.External_KmlLoaded);
-            this.external.PluginReady += new ExternalEventHandeler(this.External_PluginReady);
-            this.external.ScriptError += new ExternalEventHandeler(this.External_ScriptError);
-            this.external.KmlEvent += new ExternalEventHandeler(this.External_KmlEvent);
+            this.external.KmlLoaded += new ExternalEventHandler(this.External_KmlLoaded);
+            this.external.PluginReady += new ExternalEventHandler(this.External_PluginReady);
+            this.external.ScriptError += new ExternalEventHandler(this.External_ScriptError);
+            this.external.KmlEvent += new ExternalEventHandler(this.External_KmlEvent);
             
             // Setup the desired control defaults
             this.AllowNavigation = false;
@@ -113,22 +113,22 @@ namespace FC.GEPluginCtrls
         /// <summary>
         /// Raised when the plugin is ready
         /// </summary>
-        public event GEWebBrowserEventHandeler PluginReady;
+        public event GEWebBrowserEventHandler PluginReady;
 
         /// <summary>
         /// Raised when there is a kmlEvent
         /// </summary>
-        public event GEWebBrowserEventHandeler KmlEvent;
+        public event GEWebBrowserEventHandler KmlEvent;
 
         /// <summary>
         /// Raised when a kml/kmz file has loaded
         /// </summary>
-        public event GEWebBrowserEventHandeler KmlLoaded;
+        public event GEWebBrowserEventHandler KmlLoaded;
 
         /// <summary>
         /// Raised when there is a script error in the document 
         /// </summary>
-        public event GEWebBrowserEventHandeler ScriptError;
+        public event GEWebBrowserEventHandler ScriptError;
 
         #endregion
 
