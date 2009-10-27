@@ -28,7 +28,7 @@ namespace FC.GEPluginCtrls
     /// </summary>
     /// <param name="sender">the sending object</param>
     /// <param name="e">the event arguments</param>
-    public delegate void ExternalEventHandeler(object sender, GEEventArgs e);
+    public delegate void ExternalEventHandler(object sender, GEEventArgs e);
 
     /// <summary>
     /// This COM Visible class contains all the methods to be called from Javascript
@@ -48,22 +48,22 @@ namespace FC.GEPluginCtrls
         /// <summary>
         /// Raised when the plugin is ready
         /// </summary>
-        public event ExternalEventHandeler PluginReady;
+        public event ExternalEventHandler PluginReady;
 
         /// <summary>
         /// Raised when there is a kml event
         /// </summary>
-        public event ExternalEventHandeler KmlEvent;
+        public event ExternalEventHandler KmlEvent;
 
         /// <summary>
         /// Raised when a kml/kmz file has loaded
         /// </summary>
-        public event ExternalEventHandeler KmlLoaded;
+        public event ExternalEventHandler KmlLoaded;
 
         /// <summary>
         /// Raised when there is a script error in the document 
         /// </summary>
-        public event ExternalEventHandeler ScriptError;
+        public event ExternalEventHandler ScriptError;
         
         #endregion
 
