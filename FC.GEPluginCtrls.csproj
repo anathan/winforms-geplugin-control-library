@@ -56,42 +56,42 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DispatchHelpers.cs" />
+    <Compile Include="Helpers\DispatchHelpers.cs" />
     <Compile Include="External.cs" />
     <Compile Include="GEEventArgs.cs" />
-    <Compile Include="GEHelpers.cs" />
-    <Compile Include="GEStatusStrip.cs">
+    <Compile Include="Helpers\GEHelpers.cs" />
+    <Compile Include="Controls\GEStatusStrip.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="GEStatusStrip.Designer.cs">
+    <Compile Include="Controls\GEStatusStrip.Designer.cs">
       <DependentUpon>GEStatusStrip.cs</DependentUpon>
     </Compile>
-    <Compile Include="IExternal.cs" />
+    <Compile Include="Interfaces\IExternal.cs" />
     <Compile Include="ImageryBase.cs" />
-    <Compile Include="KmlHelpers.cs" />
+    <Compile Include="Helpers\KmlHelpers.cs" />
     <Compile Include="Maths.cs" />
-    <Compile Include="GEToolStrip.Designer.cs">
+    <Compile Include="Controls\GEToolStrip.Designer.cs">
       <DependentUpon>GEToolStrip.cs</DependentUpon>
     </Compile>
-    <Compile Include="GEWebBrowser.cs">
+    <Compile Include="Controls\GEWebBrowser.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="GEWebBrowser.Designer.cs">
+    <Compile Include="Controls\GEWebBrowser.Designer.cs">
       <DependentUpon>GEWebBrowser.cs</DependentUpon>
     </Compile>
-    <Compile Include="IGEControls.cs" />
-    <Compile Include="IHTMLScriptElement.cs" />
-    <Compile Include="KmlTreeView.cs">
+    <Compile Include="Interfaces\IGEControls.cs" />
+    <Compile Include="Interfaces\IHTMLScriptElement.cs" />
+    <Compile Include="Controls\KmlTreeView.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="KmlTreeView.Designer.cs">
+    <Compile Include="Controls\KmlTreeView.Designer.cs">
       <DependentUpon>KmlTreeView.cs</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="GEToolStrip.resx">
+    <EmbeddedResource Include="Controls\GEToolStrip.resx">
       <DependentUpon>GEToolStrip.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="KmlTreeView.resx">
+    <EmbeddedResource Include="Controls\KmlTreeView.resx">
       <DependentUpon>KmlTreeView.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
@@ -114,7 +114,7 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <Compile Include="GEToolStrip.cs">
+    <Compile Include="Controls\GEToolStrip.cs">
       <SubType>Component</SubType>
     </Compile>
   </ItemGroup>

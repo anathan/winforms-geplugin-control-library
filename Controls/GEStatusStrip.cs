@@ -87,7 +87,7 @@ namespace FC.GEPluginCtrls
         public GEStatusStrip()
             : base()
         {
-            InitializeComponent();
+            this.InitializeComponent();
             this.Enabled = false;
         }
 
@@ -174,11 +174,11 @@ namespace FC.GEPluginCtrls
             {
                 if (!value)
                 {
-                    apiVersionStatusLabel.Spring = true;
+                    this.apiVersionStatusLabel.Spring = true;
                 }
                 else
                 {
-                    apiVersionStatusLabel.Spring = false;
+                    this.apiVersionStatusLabel.Spring = false;
                 }
 
                 this.browserVersionStatusLabelVisible = value;
@@ -203,11 +203,11 @@ namespace FC.GEPluginCtrls
             {
                 if (!value && !this.browserVersionStatusLabelVisible)
                 {
-                    pluginVersionStatusLabel.Spring = true;
+                    this.pluginVersionStatusLabel.Spring = true;
                 }
                 else
                 {
-                    pluginVersionStatusLabel.Spring = false;
+                    this.pluginVersionStatusLabel.Spring = false;
                 }
 
                 this.apiVersionStatusLabelVisible = value;
