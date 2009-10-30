@@ -22,6 +22,7 @@ namespace FC.GEPluginCtrls
     using System.Diagnostics;
     using System.Runtime.InteropServices;
     using System.Text;
+    using System.Windows.Forms;
     using GEPlugin;
 
     /// <summary>
@@ -170,7 +171,7 @@ namespace FC.GEPluginCtrls
             }
             catch (COMException cex)
             {
-                Debug.WriteLine("GetAllFeaturesKml: " + cex.ToString());    
+                Debug.WriteLine("GetAllFeaturesKml: " + cex.ToString());
             }
 
             return kml.ToString();
@@ -199,7 +200,7 @@ namespace FC.GEPluginCtrls
             }
             catch (COMException cex)
             {
-                Debug.WriteLine("GetCurrentViewAsPoint: " + cex.ToString());                
+                Debug.WriteLine("GetCurrentViewAsPoint: " + cex.ToString());
             }
 
             return point;
@@ -256,31 +257,47 @@ namespace FC.GEPluginCtrls
         /// </summary>
         /// <param name="ge">the plugin</param>
         /// <param name="feature">the feature to look at</param>
+        /// <param name="gewb">a browser object for to access plugin via conduit</param>
         /// <returns>true on success</returns>
-        public static bool LookAt(IGEPlugin ge, IKmlFeature feature)
+        public static bool LookAt(IGEPlugin ge, IKmlFeature feature, GEWebBrowser gewb)
         {
             try
             {
+                IKmlAbstractView abstractView = null;
                 switch (feature.getType())
                 {
                     case "KmlFolder":
                     case "KmlDocument":
+                        if (null != feature.getAbstractView())
+                        {
+                            abstractView = feature.getAbstractView();
+                        }
+
+                        break;
                     case "KmlNetworkLink":
                         if (null != feature.getAbstractView())
                         {
-                            ge.getView().setAbstractView(feature.getAbstractView());
-                            return true;
+                            abstractView = feature.getAbstractView();
                         }
                         else
                         {
-                            return false;
+                            if (null != gewb)
+                            {
+                                string linkUrl = ((IKmlNetworkLink)feature).getLink().getHref();
+                                IKmlObject kmlObject = gewb.FetchKmlSynchronous(linkUrl);
+                                if (null != kmlObject)
+                                {
+                                    abstractView = kmlObject.getOwnerDocument().getAbstractView();
+                                }
+                            }
                         }
+
+                        break;
 
                     case "KmlPlacemark":
                         if (null != feature.getAbstractView())
                         {
-                            ge.getView().setAbstractView(feature.getAbstractView());
-                            return true;
+                            abstractView = feature.getAbstractView();
                         }
                         else
                         {
@@ -288,8 +305,17 @@ namespace FC.GEPluginCtrls
                             return LookAt(ge, placemark.getGeometry());
                         }
 
-                    default:
-                        return false;
+                        break;
+                }
+
+                if (null != abstractView)
+                {
+                    ge.getView().setAbstractView(abstractView);
+                    return true;
+                }
+                else
+                {
+                    return false;
                 }
             }
             catch (COMException cex)
@@ -317,18 +343,16 @@ namespace FC.GEPluginCtrls
                             return LookAt(ge, (IKmlPoint)geometry);
                         case "KmlPolygon":
                             IKmlPolygon polygon = (IKmlPolygon)geometry;
-                            LookAt(
+                            return LookAt(
                                 ge,
                                 polygon.getOuterBoundary().getCoordinates().get(0).getLatitude(),
                                 polygon.getOuterBoundary().getCoordinates().get(0).getLongitude());
-                            return true;
                         case "KmlLineString":
                             IKmlLineString lineString = (IKmlLineString)geometry;
-                            LookAt(
+                            return LookAt(
                                 ge,
                                 lineString.getCoordinates().get(0).getLatitude(),
                                 lineString.getCoordinates().get(0).getLongitude());
-                            return true;
                         case "KmlMultiGeometry":
                             ////IKmlMultiGeometry multiGeometry = (IKmlMultiGeometry)geometry;
                             ////multiGeometry.getGeometries().getFirstChild().getType();

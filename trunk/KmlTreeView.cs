@@ -98,16 +98,23 @@ namespace FC.GEPluginCtrls
         #region Public properties
         
         /// <summary>
-        /// Gets or sets a value ndicating if the treeview should check all child nodes
+        /// Gets or sets a value indicating whether the treeview should check all child nodes
         /// when a parent tree node is checked
         /// </summary>
         [Category("Control Options"),
-        Description("Gets or sets a value ndicating if the treeview should check all child nodes. Default True"),
+        Description("Gets or sets a value indicating whether the treeview should check all child nodes. Default True"),
         DefaultValueAttribute(true)]
         public bool CheckAllChildrenOnParentChecked
         {
-            get { return this.checkAllChildren; }
-            set { this.checkAllChildren = value; }
+            get 
+            {
+                return this.checkAllChildren; 
+            }
+
+            set
+            { 
+                this.checkAllChildren = value;
+            }
         }
 
         /// <summary>
@@ -477,10 +484,11 @@ namespace FC.GEPluginCtrls
 
                     if (e.Action != TreeViewAction.Unknown)
                     {
-                        if (checkAllChildren)
+                        if (this.checkAllChildren)
                         {
                             this.CheckAllChildNodes(e.Node);
                         }
+
                         this.CheckAllParentNodes(e.Node);
                     }
 
@@ -549,7 +557,7 @@ namespace FC.GEPluginCtrls
 
                     if (this.flyToOnDoubleClickNode)
                     {
-                        GEHelpers.LookAt(this.geplugin, feature);
+                        GEHelpers.LookAt(this.geplugin, feature, this.gewb);
                     }
                 }
             }

@@ -19,7 +19,9 @@
 namespace FC.GEPluginCtrls
 {
     using System;
+    using System.Collections.Generic;
     using System.Diagnostics;
+    using System.Reflection;
     using System.Runtime.InteropServices;
     using GEPlugin;
 
@@ -36,6 +38,16 @@ namespace FC.GEPluginCtrls
     [ComVisibleAttribute(true)]
     public class External : IExternal
     {
+        #region Private fields
+
+        /// <summary>
+        /// Stores fetched Kml Objects
+        /// </summary>
+        private static Dictionary<string, IKmlObject> kmlObjectCache =
+            new Dictionary<string, IKmlObject>();
+
+        #endregion
+
         /// <summary>
         /// Initializes a new instance of the External class.
         /// </summary>
@@ -64,26 +76,53 @@ namespace FC.GEPluginCtrls
         /// Raised when there is a script error in the document 
         /// </summary>
         public event ExternalEventHandler ScriptError;
-        
+
+        #endregion
+
+        #region Public properites
+
+        /// <summary>
+        /// Gets the store of fetched IKmlObjects
+        /// </summary>
+        public static Dictionary<string, IKmlObject> KmlObjectCache
+        {
+            get
+            {
+                return External.kmlObjectCache;
+            }
+        }
+
         #endregion
 
         #region Public methods
 
         /// <summary>
-        /// Called from javascript when a kml/kmz file has been loaded
+        /// Can be called from javascript to invoke method
         /// </summary>
-        /// <param name="kmlObject">the loaded kml object</param>
-        public void LoadKmlCallBack(IKmlObject kmlObject)
+        /// <param name="name">the name of method to be called</param>
+        /// <param name="parameters">array of parameter objects</param>
+        public void InvokeCallBack(string name, object parameters)
         {
             try
             {
-                this.OnKmlLoaded(
-                    kmlObject,
-                    new GEEventArgs());
+                object[] objArr;
+
+                if (parameters.GetType().Name == "__ComObject")
+                {
+                    objArr = DispatchHelpers.GetObjectArrayFrom__COMObjectArray(parameters);
+                }
+                else
+                {
+                    objArr = (object[])parameters;
+                }
+
+                GEEventArgs ea = new GEEventArgs(objArr);
+                MethodInfo info = this.GetType().GetMethod(name, BindingFlags.Instance | BindingFlags.NonPublic);
+                info.Invoke(this, new object[] { ea });
             }
             catch (COMException cex)
             {
-                Debug.WriteLine("LoadKmlCallBack: " + cex.ToString());
+                Debug.WriteLine("InvokeCallBack: " + cex.ToString());
                 throw;
             }
         }
@@ -114,7 +153,7 @@ namespace FC.GEPluginCtrls
         public void Error(string message)
         {
             this.OnScriptError(
-                this, 
+                this,
                 new GEEventArgs(message));
         }
 
@@ -171,13 +210,29 @@ namespace FC.GEPluginCtrls
         /// <summary>
         /// Protected method for raising the KmlLoaded event
         /// </summary>
-        /// <param name="kmlObject">The kml object</param>
         /// <param name="e">The Event arguments</param>
-        protected virtual void OnKmlLoaded(IKmlObject kmlObject, GEEventArgs e)
+        protected virtual void OnKmlLoaded(GEEventArgs e)
         {
+            IKmlObject kmlObject = (IKmlObject)((object[])e.Tag)[0];
+
             if (this.KmlLoaded != null)
             {
                 this.KmlLoaded(kmlObject, e);
+            }
+        }
+
+        /// <summary>
+        /// Protected method for capturing fetched IKmlObjects
+        /// </summary>
+        /// <param name="e">The Event arguments</param>
+        protected virtual void OnKmlFetched(GEEventArgs e)
+        {
+            IKmlObject kmlObject = (IKmlObject)((object[])e.Tag)[0];
+            string url = (string)((object[])e.Tag)[1];
+            lock (KmlObjectCache)
+            {
+                KmlObjectCache[url] = kmlObject;
+                GEWebBrowser.KmlObjectCacheSyncEvents[url].Set();
             }
         }
 
@@ -193,7 +248,7 @@ namespace FC.GEPluginCtrls
                 this.ScriptError(sender, e);
             }
         }
-        
+
         #endregion
     }
 }

@@ -622,7 +622,7 @@ namespace FC.GEPluginCtrls
             {
                 ImageryBase type = (ImageryBase)selectedItem.Tag;
 
-                ToolStripItemCollection imageryItems = imageryDropDownButton.DropDownItems;
+                ToolStripItemCollection imageryItems = this.imageryDropDownButton.DropDownItems;
 
                 foreach (ToolStripMenuItem menuItem in imageryItems)
                 {

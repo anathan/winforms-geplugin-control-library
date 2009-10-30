@@ -295,7 +295,6 @@ namespace FC.GEPluginCtrls
                 {
                     this.timer.Stop();
                     Debug.WriteLine("Timer_Tick: " + cex.ToString());
-                    throw;
                 }
 
                 if (100 == percent || 0 == percent)

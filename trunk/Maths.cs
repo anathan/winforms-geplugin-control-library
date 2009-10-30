@@ -29,6 +29,17 @@ namespace FC.GEPluginCtrls
     public static class Maths
     {
         /// <summary>
+        /// List of Cardinal comapass point names
+        /// </summary>
+        public static readonly string[] CardinalWords = new string[]
+        { 
+            "North", "North-East",
+            "East", "South-East",
+            "South", "South-West",
+            "West", "North-West "
+        };
+
+        /// <summary>
         /// Earth's radius in metres
         /// </summary>
         private const int EarthRadius = 6378135;
@@ -91,6 +102,38 @@ namespace FC.GEPluginCtrls
         public static double ConvertDegreesToRadians(this double degrees)
         {
             return degrees == 0 ? degrees : (degrees * Math.PI / 180.0);
+        }
+
+        /// <summary>
+        /// Converts a heading in the range [-180,180] to a bearing in the range [0,360] 
+        /// </summary>
+        /// <param name="heading">heading in the range [-180,180]</param>
+        /// <returns>bearing in the range [0,360]</returns>
+        public static double ConvertHeadingToBearing(double heading)
+        {
+            return heading <= 0 ? 360 - (-heading % 360) : heading % 360;
+        }
+
+        /// <summary>
+        /// Converts a heading in the range [-180,180] to the corresponding cardinal direction
+        /// </summary>
+        /// <param name="heading">decimal heading</param>
+        /// <returns>The cardinal point</returns>
+        public static string ConvertHeadingToCardinal(double heading)
+        {
+            return ConvertHeadingToCardinal(heading, CardinalWords);
+        }
+
+        /// <summary>
+        /// Converts a heading in the range [-180,180] to the corresponding cardinal direction
+        /// </summary>
+        /// <param name="heading">decimal heading</param>
+        /// <param name="points">A list of cardinal names</param>
+        /// <returns>The cardinal point</returns>
+        public static string ConvertHeadingToCardinal(double heading, string[] points)
+        {
+            int c = points.Length;
+            return points[(int)(Math.Round(Maths.ConvertHeadingToBearing(heading) / 360, 2) * c + 0.5) % c];
         }
 
         /// <summary>
@@ -163,7 +206,7 @@ namespace FC.GEPluginCtrls
         /// <param name="origin">The first point</param>
         /// <param name="destination">The second point</param>
         /// <returns>The distance between the given points in metres</returns>
-        public static double DistanceVincenty(IKmlPoint origin, IKmlPoint destination)
+        public static double DistanceVincenty(double[] origin, double[] destination)
         {
             // All equation numbers refer back to Vincenty's publication:
             // See http://www.ngs.noaa.gov/PUBS_LIB/inverse.pdf
@@ -175,10 +218,10 @@ namespace FC.GEPluginCtrls
             double f = 1 / 298.257223563;
 
             // get parametres as radians
-            double phi1 = origin.getLatitude().ConvertDegreesToRadians();
-            double phi2 = destination.getLatitude().ConvertDegreesToRadians();
-            double lambda1 = origin.getLongitude().ConvertDegreesToRadians();
-            double lambda2 = destination.getLongitude().ConvertDegreesToRadians();
+            double phi1 = origin[0].ConvertDegreesToRadians();
+            double phi2 = destination[0].ConvertDegreesToRadians();
+            double lambda1 = origin[1].ConvertDegreesToRadians();
+            double lambda2 = destination[1].ConvertDegreesToRadians();
 
             // calculations
             double a2 = a * a;
@@ -250,8 +293,8 @@ namespace FC.GEPluginCtrls
                 bcs = u2 / 1024 * (256 + u2 * (-128 + u2 * (74 - 47 * u2)));
 
                 // eq. 6
-                dsigma = bcs * sin_sigma * 
-                    (cos2_sigmam + bcs / 4 * 
+                dsigma = bcs * sin_sigma *
+                    (cos2_sigmam + bcs / 4 *
                     (cos_sigma * (-1 + 2 * cos2_sigmam2) - bcs / 6 *
                     cos2_sigmam * (-3 + 4 * sin2_sigma) *
                     (-3 + 4 * cos2_sigmam2)));
@@ -277,6 +320,21 @@ namespace FC.GEPluginCtrls
 
             // eq. 19
             return b * acs * (sigma - dsigma);
+        }
+
+        /// <summary>
+        /// Calculates the great circle distance between two points using the Vincenty formulae
+        /// This function is based on the geodesy-library code by Mike Gavaghan 
+        /// See http://www.gavaghan.org/blog/2007/08/06/c-gps-receivers-and-geocaching-vincentys-formula/
+        /// </summary>
+        /// <param name="origin">The first point</param>
+        /// <param name="destination">The second point</param>
+        /// <returns>The distance between the given points in metres</returns>
+        public static double DistanceVincenty(IKmlPoint origin, IKmlPoint destination)
+        {
+            return DistanceVincenty(
+                new double[] { origin.getLatitude(), origin.getLongitude() },
+                new double[] { destination.getLatitude(), destination.getLongitude() });
         }
 
         /// <summary>

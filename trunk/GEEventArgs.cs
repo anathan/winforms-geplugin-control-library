@@ -36,11 +36,26 @@ namespace FC.GEPluginCtrls
         private string data;
 
         /// <summary>
+        /// Event data object
+        /// </summary>
+        private object tag;
+
+        /// <summary>
         /// Initializes a new instance of the GEEventArgs class
         /// </summary>
         public GEEventArgs()
             : base()
         {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the GEEventArgs class
+        /// </summary>
+        /// <param name="tag">Tag to initialise with.</param>
+        public GEEventArgs(object tag)
+            : base()
+        {
+            this.Tag = tag;
         }
 
         /// <summary>
@@ -79,8 +94,31 @@ namespace FC.GEPluginCtrls
         /// </summary>
         public string Data
         {
-            get { return this.data; }
-            set { this.data = value; }
+            get 
+            {
+                return this.data;
+            }
+
+            set
+            {
+                this.data = value;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the event data tag
+        /// </summary>
+        public object Tag
+        {
+            get
+            { 
+                return this.tag;
+            }
+
+            set
+            {
+                this.tag = value;
+            }
         }
     }
 }
