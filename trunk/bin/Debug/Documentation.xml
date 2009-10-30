@@ -49,7 +49,7 @@
         </member>
         <member name="F:FC.GEPluginCtrls.GEWebBrowser.kmlObjectCacheSyncEvents">
             <summary>
-            Holds thread event handles for IKmlObjects collected.
+            Cache of kml event objects
             </summary>
         </member>
         <member name="F:FC.GEPluginCtrls.GEWebBrowser.external">
@@ -112,7 +112,7 @@
         <member name="M:FC.GEPluginCtrls.GEWebBrowser.FetchKml(System.String)">
             <summary>
             Load a remote kml/kmz file 
-            This function requires a 'twin' jsFetchKml function in javascript
+            This function requires a 'twin' LoadKml function in javascript
             this twin function will call "google.earth.fetchKml"
             </summary>
             <param name="url">path to a kml/kmz file</param>
@@ -121,7 +121,7 @@
         <member name="M:FC.GEPluginCtrls.GEWebBrowser.FetchKml(System.String,System.String)">
             <summary>
             Load a remote kml/kmz file 
-            This function requires a 'twin' jsFetchKml function in javascript
+            This function requires a 'twin' LoadKml function in javascript
             this twin function will call "google.earth.fetchKml"
             </summary>
             <param name="url">path to a kml/kmz file</param>
@@ -133,7 +133,7 @@
             Same as FetchKml but returns the IKmlObject
             </summary>
             <param name="url">path to a kml/kmz file</param>
-            <returns>The Kml object</returns>
+            <returns>The kml as a kmlObject</returns>
             <example>GEWebBrowser.FetchKmlSynchronous("http://www.site.com/file.kml");</example>
         </member>
         <member name="M:FC.GEPluginCtrls.GEWebBrowser.FetchKmlSynchronous(System.String,System.Int32)">
@@ -142,7 +142,7 @@
             </summary>
             <param name="url">path to a kml/kmz file</param>
             <param name="timeout">time to wait for return in ms</param>
-            <returns>The KmlObject</returns>
+            <returns>The kml as a kmlObject</returns>
             <example>GEWebBrowser.FetchKmlSynchronous("http://www.site.com/file.kml");</example>
         </member>
         <member name="M:FC.GEPluginCtrls.GEWebBrowser.FetchKmlLocal(System.String)">
@@ -326,7 +326,7 @@
         </member>
         <member name="P:FC.GEPluginCtrls.GEWebBrowser.KmlObjectCacheSyncEvents">
             <summary>
-            Gets the collection of thread event handles for IKmlObjects collected.
+            Gets thread event handles for IKmlObjects collected.
             </summary>
         </member>
         <member name="P:FC.GEPluginCtrls.GEWebBrowser.ImageyBase">
@@ -1390,6 +1390,14 @@
             <param name="message">Event message</param>
             <param name="data">Event data</param>
         </member>
+        <member name="M:FC.GEPluginCtrls.GEEventArgs.#ctor(System.String,System.String,System.Object)">
+            <summary>
+            Initializes a new instance of the GEEventArgs class
+            </summary>
+            <param name="message">Event message</param>
+            <param name="data">Event data</param>
+            <param name="tag">Event data object</param>
+        </member>
         <member name="P:FC.GEPluginCtrls.GEEventArgs.Message">
             <summary>
             Gets or sets the event message
@@ -1703,7 +1711,7 @@
             </summary>
             <param name="ge">The plugin instance</param>
         </member>
-        <member name="T:FC.GEPluginCtrls.GEWebBrowserEventHandeler">
+        <member name="T:FC.GEPluginCtrls.GEWebBrowserEventHandler">
             <summary>
             Main delegate event handler
             </summary>

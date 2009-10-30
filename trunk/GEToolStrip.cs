@@ -387,7 +387,7 @@ namespace FC.GEPluginCtrls
                     root.enableLayerById(this.geplugin.LAYER_TERRAIN, Convert.ToInt16(this.terrainMenuItem.Checked));
 
                     // imagery 
-                    foreach (ToolStripMenuItem item in imageryDropDownButton.DropDownItems)
+                    foreach (ToolStripMenuItem item in this.imageryDropDownButton.DropDownItems)
                     {
                         item.Enabled = true;
                         item.Checked = false;
