@@ -19,7 +19,9 @@
 namespace FC.GEPluginCtrls
 {
     using System;
+    using System.Collections.Generic;
     using System.ComponentModel;
+    using System.Data;
     using System.Diagnostics;
     using System.Drawing;
     using System.Drawing.Imaging;
@@ -27,9 +29,10 @@ namespace FC.GEPluginCtrls
     using System.Reflection;
     using System.Runtime.InteropServices;
     using System.Security.Permissions;
+    using System.Threading;
     using System.Windows.Forms;
     using GEPlugin;
-
+    
     /// <summary>
     /// Main delegate event handler
     /// </summary>
@@ -45,6 +48,12 @@ namespace FC.GEPluginCtrls
     public partial class GEWebBrowser : WebBrowser
     {
         #region Private fields
+
+        /// <summary>
+        /// Cache of kml event objects
+        /// </summary>
+        private static Dictionary<string, AutoResetEvent> kmlObjectCacheSyncEvents =
+            new Dictionary<string, AutoResetEvent>();
 
         /// <summary>
         /// External is A COM Visible class that holds all the public methods
@@ -88,7 +97,7 @@ namespace FC.GEPluginCtrls
             this.external.PluginReady += new ExternalEventHandler(this.External_PluginReady);
             this.external.ScriptError += new ExternalEventHandler(this.External_ScriptError);
             this.external.KmlEvent += new ExternalEventHandler(this.External_KmlEvent);
-            
+
             // Setup the desired control defaults
             this.AllowNavigation = false;
             this.IsWebBrowserContextMenuEnabled = false;
@@ -105,7 +114,7 @@ namespace FC.GEPluginCtrls
             catch (ArgumentException aex)
             {
                 Debug.WriteLine("GEWebBrowser: " + aex.ToString());
-            }           
+            }
         }
 
         #region Public events
@@ -135,6 +144,17 @@ namespace FC.GEPluginCtrls
         #region Public properties
 
         /// <summary>
+        /// Gets thread event handles for IKmlObjects collected.
+        /// </summary>
+        public static Dictionary<string, AutoResetEvent> KmlObjectCacheSyncEvents
+        {
+            get
+            {
+                return GEWebBrowser.kmlObjectCacheSyncEvents;
+            }
+        }
+
+        /// <summary>
         /// Gets or sets the current imagery base for the plug-in
         /// </summary>
         [Category("Control Options"),
@@ -149,7 +169,7 @@ namespace FC.GEPluginCtrls
 
             set
             {
-               this.CreateInstance(this.imageryBase);
+                this.CreateInstance(this.imageryBase);
             }
         }
 
@@ -222,18 +242,70 @@ namespace FC.GEPluginCtrls
         /// <example>GEWebBrowser.FetchKml("http://www.site.com/file.kml");</example>
         public void FetchKml(string url)
         {
-            if (url.EndsWith("kml", true, System.Globalization.CultureInfo.CurrentCulture)
-                || url.EndsWith("kmz", true, System.Globalization.CultureInfo.CurrentCulture))
+            this.FetchKml(url, "createCallback('OnKmlLoaded')");
+        }
+
+        /// <summary>
+        /// Load a remote kml/kmz file 
+        /// This function requires a 'twin' LoadKml function in javascript
+        /// this twin function will call "google.earth.fetchKml"
+        /// </summary>
+        /// <param name="url">path to a kml/kmz file</param>
+        /// <param name="completionCallback">name of javascript callback function to call after fetching completes</param>
+        /// <example>GEWebBrowser.FetchKml("http://www.site.com/file.kml", "createCallback(OnKmlLoaded)");</example>
+        public void FetchKml(string url, string completionCallback)
+        {
+            if (this.Document != null)
             {
-                if (this.Document != null)
-                {
-                    this.Document.InvokeScript(
-                        "jsFetchKml",
-                        new string[] { url });
-                }
+                this.Document.InvokeScript(
+                    "jsFetchKml",
+                    new string[] { url, completionCallback });
             }
         }
 
+        /// <summary>
+        /// Same as FetchKml but returns the IKmlObject
+        /// </summary>
+        /// <param name="url">path to a kml/kmz file</param>
+        /// <returns>The kml as a kmlObject</returns>
+        /// <example>GEWebBrowser.FetchKmlSynchronous("http://www.site.com/file.kml");</example>
+        public IKmlObject FetchKmlSynchronous(string url)
+        {
+            return this.FetchKmlSynchronous(url, 1000);
+        }
+
+        /// <summary>
+        /// Same as FetchKml but returns the IKmlObject
+        /// </summary>
+        /// <param name="url">path to a kml/kmz file</param>
+        /// <param name="timeout">time to wait for return in ms</param>
+        /// <returns>The kml as a kmlObject</returns>
+        /// <example>GEWebBrowser.FetchKmlSynchronous("http://www.site.com/file.kml");</example>
+        public IKmlObject FetchKmlSynchronous(string url, int timeout)
+        {
+            string completionCallback = String.Format("createCallback('OnKmlFetched', '{0}')", url);
+
+            if (this.Document != null)
+            {
+                KmlObjectCacheSyncEvents[url] = new AutoResetEvent(false);
+
+                this.Document.InvokeScript(
+                    "jsFetchKml",
+                    new string[] { url, completionCallback });
+
+                WaitHandle.WaitAll(
+                    new WaitHandle[] { KmlObjectCacheSyncEvents[url] },
+                    timeout);
+
+                if (External.KmlObjectCache.ContainsKey(url))
+                {
+                    return External.KmlObjectCache[url];
+                }
+            }
+
+            return null;
+        }
+        
         /// <summary>
         /// Loads a local kml file 
         /// </summary>
@@ -247,8 +319,8 @@ namespace FC.GEPluginCtrls
                 {
                     FileStream stream = File.Open(path, FileMode.Open, FileAccess.Read);
                     StreamReader reader = new StreamReader(stream);
-                    IKmlObject kml = geplugin.parseKml(reader.ReadToEnd());
-                    external.LoadKmlCallBack(kml as IKmlFeature);
+                    IKmlObject kml = this.geplugin.parseKml(reader.ReadToEnd());
+                    this.external.InvokeCallBack("OnKmlLoaded", new object[] { kml as IKmlFeature });
                 }
                 catch (FileNotFoundException fnfex)
                 {
@@ -267,7 +339,30 @@ namespace FC.GEPluginCtrls
                 }
             }
         }
-        
+
+        /// <summary>
+        /// Parse kml string and loads in plugin
+        /// </summary>
+        /// <param name="kml">kml string to process</param>
+        public void ParseKml(string kml)
+        {
+            try
+            {
+                IKmlObject kmlObj = this.geplugin.parseKml(kml);
+                if (null != kmlObj)
+                {
+                    this.external.InvokeCallBack(
+                        "OnKmlLoaded",
+                        new object[] { kmlObj as IKmlFeature });
+                }
+            }
+            catch (COMException cex)
+            {
+                Debug.WriteLine("ParseKml: " + cex.ToString());
+                throw;
+            }
+        }
+
         /// <summary>
         /// Get the plugin instance associated with the control
         /// </summary>
@@ -276,7 +371,7 @@ namespace FC.GEPluginCtrls
         {
             return this.geplugin;
         }
-        
+
         /// <summary>
         /// Invokes the javascript function 'doGeocode'
         /// Automatically flys to the location if one is found

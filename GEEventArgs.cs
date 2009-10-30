@@ -28,17 +28,17 @@ namespace FC.GEPluginCtrls
         /// <summary>
         /// Event message
         /// </summary>
-        private string message;
+        private string message = string.Empty;
 
         /// <summary>
         /// Event data
         /// </summary>
-        private string data;
+        private string data = string.Empty;
 
         /// <summary>
         /// Event data object
         /// </summary>
-        private object tag;
+        private object tag = null;
 
         /// <summary>
         /// Initializes a new instance of the GEEventArgs class
@@ -81,12 +81,33 @@ namespace FC.GEPluginCtrls
         }
 
         /// <summary>
+        /// Initializes a new instance of the GEEventArgs class
+        /// </summary>
+        /// <param name="message">Event message</param>
+        /// <param name="data">Event data</param>
+        /// <param name="tag">Event data object</param>
+        public GEEventArgs(string message, string data, object tag)
+            : base()
+        {
+            this.message = message;
+            this.data = data;
+            this.tag = tag;
+        }
+
+        /// <summary>
         /// Gets or sets the event message
         /// </summary>
         public string Message
         {
-            get { return this.message; }
-            set { this.message = value; }
+            get 
+            {
+                return this.message;
+            }
+            
+            set
+            {
+                this.message = value; 
+            }
         }
 
         /// <summary>
