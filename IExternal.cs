@@ -18,8 +18,9 @@
 // </summary>
 namespace FC.GEPluginCtrls
 {
+    using System;
     using GEPlugin;
-
+    
     /// <summary>
     /// This interface should be implemented by any object
     /// that is designed to act as the interface between javascript and managed code
@@ -47,10 +48,11 @@ namespace FC.GEPluginCtrls
         event ExternalEventHandler ScriptError;
 
         /// <summary>
-        /// Should be called from javascript when a kml/kmz file has been loaded
+        /// Can be called from javascript to invoke method
         /// </summary>
-        /// <param name="kmlObject">the loaded kml object</param>
-        void LoadKmlCallBack(IKmlObject kmlObject);
+        /// <param name="name">the name of method to be called</param>
+        /// <param name="parameters">array of parameter objects</param>
+        void InvokeCallBack(string name, object parameters);
 
         /// <summary>
         /// Should be called from javascript when the plugin is ready

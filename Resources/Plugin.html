@@ -29,7 +29,7 @@ along with this program.  If not, see http://www.gnu.org/licenses/
   <script type="text/javascript" src="http://www.google.com/jsapi"></script>
   <script type="text/javascript">
   /* <![CDATA[ */
-  
+
   google.load("earth", "1");
   google.load("maps", "2.xx");
 
@@ -49,9 +49,9 @@ along with this program.  If not, see http://www.gnu.org/licenses/
     jsCreateInstance('earth');
   }
 
-  var failureCallback_ = function(object)
+  var failureCallback_ = function(error)
   {
-    application.Error("Plugin failed to load");
+    application.Error("Plugin failed to load: " + error);
   }
 
   var initCallback_ = function(object)
@@ -62,16 +62,33 @@ along with this program.  If not, see http://www.gnu.org/licenses/
     ge.getWindow().setVisibility(true);
     application.Ready(ge);
   }
-  
-  var loadKmlCallBack_ = function(kmlObject)
+
+  var createCallback = function()
   {
-    if (kmlObject)
+    var name = arguments[0];  
+    var additionalArgs = new Array();
+    
+    for (var i = 1; i < arguments.length; i++)
     {
-      application.LoadKmlCallBack(kmlObject);
+      additionalArgs.push(arguments[i]);
     }
-    else
-    {
-      application.Error("Kml failed to load");
+      
+    return function(kmlObject) {
+      var parameters = [kmlObject];
+
+      for (var i = 0; i < additionalArgs.length; i++)
+      {
+        parameters.push(additionalArgs[i]);
+      }
+
+      if (kmlObject)
+      {
+        application.InvokeCallBack(name, parameters);
+      }
+      else
+      {
+        application.Error("Kml failed to load");
+      }
     }
   }
   
@@ -127,19 +144,19 @@ along with this program.  If not, see http://www.gnu.org/licenses/
   }
   
   // google.earth.fetchKml wrapper
-  var jsFetchKml = function(url)
+  var jsFetchKml = function(url, callback)
   {
-    google.earth.fetchKml(ge, url, loadKmlCallBack_);
+      google.earth.fetchKml(ge, url, eval(callback));
   }
 
-  // getLatLng wrapper
+  // GClientGeocoder.getLatLng wrapper
   var jsDoGeocode = function(address)
   {   
     geocoder.getLatLng(address, function(point)
     {
       if (point)
       {
-        var lookat = ge.createLookAt("");
+        var lookat = ge.createLookAt('');
         lookat.set(point.y, point.x, 100, ge.ALTITUDE_RELATIVE_TO_GROUND, 0, 0, 1000);
         ge.getView().setAbstractView(lookat);
         return(point);

@@ -19,9 +19,9 @@
 namespace FC.GEPluginCtrls
 {
     using System;
-    using System.Runtime.InteropServices;
     using System.IO;
     using System.IO.Compression;
+    using System.Runtime.InteropServices;
     using GEPlugin;
 
     /// <summary>

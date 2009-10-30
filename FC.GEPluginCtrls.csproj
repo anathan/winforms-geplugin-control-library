@@ -56,6 +56,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DispatchHelpers.cs" />
     <Compile Include="External.cs" />
     <Compile Include="GEEventArgs.cs" />
     <Compile Include="GEHelpers.cs" />
@@ -143,4 +144,10 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+  <PropertyGroup>
+    <PreBuildEvent>
+    </PreBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
+  </PropertyGroup>
 </Project>
