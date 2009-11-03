@@ -1,4 +1,4 @@
-﻿// <copyright file="IHTMLScriptElement.cs" company="FC">
+﻿// <copyright file="IHtmlScriptElement.cs" company="FC">
 // Copyright (c) 2008 Fraser Chapman
 // </copyright>
 // <author>Fraser Chapman</author>

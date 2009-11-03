@@ -27,7 +27,7 @@ namespace FC.GEPluginCtrls
     /// <summary>
     /// This class provides basic Kml helper methods
     /// </summary>
-    public class KmlHelpers
+    public static class KmlHelpers
     {
         /// <summary>
         /// A callback delegate for all items iterated over in WalkKmlDom
@@ -40,7 +40,7 @@ namespace FC.GEPluginCtrls
         /// see: http://code.google.com/p/earth-api-samples/source/browse/trunk/lib/kmldomwalk.js
         /// </summary>
         /// <param name="kmlObject">The kml object to parse</param>
-        /// <param name="callBack">The funciton to call on each node</param>
+        /// <param name="callBack">A function to call on each node visited</param>
         public static void WalkKmlDom(IKmlObject kmlObject, CallBack callBack)
         {
             string type = kmlObject.getType();

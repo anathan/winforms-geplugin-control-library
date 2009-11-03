@@ -290,7 +290,7 @@ namespace FC.GEPluginCtrls
                     TreeNode childNode = new TreeNode();
 
                     IKmlObjectList subNodes = kmlContainer.getFeatures().getChildNodes();
-
+                    
                     for (int i = 0; i < subNodes.getLength(); i++)
                     {
                         IKmlObject subNode = subNodes.item(i);
@@ -453,7 +453,7 @@ namespace FC.GEPluginCtrls
         {
             if (text.Length > length)
             {
-                return text.Substring(0, length) + "...";
+                return string.Format("{0}{1}", text.Substring(0, length) + "...");
             }
             else
             {

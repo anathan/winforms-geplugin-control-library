@@ -56,8 +56,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AltitudeMode.cs" />
     <Compile Include="Helpers\DispatchHelpers.cs" />
-    <Compile Include="External.cs" />
+    <Compile Include="Interfaces\External.cs" />
     <Compile Include="GEEventArgs.cs" />
     <Compile Include="Helpers\GEHelpers.cs" />
     <Compile Include="Controls\GEStatusStrip.cs">
@@ -80,7 +81,7 @@
       <DependentUpon>GEWebBrowser.cs</DependentUpon>
     </Compile>
     <Compile Include="Interfaces\IGEControls.cs" />
-    <Compile Include="Interfaces\IHTMLScriptElement.cs" />
+    <Compile Include="Interfaces\IHtmlScriptElement.cs" />
     <Compile Include="Controls\KmlTreeView.cs">
       <SubType>Component</SubType>
     </Compile>

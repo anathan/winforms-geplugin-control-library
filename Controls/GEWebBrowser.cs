@@ -320,7 +320,9 @@ namespace FC.GEPluginCtrls
                     FileStream stream = File.Open(path, FileMode.Open, FileAccess.Read);
                     StreamReader reader = new StreamReader(stream);
                     IKmlObject kml = this.geplugin.parseKml(reader.ReadToEnd());
-                    this.external.InvokeCallBack("OnKmlLoaded", new object[] { kml as IKmlFeature });
+                    this.external.InvokeCallBack(
+                        "OnKmlLoaded",
+                        new object[] { kml as IKmlFeature });
                 }
                 catch (FileNotFoundException fnfex)
                 {
@@ -543,7 +545,8 @@ namespace FC.GEPluginCtrls
                         rectangle.Height,
                         PixelFormat.Format32bppArgb);
                 Graphics graphics = Graphics.FromImage(bitmap);
-                Point point = new Point();
+                System.Drawing.Point point = 
+                    new System.Drawing.Point();
 
                 // copy the current display as a bitmap
                 graphics.CopyFromScreen(
