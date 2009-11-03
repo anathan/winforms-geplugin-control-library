@@ -55,43 +55,33 @@ namespace FC.GEPluginCtrls
         private const double MilesToKilometres = 0.621371192;
 
         /// <summary>
-        /// Keep a Longitudinal angle in the [-180, 180] range
+        /// Calculates the angular distance between two points
         /// </summary>
-        /// <param name="angle">Longitude to fix</param>
-        /// <returns>Longitude in range</returns>
-        public static double FixLongitudinalAngle(this double angle)
+        /// <param name="origin">The first point</param>
+        /// <param name="destination">The second point</param>
+        /// <returns>The distance between the points</returns>
+        public static double AngularDistance(double[] origin, double[] destination)
         {
-            while (angle < -180)
-            {
-                angle += 360;
-            }
+            double phi1 = ConvertDegreesToRadians(origin[0]);
+            double phi2 = ConvertDegreesToRadians(destination[0]);
+            double dphi = ConvertDegreesToRadians(destination[0] - origin[0]);
+            double dlambda = ConvertDegreesToRadians(destination[1] - origin[1]);
+            double a = Math.Pow(Math.Sin(dphi / 2), 2) +
+                Math.Cos(phi1) * Math.Cos(phi2) *
+                Math.Pow(Math.Sin(dlambda / 2), 2);
 
-            while (angle > 180)
-            {
-                angle -= 360;
-            }
-
-            return angle;
+            return 2 * Math.Atan2(Math.Sqrt(a), Math.Sqrt(1 - a));
         }
 
         /// <summary>
-        /// Keep a Longitudinal angle in the [-90, 90] range
+        /// Calculates the angular distance between two points
         /// </summary>
-        /// <param name="angle">Longitude to fix</param>
-        /// <returns>The angle in range</returns>
-        public static double FixLatitudinalAngle(this double angle)
+        /// <param name="origin">The first point</param>
+        /// <param name="destination">The second point</param>
+        /// <returns>The distance between the points</returns>
+        public static double AngularDistance(IKmlPoint origin, IKmlPoint destination)
         {
-            while (angle < -90)
-            {
-                angle += 90;
-            }
-
-            while (angle > 90)
-            {
-                angle -= 90;
-            }
-
-            return angle;
+            return AngularDistance(origin.PointToDouble(), destination.PointToDouble());
         }
 
         /// <summary>
@@ -99,7 +89,7 @@ namespace FC.GEPluginCtrls
         /// </summary>
         /// <param name="degrees">value in degrees</param>
         /// <returns>value in radians</returns>
-        public static double ConvertDegreesToRadians(this double degrees)
+        public static double ConvertDegreesToRadians(double degrees)
         {
             return degrees == 0 ? degrees : (degrees * Math.PI / 180.0);
         }
@@ -133,7 +123,7 @@ namespace FC.GEPluginCtrls
         public static string ConvertHeadingToCardinal(double heading, string[] points)
         {
             int c = points.Length;
-            return points[(int)(Math.Round(Maths.ConvertHeadingToBearing(heading) / 360, 2) * c + 0.5) % c];
+            return points[(int)((Math.Round(Maths.ConvertHeadingToBearing(heading) / 360, 2) * c) + 0.5) % c];
         }
 
         /// <summary>
@@ -141,7 +131,7 @@ namespace FC.GEPluginCtrls
         /// </summary>
         /// <param name="radains">value in radians</param>
         /// <returns>value in degrees</returns>
-        public static double ConvertRadiansToDegrees(this double radains)
+        public static double ConvertRadiansToDegrees(double radains)
         {
             return radains == 0 ? radains : (radains / Math.PI * 180.0);
         }
@@ -153,7 +143,7 @@ namespace FC.GEPluginCtrls
         /// <returns>distance in miles</returns>
         public static double ConvertKilometresToMiles(double kilometres)
         {
-            return kilometres * MilesToKilometres;
+            return kilometres == 0 ? kilometres : kilometres * MilesToKilometres;
         }
 
         /// <summary>
@@ -163,28 +153,61 @@ namespace FC.GEPluginCtrls
         /// <returns>distance in kilometrees</returns>
         public static double ConvertMilesToKilometres(double miles)
         {
-            return miles / MilesToKilometres;
+            return miles == 0 ? miles : miles / MilesToKilometres;
         }
 
         /// <summary>
-        /// Keep a number in the [0,PI] range
+        /// Calculates the destination point along a geodesic, given an initial point, heading and distance
+        /// see http://www.movable-type.co.uk/scripts/latlong.html
         /// </summary>
-        /// <param name="radians">value in radians</param>
-        /// <returns>normalised angle in radians</returns>
-        public static double NormaliseAngle(this double radians)
+        /// <param name="origin">The first point</param>
+        /// <param name="heading">heading in degrees</param>
+        /// <param name="distance">distance in metres</param>
+        /// <returns>The point at the location along the geodesic</returns>
+        public static double[] Destination(double[] origin, double heading, double distance)
         {
-            radians = radians % (2 * Math.PI);
-            return radians >= 0 ? radians : radians + (2 * Math.PI);
+            double phi1 = ConvertDegreesToRadians(origin[0]);
+            double lambda1 = ConvertDegreesToRadians(origin[1]);
+
+            double sin_phi1 = Math.Sin(phi1);
+            double angularDistance = distance / EarthRadius;
+            double heading_rad = ConvertDegreesToRadians(heading);
+            double sin_angularDistance = Math.Sin(angularDistance);
+            double cos_angularDistance = Math.Cos(angularDistance);
+
+            double phi2 =
+                Math.Asin(sin_phi1 * cos_angularDistance + Math.Cos(phi1) *
+                sin_angularDistance * Math.Cos(heading_rad));
+
+            return new double[] 
+            {
+                ConvertRadiansToDegrees(phi2),
+                ConvertRadiansToDegrees(Math.Atan2(Math.Sin(heading_rad) * sin_angularDistance * Math.Cos(phi2), cos_angularDistance - sin_phi1 * Math.Sin(phi2))) + origin[1]
+            };
         }
 
         /// <summary>
-        /// Reverses a number in the [0,PI] range
+        /// Calculates the destination point along a geodesic, given an initial point, heading and distance
+        /// see http://www.movable-type.co.uk/scripts/latlong.html
         /// </summary>
-        /// <param name="radians">value in radians</param>
-        /// <returns>The oposite angle</returns>
-        public static double ReverseAngle(this double radians)
+        /// <param name="origin">The first point</param>
+        /// <param name="heading">heading in degrees</param>
+        /// <param name="distance">distance in metres</param>
+        /// <returns>The point at the location along the geodesic</returns>
+        public static double[] Destination(IKmlPoint origin, double heading, double distance)
         {
-            return NormaliseAngle(radians + Math.PI);
+            return Destination(origin.PointToDouble(), heading, distance);
+        }
+
+        /// <summary>
+        /// Calculates the great circle distance between two points using the Haversine formula
+        /// </summary>
+        /// <param name="origin">The first point</param>
+        /// <param name="destination">The second point</param>
+        /// <returns>The distance between the given points in metres</returns>
+        public static double DistanceHaversine(double[] origin, double[] destination)
+        {
+            return EarthRadius * AngularDistance(origin, destination);
         }
 
         /// <summary>
@@ -218,10 +241,10 @@ namespace FC.GEPluginCtrls
             double f = 1 / 298.257223563;
 
             // get parametres as radians
-            double phi1 = origin[0].ConvertDegreesToRadians();
-            double phi2 = destination[0].ConvertDegreesToRadians();
-            double lambda1 = origin[1].ConvertDegreesToRadians();
-            double lambda2 = destination[1].ConvertDegreesToRadians();
+            double phi1 = ConvertDegreesToRadians(origin[0]);
+            double phi2 = ConvertDegreesToRadians(destination[0]);
+            double lambda1 = ConvertDegreesToRadians(origin[1]);
+            double lambda2 = ConvertDegreesToRadians(destination[1]);
 
             // calculations
             double a2 = a * a;
@@ -338,22 +361,50 @@ namespace FC.GEPluginCtrls
         }
 
         /// <summary>
-        /// Calculates the angular distance between teo points
+        /// Keep a Longitudinal angle in the [-180, 180] range
         /// </summary>
-        /// <param name="point1">The fisrt point</param>
-        /// <param name="point2">The decond point</param>
-        /// <returns>The distance betweent the given points</returns>
-        public static double AngularDistance(IKmlPoint point1, IKmlPoint point2)
+        /// <param name="angle">Longitude to fix</param>
+        /// <returns>Longitude in range</returns>
+        public static double FixLongitudinalAngle(double angle)
         {
-            double phi1 = point1.getLatitude().ConvertDegreesToRadians();
-            double phi2 = point2.getLatitude().ConvertDegreesToRadians();
-            double dphi = (point2.getLatitude() - point1.getLatitude()).ConvertDegreesToRadians();
-            double dlambda = (point2.getLongitude() - point1.getLongitude()).ConvertDegreesToRadians();
-            double a = Math.Pow(Math.Sin(dphi / 2), 2) +
-                Math.Cos(phi1) * Math.Cos(phi2) *
-                Math.Pow(Math.Sin(dlambda / 2), 2);
+            if (angle % 360 == 180)
+            {
+                return 180;
+            }
 
-            return 2 * Math.Atan2(Math.Sqrt(a), Math.Sqrt(1 - a));
+            angle = angle % 360;
+
+            return angle < -180 ? angle + 360 : angle > 180 ? angle - 360 : angle;
+        }
+
+        /// <summary>
+        /// Keep a Longitudinal angle in the [-90, 90] range
+        /// </summary>
+        /// <param name="angle">Longitude to fix</param>
+        /// <returns>The angle in range</returns>
+        public static double FixLatitudinalAngle(double angle)
+        {
+            return Math.Max(-90, Math.Min(90, angle));
+        }
+
+        /// <summary>
+        /// Calculates the initial heading/bearing at which an object at the start
+        /// point will need to travel to get to the destination point.
+        /// </summary>
+        /// <param name="origin">The first point</param>
+        /// <param name="destination">The second point</param>
+        /// <returns>The initial heading required ibn degrees</returns>
+        public static double Heading(double[] origin, double[] destination)
+        {
+            double phi1 = ConvertDegreesToRadians(origin[0]);
+            double phi2 = ConvertDegreesToRadians(destination[0]);
+            double cos_phi2 = Math.Cos(phi2);
+            double dlambda = ConvertDegreesToRadians(destination[1] - origin[1]);
+
+            return NormaliseAngle(
+                Math.Atan2(
+                Math.Sin(dlambda) * cos_phi2,
+                ConvertRadiansToDegrees(Math.Cos(phi1) * Math.Sin(phi2) - Math.Sin(phi1) * cos_phi2 * Math.Cos(dlambda))));
         }
 
         /// <summary>
@@ -365,15 +416,7 @@ namespace FC.GEPluginCtrls
         /// <returns>The initial heading required ibn degrees</returns>
         public static double Heading(IKmlPoint origin, IKmlPoint destination)
         {
-            double phi1 = origin.getLatitude().ConvertDegreesToRadians();
-            double phi2 = destination.getLatitude().ConvertDegreesToRadians();
-            double cos_phi2 = Math.Cos(phi2);
-            double dlambda = (destination.getLongitude() - origin.getLongitude()).ConvertDegreesToRadians();
-
-            return NormaliseAngle(
-                Math.Atan2(
-                Math.Sin(dlambda) * cos_phi2,
-                Math.Cos(phi1) * Math.Sin(phi2) - Math.Sin(phi1) * cos_phi2 * Math.Cos(dlambda))).ConvertRadiansToDegrees();
+            return Heading(origin.PointToDouble(), destination.PointToDouble());
         }
 
         /// <summary>
@@ -384,7 +427,7 @@ namespace FC.GEPluginCtrls
         /// <param name="destination">The second point</param>
         /// <param name="fraction">Intermediate location as a decimal fraction (T value)</param>
         /// <returns>The point at the specified fraction along the geodesic</returns>
-        public static IKmlPoint IntermediatePoint(IKmlPoint origin, IKmlPoint destination, double fraction)
+        public static double[] IntermediatePoint(double[] origin, double[] destination, double fraction)
         {
             if (fraction > 1 || fraction < 0)
             {
@@ -392,10 +435,10 @@ namespace FC.GEPluginCtrls
             }
 
             // TODO: check for antipodality and fail w/ exception in that case 
-            double phi1 = origin.getLatitude().ConvertDegreesToRadians();
-            double phi2 = destination.getLatitude().ConvertDegreesToRadians();
-            double lambda1 = origin.getLongitude().ConvertDegreesToRadians();
-            double lambda2 = destination.getLongitude().ConvertDegreesToRadians();
+            double phi1 = ConvertDegreesToRadians(origin[0]);
+            double phi2 = ConvertDegreesToRadians(destination[0]);
+            double lambda1 = ConvertDegreesToRadians(origin[1]);
+            double lambda2 = ConvertDegreesToRadians(destination[1]);
 
             double cos_phi1 = Math.Cos(phi1);
             double cos_phi2 = Math.Cos(phi2);
@@ -408,46 +451,59 @@ namespace FC.GEPluginCtrls
             double y = a * cos_phi1 * Math.Sin(lambda1) + b * cos_phi2 * Math.Sin(lambda2);
             double z = a * Math.Sin(phi1) + b * Math.Sin(phi2);
 
-            IKmlPoint result = origin;
-            result.set(0, 0, 0, 0, 0, 0);
-            result.setLatLng(
-                Math.Atan2(z, Math.Sqrt(Math.Pow(x, 2) + Math.Pow(y, 2))).ConvertRadiansToDegrees(),
-                Math.Atan2(y, x).ConvertRadiansToDegrees());
-
-            return result;
+            return new double[] 
+            { 
+                ConvertRadiansToDegrees(Math.Atan2(z, Math.Sqrt(Math.Pow(x, 2) + Math.Pow(y, 2)))),
+                ConvertRadiansToDegrees(Math.Atan2(y, x))
+            };
         }
 
         /// <summary>
-        /// Calculates the destination point along a geodesic, given an initial point, heading and distance
-        /// see http://www.movable-type.co.uk/scripts/latlong.html
+        /// Calculates an intermediate point on the geodesic between the two given points 
+        /// See: http://williams.best.vwh.net/avform.htm#Intermediate
         /// </summary>
         /// <param name="origin">The first point</param>
-        /// <param name="heading">heading in degrees</param>
-        /// <param name="distance">distance in metres</param>
-        /// <returns>The point at the location along the geodesic</returns>
-        public static IKmlPoint Destination(IKmlPoint origin, double heading, double distance)
+        /// <param name="destination">The second point</param>
+        /// <param name="fraction">Intermediate location as a decimal fraction (T value)</param>
+        /// <returns>The point at the specified fraction along the geodesic</returns>
+        public static double[] IntermediatePoint(IKmlPoint origin, IKmlPoint destination, double fraction)
         {
-            double phi1 = origin.getLatitude().ConvertDegreesToRadians();
-            double lambda1 = origin.getLongitude().ConvertDegreesToRadians();
+            return IntermediatePoint(origin.PointToDouble(), destination.PointToDouble(), fraction);
+        }
 
-            double sin_phi1 = Math.Sin(phi1);
-            double angularDistance = distance / EarthRadius;
-            double heading_rad = heading.ConvertDegreesToRadians();
-            double sin_angularDistance = Math.Sin(angularDistance);
-            double cos_angularDistance = Math.Cos(angularDistance);
+        /// <summary>
+        /// Extension method to convert an IkmlPoint object to a System.Double in lat,lng,alt format
+        /// </summary>
+        /// <param name="point">The point to convert</param>
+        /// <returns>The point as an array of doubles</returns>
+        public static double[] PointToDouble(this IKmlPoint point)
+        {
+            return new double[] { 
+                point.getLatitude(),
+                point.getLongitude(),
+                point.getAltitude()
+            };
+        }
 
-            double phi2 =
-                Math.Asin(sin_phi1 * cos_angularDistance + Math.Cos(phi1) *
-                sin_angularDistance * Math.Cos(heading_rad));
+        /// <summary>
+        /// Keep a number in the [0,PI] range
+        /// </summary>
+        /// <param name="radians">value in radians</param>
+        /// <returns>normalised angle in radians</returns>
+        public static double NormaliseAngle(double radians)
+        {
+            radians = radians % (2 * Math.PI);
+            return radians >= 0 ? radians : radians + (2 * Math.PI);
+        }
 
-            IKmlPoint result = origin;
-            result.set(0, 0, 0, 0, 0, 0);
-            result.setLatLng(
-                phi2.ConvertRadiansToDegrees(),
-                Math.Atan2(Math.Sin(heading_rad) * sin_angularDistance * Math.Cos(phi2), cos_angularDistance - sin_phi1 * Math.Sin(phi2)).ConvertRadiansToDegrees() + origin.getLongitude());
-
-            return result;
+        /// <summary>
+        /// Reverses a number in the [0,PI] range
+        /// </summary>
+        /// <param name="radians">value in radians</param>
+        /// <returns>The oposite angle</returns>
+        public static double ReverseAngle(double radians)
+        {
+            return NormaliseAngle(radians + Math.PI);
         }
     }
 }
-

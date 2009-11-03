@@ -129,13 +129,13 @@ namespace FC.GEPluginCtrls
         /// <returns>A linestring placemark</returns>
         public static IKmlPlacemark CreateLineString(IGEPlugin ge, IKmlPoint p1, IKmlPoint p2)
         {
-            IKmlPlacemark lineStringPlacemark = new KmlPlacemarkCoClass();
+            IKmlPlacemark placemark = new KmlPlacemarkCoClass();
 
             try
             {
-                lineStringPlacemark = ge.createPlacemark(String.Empty);
+                placemark = ge.createPlacemark(String.Empty);
                 IKmlLineString lineString = ge.createLineString(String.Empty);
-                lineStringPlacemark.setGeometry(lineString);
+                placemark.setGeometry(lineString);
                 lineString.setTessellate(1);
                 lineString.getCoordinates().pushLatLngAlt(p1.getLatitude(), p1.getLongitude(), 0);
                 lineString.getCoordinates().pushLatLngAlt(p2.getLatitude(), p2.getLongitude(), 0);
@@ -145,7 +145,7 @@ namespace FC.GEPluginCtrls
                 Debug.WriteLine("CreateLineString: " + cex.ToString());
             }
 
-            return lineStringPlacemark;
+            return placemark;
         }
 
         /// <summary>
@@ -422,10 +422,9 @@ namespace FC.GEPluginCtrls
             try
             {
                 IGEFeatureContainer features = ge.getFeatures();
-                IKmlObject feature = features.getFirstChild();
-                while (feature != null)
+                while (features.getLastChild() != null)
                 {
-                    features.removeChild(feature);
+                    features.removeChild(features.getLastChild());
                 }
             }
             catch (COMException cex)
