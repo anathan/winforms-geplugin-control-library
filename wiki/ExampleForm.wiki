@@ -28,13 +28,12 @@ GEStatusStrip geStatusStrip1;
             // load the test page
             geWebBrowser1.LoadEmbededPlugin();
 
-            // set up some event handlers
+            // set up some event handelers
             geWebBrowser1.PluginReady += new GEWebBrowserEventHandeler(geWebBrowser1_PluginReady);
             geWebBrowser1.KmlLoaded += new GEWebBrowserEventHandeler(geWebBrowser1_KmlLoaded);
             geWebBrowser1.KmlEvent += new GEWebBrowserEventHandeler(geWebBrowser1_KmlEvent);
             geWebBrowser1.ViewEvent += new GEWebBrowserEventHandeler(geWebBrowser1_ViewEvent);
-            geWebBrowser1.ScriptError += new
-GEWebBrowserEventHandeler(geWebBrowser1_ ScriptError);
+            geWebBrowser1.ScriptError += new GEWebBrowserEventHandeler(geWebBrowser1_ScriptError);
         }
 
         void geWebBrowser1_KmlLoaded(object sender, GEEventArgs e)
@@ -62,8 +61,8 @@ GEWebBrowserEventHandeler(geWebBrowser1_ ScriptError);
         void geWebBrowser1_ViewEvent(object sender, GEEventArgs e)
         {
             MessageBox.Show(e.message);
-            // remove the event
-            geWebBrowser1.RemoveEventListner(ge.getView(), "viewchangeend");
+            // the message should fire once as we now remove the event
+            geWebBrowser1.RemoveEventListener(ge.getView(), "viewchangeend");
         }
 
         void geWebBrowser1_PluginReady(object sender, GEEventArgs e)
@@ -81,8 +80,8 @@ GEWebBrowserEventHandeler(geWebBrowser1_ ScriptError);
               geStatusStrip1.SetBrowserInstance(browser);
 
               // add some events
-              browser.AddEventListner(ge.getGlobe(), "click");
-              browser.AddEventListner(ge.getView(), "viewchangeend");
+              browser.AddEventListener(ge.getGlobe(), "click");
+              browser.AddEventListener(ge.getView(), "viewchangeend");
             }
         }
 
