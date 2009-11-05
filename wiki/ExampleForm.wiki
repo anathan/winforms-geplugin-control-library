@@ -31,7 +31,10 @@ GEStatusStrip geStatusStrip1;
             // set up some event handlers
             geWebBrowser1.PluginReady += new GEWebBrowserEventHandeler(geWebBrowser1_PluginReady);
             geWebBrowser1.KmlLoaded += new GEWebBrowserEventHandeler(geWebBrowser1_KmlLoaded);
-            
+            geWebBrowser1.KmlEvent += new GEWebBrowserEventHandeler(geWebBrowser1_KmlEvent);
+            geWebBrowser1.ViewEvent += new GEWebBrowserEventHandeler(geWebBrowser1_ViewEvent);
+            geWebBrowser1.ScriptError += new
+GEWebBrowserEventHandeler(geWebBrowser1_ ScriptError);
         }
 
         void geWebBrowser1_KmlLoaded(object sender, GEEventArgs e)
@@ -44,6 +47,23 @@ GEStatusStrip geStatusStrip1;
                 ge.getFeatures().appendChild(kml);
                 kmlTreeView1.ParsekmlObject(kml);
             }
+        }
+   
+        void geWebBrowser1_KmlEvent(object sender, GEEventArgs e)
+        {
+            IkmlMouseEvent mouseEvent = sender as IkmlMouseEvent;
+
+            if (null != mouseEvent)
+            {
+                MessageBox.Show(mouseEvent.getTarget());
+            }
+        }
+
+        void geWebBrowser1_ViewEvent(object sender, GEEventArgs e)
+        {
+            MessageBox.Show(e.message);
+            // remove the event
+            geWebBrowser1.RemoveEventListner(ge.getView(), "viewchangeend");
         }
 
         void geWebBrowser1_PluginReady(object sender, GEEventArgs e)
@@ -59,7 +79,16 @@ GEStatusStrip geStatusStrip1;
               kmlTreeView1.SetBrowserInstance(browser);
               geToolStrip1.SetBrowserInstance(browser);
               geStatusStrip1.SetBrowserInstance(browser);
+
+              // add some events
+              browser.AddEventListner(ge.getGlobe(), "click");
+              browser.AddEventListner(ge.getView(), "viewchangeend");
             }
+        }
+
+        void geWebBrowser1_ScriptError(object sender, GEEventArgs e)
+        {
+            MessageBox.Show(e.message, e.data);
         }
     }
 
