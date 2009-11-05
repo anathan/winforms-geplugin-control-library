@@ -97,6 +97,7 @@ namespace FC.GEPluginCtrls
             this.external.PluginReady += new ExternalEventHandler(this.External_PluginReady);
             this.external.ScriptError += new ExternalEventHandler(this.External_ScriptError);
             this.external.KmlEvent += new ExternalEventHandler(this.External_KmlEvent);
+            this.external.ViewEvent += new ExternalEventHandler(this.External_ViewEvent);
 
             // Setup the desired control defaults
             this.AllowNavigation = false;
@@ -138,6 +139,11 @@ namespace FC.GEPluginCtrls
         /// Raised when there is a script error in the document 
         /// </summary>
         public event GEWebBrowserEventHandler ScriptError;
+
+        /// <summary>
+        /// Rasied when there is a viewchangebegin, viewchange or viewchangeend event 
+        /// </summary>
+        public event GEWebBrowserEventHandler ViewEvent;
 
         #endregion
 
@@ -242,7 +248,7 @@ namespace FC.GEPluginCtrls
         /// <example>GEWebBrowser.FetchKml("http://www.site.com/file.kml");</example>
         public void FetchKml(string url)
         {
-            this.FetchKml(url, "createCallback('OnKmlLoaded')");
+            this.FetchKml(url, "createCallback_('OnKmlLoaded')");
         }
 
         /// <summary>
@@ -252,7 +258,7 @@ namespace FC.GEPluginCtrls
         /// </summary>
         /// <param name="url">path to a kml/kmz file</param>
         /// <param name="completionCallback">name of javascript callback function to call after fetching completes</param>
-        /// <example>GEWebBrowser.FetchKml("http://www.site.com/file.kml", "createCallback(OnKmlLoaded)");</example>
+        /// <example>GEWebBrowser.FetchKml("http://www.site.com/file.kml", "createCallback_(OnKmlLoaded)");</example>
         public void FetchKml(string url, string completionCallback)
         {
             if (this.Document != null)
@@ -283,7 +289,7 @@ namespace FC.GEPluginCtrls
         /// <example>GEWebBrowser.FetchKmlSynchronous("http://www.site.com/file.kml");</example>
         public IKmlObject FetchKmlSynchronous(string url, int timeout)
         {
-            string completionCallback = String.Format("createCallback('OnKmlFetched', '{0}')", url);
+            string completionCallback = String.Format("createCallback_('OnKmlFetched', '{0}')", url);
 
             if (this.Document != null)
             {
@@ -525,7 +531,7 @@ namespace FC.GEPluginCtrls
         public void RemoveEventListener(object feature, string action)
         {
             this.InvokeJavascript(
-                "jsRemoveEventListner",
+                "jsRemoveEventListener",
                 new object[] { feature, action });
         }
 
@@ -631,6 +637,19 @@ namespace FC.GEPluginCtrls
             }
         }
 
+        /// <summary>
+        /// Protected method for raising the viewchange events
+        /// </summary>
+        /// <param name="sender">The GEView object</param>
+        /// <param name="e">Event arguments</param>
+        protected virtual void OnViewEvent(object sender, GEEventArgs e)
+        {
+            if (this.ViewEvent != null)
+            {
+                this.ViewEvent(sender, e);
+            }
+        }
+
         #endregion
 
         #region Event handlers
@@ -681,10 +700,20 @@ namespace FC.GEPluginCtrls
         /// Called when there is a Kml event 
         /// </summary>
         /// <param name="kmlEvent">the kml event</param>
-        /// <param name="e">The eventId</param>
+        /// <param name="e">The event arguments</param>
         private void External_KmlEvent(object kmlEvent, GEEventArgs e)
         {
             this.OnKmlEvent(kmlEvent, e);
+        }
+
+        /// <summary>
+        /// Called when there is a viewchange event 
+        /// </summary>
+        /// <param name="sender">the GEView object</param>
+        /// <param name="e">The event arguments</param>
+        private void External_ViewEvent(object sender, GEEventArgs e)
+        {
+            this.OnViewEvent(sender, e);
         }
 
         /// <summary>

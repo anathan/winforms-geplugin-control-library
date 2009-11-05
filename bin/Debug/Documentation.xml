@@ -160,164 +160,6 @@
             Gets or sets a value indicating whether the plug-in version label is visible
             </summary>
         </member>
-        <member name="T:FC.GEPluginCtrls.ExternalEventHandler">
-            <summary>
-            Event handler for methods to be called from javascript
-            </summary>
-            <param name="sender">the sending object</param>
-            <param name="e">the event arguments</param>
-        </member>
-        <member name="T:FC.GEPluginCtrls.External">
-            <summary>
-            This COM Visible class contains all the methods to be called from Javascript
-            </summary>
-        </member>
-        <member name="T:FC.GEPluginCtrls.IExternal">
-            <summary>
-            This interface should be implemented by any object
-            that is designed to act as the interface between javascript and managed code
-            </summary>
-        </member>
-        <member name="M:FC.GEPluginCtrls.IExternal.InvokeCallBack(System.String,System.Object)">
-            <summary>
-            Can be called from javascript to invoke method
-            </summary>
-            <param name="name">the name of method to be called</param>
-            <param name="parameters">array of parameter objects</param>
-        </member>
-        <member name="M:FC.GEPluginCtrls.IExternal.Ready(GEPlugin.IGEPlugin)">
-            <summary>
-            Should be called from javascript when the plugin is ready
-            </summary>
-            <param name="ge">the plugin instance</param>
-        </member>
-        <member name="M:FC.GEPluginCtrls.IExternal.Error(System.String)">
-            <summary>
-            Should be called from javascript when there is an error
-            </summary>
-            <param name="message">the error message</param>
-        </member>
-        <member name="M:FC.GEPluginCtrls.IExternal.KmlEventCallBack(GEPlugin.IKmlEvent,System.String)">
-            <summary>
-            Should be called from javascript when there is a kml event
-            </summary>
-            <param name="kmlEvent">the kml event</param>
-            <param name="action">the event id</param>
-        </member>
-        <member name="E:FC.GEPluginCtrls.IExternal.PluginReady">
-            <summary>
-            Raised when the plugin is ready
-            </summary>
-        </member>
-        <member name="E:FC.GEPluginCtrls.IExternal.KmlEvent">
-            <summary>
-            Raised when there is a kml event
-            </summary>
-        </member>
-        <member name="E:FC.GEPluginCtrls.IExternal.KmlLoaded">
-            <summary>
-            Raised when a kml/kmz file has loaded
-            </summary>
-        </member>
-        <member name="E:FC.GEPluginCtrls.IExternal.ScriptError">
-            <summary>
-            Raised when there is a script error in the document 
-            </summary>
-        </member>
-        <member name="F:FC.GEPluginCtrls.External.kmlObjectCache">
-            <summary>
-            Stores fetched Kml Objects
-            </summary>
-        </member>
-        <member name="M:FC.GEPluginCtrls.External.#ctor">
-            <summary>
-            Initializes a new instance of the External class.
-            </summary>
-        </member>
-        <member name="M:FC.GEPluginCtrls.External.InvokeCallBack(System.String,System.Object)">
-            <summary>
-            Can be called from javascript to invoke method
-            </summary>
-            <param name="name">the name of method to be called</param>
-            <param name="parameters">array of parameter objects</param>
-        </member>
-        <member name="M:FC.GEPluginCtrls.External.Ready(GEPlugin.IGEPlugin)">
-            <summary>
-            Called from javascript when the plugin is ready
-            </summary>
-            <param name="ge">the plugin instance</param>
-        </member>
-        <member name="M:FC.GEPluginCtrls.External.Error(System.String)">
-            <summary>
-            Called from javascript when there is an error
-            </summary>
-            <param name="message">the error message</param>
-        </member>
-        <member name="M:FC.GEPluginCtrls.External.KmlEventCallBack(GEPlugin.IKmlEvent,System.String)">
-            <summary>
-            Called from javascript when there is a kml event
-            </summary>
-            <param name="kmlEvent">the kml event</param>
-            <param name="action">the event id</param>
-        </member>
-        <member name="M:FC.GEPluginCtrls.External.OnPluginReady(GEPlugin.IGEPlugin,FC.GEPluginCtrls.GEEventArgs)">
-            <summary>
-            Protected method for raising the PluginReady event
-            </summary>
-            <param name="ge">The plugin object</param>
-            <param name="e">The Event arguments</param>
-        </member>
-        <member name="M:FC.GEPluginCtrls.External.OnKmlEvent(GEPlugin.IKmlEvent,FC.GEPluginCtrls.GEEventArgs)">
-            <summary>
-            Protected method for raising the KmlEvent event
-            </summary>
-            <param name="kmlEvent">The kmlEvent object</param>
-            <param name="e">The Event arguments</param>
-        </member>
-        <member name="M:FC.GEPluginCtrls.External.OnKmlLoaded(FC.GEPluginCtrls.GEEventArgs)">
-            <summary>
-            Protected method for raising the KmlLoaded event
-            </summary>
-            <param name="e">The Event arguments</param>
-        </member>
-        <member name="M:FC.GEPluginCtrls.External.OnKmlFetched(FC.GEPluginCtrls.GEEventArgs)">
-            <summary>
-            Protected method for capturing fetched IKmlObjects
-            </summary>
-            <param name="e">The Event arguments</param>
-        </member>
-        <member name="M:FC.GEPluginCtrls.External.OnScriptError(System.Object,FC.GEPluginCtrls.GEEventArgs)">
-            <summary>
-            Protected method for raising the ScriptError event
-            </summary>
-            <param name="sender">The sending object</param>
-            <param name="e">Event arguments</param>
-        </member>
-        <member name="E:FC.GEPluginCtrls.External.PluginReady">
-            <summary>
-            Raised when the plugin is ready
-            </summary>
-        </member>
-        <member name="E:FC.GEPluginCtrls.External.KmlEvent">
-            <summary>
-            Raised when there is a kml event
-            </summary>
-        </member>
-        <member name="E:FC.GEPluginCtrls.External.KmlLoaded">
-            <summary>
-            Raised when a kml/kmz file has loaded
-            </summary>
-        </member>
-        <member name="E:FC.GEPluginCtrls.External.ScriptError">
-            <summary>
-            Raised when there is a script error in the document 
-            </summary>
-        </member>
-        <member name="P:FC.GEPluginCtrls.External.KmlObjectCache">
-            <summary>
-            Gets the store of fetched IKmlObjects
-            </summary>
-        </member>
         <member name="T:FC.GEPluginCtrls.KmlTreeView">
             <summary>
             Designer file
@@ -408,22 +250,21 @@
             </summary>
             <param name="browser">The GEWebBrowser instance</param>
         </member>
-        <member name="M:FC.GEPluginCtrls.KmlTreeView.ParsekmlObject(System.Object)">
+        <member name="M:FC.GEPluginCtrls.KmlTreeView.ParseKmlObject(System.Object)">
             <summary>
             Recursively parses a kml object into the tree
             </summary>
             <param name="kmlObject">The kml object to parse</param>
         </member>
-        <member name="M:FC.GEPluginCtrls.KmlTreeView.ParsekmlObject(System.Object[])">
+        <member name="M:FC.GEPluginCtrls.KmlTreeView.ParseKmlObject(System.Object[])">
             <summary>
             Recursively parses a collection of kml object into the tree
             </summary>
             <param name="kmlObjects">The kml objects to parse</param>
         </member>
-        <member name="M:FC.GEPluginCtrls.KmlTreeView.ParsekmlContainer(GEPlugin.IKmlContainer)">
+        <member name="M:FC.GEPluginCtrls.KmlTreeView.ParseKmlContainer(GEPlugin.IKmlContainer)">
             <summary>
-            Recursivly iterates through a Kml Container
-            Adding any child features to the tree
+            Recursively iterates through a Kml Container adding any child features to the tree
             </summary>
             <param name="kmlContainer">The object to parse</param>
             <returns>The current tree node</returns>
@@ -432,8 +273,22 @@
             <summary>
             Creates a tree node from a Kml Feature
             </summary>
-            <param name="kmlFeature">The feature to add</param>
-            <returns>The created tree node of the feature</returns>
+            <param name="kmlFeature">The kml feature to add</param>
+            <returns>The tree node for the feature</returns>
+        </member>
+        <member name="M:FC.GEPluginCtrls.KmlTreeView.CreateTreeNodeFromKmlFolder(GEPlugin.IKmlObject)">
+            <summary>
+            Adds parent features accept ListStyle checkHideChildren property
+            </summary>
+            <param name="kmlObject">The kml folder object</param>
+            <returns>The tree node for the folder</returns>
+        </member>
+        <member name="M:FC.GEPluginCtrls.KmlTreeView.CreateTreeNodeFromKmlNetworkLink(GEPlugin.IKmlObject)">
+            <summary>
+            Download KmlObject from Networklink then expand.
+            </summary>
+            <param name="kmlObject">The network link object</param>
+            <returns>The tree node for the networklink</returns>
         </member>
         <member name="M:FC.GEPluginCtrls.KmlTreeView.CheckAllChildNodes(System.Windows.Forms.TreeNode)">
             <summary>
@@ -1043,6 +898,228 @@
             Gets or sets a value indicating whether the navigation textbox uses autocomplete suggestions
             </summary>
         </member>
+        <member name="T:FC.GEPluginCtrls.Maths">
+            <summary>
+            Various Geodesic methods to work with the plugin api
+            This class is based on the javascript library geojs by Roman Nurik
+            See http://code.google.com/p/geojs/
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.Maths.EarthRadius">
+            <summary>
+            Earth's radius in metres
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.Maths.Epslilon">
+            <summary>
+            Smallest significant value 
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.Maths.MilesToKilometres">
+            <summary>
+            Miles To Kilometres Conversion Ratio
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.Maths.CardinalWords">
+            <summary>
+            List of Cardinal comapass point names
+            </summary>
+        </member>
+        <member name="M:FC.GEPluginCtrls.Maths.AngularDistance(System.Double[],System.Double[])">
+            <summary>
+            Calculates the angular distance between two points
+            </summary>
+            <param name="origin">The first point</param>
+            <param name="destination">The second point</param>
+            <returns>The distance between the points</returns>
+        </member>
+        <member name="M:FC.GEPluginCtrls.Maths.AngularDistance(GEPlugin.IKmlPoint,GEPlugin.IKmlPoint)">
+            <summary>
+            Calculates the angular distance between two points
+            </summary>
+            <param name="origin">The first point</param>
+            <param name="destination">The second point</param>
+            <returns>The distance between the points</returns>
+        </member>
+        <member name="M:FC.GEPluginCtrls.Maths.ConvertDegreesToRadians(System.Double)">
+            <summary>
+            Converts decimal degrees to radians
+            </summary>
+            <param name="degrees">value in degrees</param>
+            <returns>value in radians</returns>
+        </member>
+        <member name="M:FC.GEPluginCtrls.Maths.ConvertHeadingToBearing(System.Double)">
+            <summary>
+            Converts a heading in the range [-180,180] to a bearing in the range [0,360] 
+            </summary>
+            <param name="heading">heading in the range [-180,180]</param>
+            <returns>bearing in the range [0,360]</returns>
+        </member>
+        <member name="M:FC.GEPluginCtrls.Maths.ConvertHeadingToCardinal(System.Double)">
+            <summary>
+            Converts a heading in the range [-180,180] to the corresponding cardinal direction
+            </summary>
+            <param name="heading">decimal heading</param>
+            <returns>The cardinal point</returns>
+        </member>
+        <member name="M:FC.GEPluginCtrls.Maths.ConvertHeadingToCardinal(System.Double,System.String[])">
+            <summary>
+            Converts a heading in the range [-180,180] to the corresponding cardinal direction
+            </summary>
+            <param name="heading">decimal heading</param>
+            <param name="points">A list of cardinal names</param>
+            <returns>The cardinal point</returns>
+        </member>
+        <member name="M:FC.GEPluginCtrls.Maths.ConvertRadiansToDegrees(System.Double)">
+            <summary>
+            Converts radians to decimal degrees
+            </summary>
+            <param name="radains">value in radians</param>
+            <returns>value in degrees</returns>
+        </member>
+        <member name="M:FC.GEPluginCtrls.Maths.ConvertKilometresToMiles(System.Double)">
+            <summary>
+            Convert Kilometres To Miles 
+            </summary>
+            <param name="kilometres">distance in kilometrees</param>
+            <returns>distance in miles</returns>
+        </member>
+        <member name="M:FC.GEPluginCtrls.Maths.ConvertMilesToKilometres(System.Double)">
+            <summary>
+            Convert Miles To Kilometres
+            </summary>
+            <param name="miles">distance in miles</param>
+            <returns>distance in kilometrees</returns>
+        </member>
+        <member name="M:FC.GEPluginCtrls.Maths.Destination(System.Double[],System.Double,System.Double)">
+            <summary>
+            Calculates the destination point along a geodesic, given an initial point, heading and distance
+            see http://www.movable-type.co.uk/scripts/latlong.html
+            </summary>
+            <param name="origin">The first point</param>
+            <param name="heading">heading in degrees</param>
+            <param name="distance">distance in metres</param>
+            <returns>The point at the location along the geodesic</returns>
+        </member>
+        <member name="M:FC.GEPluginCtrls.Maths.Destination(GEPlugin.IKmlPoint,System.Double,System.Double)">
+            <summary>
+            Calculates the destination point along a geodesic, given an initial point, heading and distance
+            see http://www.movable-type.co.uk/scripts/latlong.html
+            </summary>
+            <param name="origin">The first point</param>
+            <param name="heading">heading in degrees</param>
+            <param name="distance">distance in metres</param>
+            <returns>The point at the location along the geodesic</returns>
+        </member>
+        <member name="M:FC.GEPluginCtrls.Maths.DistanceHaversine(System.Double[],System.Double[])">
+            <summary>
+            Calculates the great circle distance between two points using the Haversine formula
+            </summary>
+            <param name="origin">The first point</param>
+            <param name="destination">The second point</param>
+            <returns>The distance between the given points in metres</returns>
+        </member>
+        <member name="M:FC.GEPluginCtrls.Maths.DistanceHaversine(GEPlugin.IKmlPoint,GEPlugin.IKmlPoint)">
+            <summary>
+            Calculates the great circle distance between two points using the Haversine formula
+            </summary>
+            <param name="origin">The first point</param>
+            <param name="destination">The second point</param>
+            <returns>The distance between the given points in metres</returns>
+        </member>
+        <member name="M:FC.GEPluginCtrls.Maths.DistanceVincenty(System.Double[],System.Double[])">
+            <summary>
+            Calculates the great circle distance between two points using the Vincenty formulae
+            This function is based on the geodesy-library code by Mike Gavaghan 
+            See http://www.gavaghan.org/blog/2007/08/06/c-gps-receivers-and-geocaching-vincentys-formula/
+            </summary>
+            <param name="origin">The first point</param>
+            <param name="destination">The second point</param>
+            <returns>The distance between the given points in metres</returns>
+        </member>
+        <member name="M:FC.GEPluginCtrls.Maths.DistanceVincenty(GEPlugin.IKmlPoint,GEPlugin.IKmlPoint)">
+            <summary>
+            Calculates the great circle distance between two points using the Vincenty formulae
+            This function is based on the geodesy-library code by Mike Gavaghan 
+            See http://www.gavaghan.org/blog/2007/08/06/c-gps-receivers-and-geocaching-vincentys-formula/
+            </summary>
+            <param name="origin">The first point</param>
+            <param name="destination">The second point</param>
+            <returns>The distance between the given points in metres</returns>
+        </member>
+        <member name="M:FC.GEPluginCtrls.Maths.FixLongitudinalAngle(System.Double)">
+            <summary>
+            Keep a Longitudinal angle in the [-180, 180] range
+            </summary>
+            <param name="angle">Longitude to fix</param>
+            <returns>Longitude in range</returns>
+        </member>
+        <member name="M:FC.GEPluginCtrls.Maths.FixLatitudinalAngle(System.Double)">
+            <summary>
+            Keep a Longitudinal angle in the [-90, 90] range
+            </summary>
+            <param name="angle">Longitude to fix</param>
+            <returns>The angle in range</returns>
+        </member>
+        <member name="M:FC.GEPluginCtrls.Maths.Heading(System.Double[],System.Double[])">
+            <summary>
+            Calculates the initial heading/bearing at which an object at the start
+            point will need to travel to get to the destination point.
+            </summary>
+            <param name="origin">The first point</param>
+            <param name="destination">The second point</param>
+            <returns>The initial heading required ibn degrees</returns>
+        </member>
+        <member name="M:FC.GEPluginCtrls.Maths.Heading(GEPlugin.IKmlPoint,GEPlugin.IKmlPoint)">
+            <summary>
+            Calculates the initial heading/bearing at which an object at the start
+            point will need to travel to get to the destination point.
+            </summary>
+            <param name="origin">The first point</param>
+            <param name="destination">The second point</param>
+            <returns>The initial heading required ibn degrees</returns>
+        </member>
+        <member name="M:FC.GEPluginCtrls.Maths.IntermediatePoint(System.Double[],System.Double[],System.Double)">
+            <summary>
+            Calculates an intermediate point on the geodesic between the two given points 
+            See: http://williams.best.vwh.net/avform.htm#Intermediate
+            </summary>
+            <param name="origin">The first point</param>
+            <param name="destination">The second point</param>
+            <param name="fraction">Intermediate location as a decimal fraction (T value)</param>
+            <returns>The point at the specified fraction along the geodesic</returns>
+        </member>
+        <member name="M:FC.GEPluginCtrls.Maths.IntermediatePoint(GEPlugin.IKmlPoint,GEPlugin.IKmlPoint,System.Double)">
+            <summary>
+            Calculates an intermediate point on the geodesic between the two given points 
+            See: http://williams.best.vwh.net/avform.htm#Intermediate
+            </summary>
+            <param name="origin">The first point</param>
+            <param name="destination">The second point</param>
+            <param name="fraction">Intermediate location as a decimal fraction (T value)</param>
+            <returns>The point at the specified fraction along the geodesic</returns>
+        </member>
+        <member name="M:FC.GEPluginCtrls.Maths.PointToDouble(GEPlugin.IKmlPoint)">
+            <summary>
+            Extension method to convert an IkmlPoint object to a System.Double in lat,lng,alt format
+            </summary>
+            <param name="point">The point to convert</param>
+            <returns>The point as an array of doubles</returns>
+        </member>
+        <member name="M:FC.GEPluginCtrls.Maths.NormaliseAngle(System.Double)">
+            <summary>
+            Keep a number in the [0,PI] range
+            </summary>
+            <param name="radians">value in radians</param>
+            <returns>normalised angle in radians</returns>
+        </member>
+        <member name="M:FC.GEPluginCtrls.Maths.ReverseAngle(System.Double)">
+            <summary>
+            Reverses a number in the [0,PI] range
+            </summary>
+            <param name="radians">value in radians</param>
+            <returns>The oposite angle</returns>
+        </member>
         <member name="T:FC.GEPluginCtrls.GEEventArgs">
             <summary>
             Custom event arguments 
@@ -1272,7 +1349,7 @@
             </summary>
             <param name="url">path to a kml/kmz file</param>
             <param name="completionCallback">name of javascript callback function to call after fetching completes</param>
-            <example>GEWebBrowser.FetchKml("http://www.site.com/file.kml", "createCallback(OnKmlLoaded)");</example>
+            <example>GEWebBrowser.FetchKml("http://www.site.com/file.kml", "createCallback_(OnKmlLoaded)");</example>
         </member>
         <member name="M:FC.GEPluginCtrls.GEWebBrowser.FetchKmlSynchronous(System.String)">
             <summary>
@@ -1400,6 +1477,13 @@
             <param name="sender">The sending object</param>
             <param name="e">Event arguments</param>
         </member>
+        <member name="M:FC.GEPluginCtrls.GEWebBrowser.OnViewEvent(System.Object,FC.GEPluginCtrls.GEEventArgs)">
+            <summary>
+            Protected method for raising the viewchange events
+            </summary>
+            <param name="sender">The GEView object</param>
+            <param name="e">Event arguments</param>
+        </member>
         <member name="M:FC.GEPluginCtrls.GEWebBrowser.External_ScriptError(System.Object,FC.GEPluginCtrls.GEEventArgs)">
             <summary>
             Called when the document has a ScriptError
@@ -1419,7 +1503,14 @@
             Called when there is a Kml event 
             </summary>
             <param name="kmlEvent">the kml event</param>
-            <param name="e">The eventId</param>
+            <param name="e">The event arguments</param>
+        </member>
+        <member name="M:FC.GEPluginCtrls.GEWebBrowser.External_ViewEvent(System.Object,FC.GEPluginCtrls.GEEventArgs)">
+            <summary>
+            Called when there is a viewchange event 
+            </summary>
+            <param name="sender">the GEView object</param>
+            <param name="e">The event arguments</param>
         </member>
         <member name="M:FC.GEPluginCtrls.GEWebBrowser.External_KmlLoaded(System.Object,FC.GEPluginCtrls.GEEventArgs)">
             <summary>
@@ -1470,6 +1561,11 @@
             Raised when there is a script error in the document 
             </summary>
         </member>
+        <member name="E:FC.GEPluginCtrls.GEWebBrowser.ViewEvent">
+            <summary>
+            Rasied when there is a viewchangebegin, viewchange or viewchangeend event 
+            </summary>
+        </member>
         <member name="P:FC.GEPluginCtrls.GEWebBrowser.KmlObjectCacheSyncEvents">
             <summary>
             Gets thread event handles for IKmlObjects collected.
@@ -1483,6 +1579,203 @@
         <member name="P:FC.GEPluginCtrls.GEWebBrowser.PluginIsReady">
             <summary>
             Gets a value indicating whether the plug-in is ready
+            </summary>
+        </member>
+        <member name="T:FC.GEPluginCtrls.ImageryBase">
+            <summary>
+            Enumeration of the available imagery bases for the plug-in
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.ImageryBase.Earth">
+            <summary>
+            Earth imagery base
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.ImageryBase.Mars">
+            <summary>
+            Mars imagery base
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.ImageryBase.Moon">
+            <summary>
+            Moon imagery base
+            </summary>
+        </member>
+        <member name="T:FC.GEPluginCtrls.ExternalEventHandler">
+            <summary>
+            Event handler for methods to be called from javascript
+            </summary>
+            <param name="sender">the sending object</param>
+            <param name="e">the event arguments</param>
+        </member>
+        <member name="T:FC.GEPluginCtrls.External">
+            <summary>
+            This COM Visible class contains all the methods to be called from Javascript
+            </summary>
+        </member>
+        <member name="T:FC.GEPluginCtrls.IExternal">
+            <summary>
+            This interface should be implemented by any object
+            that is designed to act as the interface between javascript and managed code
+            </summary>
+        </member>
+        <member name="M:FC.GEPluginCtrls.IExternal.InvokeCallBack(System.String,System.Object)">
+            <summary>
+            Can be called from javascript to invoke method
+            </summary>
+            <param name="name">the name of method to be called</param>
+            <param name="parameters">array of parameter objects</param>
+        </member>
+        <member name="M:FC.GEPluginCtrls.IExternal.Ready(GEPlugin.IGEPlugin)">
+            <summary>
+            Should be called from javascript when the plugin is ready
+            </summary>
+            <param name="ge">the plugin instance</param>
+        </member>
+        <member name="M:FC.GEPluginCtrls.IExternal.Error(System.String)">
+            <summary>
+            Should be called from javascript when there is an error
+            </summary>
+            <param name="message">the error message</param>
+        </member>
+        <member name="M:FC.GEPluginCtrls.IExternal.KmlEventCallBack(GEPlugin.IKmlEvent,System.String)">
+            <summary>
+            Should be called from javascript when there is a kml event
+            </summary>
+            <param name="kmlEvent">the kml event</param>
+            <param name="action">the event id</param>
+        </member>
+        <member name="E:FC.GEPluginCtrls.IExternal.PluginReady">
+            <summary>
+            Raised when the plugin is ready
+            </summary>
+        </member>
+        <member name="E:FC.GEPluginCtrls.IExternal.KmlEvent">
+            <summary>
+            Raised when there is a kml event
+            </summary>
+        </member>
+        <member name="E:FC.GEPluginCtrls.IExternal.KmlLoaded">
+            <summary>
+            Raised when a kml/kmz file has loaded
+            </summary>
+        </member>
+        <member name="E:FC.GEPluginCtrls.IExternal.ScriptError">
+            <summary>
+            Raised when there is a script error in the document 
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.External.kmlObjectCache">
+            <summary>
+            Stores fetched Kml Objects
+            </summary>
+        </member>
+        <member name="M:FC.GEPluginCtrls.External.#ctor">
+            <summary>
+            Initializes a new instance of the External class.
+            </summary>
+        </member>
+        <member name="M:FC.GEPluginCtrls.External.InvokeCallBack(System.String,System.Object)">
+            <summary>
+            Can be called from javascript to invoke method
+            </summary>
+            <param name="name">the name of method to be called</param>
+            <param name="parameters">array of parameter objects</param>
+        </member>
+        <member name="M:FC.GEPluginCtrls.External.Ready(GEPlugin.IGEPlugin)">
+            <summary>
+            Called from javascript when the plugin is ready
+            </summary>
+            <param name="ge">the plugin instance</param>
+        </member>
+        <member name="M:FC.GEPluginCtrls.External.Error(System.String)">
+            <summary>
+            Called from javascript when there is an error
+            </summary>
+            <param name="message">the error message</param>
+        </member>
+        <member name="M:FC.GEPluginCtrls.External.KmlEventCallBack(GEPlugin.IKmlEvent,System.String)">
+            <summary>
+            Called from javascript when there is a kml event
+            </summary>
+            <param name="kmlEvent">the kml event</param>
+            <param name="action">the event id</param>
+        </member>
+        <member name="M:FC.GEPluginCtrls.External.ViewEventCallBack(GEPlugin.IGEView,System.String)">
+            <summary>
+            Called from javascript when there is a viewchange event
+            </summary>
+            <param name="sender">The GEView object</param>
+            <param name="action">The event action (viewchangebegin, viewchange or viewchangeend)</param>
+        </member>
+        <member name="M:FC.GEPluginCtrls.External.OnPluginReady(GEPlugin.IGEPlugin,FC.GEPluginCtrls.GEEventArgs)">
+            <summary>
+            Protected method for raising the PluginReady event
+            </summary>
+            <param name="ge">The plugin object</param>
+            <param name="e">The Event arguments</param>
+        </member>
+        <member name="M:FC.GEPluginCtrls.External.OnKmlEvent(GEPlugin.IKmlEvent,FC.GEPluginCtrls.GEEventArgs)">
+            <summary>
+            Protected method for raising the KmlEvent event
+            </summary>
+            <param name="kmlEvent">The kmlEvent object</param>
+            <param name="e">The Event arguments</param>
+        </member>
+        <member name="M:FC.GEPluginCtrls.External.OnKmlLoaded(FC.GEPluginCtrls.GEEventArgs)">
+            <summary>
+            Protected method for raising the KmlLoaded event
+            </summary>
+            <param name="e">The Event arguments</param>
+        </member>
+        <member name="M:FC.GEPluginCtrls.External.OnKmlFetched(FC.GEPluginCtrls.GEEventArgs)">
+            <summary>
+            Protected method for capturing fetched IKmlObjects
+            </summary>
+            <param name="e">The Event arguments</param>
+        </member>
+        <member name="M:FC.GEPluginCtrls.External.OnScriptError(System.Object,FC.GEPluginCtrls.GEEventArgs)">
+            <summary>
+            Protected method for raising the ScriptError event
+            </summary>
+            <param name="sender">The sending object</param>
+            <param name="e">Event arguments</param>
+        </member>
+        <member name="M:FC.GEPluginCtrls.External.OnViewEvent(GEPlugin.IGEView,FC.GEPluginCtrls.GEEventArgs)">
+            <summary>
+            Protected method for raising the ViewEvent event
+            </summary>
+            <param name="sender">The sending object</param>
+            <param name="e">Event arguments</param>
+        </member>
+        <member name="E:FC.GEPluginCtrls.External.PluginReady">
+            <summary>
+            Raised when the plugin is ready
+            </summary>
+        </member>
+        <member name="E:FC.GEPluginCtrls.External.KmlEvent">
+            <summary>
+            Raised when there is a kml event
+            </summary>
+        </member>
+        <member name="E:FC.GEPluginCtrls.External.KmlLoaded">
+            <summary>
+            Raised when a kml/kmz file has loaded
+            </summary>
+        </member>
+        <member name="E:FC.GEPluginCtrls.External.ScriptError">
+            <summary>
+            Raised when there is a script error in the document 
+            </summary>
+        </member>
+        <member name="E:FC.GEPluginCtrls.External.ViewEvent">
+            <summary>
+            Rasied when there is a viewchangebegin, viewchange or viewchangeend event 
+            </summary>
+        </member>
+        <member name="P:FC.GEPluginCtrls.External.KmlObjectCache">
+            <summary>
+            Gets the store of fetched IKmlObjects
             </summary>
         </member>
         <member name="T:FC.GEPluginCtrls.KmlHelpers">
@@ -1527,248 +1820,6 @@
             </summary>
             <param name="sender">The sending object</param>
             <param name="e">The event arguments</param>
-        </member>
-        <member name="T:FC.GEPluginCtrls.Maths">
-            <summary>
-            Various Geodesic methods to work with the plugin api
-            This class is based on the javascript library geojs by Roman Nurik
-            See http://code.google.com/p/geojs/
-            </summary>
-        </member>
-        <member name="F:FC.GEPluginCtrls.Maths.EarthRadius">
-            <summary>
-            Earth's radius in metres
-            </summary>
-        </member>
-        <member name="F:FC.GEPluginCtrls.Maths.Epslilon">
-            <summary>
-            Smallest significant value 
-            </summary>
-        </member>
-        <member name="F:FC.GEPluginCtrls.Maths.MilesToKilometres">
-            <summary>
-            Miles To Kilometres Conversion Ratio
-            </summary>
-        </member>
-        <member name="F:FC.GEPluginCtrls.Maths.CardinalWords">
-            <summary>
-            List of Cardinal comapass point names
-            </summary>
-        </member>
-        <member name="M:FC.GEPluginCtrls.Maths.AngularDistance(System.Double[],System.Double[])">
-            <summary>
-            Calculates the angular distance between two points
-            </summary>
-            <param name="origin">The first point</param>
-            <param name="destination">The second point</param>
-            <returns>The distance between the points</returns>
-        </member>
-        <member name="M:FC.GEPluginCtrls.Maths.AngularDistance(GEPlugin.IKmlPoint,GEPlugin.IKmlPoint)">
-            <summary>
-            Calculates the angular distance between two points
-            </summary>
-            <param name="origin">The first point</param>
-            <param name="destination">The second point</param>
-            <returns>The distance between the points</returns>
-        </member>
-        <member name="M:FC.GEPluginCtrls.Maths.ConvertDegreesToRadians(System.Double)">
-            <summary>
-            Converts decimal degrees to radians
-            </summary>
-            <param name="degrees">value in degrees</param>
-            <returns>value in radians</returns>
-        </member>
-        <member name="M:FC.GEPluginCtrls.Maths.ConvertHeadingToBearing(System.Double)">
-            <summary>
-            Converts a heading in the range [-180,180] to a bearing in the range [0,360] 
-            </summary>
-            <param name="heading">heading in the range [-180,180]</param>
-            <returns>bearing in the range [0,360]</returns>
-        </member>
-        <member name="M:FC.GEPluginCtrls.Maths.ConvertHeadingToCardinal(System.Double)">
-            <summary>
-            Converts a heading in the range [-180,180] to the corresponding cardinal direction
-            </summary>
-            <param name="heading">decimal heading</param>
-            <returns>The cardinal point</returns>
-        </member>
-        <member name="M:FC.GEPluginCtrls.Maths.ConvertHeadingToCardinal(System.Double,System.String[])">
-            <summary>
-            Converts a heading in the range [-180,180] to the corresponding cardinal direction
-            </summary>
-            <param name="heading">decimal heading</param>
-            <param name="points">A list of cardinal names</param>
-            <returns>The cardinal point</returns>
-        </member>
-        <member name="M:FC.GEPluginCtrls.Maths.ConvertRadiansToDegrees(System.Double)">
-            <summary>
-            Converts radians to decimal degrees
-            </summary>
-            <param name="radains">value in radians</param>
-            <returns>value in degrees</returns>
-        </member>
-        <member name="M:FC.GEPluginCtrls.Maths.ConvertKilometresToMiles(System.Double)">
-            <summary>
-            Convert Kilometres To Miles 
-            </summary>
-            <param name="kilometres">distance in kilometrees</param>
-            <returns>distance in miles</returns>
-        </member>
-        <member name="M:FC.GEPluginCtrls.Maths.ConvertMilesToKilometres(System.Double)">
-            <summary>
-            Convert Miles To Kilometres
-            </summary>
-            <param name="miles">distance in miles</param>
-            <returns>distance in kilometrees</returns>
-        </member>
-        <member name="M:FC.GEPluginCtrls.Maths.Destination(System.Double[],System.Double,System.Double)">
-            <summary>
-            Calculates the destination point along a geodesic, given an initial point, heading and distance
-            see http://www.movable-type.co.uk/scripts/latlong.html
-            </summary>
-            <param name="origin">The first point</param>
-            <param name="heading">heading in degrees</param>
-            <param name="distance">distance in metres</param>
-            <returns>The point at the location along the geodesic</returns>
-        </member>
-        <member name="M:FC.GEPluginCtrls.Maths.Destination(GEPlugin.IKmlPoint,System.Double,System.Double)">
-            <summary>
-            Calculates the destination point along a geodesic, given an initial point, heading and distance
-            see http://www.movable-type.co.uk/scripts/latlong.html
-            </summary>
-            <param name="origin">The first point</param>
-            <param name="heading">heading in degrees</param>
-            <param name="distance">distance in metres</param>
-            <returns>The point at the location along the geodesic</returns>
-        </member>
-        <member name="M:FC.GEPluginCtrls.Maths.DistanceHaversine(System.Double[],System.Double[])">
-            <summary>
-            Calculates the great circle distance between two points using the Haversine formula
-            </summary>
-            <param name="origin">The first point</param>
-            <param name="destination">The second point</param>
-            <returns>The distance between the given points in metres</returns>
-        </member>
-        <member name="M:FC.GEPluginCtrls.Maths.DistanceHaversine(GEPlugin.IKmlPoint,GEPlugin.IKmlPoint)">
-            <summary>
-            Calculates the great circle distance between two points using the Haversine formula
-            </summary>
-            <param name="origin">The first point</param>
-            <param name="destination">The second point</param>
-            <returns>The distance between the given points in metres</returns>
-        </member>
-        <member name="M:FC.GEPluginCtrls.Maths.DistanceVincenty(System.Double[],System.Double[])">
-            <summary>
-            Calculates the great circle distance between two points using the Vincenty formulae
-            This function is based on the geodesy-library code by Mike Gavaghan 
-            See http://www.gavaghan.org/blog/2007/08/06/c-gps-receivers-and-geocaching-vincentys-formula/
-            </summary>
-            <param name="origin">The first point</param>
-            <param name="destination">The second point</param>
-            <returns>The distance between the given points in metres</returns>
-        </member>
-        <member name="M:FC.GEPluginCtrls.Maths.DistanceVincenty(GEPlugin.IKmlPoint,GEPlugin.IKmlPoint)">
-            <summary>
-            Calculates the great circle distance between two points using the Vincenty formulae
-            This function is based on the geodesy-library code by Mike Gavaghan 
-            See http://www.gavaghan.org/blog/2007/08/06/c-gps-receivers-and-geocaching-vincentys-formula/
-            </summary>
-            <param name="origin">The first point</param>
-            <param name="destination">The second point</param>
-            <returns>The distance between the given points in metres</returns>
-        </member>
-        <member name="M:FC.GEPluginCtrls.Maths.FixLongitudinalAngle(System.Double)">
-            <summary>
-            Keep a Longitudinal angle in the [-180, 180] range
-            </summary>
-            <param name="angle">Longitude to fix</param>
-            <returns>Longitude in range</returns>
-        </member>
-        <member name="M:FC.GEPluginCtrls.Maths.FixLatitudinalAngle(System.Double)">
-            <summary>
-            Keep a Longitudinal angle in the [-90, 90] range
-            </summary>
-            <param name="angle">Longitude to fix</param>
-            <returns>The angle in range</returns>
-        </member>
-        <member name="M:FC.GEPluginCtrls.Maths.Heading(System.Double[],System.Double[])">
-            <summary>
-            Calculates the initial heading/bearing at which an object at the start
-            point will need to travel to get to the destination point.
-            </summary>
-            <param name="origin">The first point</param>
-            <param name="destination">The second point</param>
-            <returns>The initial heading required ibn degrees</returns>
-        </member>
-        <member name="M:FC.GEPluginCtrls.Maths.Heading(GEPlugin.IKmlPoint,GEPlugin.IKmlPoint)">
-            <summary>
-            Calculates the initial heading/bearing at which an object at the start
-            point will need to travel to get to the destination point.
-            </summary>
-            <param name="origin">The first point</param>
-            <param name="destination">The second point</param>
-            <returns>The initial heading required ibn degrees</returns>
-        </member>
-        <member name="M:FC.GEPluginCtrls.Maths.IntermediatePoint(System.Double[],System.Double[],System.Double)">
-            <summary>
-            Calculates an intermediate point on the geodesic between the two given points 
-            See: http://williams.best.vwh.net/avform.htm#Intermediate
-            </summary>
-            <param name="origin">The first point</param>
-            <param name="destination">The second point</param>
-            <param name="fraction">Intermediate location as a decimal fraction (T value)</param>
-            <returns>The point at the specified fraction along the geodesic</returns>
-        </member>
-        <member name="M:FC.GEPluginCtrls.Maths.IntermediatePoint(GEPlugin.IKmlPoint,GEPlugin.IKmlPoint,System.Double)">
-            <summary>
-            Calculates an intermediate point on the geodesic between the two given points 
-            See: http://williams.best.vwh.net/avform.htm#Intermediate
-            </summary>
-            <param name="origin">The first point</param>
-            <param name="destination">The second point</param>
-            <param name="fraction">Intermediate location as a decimal fraction (T value)</param>
-            <returns>The point at the specified fraction along the geodesic</returns>
-        </member>
-        <member name="M:FC.GEPluginCtrls.Maths.PointToDouble(GEPlugin.IKmlPoint)">
-            <summary>
-            Extension method to convert an IkmlPoint object to a System.Double in lat,lng,alt format
-            </summary>
-            <param name="point">The point to convert</param>
-            <returns>The point as an array of doubles</returns>
-        </member>
-        <member name="M:FC.GEPluginCtrls.Maths.NormaliseAngle(System.Double)">
-            <summary>
-            Keep a number in the [0,PI] range
-            </summary>
-            <param name="radians">value in radians</param>
-            <returns>normalised angle in radians</returns>
-        </member>
-        <member name="M:FC.GEPluginCtrls.Maths.ReverseAngle(System.Double)">
-            <summary>
-            Reverses a number in the [0,PI] range
-            </summary>
-            <param name="radians">value in radians</param>
-            <returns>The oposite angle</returns>
-        </member>
-        <member name="T:FC.GEPluginCtrls.ImageryBase">
-            <summary>
-            Enumeration of the available imagery bases for the plug-in
-            </summary>
-        </member>
-        <member name="F:FC.GEPluginCtrls.ImageryBase.Earth">
-            <summary>
-            Earth imagery base
-            </summary>
-        </member>
-        <member name="F:FC.GEPluginCtrls.ImageryBase.Mars">
-            <summary>
-            Mars imagery base
-            </summary>
-        </member>
-        <member name="F:FC.GEPluginCtrls.ImageryBase.Moon">
-            <summary>
-            Moon imagery base
-            </summary>
         </member>
         <member name="T:FC.GEPluginCtrls.AltitudeMode">
             <summary>

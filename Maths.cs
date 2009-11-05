@@ -478,7 +478,8 @@ namespace FC.GEPluginCtrls
         /// <returns>The point as an array of doubles</returns>
         public static double[] PointToDouble(this IKmlPoint point)
         {
-            return new double[] { 
+            return new double[]
+            { 
                 point.getLatitude(),
                 point.getLongitude(),
                 point.getAltitude()
