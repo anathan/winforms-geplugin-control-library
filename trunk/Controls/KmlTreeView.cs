@@ -203,7 +203,7 @@ namespace FC.GEPluginCtrls
         /// Recursively parses a kml object into the tree
         /// </summary>
         /// <param name="kmlObject">The kml object to parse</param>
-        public void ParsekmlObject(object kmlObject)
+        public void ParseKmlObject(object kmlObject)
         {
             IKmlObject obj = kmlObject as IKmlObject;
 
@@ -219,24 +219,13 @@ namespace FC.GEPluginCtrls
                     {
                         case "KmlDocument":
                         case "KmlFolder":
-                            
-                            // patch from blairuk
-                            // issue 10
-                            // Allow KmlTreeView to accept ListStyle checkHideChildren property
-                            if (obj.getOwnerDocument().getComputedStyle().getListStyle().getListItemType() !=
-                                this.geplugin.LIST_ITEM_CHECK_HIDE_CHILDREN)
-                            {
-                                this.Nodes.Add(
-                                    this.ParsekmlContainer(obj as IKmlContainer));
-                            }
-                            else
-                            {
-                                this.Nodes.Add(
-                                    this.CreateTreeNodeFromKmlFeature(obj as IKmlFeature));
-                            }
-
+                            this.Nodes.Add(
+                                this.CreateTreeNodeFromKmlFolder(obj));
                             break;
                         case "KmlNetworkLink":
+                            this.Nodes.Add(
+                                this.CreateTreeNodeFromKmlNetworkLink(obj));
+                            break;
                         case "KmlGroundOverlay":
                         case "KmlScreenOverlay":
                         case "KmlPlacemark":
@@ -261,11 +250,11 @@ namespace FC.GEPluginCtrls
         /// Recursively parses a collection of kml object into the tree
         /// </summary>
         /// <param name="kmlObjects">The kml objects to parse</param>
-        public void ParsekmlObject(object[] kmlObjects)
+        public void ParseKmlObject(object[] kmlObjects)
         {
             foreach (object kmlObject in kmlObjects)
             {
-                this.ParsekmlObject(kmlObject);
+                this.ParseKmlObject(kmlObject);
             }
         }
 
@@ -274,12 +263,11 @@ namespace FC.GEPluginCtrls
         #region Private methods
 
         /// <summary>
-        /// Recursivly iterates through a Kml Container
-        /// Adding any child features to the tree
+        /// Recursively iterates through a Kml Container adding any child features to the tree
         /// </summary>
         /// <param name="kmlContainer">The object to parse</param>
         /// <returns>The current tree node</returns>
-        private TreeNode ParsekmlContainer(IKmlContainer kmlContainer)
+        private TreeNode ParseKmlContainer(IKmlContainer kmlContainer)
         {
             TreeNode parentNode = this.CreateTreeNodeFromKmlFeature(kmlContainer as IKmlFeature);
 
@@ -290,7 +278,7 @@ namespace FC.GEPluginCtrls
                     TreeNode childNode = new TreeNode();
 
                     IKmlObjectList subNodes = kmlContainer.getFeatures().getChildNodes();
-                    
+
                     for (int i = 0; i < subNodes.getLength(); i++)
                     {
                         IKmlObject subNode = subNodes.item(i);
@@ -301,7 +289,12 @@ namespace FC.GEPluginCtrls
                             // features that implement the IkmlContainer interface
                             case "KmlDocument":
                             case "KmlFolder":
-                                childNode = this.ParsekmlContainer(subNode as IKmlContainer);
+                                childNode = this.CreateTreeNodeFromKmlFolder(subNode);
+                                break;
+
+                            // network links
+                            case "KmlNetworkLink":
+                                childNode = this.CreateTreeNodeFromKmlNetworkLink(subNode);
                                 break;
 
                             // all other features
@@ -326,8 +319,8 @@ namespace FC.GEPluginCtrls
         /// <summary>
         /// Creates a tree node from a Kml Feature
         /// </summary>
-        /// <param name="kmlFeature">The feature to add</param>
-        /// <returns>The created tree node of the feature</returns>
+        /// <param name="kmlFeature">The kml feature to add</param>
+        /// <returns>The tree node for the feature</returns>
         private TreeNode CreateTreeNodeFromKmlFeature(IKmlFeature kmlFeature)
         {
             TreeNode treenode = new TreeNode();
@@ -398,6 +391,48 @@ namespace FC.GEPluginCtrls
         }
 
         /// <summary>
+        /// Adds parent features accept ListStyle checkHideChildren property
+        /// </summary>
+        /// <param name="kmlObject">The kml folder object</param>
+        /// <returns>The tree node for the folder</returns>
+        private TreeNode CreateTreeNodeFromKmlFolder(IKmlObject kmlObject)
+        {
+            if (kmlObject.getOwnerDocument() != null &&
+                kmlObject.getOwnerDocument().getComputedStyle().getListStyle().getListItemType() ==
+                this.geplugin.LIST_ITEM_CHECK_HIDE_CHILDREN)
+            {
+                return this.CreateTreeNodeFromKmlFeature(kmlObject as IKmlFeature);
+            }
+            else
+            {
+                return this.ParseKmlContainer(kmlObject as IKmlContainer);
+            }
+        }
+
+        /// <summary>
+        /// Download KmlObject from Networklink then expand.
+        /// </summary>
+        /// <param name="kmlObject">The network link object</param>
+        /// <returns>The tree node for the networklink</returns>
+        private TreeNode CreateTreeNodeFromKmlNetworkLink(IKmlObject kmlObject)
+        {
+            IKmlNetworkLink link = kmlObject as IKmlNetworkLink;
+            string url = link.getLink().getHref();
+            IKmlObject obj = this.gewb.FetchKmlSynchronous(url);
+
+            if (obj.getOwnerDocument() != null &&
+                obj.getOwnerDocument().getComputedStyle().getListStyle().getListItemType() ==
+                this.geplugin.LIST_ITEM_CHECK_HIDE_CHILDREN)
+            {
+                return this.CreateTreeNodeFromKmlFeature(obj as IKmlFeature);
+            }
+            else
+            {
+                return this.ParseKmlContainer(obj as IKmlContainer);
+            }
+        }
+
+        /// <summary>
         /// Sets the checked state of any child nodes to true
         /// </summary>
         /// <param name="treeNode">The starting node to check from</param>
@@ -453,7 +488,7 @@ namespace FC.GEPluginCtrls
         {
             if (text.Length > length)
             {
-                return string.Format("{0}{1}", text.Substring(0, length) + "...");
+                return text.Substring(0, length) + "...";
             }
             else
             {

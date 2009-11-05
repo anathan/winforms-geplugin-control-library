@@ -77,6 +77,11 @@ namespace FC.GEPluginCtrls
         /// </summary>
         public event ExternalEventHandler ScriptError;
 
+        /// <summary>
+        /// Rasied when there is a viewchangebegin, viewchange or viewchangeend event 
+        /// </summary>
+        public event ExternalEventHandler ViewEvent;
+
         #endregion
 
         #region Public properites
@@ -177,6 +182,16 @@ namespace FC.GEPluginCtrls
             }
         }
 
+        /// <summary>
+        /// Called from javascript when there is a viewchange event
+        /// </summary>
+        /// <param name="sender">The GEView object</param>
+        /// <param name="action">The event action (viewchangebegin, viewchange or viewchangeend)</param>
+        public void ViewEventCallBack(IGEView sender, string action)
+        {
+            this.OnViewEvent(sender, new GEEventArgs(action));
+        }
+
         #endregion
 
         #region Protected methods
@@ -246,6 +261,19 @@ namespace FC.GEPluginCtrls
             if (this.ScriptError != null)
             {
                 this.ScriptError(sender, e);
+            }
+        }
+
+        /// <summary>
+        /// Protected method for raising the ViewEvent event
+        /// </summary>
+        /// <param name="sender">The sending object</param>
+        /// <param name="e">Event arguments</param>
+        protected virtual void OnViewEvent(IGEView sender, GEEventArgs e)
+        {
+            if (this.ViewEvent != null)
+            {
+                this.ViewEvent(sender, e);
             }
         }
 

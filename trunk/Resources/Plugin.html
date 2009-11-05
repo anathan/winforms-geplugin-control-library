@@ -63,7 +63,7 @@ along with this program.  If not, see http://www.gnu.org/licenses/
     application.Ready(ge);
   }
 
-  var createCallback = function()
+  var createCallback_ = function()
   {
     var name = arguments[0];  
     var additionalArgs = new Array();
@@ -92,7 +92,7 @@ along with this program.  If not, see http://www.gnu.org/licenses/
     }
   }
   
-  var eventListner_ = function(kmlEvent) 
+  var kmlEventListener_ = function(kmlEvent) 
   {
     if(kmlEvent)
     {
@@ -100,6 +100,15 @@ along with this program.  If not, see http://www.gnu.org/licenses/
     }
   }
       
+  var viewEventListener_ = function(action) 
+  {
+     if(action)
+     {
+       alert("Rasied: " + action);
+       application.ViewEventCallBack(ge.getView(), action);
+     }
+  }
+  
   /**
   *
   * Methods to be invoked from managed code.
@@ -122,22 +131,33 @@ along with this program.  If not, see http://www.gnu.org/licenses/
   {
     if(null == callback)
     {
-      callback = eventListner_;
+      callback = kmlEventListener_;
     }
-    if(ge)
+    
+    if(action == "viewchangebegin" || action == "viewchange" || action == "viewchangeend")
+    {
+      callback[action] = function() { viewEventListener_(action); };
+      google.earth.addEventListener(feature, action, callback[action]);
+    } 
+    else
     {
       google.earth.addEventListener(feature, action, eval(callback));
     }
   }
   
   // google.earth.removeEventListener wrapper
-  var jsRemoveEventListner = function(feature, action, callback)
+  var jsRemoveEventListener = function(feature, action, callback)
   {
     if(null == callback)
     {
-      callback = eventListner_;
+      callback = kmlEventListener_;
     }  
-    if(ge)
+    
+    if(action == "viewchangebegin" || action == "viewchange" || action == "viewchangeend")
+    {
+      google.earth.removeEventListener(feature, action, callback[action]);
+    }
+    else
     {
       google.earth.removeEventListener(feature, action, eval(callback));
     }

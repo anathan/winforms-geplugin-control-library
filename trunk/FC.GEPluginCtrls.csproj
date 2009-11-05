@@ -57,8 +57,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AltitudeMode.cs" />
+    <Compile Include="External.cs" />
     <Compile Include="Helpers\DispatchHelpers.cs" />
-    <Compile Include="Interfaces\External.cs" />
     <Compile Include="GEEventArgs.cs" />
     <Compile Include="Helpers\GEHelpers.cs" />
     <Compile Include="Controls\GEStatusStrip.cs">
@@ -91,6 +91,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Controls\GEToolStrip.resx">
       <DependentUpon>GEToolStrip.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Controls\KmlTreeView.resx">
       <DependentUpon>KmlTreeView.cs</DependentUpon>
@@ -137,7 +138,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- Uncomment the folowing line to allow StyleCop to run during the build -->
-  <Import Project="$(ProgramFiles)\MSBuild\Microsoft\StyleCop\v4.3\Microsoft.StyleCop.targets" />
+  <!-- <Import Project="$(ProgramFiles)\MSBuild\Microsoft\StyleCop\v4.3\Microsoft.StyleCop.targets" /> -->
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
