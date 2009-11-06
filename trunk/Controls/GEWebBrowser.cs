@@ -97,6 +97,7 @@ namespace FC.GEPluginCtrls
             this.external.PluginReady += new ExternalEventHandler(this.External_PluginReady);
             this.external.ScriptError += new ExternalEventHandler(this.External_ScriptError);
             this.external.KmlEvent += new ExternalEventHandler(this.External_KmlEvent);
+            this.external.PluginEvent += new ExternalEventHandler(External_PluginEvent);
             this.external.ViewEvent += new ExternalEventHandler(this.External_ViewEvent);
 
             // Setup the desired control defaults
@@ -139,6 +140,8 @@ namespace FC.GEPluginCtrls
         /// Raised when there is a script error in the document 
         /// </summary>
         public event GEWebBrowserEventHandler ScriptError;
+
+        public event GEWebBrowserEventHandler PluginEvent;
 
         /// <summary>
         /// Rasied when there is a viewchangebegin, viewchange or viewchangeend event 
@@ -637,6 +640,14 @@ namespace FC.GEPluginCtrls
             }
         }
 
+        protected virtual void OnPluginEvent(object sender, GEEventArgs e)
+        {
+            if (this.PluginEvent != null)
+            {
+                this.PluginEvent(sender, e);
+            }
+        }
+
         /// <summary>
         /// Protected method for raising the viewchange events
         /// </summary>
@@ -704,6 +715,16 @@ namespace FC.GEPluginCtrls
         private void External_KmlEvent(object kmlEvent, GEEventArgs e)
         {
             this.OnKmlEvent(kmlEvent, e);
+        }
+
+        /// <summary>
+        /// Called when there is a GEPlugin event
+        /// </summary>
+        /// <param name="sender">The plugin object</param>
+        /// <param name="e">The event arguments</param>
+        void External_PluginEvent(object sender, GEEventArgs e)
+        {
+            this.OnPluginEvent(sender, e);
         }
 
         /// <summary>
