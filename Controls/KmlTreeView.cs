@@ -197,6 +197,7 @@ namespace FC.GEPluginCtrls
             this.geplugin = browser.GetPlugin();
             this.htmlDocument = browser.Document;
             this.Nodes.Clear();
+            this.Enabled = true;
         }
 
         /// <summary>

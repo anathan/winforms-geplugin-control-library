@@ -77,6 +77,8 @@ namespace FC.GEPluginCtrls
         /// </summary>
         public event ExternalEventHandler ScriptError;
 
+        public event ExternalEventHandler PluginEvent;
+
         /// <summary>
         /// Rasied when there is a viewchangebegin, viewchange or viewchangeend event 
         /// </summary>
@@ -173,13 +175,18 @@ namespace FC.GEPluginCtrls
             {
                 this.OnKmlEvent(
                     kmlEvent,
-                    new GEEventArgs(kmlEvent.getType(), action));
+                    new GEEventArgs(kmlEvent.getType(), action, kmlEvent.getTarget()));
             }
             catch (COMException cex)
             {
                 Debug.WriteLine("KmlEventCallBack: " + cex.ToString());
                 throw;
             }
+        }
+
+        public void PluginEventCallBack(IGEPlugin plugin, string action)
+        {
+            this.OnPluginEvent(plugin, new GEEventArgs(action));
         }
 
         /// <summary>
@@ -261,6 +268,14 @@ namespace FC.GEPluginCtrls
             if (this.ScriptError != null)
             {
                 this.ScriptError(sender, e);
+            }
+        }
+
+        protected virtual void OnPluginEvent(IGEPlugin sender, GEEventArgs e)
+        {
+            if (this.PluginEvent != null)
+            {
+                this.PluginEvent(sender, e);
             }
         }
 
