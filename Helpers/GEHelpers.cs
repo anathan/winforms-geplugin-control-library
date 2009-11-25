@@ -283,11 +283,27 @@ namespace FC.GEPluginCtrls
                         {
                             if (null != gewb)
                             {
-                                string linkUrl = ((IKmlNetworkLink)feature).getLink().getHref();
+                                string linkUrl = string.Empty;
+
+                                // Kml documents using the pre 2.1 spec may contain the <Url> element 
+                                // in these cases the getHref call will return null
+                                try
+                                {
+                                    linkUrl = ((IKmlNetworkLink)feature).getLink().getHref();
+                                }
+                                catch (NullReferenceException)
+                                {
+                                    linkUrl = ((IKmlNetworkLink)feature).GetUrl();
+                                }
+
                                 IKmlObject kmlObject = gewb.FetchKmlSynchronous(linkUrl);
+
                                 if (null != kmlObject)
                                 {
-                                    abstractView = kmlObject.getOwnerDocument().getAbstractView();
+                                    if (kmlObject.getOwnerDocument() != null)
+                                    {
+                                        abstractView = kmlObject.getOwnerDocument().getAbstractView();
+                                    }
                                 }
                             }
                         }

@@ -77,6 +77,9 @@ namespace FC.GEPluginCtrls
         /// </summary>
         public event ExternalEventHandler ScriptError;
 
+        /// <summary>
+        /// Raised when there is a GEPlugin event (frameend, balloonclose) 
+        /// </summary>
         public event ExternalEventHandler PluginEvent;
 
         /// <summary>
@@ -129,7 +132,7 @@ namespace FC.GEPluginCtrls
             }
             catch (COMException cex)
             {
-                Debug.WriteLine("InvokeCallBack: " + cex.ToString());
+                Debug.WriteLine("InvokeCallBack: " + cex.ToString(), "External");
                 throw;
             }
         }
@@ -148,7 +151,7 @@ namespace FC.GEPluginCtrls
             }
             catch (COMException cex)
             {
-                Debug.WriteLine("Ready: " + cex.ToString());
+                Debug.WriteLine("Ready: " + cex.ToString(), "External");
                 throw;
             }
         }
@@ -179,11 +182,16 @@ namespace FC.GEPluginCtrls
             }
             catch (COMException cex)
             {
-                Debug.WriteLine("KmlEventCallBack: " + cex.ToString());
+                Debug.WriteLine("KmlEventCallBack: " + cex.ToString(), "External");
                 throw;
             }
         }
 
+        /// <summary>
+        /// Called from javascript when there is a GEPlugin event
+        /// </summary>
+        /// <param name="plugin">The plugin object</param>
+        /// <param name="action">The event action</param>
         public void PluginEventCallBack(IGEPlugin plugin, string action)
         {
             this.OnPluginEvent(plugin, new GEEventArgs(action));
@@ -271,6 +279,11 @@ namespace FC.GEPluginCtrls
             }
         }
 
+        /// <summary>
+        /// Protected method for raising the PluginEvent event
+        /// </summary>
+        /// <param name="sender">The sending object</param>
+        /// <param name="e">Event arguments</param>
         protected virtual void OnPluginEvent(IGEPlugin sender, GEEventArgs e)
         {
             if (this.PluginEvent != null)
