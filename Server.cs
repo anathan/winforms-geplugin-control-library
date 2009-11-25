@@ -27,7 +27,7 @@ namespace FC.GEPluginCtrls.HttpServer
     using System.Threading;
 
     /// <summary>
-    /// adasdasd dsf sd fsd f sd fs
+    /// A simple HTTP server class to allow the use of local files
     /// </summary>
     public class Server
     {
