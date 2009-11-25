@@ -515,7 +515,7 @@ namespace FC.GEPluginCtrls
                 }
                 catch (COMException cex)
                 {
-                    Debug.WriteLine("LayersItem_Clicked: " + cex.ToString());
+                    Debug.WriteLine("LayersItem_Clicked: " + cex.ToString(), "ToolStrip");
                     throw;
                 }
             }
@@ -567,7 +567,7 @@ namespace FC.GEPluginCtrls
                 }
                 catch (COMException cex)
                 {
-                    Debug.WriteLine("ImageryItem_Clicked: " + cex.ToString());
+                    Debug.WriteLine("ImageryItem_Clicked: " + cex.ToString(), "ToolStrip");
                     throw;
                 }
             }
@@ -603,7 +603,7 @@ namespace FC.GEPluginCtrls
                 }
                 catch (COMException cex)
                 {
-                    Debug.WriteLine("OptionsItem_Clicked: " + cex.ToString());
+                    Debug.WriteLine("OptionsItem_Clicked: " + cex.ToString(), "ToolStrip");
                     throw;
                 }
             }
@@ -660,7 +660,7 @@ namespace FC.GEPluginCtrls
                 }
                 catch (COMException cex)
                 {
-                    Debug.WriteLine("ImageryItem_Clicked: " + cex.ToString());
+                    Debug.WriteLine("ImageryItem_Clicked: " + cex.ToString(), "ToolStrip");
                     throw;
                 }
 

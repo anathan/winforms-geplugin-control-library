@@ -19,9 +19,11 @@
 namespace FC.GEPluginCtrls
 {
     using System;
+    using System.Collections.Generic;
     using System.IO;
     using System.IO.Compression;
     using System.Runtime.InteropServices;
+    using System.Xml;
     using GEPlugin;
 
     /// <summary>
@@ -67,6 +69,55 @@ namespace FC.GEPluginCtrls
                     callBack(kmlObject);
                     break;
             }
+        }
+
+        /// <summary>
+        ///  Gives access to Url element in pre KML Release 2.1 documents
+        ///  This allows the controls to work with legacy Kml formats
+        /// </summary>
+        /// <param name="networklink">The network link to look for a url in</param>
+        /// <returns>The url value or an empty string</returns>
+        public static string GetUrl(this IKmlNetworkLink networklink)
+        {
+            string kml = networklink.getKml();
+            System.Xml.XmlDocument doc = new System.Xml.XmlDocument();
+            doc.InnerXml = kml;
+            System.Xml.XmlNodeList list = doc.GetElementsByTagName("Url");
+            int c = list.Count;
+            if (c > 0)
+            {
+                return list[0].InnerText;
+            }
+            else
+            {
+                return string.Empty;
+            }
+        }
+
+        /// <summary>
+        /// Gives access to untyped data/value pairs using the basic Data element
+        /// See http://code.google.com/apis/kml/documentation/kmlreference.html#extendeddata
+        /// </summary>
+        /// <param name="feature">feature to get data from</param>
+        /// <returns>A list of key value pairs</returns>
+        public static List<KeyValuePair<string, string>> GetExtendedData(this IKmlFeature feature)
+        {
+            List<KeyValuePair<string, string>> keyValues = 
+                new List<KeyValuePair<string, string>>();
+
+            XmlDocument doc = new XmlDocument();
+            doc.InnerXml = feature.getKml();
+            XmlNodeList list = doc.GetElementsByTagName("Data");
+            int c = list.Count;
+
+            for (int i = 0; i < c; i++)
+            {
+                keyValues.Add(new KeyValuePair<string, string>(
+                    list[i].Attributes["name"].InnerText,
+                    list[i].ChildNodes[0].InnerText));
+            }
+
+            return keyValues;
         }
     }
 }

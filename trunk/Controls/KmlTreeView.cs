@@ -241,7 +241,7 @@ namespace FC.GEPluginCtrls
                 }
                 catch (COMException cex)
                 {
-                    Debug.WriteLine("ParsekmlObject: " + cex.ToString());
+                    Debug.WriteLine("ParsekmlObject: " + cex.ToString(), "KmlTreeView");
                     throw;
                 }
             }
@@ -310,7 +310,7 @@ namespace FC.GEPluginCtrls
             }
             catch (COMException cex)
             {
-                Debug.WriteLine("ParsekmlContainer: " + cex.ToString());
+                Debug.WriteLine("ParsekmlContainer: " + cex.ToString(), "KmlTreeView");
                 throw;
             }
 
@@ -356,7 +356,7 @@ namespace FC.GEPluginCtrls
             }
             catch (COMException cex)
             {
-                Debug.WriteLine("CreateTreeNodeFromKmlFeature:" + cex.ToString());
+                Debug.WriteLine("CreateTreeNodeFromKmlFeature:" + cex.ToString(), "KmlTreeView");
                 throw;
             }
 
@@ -398,16 +398,26 @@ namespace FC.GEPluginCtrls
         /// <returns>The tree node for the folder</returns>
         private TreeNode CreateTreeNodeFromKmlFolder(IKmlObject kmlObject)
         {
-            if (kmlObject.getOwnerDocument() != null &&
-                kmlObject.getOwnerDocument().getComputedStyle().getListStyle().getListItemType() ==
-                this.geplugin.LIST_ITEM_CHECK_HIDE_CHILDREN)
+            try
             {
-                return this.CreateTreeNodeFromKmlFeature(kmlObject as IKmlFeature);
+                // getComputedStyle is not part of the current Api and has issues.
+                // if the call fails we default to parsing the kml container
+                if (kmlObject.getOwnerDocument() != null &&
+                    kmlObject.getOwnerDocument().getComputedStyle().getListStyle().getListItemType() ==
+                    this.geplugin.LIST_ITEM_CHECK_HIDE_CHILDREN)
+                {
+                    return this.CreateTreeNodeFromKmlFeature(kmlObject as IKmlFeature);
+                }
+                else
+                {
+                    return this.ParseKmlContainer(kmlObject as IKmlContainer);
+                }
             }
-            else
+            catch (NullReferenceException)
             {
-                return this.ParseKmlContainer(kmlObject as IKmlContainer);
             }
+
+            return this.ParseKmlContainer(kmlObject as IKmlContainer);
         }
 
         /// <summary>
@@ -418,19 +428,45 @@ namespace FC.GEPluginCtrls
         private TreeNode CreateTreeNodeFromKmlNetworkLink(IKmlObject kmlObject)
         {
             IKmlNetworkLink link = kmlObject as IKmlNetworkLink;
-            string url = link.getLink().getHref();
-            IKmlObject obj = this.gewb.FetchKmlSynchronous(url);
+            string url = string.Empty;
 
-            if (obj.getOwnerDocument() != null &&
-                obj.getOwnerDocument().getComputedStyle().getListStyle().getListItemType() ==
-                this.geplugin.LIST_ITEM_CHECK_HIDE_CHILDREN)
+            // Kml documents using the pre 2.1 spec may contain the <Url> element 
+            // in these cases the getHref call will return null
+            try
             {
-                return this.CreateTreeNodeFromKmlFeature(obj as IKmlFeature);
+                url = link.getLink().getHref();
             }
-            else
+            catch (NullReferenceException)
             {
-                return this.ParseKmlContainer(obj as IKmlContainer);
+                url = link.GetUrl();
             }
+
+            // getComputedStyle is not part of the current Api and has issues.
+            // if the call fails we manualy create a tree node for the link
+            try
+            {
+                IKmlObject obj = this.gewb.FetchKmlSynchronous(url);
+                KmlStyleCoClass foo = obj.getOwnerDocument().getComputedStyle();
+
+                if (obj.getOwnerDocument() != null &&
+                    obj.getOwnerDocument().getComputedStyle().getListStyle().getListItemType() ==
+                    this.geplugin.LIST_ITEM_CHECK_HIDE_CHILDREN)
+                {
+                    return this.CreateTreeNodeFromKmlFeature(obj as IKmlFeature);
+                }
+                else
+                {
+                    return this.ParseKmlContainer(obj as IKmlContainer);
+                }
+            }
+            catch (NullReferenceException)
+            {
+            }
+
+            // return a simple treenode...
+            TreeNode node = new TreeNode(kmlObject.getType());
+            node.Tag = kmlObject;
+            return node;
         }
 
         /// <summary>
@@ -649,7 +685,7 @@ namespace FC.GEPluginCtrls
             }
             catch (InvalidCastException icex)
             {
-                Debug.WriteLine(icex.ToString());
+                Debug.WriteLine(icex.ToString(), "KmlTreeView");
                 throw;
             }
         }

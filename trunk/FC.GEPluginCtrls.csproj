@@ -56,7 +56,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AltitudeMode.cs" />
     <Compile Include="External.cs" />
     <Compile Include="Helpers\DispatchHelpers.cs" />
     <Compile Include="GEEventArgs.cs" />
@@ -68,7 +67,7 @@
       <DependentUpon>GEStatusStrip.cs</DependentUpon>
     </Compile>
     <Compile Include="Interfaces\IExternal.cs" />
-    <Compile Include="ImageryBase.cs" />
+    <Compile Include="Enumerations\ImageryBase.cs" />
     <Compile Include="Helpers\KmlHelpers.cs" />
     <Compile Include="Maths.cs" />
     <Compile Include="Controls\GEToolStrip.Designer.cs">
@@ -119,6 +118,7 @@
     <Compile Include="Controls\GEToolStrip.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Server.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Plugin.html" />

@@ -97,7 +97,7 @@ namespace FC.GEPluginCtrls
             this.external.PluginReady += new ExternalEventHandler(this.External_PluginReady);
             this.external.ScriptError += new ExternalEventHandler(this.External_ScriptError);
             this.external.KmlEvent += new ExternalEventHandler(this.External_KmlEvent);
-            this.external.PluginEvent += new ExternalEventHandler(External_PluginEvent);
+            this.external.PluginEvent += new ExternalEventHandler(this.External_PluginEvent);
             this.external.ViewEvent += new ExternalEventHandler(this.External_ViewEvent);
 
             // Setup the desired control defaults
@@ -115,7 +115,7 @@ namespace FC.GEPluginCtrls
             }
             catch (ArgumentException aex)
             {
-                Debug.WriteLine("GEWebBrowser: " + aex.ToString());
+                Debug.WriteLine(aex.ToString(), "GEWebBrowser");
             }
         }
 
@@ -141,6 +141,9 @@ namespace FC.GEPluginCtrls
         /// </summary>
         public event GEWebBrowserEventHandler ScriptError;
 
+        /// <summary>
+        /// Rasied when there is a GEPlugin event
+        /// </summary>
         public event GEWebBrowserEventHandler PluginEvent;
 
         /// <summary>
@@ -335,17 +338,17 @@ namespace FC.GEPluginCtrls
                 }
                 catch (FileNotFoundException fnfex)
                 {
-                    Debug.WriteLine(fnfex.ToString());
+                    Debug.WriteLine(fnfex.ToString(), "GEWebBrowser");
                     throw;
                 }
                 catch (UnauthorizedAccessException uaex)
                 {
-                    Debug.WriteLine(uaex.ToString());
+                    Debug.WriteLine(uaex.ToString(), "GEWebBrowser");
                     throw;
                 }
                 catch (COMException cex)
                 {
-                    Debug.WriteLine(cex.ToString());
+                    Debug.WriteLine(cex.ToString(), "GEWebBrowser");
                     throw;
                 }
             }
@@ -424,7 +427,7 @@ namespace FC.GEPluginCtrls
                 }
                 catch (InvalidOperationException ioex)
                 {
-                    Debug.WriteLine(ioex.ToString());
+                    Debug.WriteLine(ioex.ToString(), "GEWebBrowser");
                     this.OnScriptError(this, new GEEventArgs(ioex.Message, ioex.ToString()));
                     throw;
                 }
@@ -483,14 +486,14 @@ namespace FC.GEPluginCtrls
                     }
                     catch (InvalidOperationException ioex)
                     {
-                        Debug.WriteLine(ioex.ToString());
+                        Debug.WriteLine(ioex.ToString(), "GEWebBrowser");
                         throw;
                     }
                 }
             }
             catch (InvalidOperationException ioex)
             {
-                Debug.WriteLine(ioex.ToString());
+                Debug.WriteLine(ioex.ToString(), "GEWebBrowser");
                 throw;
             }
         }
@@ -500,10 +503,11 @@ namespace FC.GEPluginCtrls
         /// </summary>
         public void LoadEmbededPlugin()
         {
+            string html = string.Empty;
+
             try
             {
-                // Get the html string from the embebed reasource
-                string html = Properties.Resources.Plugin;
+                html = Properties.Resources.Plugin;
 
                 // Create a temp file and get the full path
                 string path = Path.GetTempFileName();
@@ -521,7 +525,7 @@ namespace FC.GEPluginCtrls
             }
             catch (IOException ioex)
             {
-                Debug.WriteLine(ioex.ToString());
+                Debug.WriteLine(ioex.ToString(), "GEWebBrowser");
                 throw;
             }
         }
@@ -568,7 +572,7 @@ namespace FC.GEPluginCtrls
             }
             catch (ArgumentNullException anex)
             {
-                Debug.WriteLine(anex.ToString());
+                Debug.WriteLine(anex.ToString(), "GEWebBrowser");
                 throw;
             }
         }
@@ -640,6 +644,11 @@ namespace FC.GEPluginCtrls
             }
         }
 
+        /// <summary>
+        /// Protected method for raising the PluginEvent event
+        /// </summary>
+        /// <param name="sender">The sending object</param>
+        /// <param name="e">Event arguments</param>
         protected virtual void OnPluginEvent(object sender, GEEventArgs e)
         {
             if (this.PluginEvent != null)
@@ -695,7 +704,7 @@ namespace FC.GEPluginCtrls
                 }
                 catch (COMException cex)
                 {
-                    Debug.WriteLine(cex.ToString());
+                    Debug.WriteLine(cex.ToString(), "GEWebBrowser");
                     throw;
                 }
             }
@@ -722,7 +731,7 @@ namespace FC.GEPluginCtrls
         /// </summary>
         /// <param name="sender">The plugin object</param>
         /// <param name="e">The event arguments</param>
-        void External_PluginEvent(object sender, GEEventArgs e)
+        private void External_PluginEvent(object sender, GEEventArgs e)
         {
             this.OnPluginEvent(sender, e);
         }
@@ -767,7 +776,7 @@ namespace FC.GEPluginCtrls
         private void ParentForm_FormClosing(object sender, FormClosingEventArgs e)
         {
             this.pluginIsReady = false;
-            Debug.WriteLine("ParentForm_FormClosing: " + this.parentForm.Name);
+            Debug.WriteLine("ParentForm_FormClosing: " + this.parentForm.Name, "GEWebBrowser");
         }
 
         /// <summary>
