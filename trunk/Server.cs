@@ -258,7 +258,7 @@ namespace FC.GEPluginCtrls.HttpServer
         }
 
         /// <summary>
-        /// This function send an Error Header to the client (Browser/GoogleEarth)
+        /// Sends an Error Header to the client (Browser/GoogleEarth)
         /// </summary>
         /// <param name="version">The HTTP version</param>
         /// <param name="status">The Http Error Code</param>
@@ -271,7 +271,7 @@ namespace FC.GEPluginCtrls.HttpServer
         }
 
         /// <summary>
-        /// This function send the Header Information to the client (Browser/GoogleEarth)
+        /// Sends Header Information to the client (Browser/GoogleEarth)
         /// </summary>
         /// <param name="version">The HTTP Version number</param>
         /// <param name="mime">Mime Type of the responce</param>
@@ -291,8 +291,7 @@ namespace FC.GEPluginCtrls.HttpServer
         }
 
         /// <summary>
-        /// Overloaded Function, takes string, convert to bytes and calls 
-        /// overloaded sendToBrowserFunction.
+        /// Sends data to the client (Browser/GoogleEarth)
         /// </summary>
         /// <param name="data">The data to be sent to google earth (client)</param>
         private void SendToBrowser(string data)
@@ -301,7 +300,7 @@ namespace FC.GEPluginCtrls.HttpServer
         }
 
         /// <summary>
-        /// Sends data to the browser (client)
+        /// Sends data to the client (Browser/GoogleEarth)
         /// </summary>
         /// <param name="data">The data to be sent to google earth (client)</param>
         private void SendToBrowser(byte[] data)
@@ -340,7 +339,8 @@ namespace FC.GEPluginCtrls.HttpServer
 
             while (this.keepListening)
             {
-                // Stops the call to AcceptSocket from blockin allowing the listenThread to teminate cleanly
+                // Stops the call to AcceptSocket from blocking
+                // allowins the listenThread to teminate cleanly
                 if (!this.tcpListener.Pending())
                 {
                     Thread.Sleep(100);
@@ -398,9 +398,8 @@ namespace FC.GEPluginCtrls.HttpServer
                         }                     
                     }
 
-                    // GET /kml/wht-blank.png HTTP/1.1
+                    // Token format is give in the RFC as:
                     // RMethod [SP] Request-URI [SP] HTTP-Version [CRLF]
-                    // retun if the request is invalid 
                     string[] requestTokens = requestHeader.Split(new char[] { ' ' });
                     if (requestTokens.Length != 3)
                     {
