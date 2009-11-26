@@ -1212,7 +1212,7 @@
         </member>
         <member name="T:FC.GEPluginCtrls.HttpServer.Server">
             <summary>
-            adasdasd dsf sd fsd f sd fs
+            A simple HTTP server class to allow the use of local files
             </summary>
         </member>
         <member name="F:FC.GEPluginCtrls.HttpServer.Server.tcpListener">
@@ -1278,6 +1278,20 @@
             Stops the server
             </summary>
         </member>
+        <member name="M:FC.GEPluginCtrls.HttpServer.Server.GetLocalDirectory(System.String)">
+            <summary>
+            Get the local directory from a request uri
+            </summary>
+            <param name="requestUri">header Request-Uri</param>
+            <returns></returns>
+        </member>
+        <member name="M:FC.GEPluginCtrls.HttpServer.Server.GetLocalFile(System.String)">
+            <summary>
+            Attempt to get the file name from a request uri
+            </summary>
+            <param name="requestUri">header Request-Uri</param>
+            <returns>the filename, the default filename or and empty string</returns>
+        </member>
         <member name="M:FC.GEPluginCtrls.HttpServer.Server.GetMimeType(System.String)">
             <summary>
             Gets the mime type for the given file type
@@ -1287,14 +1301,14 @@
         </member>
         <member name="M:FC.GEPluginCtrls.HttpServer.Server.SendError(System.String,System.Net.HttpStatusCode)">
             <summary>
-            This function send an Error Header to the client (Browser/GoogleEarth)
+            Sends an Error Header to the client (GoogleEarth)
             </summary>
             <param name="version">The HTTP version</param>
             <param name="status">The Http Error Code</param>
         </member>
         <member name="M:FC.GEPluginCtrls.HttpServer.Server.SendHeader(System.String,System.String,System.Int32,System.Net.HttpStatusCode)">
             <summary>
-            This function send the Header Information to the client (Browser/GoogleEarth)
+            Sends Header Information to the client (GoogleEarth)
             </summary>
             <param name="version">The HTTP Version number</param>
             <param name="mime">Mime Type of the responce</param>
@@ -1303,14 +1317,13 @@
         </member>
         <member name="M:FC.GEPluginCtrls.HttpServer.Server.SendToBrowser(System.String)">
             <summary>
-            Overloaded Function, takes string, convert to bytes and calls 
-            overloaded sendToBrowserFunction.
+            Sends body data to the client (GoogleEarth)
             </summary>
             <param name="data">The data to be sent to google earth (client)</param>
         </member>
         <member name="M:FC.GEPluginCtrls.HttpServer.Server.SendToBrowser(System.Byte[])">
             <summary>
-            Sends data to the browser (client)
+            Sends data to the client (Browser/GoogleEarth)
             </summary>
             <param name="data">The data to be sent to google earth (client)</param>
         </member>
@@ -1335,11 +1348,6 @@
             <summary>
             Gets or sets the root server directory (webroot) 
             http://localhost:port/ will point to this directory
-            </summary>
-        </member>
-        <member name="P:FC.GEPluginCtrls.HttpServer.Server.Listen">
-            <summary>
-            Gets or sets a value indicating whether the server should keep listening
             </summary>
         </member>
         <member name="T:FC.GEPluginCtrls.Properties.Resources">
@@ -1963,23 +1971,6 @@
             </summary>
             <param name="kmlObject">The current KmlObject</param>
         </member>
-        <member name="T:FC.GEPluginCtrls.IHTMLScriptElement">
-            <summary>
-            A COM interface is needed because .NET does not provide a way
-            to set the properties of a HTML script element.
-            This negates the need to refrence mshtml
-            </summary>
-        </member>
-        <member name="P:FC.GEPluginCtrls.IHTMLScriptElement.Text">
-            <summary>
-            Sets the text property
-            </summary>
-        </member>
-        <member name="P:FC.GEPluginCtrls.IHTMLScriptElement.Src">
-            <summary>
-            Sets the src property
-            </summary>
-        </member>
         <member name="T:FC.GEPluginCtrls.GEWebBrowserEventHandler">
             <summary>
             Main delegate event handler
@@ -2005,6 +1996,23 @@
         <member name="F:FC.GEPluginCtrls.ImageryBase.Moon">
             <summary>
             Moon imagery base
+            </summary>
+        </member>
+        <member name="T:FC.GEPluginCtrls.IHTMLScriptElement">
+            <summary>
+            A COM interface is needed because .NET does not provide a way
+            to set the properties of a HTML script element.
+            This negates the need to refrence mshtml
+            </summary>
+        </member>
+        <member name="P:FC.GEPluginCtrls.IHTMLScriptElement.Text">
+            <summary>
+            Sets the text property
+            </summary>
+        </member>
+        <member name="P:FC.GEPluginCtrls.IHTMLScriptElement.Src">
+            <summary>
+            Sets the src property
             </summary>
         </member>
     </members>

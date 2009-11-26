@@ -163,22 +163,6 @@ namespace FC.GEPluginCtrls.HttpServer
             }
         }
 
-        /// <summary>
-        /// Gets or sets a value indicating whether the server should keep listening
-        /// </summary>
-        public bool Listen
-        {
-            get
-            {
-                return this.keepListening;
-            }
-
-            set
-            {
-                this.keepListening = value;
-            }
-        }
-
         #endregion
 
         #region Public methods
@@ -191,15 +175,13 @@ namespace FC.GEPluginCtrls.HttpServer
             // start listing on the given ip address and port
             this.tcpListener = new TcpListener(this.localHost, this.port);
             this.tcpListener.Start();
-            Debug.WriteLine("Running...", "Server");
 
             // start the listen thread
             Thread listenThread = new Thread(new ThreadStart(this.StartListen));
             listenThread.Start();
 
             this.keepListening = true;
-
-            Debug.WriteLine("Start", "Server");
+            Debug.WriteLine("Start...", "Server-Info");
         }
 
         /// <summary>
@@ -207,13 +189,69 @@ namespace FC.GEPluginCtrls.HttpServer
         /// </summary>
         public void Stop()
         {
-            Debug.WriteLine("Stop!", "Server");
+            Debug.WriteLine("Stop...", "Server-Info");
             this.keepListening = false;
         }
 
         #endregion
 
         #region Private methods
+
+        /// <summary>
+        /// Get the local directory from a request uri
+        /// </summary>
+        /// <param name="requestUri">header Request-Uri</param>
+        /// <returns></returns>
+        private string GetLocalDirectory(string requestUri)
+        {
+            string localFilePath = Path.GetDirectoryName(requestUri);
+
+            if (localFilePath != null)
+            {
+                // remove any leading slash from the path
+                if (localFilePath.StartsWith("\\"))
+                {
+                    localFilePath = localFilePath.Substring(1);
+                }
+
+                // add a trailing slash to the path if required
+                if (!localFilePath.EndsWith("\\"))
+                {
+                    // add a trailing slash if needed
+                    localFilePath += "\\";
+                }
+            }
+
+            if (localFilePath == "\\")
+            {
+                localFilePath = this.rootDirectory;
+            }
+            else
+            {
+                localFilePath = this.RootDirectory + requestUri;
+            }
+
+            return localFilePath;
+        }
+
+        /// <summary>
+        /// Attempt to get the file name from a request uri
+        /// </summary>
+        /// <param name="requestUri">header Request-Uri</param>
+        /// <returns>the filename, the default filename or and empty string</returns>
+        private string GetLocalFile(string requestUri)
+        {
+            string fileName = Path.GetFileName(requestUri);
+
+            // If a file is not specified 
+            if (fileName == string.Empty)
+            {
+                // try the default filename
+                fileName = this.defaultFileName;
+            }
+
+            return fileName;
+        }
 
         /// <summary>
         /// Gets the mime type for the given file type
@@ -258,7 +296,7 @@ namespace FC.GEPluginCtrls.HttpServer
         }
 
         /// <summary>
-        /// Sends an Error Header to the client (Browser/GoogleEarth)
+        /// Sends an Error Header to the client (GoogleEarth)
         /// </summary>
         /// <param name="version">The HTTP version</param>
         /// <param name="status">The Http Error Code</param>
@@ -271,7 +309,7 @@ namespace FC.GEPluginCtrls.HttpServer
         }
 
         /// <summary>
-        /// Sends Header Information to the client (Browser/GoogleEarth)
+        /// Sends Header Information to the client (GoogleEarth)
         /// </summary>
         /// <param name="version">The HTTP Version number</param>
         /// <param name="mime">Mime Type of the responce</param>
@@ -291,7 +329,7 @@ namespace FC.GEPluginCtrls.HttpServer
         }
 
         /// <summary>
-        /// Sends data to the client (Browser/GoogleEarth)
+        /// Sends body data to the client (GoogleEarth)
         /// </summary>
         /// <param name="data">The data to be sent to google earth (client)</param>
         private void SendToBrowser(string data)
@@ -332,15 +370,10 @@ namespace FC.GEPluginCtrls.HttpServer
         /// </summary>
         private void StartListen()
         {
-            string localDir;
-            string physicalFilePath = string.Empty;
-            string formattedMessage = string.Empty;
-            string response = string.Empty;
-
             while (this.keepListening)
             {
                 // Stops the call to AcceptSocket from blocking
-                // allowins the listenThread to teminate cleanly
+                // this allows the listenThread to teminate cleanly
                 if (!this.tcpListener.Pending())
                 {
                     Thread.Sleep(100);
@@ -350,15 +383,16 @@ namespace FC.GEPluginCtrls.HttpServer
                 {
                     this.socket = this.tcpListener.AcceptSocket();
                 }
-                
-                // Handle the connection
+
+                // Handle the incoming connection
                 if (this.socket.Connected)
                 {
-                    Debug.WriteLine("Connected: " + this.socket.RemoteEndPoint, "Server");
-
-                    byte[] buffer = new byte[1024];
+                    Debug.WriteLine("Connected: " + this.socket.RemoteEndPoint, "Server-Info");
+                    byte[] buffer = new byte[1024]; // 1KB
                     string data = string.Empty;
 
+                    // See http://www.w3.org/Protocols/rfc2616/rfc2616-sec5.html
+                    // wait for the end of the header: CRLF CRLF 
                     do
                     {
                         int read = this.socket.Receive(buffer, this.socket.Available, SocketFlags.None);
@@ -366,23 +400,27 @@ namespace FC.GEPluginCtrls.HttpServer
                     }
                     while (!data.EndsWith(Environment.NewLine + Environment.NewLine));
 
-                    // Example request header from the plug-in
-                    // GET /kml/wht-blank.png HTTP/1.1
-                    // Accept: application/vnd.google-earth.kml+xml, application/vnd.google-earth.kmz, image/*, */*
-                    // User-Agent: GoogleEarth/5.1.3509.4636(Windows;Microsoft Windows Vista (Service Pack 2);en-US;kml:2.2;client:Plus;type:plugin)
-                    // Host: localhost:8080
-                    // Connection: Keep-Alive
+                    // parse the header
+                    string[] headerLines = data.Split(Environment.NewLine.ToCharArray());
                     string requestHeader = string.Empty;
                     string acceptHeader = string.Empty;
                     string userAgentHeader = string.Empty;
                     string hostHeader = string.Empty;
-                    string[] headers = data.Split('\n');
+                    bool getRequest = true;
 
-                    foreach (string line in headers)
+                    foreach (string line in headerLines)
                     {
+                        // Get and head only...
                         if (line.StartsWith("GET"))
                         {
+                            Debug.WriteLine(line, "Server-Request");
                             requestHeader = line;
+                        }
+                        else if (line.StartsWith("HEAD"))
+                        {
+                            Debug.WriteLine(line, "Server-Request");
+                            requestHeader = line;
+                            getRequest = false;
                         }
                         else if (line.StartsWith("Accept:"))
                         {
@@ -395,107 +433,94 @@ namespace FC.GEPluginCtrls.HttpServer
                         else if (line.StartsWith("Host:"))
                         {
                             hostHeader = line;
-                        }                     
+                        }
                     }
 
-                    // Token format is give in the RFC as:
-                    // RMethod [SP] Request-URI [SP] HTTP-Version [CRLF]
-                    string[] requestTokens = requestHeader.Split(new char[] { ' ' });
+                    // Request-Line
+                    // See http://www.w3.org/Protocols/rfc2616/rfc2616-sec5.html#sec5.1
+                    // Method [SP] Request-URI [SP] HTTP-Version [CRLF]
+                    // if there are missing parts then skip the request
+                    string[] requestTokens = requestHeader.Split(' ');
                     if (requestTokens.Length != 3)
                     {
                         continue;
                     }
 
-                    string requestMethod = requestTokens[0];
-                    string requestUri = requestTokens[1];
-                    string httpVersion = requestTokens[2]; // HTTP-Version HTTP/1.?
-                    string requestedFile = Path.GetFileName(requestUri);
-                    string requestedDirectory = Path.GetDirectoryName(requestUri);
-
-                    if (requestedDirectory != null)
+                    // Method
+                    // Handle GET and HEAD requests otherwise send 501 NotImplemented
+                    // see http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.3
+                    // see http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.4
+                    if (requestTokens[0] != "GET" && requestTokens[0] != "HEAD")
                     {
-                        // remove any leading slash from the path
-                        if (requestedDirectory.StartsWith("\\"))
-                        {
-                            requestedDirectory = requestedDirectory.Substring(1);
-                        }
-
-                        // add a trailing slash to the path if required
-                        if (!requestedDirectory.EndsWith("\\"))
-                        {
-                            // add a trailing slash if needed
-                            requestedDirectory += "\\";
-                        }
-                    }             
-
-                    Debug.WriteLine(requestedDirectory, "requestedDirectory");
-                    Debug.WriteLine(requestedFile, "requestedFile");
-
-                    // GET only
-                    if (requestMethod != "GET")
-                    {
-                        // 405 MethodNotAllowed
-                        this.SendError(httpVersion, HttpStatusCode.MethodNotAllowed);
+                        Debug.WriteLine("501 NotImplemented", "Server-Send");
+                        this.SendError(requestTokens[2], HttpStatusCode.NotImplemented);
                         continue;
                     }
 
-                    // GoogleEarth only
+                    // HTTP-Version 
+                    // Handle HTTP/1.1 otherwise send 505 HttpVersionNotSupported
+                    if (requestTokens[2] != "HTTP/1.1")
+                    {
+                        Debug.WriteLine("505 HttpVersionNotSupported", "Server");
+                        this.SendError(requestTokens[2], HttpStatusCode.HttpVersionNotSupported);
+                        continue;
+                    }
+
+                    // User-Agent
+                    // Handle GoogleEarth otherwise send 403 Forbidden
                     if (!userAgentHeader.StartsWith("User-Agent: GoogleEarth"))
                     {
-                        Debug.WriteLine("403 Forbidden", "Server");
-                        Debug.WriteLine(userAgentHeader, "Server");
-
-                        this.SendError(httpVersion, HttpStatusCode.Forbidden);
+                        Debug.WriteLine("403 Forbidden", "Server-Send");
+                        this.SendError(requestTokens[2], HttpStatusCode.Forbidden);
                         continue;
-                    }                
-
-                    // Find the virtual directory
-                    if (requestedDirectory == "\\")
-                    {
-                        localDir = this.rootDirectory;
-                    }
-                    else
-                    {
-                        localDir = this.RootDirectory + requestedDirectory;
                     }
 
-                    if (localDir == string.Empty)
+                    // Get the requested/default file from the Request-Uri
+                    string localFile = this.GetLocalFile(requestTokens[1]);
+
+                    // If no file exists then send 404 NotFound
+                    if (localFile == string.Empty)
                     {
-                        this.SendError(httpVersion, HttpStatusCode.NotFound);
+                        Debug.WriteLine("404 NotFound (File)", "Server-Send");
+                        this.SendError(requestTokens[2], HttpStatusCode.NotFound);
+                        continue;
                     }
 
-                    if (requestedFile == string.Empty)
-                    {
-                        // Get the default filename
-                        requestedFile = this.DefaultFileName;
+                    // Get the local directory file from the Request-Uri
+                    string localDirectory = GetLocalDirectory(requestTokens[1]);
 
-                        if (requestedFile == string.Empty)
+                    // If no directory exists then send 404 NotFound
+                    if (localDirectory == string.Empty)
+                    {
+                        Debug.WriteLine("404 NotFound (Directory)", "Server-Send");
+                        this.SendError("HTTP/1.1", HttpStatusCode.NotFound);
+                        continue;
+                    }
+
+                    // The physical path to the local file
+                    string localPath = localDirectory + localFile;
+
+                    if (File.Exists(localPath))
+                    {
+                        // Send then file 200 OK
+                        Debug.WriteLine("200 OK", "Server-Send");
+                        byte[] bytes = File.ReadAllBytes(localPath);
+                        string response = Encoding.ASCII.GetString(bytes);
+                        this.SendHeader(requestTokens[2], this.GetMimeType(localFile), bytes.Length, HttpStatusCode.OK);
+                        if (getRequest)
                         {
-                            Debug.WriteLine("404 NotFound", "Server");
-                            Debug.WriteLine("No defualt file specified", "Server");
-
-                            this.SendError(httpVersion, HttpStatusCode.NotFound);
+                            this.SendToBrowser(bytes);
                         }
-                    }
 
-                    string mimeType = this.GetMimeType(requestedFile);
-                    physicalFilePath = localDir + requestedFile;
-
-                    if (File.Exists(physicalFilePath) == false)
-                    {
-                        Debug.WriteLine("404 NotFound", "Server");
-                        Debug.WriteLine("File not found: " + physicalFilePath, "Server");
-                        this.SendError(httpVersion, HttpStatusCode.NotFound);
+                        this.socket.Close();
                     }
                     else
                     {
-                        Debug.WriteLine("200 OK " + physicalFilePath, "Server");
-
-                        byte[] bytes = File.ReadAllBytes(physicalFilePath);
-                        response += Encoding.ASCII.GetString(bytes);
-                        this.SendHeader(httpVersion, mimeType, bytes.Length, HttpStatusCode.OK);
-                        this.SendToBrowser(bytes);
-                        this.socket.Close();
+                        // Anything else send a 404 NotFound
+                        Debug.WriteLine("404 NotFound", "Server");
+                        Debug.WriteLine("Requested: " + requestTokens[1], "Server");
+                        Debug.WriteLine("Translated: " + localPath, "Server");
+                        this.SendError(requestTokens[2], HttpStatusCode.NotFound);
                     }
                 }
             }
