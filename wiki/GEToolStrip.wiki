@@ -5,7 +5,7 @@ http://earthapi.googlepages.com/GEToolStrip_6.jpg
 
 = Introduction =
 
-The GEToolStrip control intergrates with the GEWebBrowser to provide controls for the basic options in the Google Earth Plugin. 
+The GEToolStrip control integrates with the GEWebBrowser to provide controls for the basic options in the Google Earth Plug-in. 
 
 
 = Details =
