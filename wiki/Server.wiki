@@ -1,0 +1,56 @@
+#summary Overview of the Server class
+#labels Phase-Implementation,Featured
+
+= Introduction =
+
+The Server class can be used to provide a way to allow for local files access over a standard HTTP connection.
+
+= Details =
+
+This class provide a basic web server for the Plug-in to work with. A local server provides a way to circumvent all access issues between the JavaScript and the local file system by allowing the plug-in to access and work with files over a standard TCP connection.
+  
+== Constructor == 
+
+_HttpServer.Server_ *Server()*<br>
+Initializes a new instance of the Server class
+
+_HttpServer.Server_ *Server(System.string rootDirectory)*<br>
+Initializes a new instance of the Server class
+
+_HttpServer.Server_ *Server(System.string rootDirectory, System.string defaultFileName)*<br>
+Initializes a new instance of the Server class
+
+== Public Properties ==
+
+_System.String_ *DefaultFileName*<br>
+Gets or sets the default file name<br>
+The default value is "default.kml"<br>
+
+_System.Net.IPAddress_ *IPAddress*<br>
+Gets or sets the IP Address for the server to use<br>
+The default is 127.0.0.1 (localhost/loopback)<br>
+
+_System.Int_ *Port*<br>
+Gets or sets the port for the server to use 
+The default value is 8080
+
+_System.String_  *RootDirectory*<br>
+Gets or sets the root server directory (webroot)<br>
+The default value is "\" (the application root)
+http://localhost:port/ will point to this directory<br>
+
+== Public methods ==
+
+_Void_ *Start()*<br>
+Starts the server
+
+_Void_ *Stop()*<br>
+Stops the server
+
+== Source == 
+
+http://code.google.com/p/winforms-geplugin-control-library/source/browse/trunk/Server.cs
+
+== Ads ==
+
+<wiki:gadget url="http://earthapi.googlepages.com/ad.xml" border="0" width="728" height="90" />
