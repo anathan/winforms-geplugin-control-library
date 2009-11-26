@@ -3,11 +3,11 @@
 
 = Introduction =
 
-The Server class can be used to provide a way to allow for local files access over a standard HTTP connection.
+The Server class can be used to serve file over a standard HTTP connection.
 
 = Details =
 
-This class provide a basic web server for the Plug-in to work with. A local server provides a way to circumvent all access issues between the JavaScript and the local file system by allowing the plug-in to access and work with files over a standard TCP connection.
+This class provide a basic web server for the Plug-in to work with. A local server provides a way to circumvent all access issues between JavaScript and the local file system by serving the local files over a standard TCP connection.
   
 == Constructor == 
 
