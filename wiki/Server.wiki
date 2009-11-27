@@ -28,10 +28,10 @@ By default the server only accepts connections from GoogleEarth User-agents on t
 _HttpServer.Server_ *Server()*<br>
 Initializes a new instance of the Server class
 
-_HttpServer.Server_ *Server(System.string rootDirectory)*<br>
+_HttpServer.Server_ *Server(string rootDirectory)*<br>
 Initializes a new instance of the Server class
 
-_HttpServer.Server_ *Server(System.string rootDirectory, System.string defaultFileName)*<br>
+_HttpServer.Server_ *Server(string rootDirectory, string defaultFileName)*<br>
 Initializes a new instance of the Server class
 
 == Public Properties ==
@@ -48,7 +48,7 @@ _System.ushort_ *Port*<br>
 Gets or sets the port for the server to use 
 The default value is 8080
 
-_System.String_  *RootDirectory*<br>
+_string_  *RootDirectory*<br>
 Gets or sets the root server directory (webroot)<br>
 The default value is "\" (the application root)
 http://localhost:port/ will point to this directory<br>
