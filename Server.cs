@@ -18,6 +18,8 @@
 // </summary>
 namespace FC.GEPluginCtrls.HttpServer
 {
+    ////TODO - refactor most of StartListen into a new ParseHeader method...
+
     using System;
     using System.Diagnostics;
     using System.IO;
@@ -64,6 +66,11 @@ namespace FC.GEPluginCtrls.HttpServer
         private string defaultFileName = "default.kml";
 
         /// <summary>
+        /// The Server HTTP version
+        /// </summary>
+        private string httpVersion = "HTTP/1.1";
+
+        /// <summary>
         /// Keep listening
         /// </summary>
         private volatile bool keepListening = true;
@@ -74,7 +81,7 @@ namespace FC.GEPluginCtrls.HttpServer
         /// Initializes a new instance of the Server class
         /// </summary>
         public Server() :
-            this(@"\")
+            this(Path.DirectorySeparatorChar.ToString())
         {
         }
 
@@ -201,10 +208,10 @@ namespace FC.GEPluginCtrls.HttpServer
         /// Get the local directory from a request uri
         /// </summary>
         /// <param name="requestUri">header Request-Uri</param>
-        /// <returns></returns>
+        /// <returns>The local/root directory path</returns>
         private string GetLocalDirectory(string requestUri)
         {
-            string directory = Path.GetDirectoryName(requestUri);
+            string directory = Path.GetDirectoryName(requestUri.Replace("/", @"\"));
 
             if (null != directory)
             {
@@ -228,7 +235,7 @@ namespace FC.GEPluginCtrls.HttpServer
             }
             else
             {
-                directory = this.RootDirectory + requestUri;
+                directory = this.RootDirectory + directory;
             }
 
             return directory;
@@ -268,8 +275,9 @@ namespace FC.GEPluginCtrls.HttpServer
             }
             catch (ArgumentException aex)
             {
-                Debug.WriteLine("GetMimeType: " + aex.ToString(), "Server");
-                return "application/unknown";
+                Debug.WriteLine("GetMimeType: " + aex.ToString(), "Server-Error");
+                this.SendError(HttpStatusCode.InternalServerError);
+                return string.Empty;
             }
 
             switch (extension)
@@ -291,41 +299,59 @@ namespace FC.GEPluginCtrls.HttpServer
                 case ".txt":
                     return "text/plain";
                 default:
-                    return "application/unknown";
+                    this.SendError(HttpStatusCode.UnsupportedMediaType);
+                    return string.Empty;
             }
         }
 
         /// <summary>
         /// Sends an Error Header to the client (GoogleEarth)
         /// </summary>
-        /// <param name="version">The HTTP version</param>
         /// <param name="status">The Http Error Code</param>
-        private void SendError(string version, HttpStatusCode status)
+        private void SendError(HttpStatusCode status)
         {
             string code = string.Format("{0} {1}", (int)status, status);
-            this.SendHeader(version, string.Empty, code.Length, status);
+            this.SendHeader("text/plain; charset=UTF-8", code.Length, status);
             this.SendToBrowser(code);
             this.socket.Close();
         }
 
         /// <summary>
         /// Sends Header Information to the client (GoogleEarth)
+        /// See http://www.w3.org/Protocols/rfc2616/rfc2616-sec6.html
         /// </summary>
-        /// <param name="version">The HTTP Version number</param>
-        /// <param name="mime">Mime Type of the responce</param>
+        /// <param name="mime">MMIE (type) for the responce</param>
         /// <param name="bytes">Total Bytes to be sent in the body</param>
         /// <param name="code">The HTTP status code</param>
-        private void SendHeader(string version, string mime, int bytes, HttpStatusCode code)
+        private void SendHeader(string mime, int bytes, HttpStatusCode code)
         {
             StringBuilder data = new StringBuilder();
-            data.AppendFormat("{0} {1} {2}{3}", version, (int)code, code.ToString(), Environment.NewLine);
-            data.AppendLine("Server: GEPluginCtrls-a");
-            data.AppendFormat("Content-Type: {0}{1}", mime, Environment.NewLine);
-            data.AppendLine("Accept-Ranges: bytes");
-            data.AppendFormat("Content-Length: {0}{1}{2}", bytes, Environment.NewLine, Environment.NewLine);
 
+            // Status-Line
+            // HTTP-Version SP Status-Code SP Reason-Phrase CRLF
+            // See http://www.w3.org/Protocols/rfc2616/rfc2616-sec6.html#sec6.1
+            data.AppendFormat(
+                "{0} {1} {2}{3}",
+                this.httpVersion,
+                (int)code,
+                code.ToString(),
+                Environment.NewLine);
+
+            string httpDate = DateTime.Now.ToUniversalTime().ToString("r");
+            data.AppendFormat("Date: {0}{1}", httpDate, Environment.NewLine);
+            data.AppendLine("Accept-Ranges: bytes");
+            data.AppendFormat("Content-Length: {0}{1}", bytes, Environment.NewLine);
+            data.AppendFormat("Content-Type: {0}{1}", mime, Environment.NewLine);
+
+            // end
+            data.AppendLine("Connection: close");
+            data.AppendLine();
+
+            // send
             byte[] header = Encoding.UTF8.GetBytes(data.ToString());
             this.SendToBrowser(header);
+
+            ////Debug.WriteLine(data.ToString(), "Server-Send");
         }
 
         /// <summary>
@@ -349,9 +375,13 @@ namespace FC.GEPluginCtrls.HttpServer
             {
                 if (this.socket.Connected)
                 {
-                    if ((numBytes = this.socket.Send(data, data.Length, 0)) == -1)
+                    if ((numBytes = this.socket.Send(data, data.Length, SocketFlags.None)) == -1)
                     {
                         Debug.WriteLine("Send Packet Error", "Server");
+                    }
+                    else
+                    {
+                        ////Debug.WriteLine(Encoding.UTF8.GetString(data), "Server-Send");
                     }
                 }
                 else
@@ -393,22 +423,35 @@ namespace FC.GEPluginCtrls.HttpServer
 
                     // See http://www.w3.org/Protocols/rfc2616/rfc2616-sec5.html
                     // wait for the end of the header: CRLF CRLF 
-                    do
+                    try
                     {
-                        int read = this.socket.Receive(buffer, this.socket.Available, SocketFlags.None);
-                        data += Encoding.UTF8.GetString(buffer, 0, read);
+                        do
+                        {
+                            int read = this.socket.Receive(buffer, this.socket.Available, SocketFlags.None);
+                            data += Encoding.UTF8.GetString(buffer, 0, read);
+                        }
+                        while (!data.EndsWith(Environment.NewLine + Environment.NewLine));
                     }
-                    while (!data.EndsWith(Environment.NewLine + Environment.NewLine));
+                    catch (SocketException sex)
+                    {
+                        Debug.WriteLine("StartListen" + sex.ToString(), "Server-Error");
+                        this.SendError(HttpStatusCode.InternalServerError);
+                        continue;
+                    }
+                   
+                    ////Debug.WriteLine(data, "Server-Request");
 
-                    // parse the header
-                    string[] headerLines = data.Split(Environment.NewLine.ToCharArray());
+                    // split the request by CRLF into lines
+                    string[] headerLines = data.Split(
+                        new string[] { Environment.NewLine },
+                        StringSplitOptions.RemoveEmptyEntries);
+
                     string requestHeader = string.Empty;
                     string requestMethod = string.Empty;
-                    string acceptHeader = string.Empty;
                     string userAgentHeader = string.Empty;
                     string hostHeader = string.Empty;
                     
-
+                    // Find the headers we are interested in from the request
                     foreach (string line in headerLines)
                     {
                         // Get and head only...
@@ -424,11 +467,7 @@ namespace FC.GEPluginCtrls.HttpServer
                             requestHeader = line;
                             requestMethod = "HEAD";
                         }
-                        else if (line.StartsWith("Accept:"))
-                        {
-                            acceptHeader = line;
-                        }
-                        else if (line.StartsWith("User-Agent"))
+                        else if (line.StartsWith("User-Agent:"))
                         {
                             userAgentHeader = line;
                         }
@@ -441,30 +480,41 @@ namespace FC.GEPluginCtrls.HttpServer
                     // Request-Line
                     // See http://www.w3.org/Protocols/rfc2616/rfc2616-sec5.html#sec5.1
                     // Method [SP] Request-URI [SP] HTTP-Version [CRLF]
-                    // if there are missing parts then skip the request
+                    // Tokenize the reqest, if there are missing parts then skip it...
                     string[] requestTokens = requestHeader.Split(' ');
                     if (requestTokens.Length != 3)
                     {
+                        Debug.WriteLine("400 Bad Request");
+                        this.SendError(HttpStatusCode.BadRequest);
                         continue;
                     }
-
+                    
                     // Method
                     // Handle GET and HEAD requests otherwise send 501 NotImplemented
                     // see http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.3
                     // see http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.4
                     if (requestTokens[0] != "GET" && requestTokens[0] != "HEAD")
                     {
-                        Debug.WriteLine("501 NotImplemented", "Server-Send");
-                        this.SendError(requestTokens[2], HttpStatusCode.NotImplemented);
+                        Debug.WriteLine("501 Not Implemented", "Server-Send");
+                        this.SendError(HttpStatusCode.NotImplemented);
                         continue;
                     }
 
                     // HTTP-Version 
-                    // Handle HTTP/1.1 otherwise send 505 HttpVersionNotSupported
-                    if (requestTokens[2] != "HTTP/1.1")
+                    // Handle version 1.1 otherwise send 505 HttpVersionNotSupported
+                    if (requestTokens[2] != this.httpVersion)
                     {
-                        Debug.WriteLine("505 HttpVersionNotSupported", "Server");
-                        this.SendError(requestTokens[2], HttpStatusCode.HttpVersionNotSupported);
+                        Debug.WriteLine("505 Http Version Not Supported", "Server");
+                        this.SendError(HttpStatusCode.HttpVersionNotSupported);
+                        continue;
+                    }
+
+                    // Host
+                    // Reject any requset that does not have a host header
+                    if (hostHeader == string.Empty)
+                    {
+                        Debug.WriteLine("400 Bad Request", "Server");
+                        this.SendError(HttpStatusCode.BadRequest);
                         continue;
                     }
 
@@ -473,29 +523,31 @@ namespace FC.GEPluginCtrls.HttpServer
                     if (!userAgentHeader.StartsWith("User-Agent: GoogleEarth"))
                     {
                         Debug.WriteLine("403 Forbidden", "Server-Send");
-                        this.SendError(requestTokens[2], HttpStatusCode.Forbidden);
+                        this.SendError(HttpStatusCode.Forbidden);
                         continue;
                     }
 
-                    // Get the requested/default file from the Request-Uri
+                    // Request-Uri
+                    // Convert any forward-slashes to backslashes
+                    // get the requested (default file from the Request-Uri
                     string localFile = this.GetLocalFile(requestTokens[1]);
 
                     // If no file exists then send 404 NotFound
                     if (localFile == string.Empty)
                     {
-                        Debug.WriteLine("404 NotFound (File)", "Server-Send");
-                        this.SendError(requestTokens[2], HttpStatusCode.NotFound);
+                        Debug.WriteLine("404 Not Found (File)", "Server-Send");
+                        this.SendError(HttpStatusCode.NotFound);
                         continue;
                     }
 
                     // Get the local directory file from the Request-Uri
-                    string localDirectory = GetLocalDirectory(requestTokens[1]);
+                    string localDirectory = this.GetLocalDirectory(requestTokens[1]);
 
                     // If no directory exists then send 404 NotFound
                     if (localDirectory == string.Empty)
                     {
-                        Debug.WriteLine("404 NotFound (Directory)", "Server-Send");
-                        this.SendError("HTTP/1.1", HttpStatusCode.NotFound);
+                        Debug.WriteLine("404 Not Found (Directory)", "Server-Send");
+                        this.SendError(HttpStatusCode.NotFound);
                         continue;
                     }
 
@@ -505,18 +557,14 @@ namespace FC.GEPluginCtrls.HttpServer
                     if (File.Exists(localPath))
                     {
                         // Send then file 200 OK
-                        Debug.WriteLine("200 OK", "Server-Send");
-                        Debug.WriteLine("Requested: " + requestTokens[1], "Server");
-                        Debug.WriteLine("Translated: " + localPath, "Server");
                         byte[] bytes = File.ReadAllBytes(localPath);
                         string response = Encoding.UTF8.GetString(bytes);
-                        this.SendHeader(requestTokens[2], this.GetMimeType(localFile), bytes.Length, HttpStatusCode.OK);
+                        string mimeType = this.GetMimeType(localFile);
+                        this.SendHeader(mimeType, bytes.Length, HttpStatusCode.OK);
                         if (requestMethod == "GET")
                         {
                             this.SendToBrowser(bytes);
                         }
-
-                        this.socket.Close();
                     }
                     else
                     {
@@ -524,7 +572,8 @@ namespace FC.GEPluginCtrls.HttpServer
                         Debug.WriteLine("404 NotFound", "Server");
                         Debug.WriteLine("Requested: " + requestTokens[1], "Server");
                         Debug.WriteLine("Translated: " + localPath, "Server");
-                        this.SendError(requestTokens[2], HttpStatusCode.NotFound);
+                        this.SendError(HttpStatusCode.NotFound);
+                        continue;
                     }
                 }
             }

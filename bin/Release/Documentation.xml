@@ -1212,7 +1212,7 @@
         </member>
         <member name="T:FC.GEPluginCtrls.HttpServer.Server">
             <summary>
-            adasdasd dsf sd fsd f sd fs
+            A simple HTTP server class to allow the use of local files
             </summary>
         </member>
         <member name="F:FC.GEPluginCtrls.HttpServer.Server.tcpListener">
@@ -1243,6 +1243,11 @@
         <member name="F:FC.GEPluginCtrls.HttpServer.Server.defaultFileName">
             <summary>
             Default file name
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.HttpServer.Server.httpVersion">
+            <summary>
+            The Server HTTP version
             </summary>
         </member>
         <member name="F:FC.GEPluginCtrls.HttpServer.Server.keepListening">
@@ -1278,6 +1283,20 @@
             Stops the server
             </summary>
         </member>
+        <member name="M:FC.GEPluginCtrls.HttpServer.Server.GetLocalDirectory(System.String)">
+            <summary>
+            Get the local directory from a request uri
+            </summary>
+            <param name="requestUri">header Request-Uri</param>
+            <returns>The local/root directory path</returns>
+        </member>
+        <member name="M:FC.GEPluginCtrls.HttpServer.Server.GetLocalFile(System.String)">
+            <summary>
+            Attempt to get the file name from a request uri
+            </summary>
+            <param name="requestUri">header Request-Uri</param>
+            <returns>the filename, the default filename or and empty string</returns>
+        </member>
         <member name="M:FC.GEPluginCtrls.HttpServer.Server.GetMimeType(System.String)">
             <summary>
             Gets the mime type for the given file type
@@ -1285,32 +1304,30 @@
             <param name="path">path to the file</param>
             <returns>the mime type of the file or "application/unknown"</returns>
         </member>
-        <member name="M:FC.GEPluginCtrls.HttpServer.Server.SendError(System.String,System.Net.HttpStatusCode)">
+        <member name="M:FC.GEPluginCtrls.HttpServer.Server.SendError(System.Net.HttpStatusCode)">
             <summary>
-            This function send an Error Header to the client (Browser/GoogleEarth)
+            Sends an Error Header to the client (GoogleEarth)
             </summary>
-            <param name="version">The HTTP version</param>
             <param name="status">The Http Error Code</param>
         </member>
-        <member name="M:FC.GEPluginCtrls.HttpServer.Server.SendHeader(System.String,System.String,System.Int32,System.Net.HttpStatusCode)">
+        <member name="M:FC.GEPluginCtrls.HttpServer.Server.SendHeader(System.String,System.Int32,System.Net.HttpStatusCode)">
             <summary>
-            This function send the Header Information to the client (Browser/GoogleEarth)
+            Sends Header Information to the client (GoogleEarth)
+            See http://www.w3.org/Protocols/rfc2616/rfc2616-sec6.html
             </summary>
-            <param name="version">The HTTP Version number</param>
-            <param name="mime">Mime Type of the responce</param>
+            <param name="mime">MMIE (type) for the responce</param>
             <param name="bytes">Total Bytes to be sent in the body</param>
             <param name="code">The HTTP status code</param>
         </member>
         <member name="M:FC.GEPluginCtrls.HttpServer.Server.SendToBrowser(System.String)">
             <summary>
-            Overloaded Function, takes string, convert to bytes and calls 
-            overloaded sendToBrowserFunction.
+            Sends body data to the client (GoogleEarth)
             </summary>
             <param name="data">The data to be sent to google earth (client)</param>
         </member>
         <member name="M:FC.GEPluginCtrls.HttpServer.Server.SendToBrowser(System.Byte[])">
             <summary>
-            Sends data to the browser (client)
+            Sends data to the client (Browser/GoogleEarth)
             </summary>
             <param name="data">The data to be sent to google earth (client)</param>
         </member>
@@ -1335,11 +1352,6 @@
             <summary>
             Gets or sets the root server directory (webroot) 
             http://localhost:port/ will point to this directory
-            </summary>
-        </member>
-        <member name="P:FC.GEPluginCtrls.HttpServer.Server.Listen">
-            <summary>
-            Gets or sets a value indicating whether the server should keep listening
             </summary>
         </member>
         <member name="T:FC.GEPluginCtrls.Properties.Resources">
