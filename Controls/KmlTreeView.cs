@@ -464,7 +464,8 @@ namespace FC.GEPluginCtrls
             }
 
             // return a simple treenode...
-            TreeNode node = new TreeNode(kmlObject.getType());
+            ////TreeNode node = new TreeNode(kmlObject.getType());
+            TreeNode node = new TreeNode(link.getName());
             node.Tag = kmlObject;
             return node;
         }

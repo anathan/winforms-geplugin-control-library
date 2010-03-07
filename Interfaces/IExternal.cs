@@ -63,8 +63,9 @@ namespace FC.GEPluginCtrls
         /// <summary>
         /// Should be called from javascript when there is an error
         /// </summary>
+        /// <param name="type">the error type</param>
         /// <param name="message">the error message</param>
-        void Error(string message);
+        void Error(string type, string message);
 
         /// <summary>
         /// Should be called from javascript when there is a kml event

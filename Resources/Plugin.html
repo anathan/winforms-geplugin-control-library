@@ -56,7 +56,7 @@
     */
     var failureCallback_ = function(error)
     {
-      application.Error("Plugin failed to load: " + error);
+      application.Error("PluginLoadFailError", "Plugin failed to load: " + error);
     }
 
     /**
@@ -102,7 +102,8 @@
         }
         else
         {
-          application.Error("Kml failed to load");
+          application.Error(name + "CallbackError",
+            "Error in callback: " + name + "(" + parameters.join(',') + ")");
         }
       }
     }
@@ -295,16 +296,7 @@
     {
       return google.earth.isInstalled(); 	
     }
-    
-    /**
-    * google.earth.isInstalled wrapper.
-    * Whether or not the Google Earth Browser Plug-in and API are supported on the current browser and operating system.
-    * @return {bool} true on success, false on fail.
-    */  
-    var jsIsSupported = function()
-    {
-      return google.earth.isInstalled(); 	
-    }
+   
     
     google.setOnLoadCallback(init_);
     
