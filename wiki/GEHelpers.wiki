@@ -1,5 +1,7 @@
-#summary GEHelpers class notes
 #labels Phase-Implementation
+<wiki:gadget url="http://earthapi.googlepages.com/ad.xml" border="0" width="728" height="90" />
+
+#summary GEHelpers class notes
 
 = Introduction =
 
