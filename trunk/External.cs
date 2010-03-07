@@ -160,11 +160,12 @@ namespace FC.GEPluginCtrls
         /// Called from javascript when there is an error
         /// </summary>
         /// <param name="message">the error message</param>
-        public void Error(string message)
+        /// <param name="type">the error type</param>
+        public void Error(string message, string type)
         {
             this.OnScriptError(
                 this,
-                new GEEventArgs(message));
+                new GEEventArgs(message, type));
         }
 
         /// <summary>

@@ -170,6 +170,23 @@ namespace FC.GEPluginCtrls.HttpServer
             }
         }
 
+
+        /// <summary>
+        /// Gets or sets a value indicating the port for the server to use
+        /// </summary>
+        public int Port
+        {
+            get
+            {
+                return this.port;
+            }
+
+            set
+            {
+                this.port = value;
+            }
+        }
+
         #endregion
 
         #region Public methods
@@ -182,6 +199,14 @@ namespace FC.GEPluginCtrls.HttpServer
             // start listing on the given ip address and port
             this.tcpListener = new TcpListener(this.localHost, this.port);
             this.tcpListener.Start();
+
+            // setting a tcp port of zero (0) will find
+            // first available port. pass back the assigned port.
+            // see: http://code.google.com/p/winforms-geplugin-control-library/issues/detail?id=27
+            if (this.port == 0)
+            {
+                this.Port = ((IPEndPoint)this.tcpListener.LocalEndpoint).Port;
+            }
 
             // start the listen thread
             Thread listenThread = new Thread(new ThreadStart(this.StartListen));

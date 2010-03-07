@@ -1354,6 +1354,11 @@
             http://localhost:port/ will point to this directory
             </summary>
         </member>
+        <member name="P:FC.GEPluginCtrls.HttpServer.Server.Port">
+            <summary>
+            Gets or sets a value indicating the port for the server to use
+            </summary>
+        </member>
         <member name="T:FC.GEPluginCtrls.Properties.Resources">
             <summary>
               A strongly-typed resource class, for looking up localized strings, etc.
@@ -1775,10 +1780,11 @@
             </summary>
             <param name="ge">the plugin instance</param>
         </member>
-        <member name="M:FC.GEPluginCtrls.IExternal.Error(System.String)">
+        <member name="M:FC.GEPluginCtrls.IExternal.Error(System.String,System.String)">
             <summary>
             Should be called from javascript when there is an error
             </summary>
+            <param name="type">the error type</param>
             <param name="message">the error message</param>
         </member>
         <member name="M:FC.GEPluginCtrls.IExternal.KmlEventCallBack(GEPlugin.IKmlEvent,System.String)">
@@ -1831,11 +1837,12 @@
             </summary>
             <param name="ge">the plugin instance</param>
         </member>
-        <member name="M:FC.GEPluginCtrls.External.Error(System.String)">
+        <member name="M:FC.GEPluginCtrls.External.Error(System.String,System.String)">
             <summary>
             Called from javascript when there is an error
             </summary>
             <param name="message">the error message</param>
+            <param name="type">the error type</param>
         </member>
         <member name="M:FC.GEPluginCtrls.External.KmlEventCallBack(GEPlugin.IKmlEvent,System.String)">
             <summary>
