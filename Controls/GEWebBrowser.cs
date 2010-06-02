@@ -340,11 +340,15 @@ namespace FC.GEPluginCtrls
         {
             if (File.Exists(path) && path.EndsWith("kml", true, System.Globalization.CultureInfo.CurrentCulture))
             {
+                FileStream stream = null;
+                StreamReader reader = null;
+
                 try
                 {
-                    FileStream stream = File.Open(path, FileMode.Open, FileAccess.Read);
-                    StreamReader reader = new StreamReader(stream);
+                    stream = File.Open(path, FileMode.Open, FileAccess.Read);
+                    reader = new StreamReader(stream);
                     IKmlObject kml = this.geplugin.parseKml(reader.ReadToEnd());
+
                     this.external.InvokeCallBack(
                         "OnKmlLoaded",
                         new object[] { kml as IKmlFeature });
@@ -363,6 +367,17 @@ namespace FC.GEPluginCtrls
                 {
                     Debug.WriteLine(cex.ToString(), "GEWebBrowser");
                     throw;
+                }
+                finally
+                {
+                    if (stream != null)
+                    {
+                        stream.Close();
+                    }
+                    if (reader != null)
+                    {
+                        reader.Close();
+                    }
                 }
             }
         }
