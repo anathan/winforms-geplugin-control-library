@@ -170,7 +170,6 @@ namespace FC.GEPluginCtrls.HttpServer
             }
         }
 
-
         /// <summary>
         /// Gets or sets a value indicating the port for the server to use
         /// </summary>

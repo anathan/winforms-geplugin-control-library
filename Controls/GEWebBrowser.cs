@@ -228,7 +228,8 @@ namespace FC.GEPluginCtrls
         }
 
         /// <summary>
-        /// Sets the imagery database to use with the plug-in
+        /// Wrapper for the  google.earth.createInstance method
+        /// See: http://code.google.com/apis/earth/documentation/reference/google_earth_namespace.html#70288485024d8129dd1c290fb2e5553b
         /// </summary>
         /// <param name="database">The database name</param>
         /// <example>GEWebBrowser.CreateInstance(ImageryBase.Moon);</example>
@@ -244,6 +245,18 @@ namespace FC.GEPluginCtrls
                 this.imageryBase = database;
             }
         }
+
+        /// <summary>
+        /// Wrapper for the google.earth.executeBatch method
+        /// See: http://code.google.com/apis/earth/documentation/reference/google_earth_namespace.html#b26414915202d39cad12bcd5bd99e739
+        /// Efficiently executes an arbitrary, user-defined function (the batch function),minimizing
+        /// the amount of overhead incurred during cross-process communication between the browser
+        /// and Google Earth Plugin. 
+        /// </summary>
+        public void ExecuteBatch()
+        {
+            throw new NotImplementedException("ExecuteBatch");
+        }  
 
         /// <summary>
         /// Load a remote kml/kmz file 
@@ -578,13 +591,22 @@ namespace FC.GEPluginCtrls
         }
 
         /// <summary>
+        /// Set the plugin langauge
+        /// </summary>
+        /// <param name="code">The language code to use</param>
+        public void SetLanguage(string code)
+        {
+            this.pluginIsReady = false;
+            this.InvokeJavascript("jsSetLanguage", new object[] { code });
+        }
+
+        /// <summary>
         /// Reloads the document currently displayed in the control
         /// Overides the default WebBrowser Refresh method
         /// </summary>
         public override void Refresh()
         {
             this.pluginIsReady = false;
-            this.imageryBase = ImageryBase.Earth;
             base.Refresh();
         }
 

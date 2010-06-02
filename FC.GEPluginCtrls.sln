@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual C# Express 2008
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FC.GEPluginCtrls", "FC.GEPluginCtrls.csproj", "{C06F0F75-6B29-4BA2-9EC5-BBFA3CA28617}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestApplication", "..\TestApplication\TestApplication\TestApplication.csproj", "{57ED482F-D949-4F71-8B28-8509CFCDBC85}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,28 +13,16 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{C06F0F75-6B29-4BA2-9EC5-BBFA3CA28617}.Debug|Any CPU.ActiveCfg = Debug|x86
-		{C06F0F75-6B29-4BA2-9EC5-BBFA3CA28617}.Debug|Any CPU.Build.0 = Debug|x86
-		{C06F0F75-6B29-4BA2-9EC5-BBFA3CA28617}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
-		{C06F0F75-6B29-4BA2-9EC5-BBFA3CA28617}.Debug|Mixed Platforms.Build.0 = Debug|x86
-		{C06F0F75-6B29-4BA2-9EC5-BBFA3CA28617}.Debug|x86.ActiveCfg = Debug|x86
-		{C06F0F75-6B29-4BA2-9EC5-BBFA3CA28617}.Debug|x86.Build.0 = Debug|x86
-		{C06F0F75-6B29-4BA2-9EC5-BBFA3CA28617}.Release|Any CPU.ActiveCfg = Release|x86
-		{C06F0F75-6B29-4BA2-9EC5-BBFA3CA28617}.Release|Any CPU.Build.0 = Release|x86
-		{C06F0F75-6B29-4BA2-9EC5-BBFA3CA28617}.Release|Mixed Platforms.ActiveCfg = Release|x86
-		{C06F0F75-6B29-4BA2-9EC5-BBFA3CA28617}.Release|Mixed Platforms.Build.0 = Release|x86
-		{C06F0F75-6B29-4BA2-9EC5-BBFA3CA28617}.Release|x86.ActiveCfg = Release|x86
-		{C06F0F75-6B29-4BA2-9EC5-BBFA3CA28617}.Release|x86.Build.0 = Release|x86
-		{57ED482F-D949-4F71-8B28-8509CFCDBC85}.Debug|Any CPU.ActiveCfg = Debug|x86
-		{57ED482F-D949-4F71-8B28-8509CFCDBC85}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
-		{57ED482F-D949-4F71-8B28-8509CFCDBC85}.Debug|Mixed Platforms.Build.0 = Debug|x86
-		{57ED482F-D949-4F71-8B28-8509CFCDBC85}.Debug|x86.ActiveCfg = Debug|x86
-		{57ED482F-D949-4F71-8B28-8509CFCDBC85}.Debug|x86.Build.0 = Debug|x86
-		{57ED482F-D949-4F71-8B28-8509CFCDBC85}.Release|Any CPU.ActiveCfg = Release|x86
-		{57ED482F-D949-4F71-8B28-8509CFCDBC85}.Release|Mixed Platforms.ActiveCfg = Release|x86
-		{57ED482F-D949-4F71-8B28-8509CFCDBC85}.Release|Mixed Platforms.Build.0 = Release|x86
-		{57ED482F-D949-4F71-8B28-8509CFCDBC85}.Release|x86.ActiveCfg = Release|x86
-		{57ED482F-D949-4F71-8B28-8509CFCDBC85}.Release|x86.Build.0 = Release|x86
+		{C06F0F75-6B29-4BA2-9EC5-BBFA3CA28617}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C06F0F75-6B29-4BA2-9EC5-BBFA3CA28617}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C06F0F75-6B29-4BA2-9EC5-BBFA3CA28617}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{C06F0F75-6B29-4BA2-9EC5-BBFA3CA28617}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{C06F0F75-6B29-4BA2-9EC5-BBFA3CA28617}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{C06F0F75-6B29-4BA2-9EC5-BBFA3CA28617}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C06F0F75-6B29-4BA2-9EC5-BBFA3CA28617}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C06F0F75-6B29-4BA2-9EC5-BBFA3CA28617}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{C06F0F75-6B29-4BA2-9EC5-BBFA3CA28617}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{C06F0F75-6B29-4BA2-9EC5-BBFA3CA28617}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

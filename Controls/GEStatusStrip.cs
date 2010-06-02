@@ -296,23 +296,17 @@ namespace FC.GEPluginCtrls
                     this.timer.Stop();
                 }
 
-                try
+                if (100 == percent || 0 == percent)
                 {
-                    if (100 == percent || 0 == percent)
-                    {
-                        this.streamingStatusLabel.ForeColor = Color.Gray;
-                        this.streamingStatusLabel.Text = "idle";
-                        this.streamingProgressBar.Value = 0;
-                    }
-                    else
-                    {
-                        this.streamingStatusLabel.ForeColor = Color.Black;
-                        this.streamingProgressBar.Value = percent;
-                        this.streamingStatusLabel.Text = percent + "%";
-                    }
+                    this.streamingStatusLabel.ForeColor = Color.Gray;
+                    this.streamingStatusLabel.Text = "idle";
+                    this.streamingProgressBar.Value = 0;
                 }
-                catch (NullReferenceException)
+                else
                 {
+                    this.streamingStatusLabel.ForeColor = Color.Black;
+                    this.streamingProgressBar.Value = percent;
+                    this.streamingStatusLabel.Text = percent + "%";
                 }
             }
         }

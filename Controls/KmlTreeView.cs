@@ -546,10 +546,19 @@ namespace FC.GEPluginCtrls
         private void KmlTree_AfterCheck(object sender, TreeViewEventArgs e)
         {
             IKmlFeature feature = e.Node.Tag as IKmlFeature;
+            string type = string.Empty;
 
-            string type = feature.getType();
+            try
+            {
+                type = feature.getType();
+            }
+            catch (COMException cex)
+            {
+                Debug.WriteLine(cex.ToString(), "KmlTree_AfterCheck");
+                ////throw;
+            }
 
-            if (feature != null)
+            if (feature != null && type != string.Empty)
             {
                 if (e.Node.Checked)
                 {
@@ -597,12 +606,21 @@ namespace FC.GEPluginCtrls
             if (this.SelectedNode != null)
             {
                 IKmlFeature feature = SelectedNode.Tag as IKmlFeature;
+                string type = string.Empty;
 
                 this.SelectedNode.Checked = true;
 
                 if (null != feature)
                 {
-                    string type = feature.getType();
+                    try
+                    {
+                        type = feature.getType();
+                    }
+                    catch (COMException cex)
+                    {
+                        Debug.WriteLine(cex.ToString(), "KmlTree_DoubleClick");
+                        ////throw;
+                    }
 
                     switch (type)
                     {
@@ -644,10 +662,19 @@ namespace FC.GEPluginCtrls
         private void KmlTreeView_AfterExpand(object sender, TreeViewEventArgs e)
         {
             IKmlFeature feature = e.Node.Tag as IKmlFeature;
+            string type = string.Empty;
 
             if (null != feature)
             {
-                string type = feature.getType();
+                try
+                {
+                    type = feature.getType();
+                }
+                catch (COMException cex)
+                {
+                    Debug.WriteLine(cex.ToString(), "KmlTreeView_AfterExpand");
+                    ////throw;
+                }
 
                 switch (type)
                 {

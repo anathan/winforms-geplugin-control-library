@@ -26,9 +26,9 @@ namespace FC.GEPluginCtrls
     using GEPlugin;
 
     /// <summary>
-    /// This class provides a very basic Google Earth plugin helpers
-    /// It is based on the GEHelpers javasctipt library at:
-    /// http://earth-api-samples.googlecode.com/svn/trunk/lib/geplugin-helpers.js
+    /// This class provides some basic Google Earth plugin helpers functions.
+    /// It is based on the "GEHelpers javasctipt library" by Roman Nurik
+    /// See: http://earth-api-samples.googlecode.com/svn/trunk/lib/geplugin-helpers.js
     /// </summary>
     public static class GEHelpers
     {
@@ -37,9 +37,12 @@ namespace FC.GEPluginCtrls
         /// </summary>
         /// <param name="ge">The plugin instance</param>
         /// <param name="latLngAlt">The latitude and longitude in decimal degrees</param>
-        /// <param name="data">Optional data (id, name, description)</param>
+        /// <param name="data">Optional string data (id, name, description)</param>
         /// <returns>The placemark object</returns>
-        public static IKmlPlacemark CreatePlacemark(IGEPlugin ge, double[] latLngAlt, params string[] data)
+        public static IKmlPlacemark CreatePlacemark(
+            IGEPlugin ge,
+            double[] latLngAlt,
+            params string[] data)
         {
             int agrs1 = latLngAlt.Length;
 
@@ -96,7 +99,7 @@ namespace FC.GEPluginCtrls
             string name,
             string description)
         {
-            IKmlPlacemark placemark = new KmlPlacemarkCoClass();
+            IKmlPlacemark placemark = ge.createPlacemark(String.Empty);
 
             try
             {
@@ -129,7 +132,7 @@ namespace FC.GEPluginCtrls
         /// <returns>A linestring placemark</returns>
         public static IKmlPlacemark CreateLineString(IGEPlugin ge, IKmlPoint p1, IKmlPoint p2)
         {
-            IKmlPlacemark placemark = new KmlPlacemarkCoClass();
+            IKmlPlacemark placemark = ge.createPlacemark(String.Empty);
 
             try
             {
@@ -446,29 +449,6 @@ namespace FC.GEPluginCtrls
             catch (COMException cex)
             {
                 Debug.WriteLine("RemoveAllFeatures: " + cex.ToString());
-            }
-        }
-
-        /// <summary>
-        /// Remove the feature with the given id from the plugin
-        /// </summary>
-        /// <param name="ge">The plugin instance</param>
-        /// <param name="id">The id of the element to remove</param>
-        public static void RemoveFeatureById(IGEPlugin ge, string id)
-        {
-            try
-            {
-                while (Convert.ToBoolean(ge.getFeatures().hasChildNodes()))
-                {
-                    if (ge.getFeatures().getFirstChild().getId() == id)
-                    {
-                        ge.getFeatures().removeChild(ge.getFeatures().getFirstChild());
-                    }
-                }
-            }
-            catch (COMException cex)
-            {
-                Debug.WriteLine("RemoveFeatureById: " + cex.ToString());
             }
         }
 
