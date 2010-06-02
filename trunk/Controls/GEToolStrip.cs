@@ -19,6 +19,7 @@
 namespace FC.GEPluginCtrls
 {
     using System;
+    using System.Collections.Generic;
     using System.ComponentModel;
     using System.Diagnostics;
     using System.Drawing;
@@ -86,6 +87,11 @@ namespace FC.GEPluginCtrls
         private bool viewInMapsButtonVisiblity = true;
 
         /// <summary>
+        /// Indicates whether the language comobobox is visible
+        /// </summary>
+        private bool languageComboboxVisiblity = true;
+
+        /// <summary>
         /// Indicates if auto compleate should be used in the navigaton text box
         /// </summary>
         private bool useAutoCompleteSugestions = true;
@@ -99,6 +105,7 @@ namespace FC.GEPluginCtrls
             : base()
         {
             this.InitializeComponent();
+            this.BuildLanguageOptions();
             this.Enabled = false;
         }
 
@@ -248,6 +255,26 @@ namespace FC.GEPluginCtrls
         }
 
         /// <summary>
+        /// Gets or sets a value indicating whether the language combobox is visible
+        /// </summary>
+        [Category("Control Options"),
+        Description("Specifies the visiblity of the language combobox."),
+        DefaultValueAttribute(true)]
+        public bool ShowLanguageCombobox
+        {
+            get
+            {
+                return this.languageComboboxVisiblity;
+            }
+
+            set
+            {
+                this.languageComboboxVisiblity = value;
+                this.languageComboBox.Visible = value;
+            }
+        }
+
+        /// <summary>
         /// Gets or sets a value indicating whether the navigation textbox uses autocomplete suggestions
         /// </summary>
         [Category("Control Options"),
@@ -344,6 +371,7 @@ namespace FC.GEPluginCtrls
             this.scaleLegendMenuItem.Checked = false;
             this.atmosphereMenuItem.Checked = true;
             this.mouseNavigationMenuItem.Checked = true;
+            this.imperialUnitsMenuItem.Checked = false;
             this.scaleLegendMenuItem.Checked = false;
             this.overviewMapMenuItem.Checked = false;
             this.skyMenuItem.Checked = false;
@@ -368,6 +396,7 @@ namespace FC.GEPluginCtrls
                 options.setMouseNavigationEnabled(Convert.ToInt16(this.mouseNavigationMenuItem.Checked));
                 options.setScaleLegendVisibility(Convert.ToInt16(this.scaleLegendMenuItem.Checked));
                 options.setOverviewMapVisibility(Convert.ToInt16(this.overviewMapMenuItem.Checked));
+                options.setUnitsFeetMiles(Convert.ToInt16(this.imperialUnitsMenuItem.Checked));
                 options.setMapType(Convert.ToInt16(this.skyMenuItem.Checked) + 1);
 
                 // sun
@@ -379,12 +408,20 @@ namespace FC.GEPluginCtrls
                 if (this.gewb.ImageyBase == ImageryBase.Earth)
                 {
                     // layers 
-                    IKmlLayerRoot root = this.geplugin.getLayerRoot();
-                    root.enableLayerById(this.geplugin.LAYER_BORDERS, Convert.ToInt16(this.bordersMenuItem.Checked));
-                    root.enableLayerById(this.geplugin.LAYER_BUILDINGS, Convert.ToInt16(this.buildingsMenuItem.Checked));
-                    root.enableLayerById(this.geplugin.LAYER_BUILDINGS_LOW_RESOLUTION, Convert.ToInt16(this.buildingsGreyMenuItem.Checked));
-                    root.enableLayerById(this.geplugin.LAYER_ROADS, Convert.ToInt16(this.roadsMenuItem.Checked));
-                    root.enableLayerById(this.geplugin.LAYER_TERRAIN, Convert.ToInt16(this.terrainMenuItem.Checked));
+                    try
+                    {
+                        IKmlLayerRoot root = this.geplugin.getLayerRoot();
+                        root.enableLayerById(this.geplugin.LAYER_BORDERS, Convert.ToInt16(this.bordersMenuItem.Checked));
+                        root.enableLayerById(this.geplugin.LAYER_BUILDINGS, Convert.ToInt16(this.buildingsMenuItem.Checked));
+                        root.enableLayerById(this.geplugin.LAYER_BUILDINGS_LOW_RESOLUTION, Convert.ToInt16(this.buildingsGreyMenuItem.Checked));
+                        root.enableLayerById(this.geplugin.LAYER_ROADS, Convert.ToInt16(this.roadsMenuItem.Checked));
+                        root.enableLayerById(this.geplugin.LAYER_TERRAIN, Convert.ToInt16(this.terrainMenuItem.Checked));
+                    }
+                    catch (COMException cex)
+                    {
+                        Debug.WriteLine(cex.ToString(), "ResetToolStripDefaults layers");
+                        ////throw;
+                    }
 
                     // imagery 
                     foreach (ToolStripMenuItem item in this.imageryDropDownButton.DropDownItems)
@@ -394,8 +431,25 @@ namespace FC.GEPluginCtrls
                     }
 
                     this.earthMenuItem.Checked = true;
-                    this.earthMenuItem.Enabled = true;
+                    this.earthMenuItem.Enabled = false;
                 }
+            }
+        }
+
+        /// <summary>
+        /// Builds the language combobox options from the Languages class
+        /// </summary>
+        private void BuildLanguageOptions()
+        {
+            this.languageComboBox.Items.Clear();
+
+            Dictionary<string, string> languages = Languages.GetList();
+            foreach (KeyValuePair<string, string> entry in languages)
+            {
+                ToolStripMenuItem item = new ToolStripMenuItem();
+                item.Text = entry.Value;
+                item.Tag = entry.Key;
+                this.languageComboBox.Items.Add(item);
             }
         }
 
@@ -469,10 +523,10 @@ namespace FC.GEPluginCtrls
         /// Called when the refresh button is clicked
         /// </summary>
         /// <param name="sender">The sending object</param>
-         /// <param name="e">The Event arguments</param>
+        /// <param name="e">The Event arguments</param>
         private void RefreshButton_Click(object sender, EventArgs e)
         {
-            this.gewb.Refresh();   
+            this.gewb.Refresh();
         }
 
         /// <summary>
@@ -540,6 +594,12 @@ namespace FC.GEPluginCtrls
                 {
                     switch (type)
                     {
+                        case "FADEINOUT":
+                            this.geplugin.getOptions().setFadeInOutEnabled(value);
+                            break;
+                        case "IMPERIAL":
+                            this.geplugin.getOptions().setUnitsFeetMiles(value);
+                            break;
                         case "ATMOSPHERE":
                             this.geplugin.getOptions().setAtmosphereVisibility(value);
                             break;
@@ -567,7 +627,7 @@ namespace FC.GEPluginCtrls
                 }
                 catch (COMException cex)
                 {
-                    Debug.WriteLine("ImageryItem_Clicked: " + cex.ToString(), "ToolStrip");
+                    Debug.WriteLine("OptionsItem_Clicked: " + cex.ToString(), "ToolStrip");
                     throw;
                 }
             }
@@ -603,7 +663,7 @@ namespace FC.GEPluginCtrls
                 }
                 catch (COMException cex)
                 {
-                    Debug.WriteLine("OptionsItem_Clicked: " + cex.ToString(), "ToolStrip");
+                    Debug.WriteLine("ViewItem_Clicked: " + cex.ToString(), "ToolStrip");
                     throw;
                 }
             }
@@ -724,6 +784,17 @@ namespace FC.GEPluginCtrls
             this.SynchronizeOptions();
         }
 
-        #endregion        
+        /// <summary>
+        /// Called whenever the language combobox selected index is changed
+        /// </summary>
+        /// <param name="sender">The language combobox</param>
+        /// <param name="e">The event arguments</param>
+        private void LanguageComboBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            ToolStripMenuItem item = this.languageComboBox.SelectedItem as ToolStripMenuItem;
+            this.gewb.SetLanguage(item.Tag.ToString());
+        }
+
+        #endregion
     }
-} 
+}

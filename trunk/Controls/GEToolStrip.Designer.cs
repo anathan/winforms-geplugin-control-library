@@ -104,6 +104,16 @@ namespace FC.GEPluginCtrls
         private System.Windows.Forms.ToolStripMenuItem controlsMenuItem;
 
         /// <summary>
+        /// The imperial units menu item
+        /// </summary>
+        private System.Windows.Forms.ToolStripMenuItem imperialUnitsMenuItem;
+
+        /// <summary>
+        /// The new item animation menu item
+        /// </summary>
+        private System.Windows.Forms.ToolStripMenuItem fadeInOutMenuItem;
+
+        /// <summary>
         /// The staus menu item
         /// </summary>
         private System.Windows.Forms.ToolStripMenuItem statusBarMenuItem;
@@ -179,6 +189,16 @@ namespace FC.GEPluginCtrls
         private System.Windows.Forms.ToolStripButton viewInMapsButton;
 
         /// <summary>
+        /// The language seperator
+        /// </summary>
+        private System.Windows.Forms.ToolStripSeparator languageSeparator;
+
+        /// <summary>
+        /// The language combobox
+        /// </summary>
+        private System.Windows.Forms.ToolStripComboBox languageComboBox;
+
+        /// <summary>
         /// Clean up any resources being used.
         /// </summary>
         /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
@@ -215,6 +235,8 @@ namespace FC.GEPluginCtrls
             this.skyMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.sunMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.optionsDropDownButton = new System.Windows.Forms.ToolStripDropDownButton();
+            this.imperialUnitsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.fadeInOutMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.controlsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusBarMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.gridMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -232,6 +254,8 @@ namespace FC.GEPluginCtrls
             this.earthMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.marsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.moonMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.languageSeparator = new System.Windows.Forms.ToolStripSeparator();
+            this.languageComboBox = new System.Windows.Forms.ToolStripComboBox();
             this.SuspendLayout();
             // 
             // imageList1
@@ -347,13 +371,15 @@ namespace FC.GEPluginCtrls
             // 
             this.optionsDropDownButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.optionsDropDownButton.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.controlsMenuItem,
-            this.statusBarMenuItem,
-            this.gridMenuItem,
-            this.overviewMapMenuItem,
-            this.scaleLegendMenuItem,
-            this.atmosphereMenuItem,
-            this.mouseNavigationMenuItem});
+                this.imperialUnitsMenuItem,
+                this.controlsMenuItem,
+                this.statusBarMenuItem,
+                this.gridMenuItem,
+                this.overviewMapMenuItem,
+                this.scaleLegendMenuItem,
+                this.atmosphereMenuItem,
+                this.fadeInOutMenuItem,
+                this.mouseNavigationMenuItem});
             this.optionsDropDownButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.optionsDropDownButton.Name = "optionsDropDownButton";
             this.optionsDropDownButton.Size = new System.Drawing.Size(57, 17);
@@ -434,6 +460,28 @@ namespace FC.GEPluginCtrls
             this.mouseNavigationMenuItem.Text = "Mouse navigation";
             this.mouseNavigationMenuItem.ToolTipText = "Toggle Mouse navigation enabled";
             this.mouseNavigationMenuItem.Click += new System.EventHandler(this.OptionsItem_Clicked);
+            //
+            // imperialMenuItem
+            //
+            this.imperialUnitsMenuItem.Checked = false;
+            this.imperialUnitsMenuItem.CheckOnClick = true;
+            this.imperialUnitsMenuItem.CheckState = System.Windows.Forms.CheckState.Unchecked;
+            this.imperialUnitsMenuItem.Name = "imperialMenuItem";
+            this.imperialUnitsMenuItem.Tag = "IMPERIAL";
+            this.imperialUnitsMenuItem.Text = "Imperial Units";
+            this.imperialUnitsMenuItem.ToolTipText = "Use imperial units for the plugin";
+            this.imperialUnitsMenuItem.Click += new System.EventHandler(this.OptionsItem_Clicked);
+            //
+            // fadeInOutMenuItem
+            //
+            this.fadeInOutMenuItem.Checked = true;
+            this.fadeInOutMenuItem.CheckOnClick = true;
+            this.fadeInOutMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.fadeInOutMenuItem.Name = "fadeInOutMenuItem";
+            this.fadeInOutMenuItem.Tag = "FADEINOUT";
+            this.fadeInOutMenuItem.Text = "Animate features";
+            this.fadeInOutMenuItem.ToolTipText = "Animate new features with a slight change of scale";
+            this.fadeInOutMenuItem.Click += new System.EventHandler(this.OptionsItem_Clicked);
             // 
             // layersDropDownButton
             // 
@@ -549,6 +597,21 @@ namespace FC.GEPluginCtrls
             this.moonMenuItem.ToolTipText = "Use the Moon imagery";
             this.moonMenuItem.Click += new System.EventHandler(this.ImageryItem_Clicked);
             // 
+            // languageSeparator
+            // 
+            this.languageSeparator.Name = "languageSeparator";
+            this.languageSeparator.Size = new System.Drawing.Size(6, 6);
+            //
+            // languageComboBox
+            //
+            this.languageComboBox.Text = "language";
+            this.languageComboBox.Name = "languageComboBox";
+            this.moonMenuItem.ToolTipText = "Change the plugin language";
+            this.languageComboBox.AutoSize = true;
+            this.languageComboBox.DropDownHeight = 250;
+            this.languageComboBox.Size = new System.Drawing.Size(106, 22);
+            this.languageComboBox.SelectedIndexChanged += new System.EventHandler(LanguageComboBox_SelectedIndexChanged);
+            // 
             // GEToolStrip
             // 
             this.ImageList = this.imageList1;
@@ -563,7 +626,9 @@ namespace FC.GEPluginCtrls
             this.imageryDropDownButton,
             this.dropDownSeparator,
             this.screenGrabButton,
-            this.viewInMapsButton});
+            this.viewInMapsButton,
+            this.languageSeparator,
+            this.languageComboBox});
             this.Layout += new System.Windows.Forms.LayoutEventHandler(this.GEToolStrip_Layout);
             this.ResumeLayout(false);
 

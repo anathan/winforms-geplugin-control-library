@@ -30,7 +30,7 @@
     <script type="text/javascript">
     /* <![CDATA[ */
 
-    google.load("earth", "1");
+    google.load("earth", "1", { 'language': 'en-GB' });
     google.load("maps", "2.xx");
         
     var ge = null; //GEPlugin
@@ -271,6 +271,7 @@
     {
       document.getElementById('map3d').innerHTML = '';
       var db = name.toLowerCase();
+      
       switch(db)
       {
         case 'earth' :
@@ -285,6 +286,27 @@
         default :
           return false;
       }
+    }
+
+    /**
+    * google.earth.setLanguage wrapper.
+    * Sets the langauge code for the plugin to use
+    * @param code {string} the langauge code to use.
+    */
+    var jsSetLanguage = function(code)
+    {
+      google.earth.setLanguage(code);
+      jsCreateInstance('earth');
+    }
+
+    /**
+    * google.earth.getLanguage wrapper.
+    * Gets the current langauge code used by the plugin
+    * @return {string} the current langauge code.
+    */
+    var jsGetLanguage = function()
+    {
+      return google.earth.getLanguage(); 	
     }
     
     /**

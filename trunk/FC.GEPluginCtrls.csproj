@@ -2,8 +2,8 @@
 <Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
-    <PlatformTarget>x86</PlatformTarget>
+    <Platform Condition=" '$(Platform)' == '' ">anycpu</Platform>
+    <PlatformTarget>anycpu</PlatformTarget>
     <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{C06F0F75-6B29-4BA2-9EC5-BBFA3CA28617}</ProjectGuid>
@@ -17,8 +17,8 @@
     </StartupObject>
     <SignAssembly>false</SignAssembly>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
-    <PlatformTarget>x86</PlatformTarget>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|anycpu' ">
+    <PlatformTarget>anycpu</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -28,8 +28,8 @@
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>Documentation.xml</DocumentationFile>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
-    <PlatformTarget>x86</PlatformTarget>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|anycpu' ">
+    <PlatformTarget>anycpu</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -69,6 +69,7 @@
     <Compile Include="Interfaces\IExternal.cs" />
     <Compile Include="Enumerations\ImageryBase.cs" />
     <Compile Include="Helpers\KmlHelpers.cs" />
+    <Compile Include="Languages.cs" />
     <Compile Include="Maths.cs" />
     <Compile Include="Controls\GEToolStrip.Designer.cs">
       <DependentUpon>GEToolStrip.cs</DependentUpon>
@@ -138,7 +139,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- Uncomment the folowing line to allow StyleCop to run during the build -->
-  <!-- <Import Project="$(ProgramFiles)\MSBuild\Microsoft\StyleCop\v4.3\Microsoft.StyleCop.targets" /> -->
+  <!-- Import Project="$(ProgramFiles)\MSBuild\Microsoft\StyleCop\v4.3\Microsoft.StyleCop.targets" /-->
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

@@ -391,9 +391,9 @@
         </member>
         <member name="T:FC.GEPluginCtrls.GEHelpers">
             <summary>
-            This class provides a very basic Google Earth plugin helpers
-            It is based on the GEHelpers javasctipt library at:
-            http://earth-api-samples.googlecode.com/svn/trunk/lib/geplugin-helpers.js
+            This class provides some basic Google Earth plugin helpers functions.
+            It is based on the "GEHelpers javasctipt library" by Roman Nurik
+            See: http://earth-api-samples.googlecode.com/svn/trunk/lib/geplugin-helpers.js
             </summary>
         </member>
         <member name="M:FC.GEPluginCtrls.GEHelpers.CreatePlacemark(GEPlugin.IGEPlugin,System.Double[],System.String[])">
@@ -402,7 +402,7 @@
             </summary>
             <param name="ge">The plugin instance</param>
             <param name="latLngAlt">The latitude and longitude in decimal degrees</param>
-            <param name="data">Optional data (id, name, description)</param>
+            <param name="data">Optional string data (id, name, description)</param>
             <returns>The placemark object</returns>
         </member>
         <member name="M:FC.GEPluginCtrls.GEHelpers.CreatePlacemark(GEPlugin.IGEPlugin,System.Double,System.Double,System.Double,System.String,System.String,System.String)">
@@ -494,13 +494,6 @@
             Remove all features from the plugin 
             </summary>
             <param name="ge">The plugin instance</param>
-        </member>
-        <member name="M:FC.GEPluginCtrls.GEHelpers.RemoveFeatureById(GEPlugin.IGEPlugin,System.String)">
-            <summary>
-            Remove the feature with the given id from the plugin
-            </summary>
-            <param name="ge">The plugin instance</param>
-            <param name="id">The id of the element to remove</param>
         </member>
         <member name="M:FC.GEPluginCtrls.GEHelpers.ShowCurrentViewInMaps(GEPlugin.IGEPlugin)">
             <summary>
@@ -596,6 +589,16 @@
             The controls menu item
             </summary>
         </member>
+        <member name="F:FC.GEPluginCtrls.GEToolStrip.imperialUnitsMenuItem">
+            <summary>
+            The imperial units menu item
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.GEToolStrip.fadeInOutMenuItem">
+            <summary>
+            The new item animation menu item
+            </summary>
+        </member>
         <member name="F:FC.GEPluginCtrls.GEToolStrip.statusBarMenuItem">
             <summary>
             The staus menu item
@@ -671,6 +674,16 @@
             The view in Maps button
             </summary>
         </member>
+        <member name="F:FC.GEPluginCtrls.GEToolStrip.languageSeparator">
+            <summary>
+            The language seperator
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.GEToolStrip.languageComboBox">
+            <summary>
+            The language combobox
+            </summary>
+        </member>
         <member name="M:FC.GEPluginCtrls.GEToolStrip.Dispose(System.Boolean)">
             <summary>
             Clean up any resources being used.
@@ -734,6 +747,11 @@
             Indicates whether the view in maps button is visible
             </summary>
         </member>
+        <member name="F:FC.GEPluginCtrls.GEToolStrip.languageComboboxVisiblity">
+            <summary>
+            Indicates whether the language comobobox is visible
+            </summary>
+        </member>
         <member name="F:FC.GEPluginCtrls.GEToolStrip.useAutoCompleteSugestions">
             <summary>
             Indicates if auto compleate should be used in the navigaton text box
@@ -779,6 +797,11 @@
         <member name="M:FC.GEPluginCtrls.GEToolStrip.SynchronizeOptions">
             <summary>
             Force the plug-in to confom to the tool-strip settings
+            </summary>
+        </member>
+        <member name="M:FC.GEPluginCtrls.GEToolStrip.BuildLanguageOptions">
+            <summary>
+            Builds the language combobox options from the Languages class
             </summary>
         </member>
         <member name="M:FC.GEPluginCtrls.GEToolStrip.NavigationTextBox_KeyUp(System.Object,System.Windows.Forms.KeyEventArgs)">
@@ -858,6 +881,13 @@
             <param name="sender">The GEWebBorwser instance</param>
             <param name="e">The event arguments</param>
         </member>
+        <member name="M:FC.GEPluginCtrls.GEToolStrip.LanguageComboBox_SelectedIndexChanged(System.Object,System.EventArgs)">
+            <summary>
+            Called whenever the language combobox selected index is changed
+            </summary>
+            <param name="sender">The language combobox</param>
+            <param name="e">The event arguments</param>
+        </member>
         <member name="P:FC.GEPluginCtrls.GEToolStrip.ShowNavigationItems">
             <summary>
             Gets or sets a value indicating whether the navigation items are visible
@@ -891,6 +921,11 @@
         <member name="P:FC.GEPluginCtrls.GEToolStrip.ShowViewInMapsButton">
             <summary>
             Gets or sets a value indicating whether the view in maps button is visible
+            </summary>
+        </member>
+        <member name="P:FC.GEPluginCtrls.GEToolStrip.ShowLanguageCombobox">
+            <summary>
+            Gets or sets a value indicating whether the language combobox is visible
             </summary>
         </member>
         <member name="P:FC.GEPluginCtrls.GEToolStrip.UseAutoCompleteSugestions">
@@ -1119,6 +1154,19 @@
             </summary>
             <param name="radians">value in radians</param>
             <returns>The oposite angle</returns>
+        </member>
+        <member name="T:FC.GEPluginCtrls.Languages">
+            <summary>
+            A class to provide the supported language codes
+            Supported language codes are listed in the Google Maps API Coverage document
+            see: http://spreadsheets.google.com/pub?key=p9pdwsai2hDMsLkXsoM05KQ
+            </summary>
+        </member>
+        <member name="M:FC.GEPluginCtrls.Languages.GetList">
+            <summary>
+            Provides a Dictionary of language codes and native names 
+            </summary>
+            <returns>A Dictionary of language codes and native names</returns>
         </member>
         <member name="T:FC.GEPluginCtrls.GEEventArgs">
             <summary>
@@ -1476,10 +1524,20 @@
         </member>
         <member name="M:FC.GEPluginCtrls.GEWebBrowser.CreateInstance(FC.GEPluginCtrls.ImageryBase)">
             <summary>
-            Sets the imagery database to use with the plug-in
+            Wrapper for the  google.earth.createInstance method
+            See: http://code.google.com/apis/earth/documentation/reference/google_earth_namespace.html#70288485024d8129dd1c290fb2e5553b
             </summary>
             <param name="database">The database name</param>
             <example>GEWebBrowser.CreateInstance(ImageryBase.Moon);</example>
+        </member>
+        <member name="M:FC.GEPluginCtrls.GEWebBrowser.ExecuteBatch">
+            <summary>
+            Wrapper for the google.earth.executeBatch method
+            See: http://code.google.com/apis/earth/documentation/reference/google_earth_namespace.html#b26414915202d39cad12bcd5bd99e739
+            Efficiently executes an arbitrary, user-defined function (the batch function),minimizing
+            the amount of overhead incurred during cross-process communication between the browser
+            and Google Earth Plugin. 
+            </summary>
         </member>
         <member name="M:FC.GEPluginCtrls.GEWebBrowser.FetchKml(System.String)">
             <summary>
@@ -1591,6 +1649,12 @@
             Take a 'screen grab' of the current GEWebBrowser view
             </summary>
             <returns>bitmap image</returns>
+        </member>
+        <member name="M:FC.GEPluginCtrls.GEWebBrowser.SetLanguage(System.String)">
+            <summary>
+            Set the plugin langauge
+            </summary>
+            <param name="code">The language code to use</param>
         </member>
         <member name="M:FC.GEPluginCtrls.GEWebBrowser.Refresh">
             <summary>
