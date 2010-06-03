@@ -75,6 +75,11 @@ _Bitmap_ *ScreenGrab()*<br>
 Take a 'screen grab' of the current GEWebBrowser view <br>
 *Return Value:* bitmap image<br>
 
+_Void_ SetLanguage(System.String)<br>
+Set the plugin language to use for labels, etc
+string: The language code to use<br>
+See: http://spreadsheets.google.com/pub?key=p9pdwsai2hDMsLkXsoM05KQ&gid=1
+
 == Public Events ==
 
 _GEWebBorwserEventHandeler_ *PluginReady(GEWebBrowser sender, GEEventArgs e)*<br>
