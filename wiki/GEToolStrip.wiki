@@ -40,6 +40,9 @@ Gets or sets a value indicating whether the screen grab button is visible <br>
 _Bool_ *ShowViewInMapsButton*<br>
 Gets or sets a value indicating whether the show in maps button is visible <br>
 
+_Bool_ *ShowLanguageCombobox*<br>
+Gets or sets a value indicating whether the language combobox is visible <br>
+
 _Bool_ * UseAutoCompleteSugestions*<br>
 Gets or sets a value indicating whether the navigation box should use auto-complete<br>
 
