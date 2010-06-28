@@ -15,7 +15,7 @@ public void InjectJavascript(
 
 == Examples ==
 
-This example inserts a an active scripting function named 'jsExec' in to the head of the document loaded in geWebBrowser1
+This example inserts an active scripting function named 'jsExec' in to the head of the document loaded in geWebBrowser1
 
 {{{
 geWebBrowser1.InjectJavascript("function jsExec(s){window.execScript(s);}");
