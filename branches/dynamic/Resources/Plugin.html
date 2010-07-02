@@ -1,0 +1,340 @@
+﻿<!DOCTYPE html 
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <!--
+  Copyright (c) 2008 Fraser Chapman
+  Author: Fraser Chapman
+  Email: fraser.chapman@gmail.com
+  Date: 2009-01-25
+  Summary:
+  Plugin.html is part of FC.GEPluginCtrls
+  FC.GEPluginCtrls is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+  You should have received a copy of the GNU General Public License
+  along with this program.  If not, see http://www.gnu.org/licenses/
+  -->
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta name="Author" content="Fraser Chapman" />
+    <title>FC.GEPluginCtrls Embeded Html Test Page</title>
+    <!-- If you plan to use this file for anything other than testing purposes then
+    you should place it on a publicly accessible server and generate a valid API key for it -->
+    <script type="text/javascript" src="http://www.google.com/jsapi"></script>
+    <script type="text/javascript">
+    /* <![CDATA[ */
+
+    google.load("earth", "1", { 'language': 'en-GB' });
+    google.load("maps", "2.xx");
+        
+    var ge = null; //GEPlugin
+    var geocoder = null; //GClientGeocoder
+    var application = null; //External
+
+    /**
+    * Internal methods called from javascript
+    * suffix_
+    */
+    
+    /*
+    * Main entry point
+    */
+    var init_ = function()
+    {
+      jsCreateInstance('earth');
+    }
+
+    /**
+    * Sends error messages to the application.
+    * @param error {string} the error message.
+    */
+    var failureCallback_ = function(error)
+    {
+      application.Error("PluginLoadFailError", "Plugin failed to load: " + error);
+    }
+
+    /**
+    * Called when plugin loading is successful.
+    * @param object {GEPlugin} the plug-in object.
+    */
+    var initCallback_ = function(object)
+    {
+      ge = object;
+      geocoder = new GClientGeocoder();
+      application = window.external;
+      ge.getWindow().setVisibility(true);
+      application.Ready(ge);
+    }
+
+    /**
+    * Used to refrence a callback function from managed code.
+    * @param arguments {array} an array of arguments.
+    * @return {object} a callback function.
+    */
+    var createCallback_ = function()
+    {
+      var name = arguments[0];  
+      var additionalArgs = new Array();
+      
+      for (var i = 1; i < arguments.length; i++)
+      {
+        additionalArgs.push(arguments[i]);
+      }
+        
+      return function(kmlObject)
+      {
+        var parameters = [kmlObject];
+
+        for (var i = 0; i < additionalArgs.length; i++)
+        {
+          parameters.push(additionalArgs[i]);
+        }
+
+        if (kmlObject)
+        {
+          application.InvokeCallBack(name, parameters);
+        }
+        else
+        {
+          application.Error(name + "CallbackError",
+            "Error in callback: " + name + "(" + parameters.join(',') + ")");
+        }
+      }
+    }
+
+    /**
+    * KmlEvent event listner callback function
+    * @param kmlEvent {kmlMouseEvent} the mouse event object
+    * @parma action {string} the event action (click, dblclick, mousedown, etc)
+    */
+    var kmlEventListener_ = function(kmlEvent, action) 
+    {
+      if(kmlEvent)
+      {
+        application.KmlEventCallBack(kmlEvent, action);
+      }
+    }
+
+    /**
+    * GEView event listner callback function.
+    * @param action {string} the event action (viewchangebegin, viewchange, viewchangeend).
+    */
+    var viewEventListener_ = function(action) 
+    {
+      if(action)
+      {
+        application.ViewEventCallBack(ge.getView(), action);
+      }
+    }
+    
+    /**
+    * GEPlugin event listner callback function.
+    * @param action {string} the event action (frameend or balloonclose).
+    */
+    var pluginEventListener_ = function(action)
+    {
+      if(action)
+      {
+        application.PluginEventCallBack(ge, action);
+      }
+    }
+    
+    
+    /**
+    * Methods to be invoked from managed code.
+    * jsPrefix
+    */
+    
+    /**
+    * eval wrapper.
+    * Evaluates a string and executes it as if it was script code.
+    * @param {string} script The javascript to evaluate.
+    * @return {object} The result of the executed code.
+    */
+    var jsEvaluate = function(script)
+    {
+      return eval(script);
+    }
+    
+    /**
+    * window.execScript wrapper.
+    * Executes the specified script in the javascript language.
+    * @param {string} script The javascript to execute.
+    */
+    var jsExecute = function(script)
+    {
+      window.execScript(script);
+    }
+    
+    /**
+    * google.earth.addEventListener wrapper.
+    * Attaches a listener to a given object for a specific event; when the event occurs on the object, the given callback is invoked.
+    * @param feature {object} The object on which to listen to the event.
+    * @param action {string} The event string identifying the event to listen for.
+    * @param callback {string} A function that will be called when the event occurs on the object.
+    */
+    var jsAddEventListener = function(feature, action, callback)
+    {
+      if(null == callback)
+      {
+        callback = function(event) { kmlEventListener_(event, action); };
+      }
+      
+      if(action == "viewchangebegin" || action == "viewchange" || action == "viewchangeend")
+      {
+        callback[action] = function() { viewEventListener_(action); };
+        google.earth.addEventListener(feature, action, callback[action]);
+      }
+      else if(action == "frameend" || action == "balloonclose")
+      {
+        callback[action] = function() { pluginEventListener_(action); };
+        google.earth.addEventListener(feature, action, callback[action]);
+      }      
+      else
+      {
+        google.earth.addEventListener(feature, action, eval(callback));
+      }
+    }
+    
+    /**
+    * google.earth.removeEventListener wrapper.
+    * Removes an event listener previously added using google.earth.addEventListener() from the event chain.
+    * @param feature {object} The object on which to listen to the event.
+    * @param action {string} The event string identifying the event to listen for.
+    * @param callback {string} A function that will be called when the event occurs on the object.
+    */
+    var jsRemoveEventListener = function(feature, action, callback)
+    {
+      if(null == callback)
+      {
+        callback = function(event) { kmlEventListener_(event, action); };
+      }  
+      
+      if(action == "viewchangebegin" || action == "viewchange" || action == "viewchangeend" ||
+      action == "frameend" || action == "balloonclose")
+      {
+        google.earth.removeEventListener(feature, action, callback[action]);
+      }      
+      else
+      {
+        google.earth.removeEventListener(feature, action, eval(callback));
+      }
+    }
+    
+    /**
+    * google.earth.fetchKml wrapper.
+    * Retrieves and parses a KML or KMZ file at the given URL and returns an instance of a KmlFeature-derived class representing the parsed KML object model.
+    * @param url {string} The path of the file to load.
+    * @param callback {string} The method to invoke on compleation.
+    */
+    var jsFetchKml = function(url, callback)
+    {
+      google.earth.fetchKml(ge, url, eval(callback));
+    }
+
+    /**
+    * GClientGeocoder.getLatLng wrapper.
+    * @param {string} address The address to attempt geocode.
+    * @return a GLatLng point on success, false on fail.
+    */
+    var jsDoGeocode = function(address)
+    {   
+      geocoder.getLatLng(address, function(point)
+      {
+        if (point)
+        {
+          var lookat = ge.createLookAt('');
+          lookat.set(point.y, point.x, 100, ge.ALTITUDE_RELATIVE_TO_GROUND, 0, 0, 1000);
+          ge.getView().setAbstractView(lookat);
+          return point;
+        }
+        else 
+        {
+          return false;
+        }
+      });
+    } 
+    
+    /**
+    * google.earth.createInstance wrapper.
+    * Attempts to create an instance of the plugin.
+    * @param name {string} The name of the database to use (earth, moon or mars).
+    * @return {object} name param on success, false on fail.
+    */
+    var jsCreateInstance = function(name)
+    {
+      document.getElementById('map3d').innerHTML = '';
+      var db = name.toLowerCase();
+      
+      switch(db)
+      {
+        case 'earth' :
+          google.earth.createInstance('map3d', initCallback_, failureCallback_);
+          return db;
+          break;
+        case 'mars' :
+        case 'moon' :
+          google.earth.createInstance('map3d', initCallback_, failureCallback_,
+            { database: 'http://khmdb.google.com/?db=' + db });
+          return db;
+        default :
+          return false;
+      }
+    }
+
+    /**
+    * google.earth.setLanguage wrapper.
+    * Sets the langauge code for the plugin to use
+    * @param code {string} the langauge code to use.
+    */
+    var jsSetLanguage = function(code)
+    {
+      google.earth.setLanguage(code);
+      jsCreateInstance('earth');
+    }
+
+    /**
+    * google.earth.getLanguage wrapper.
+    * Gets the current langauge code used by the plugin
+    * @return {string} the current langauge code.
+    */
+    var jsGetLanguage = function()
+    {
+      return google.earth.getLanguage(); 	
+    }
+    
+    /**
+    * google.earth.isInstalled wrapper.
+    * Whether or not the Google Earth Browser Plug-in is currently installed on the user's machine.
+    * @return {bool} true on success, false on fail.
+    */
+    var jsIsInstalled = function()
+    {
+      return google.earth.isInstalled(); 	
+    }
+   
+    
+    google.setOnLoadCallback(init_);
+    
+    /* ]]> */
+    </script>
+    <style type="text/css">
+      html, body {
+      margin:0;
+      height:100%;
+      }
+      #map3d {
+      height: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <div id='map3d'></div>
+  </body>
+</html>
