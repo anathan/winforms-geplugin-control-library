@@ -24,7 +24,6 @@ namespace FC.GEPluginCtrls
     using System.Drawing;
     using System.Runtime.InteropServices;
     using System.Windows.Forms;
-    using GEPlugin;
 
     /// <summary>
     /// The GEStatusStrip shows various information about the plug-in
@@ -37,7 +36,7 @@ namespace FC.GEPluginCtrls
         /// Use the IGEPlugin COM interface. 
         /// Equivalent to QueryInterface for COM objects
         /// </summary>
-        private IGEPlugin geplugin = null;
+        private dynamic geplugin = null;
 
         /// <summary>
         /// An instance of the current browser
@@ -285,15 +284,19 @@ namespace FC.GEPluginCtrls
         {
             if (this.gewb.PluginIsReady)
             {
-                int percent = 0;
+                float percent = 0;
 
                 try
                 {
-                    percent = (int)this.geplugin.getStreamingPercent();
+                    percent = this.geplugin.getStreamingPercent();
                 }
                 catch (COMException)
                 {
                     this.timer.Stop();
+                }
+                catch (Microsoft.CSharp.RuntimeBinder.RuntimeBinderException rbex)
+                {
+                    MessageBox.Show(rbex.ToString());
                 }
 
                 if (100 == percent || 0 == percent)
@@ -305,7 +308,7 @@ namespace FC.GEPluginCtrls
                 else
                 {
                     this.streamingStatusLabel.ForeColor = Color.Black;
-                    this.streamingProgressBar.Value = percent;
+                    this.streamingProgressBar.Value = (int)percent;
                     this.streamingStatusLabel.Text = percent + "%";
                 }
             }

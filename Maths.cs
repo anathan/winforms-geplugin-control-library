@@ -19,7 +19,6 @@
 namespace FC.GEPluginCtrls
 {
     using System;
-    using GEPlugin;
 
     /// <summary>
     /// Various Geodesic methods to work with the plugin api
@@ -79,9 +78,9 @@ namespace FC.GEPluginCtrls
         /// <param name="origin">The first point</param>
         /// <param name="destination">The second point</param>
         /// <returns>The distance between the points</returns>
-        public static double AngularDistance(IKmlPoint origin, IKmlPoint destination)
+        public static double AngularDistance(object origin, object destination)
         {
-            return AngularDistance(origin.PointToDouble(), destination.PointToDouble());
+            return AngularDistance(PointToDouble(origin), PointToDouble(destination));
         }
 
         /// <summary>
@@ -194,7 +193,7 @@ namespace FC.GEPluginCtrls
         /// <param name="heading">heading in degrees</param>
         /// <param name="distance">distance in metres</param>
         /// <returns>The point at the location along the geodesic</returns>
-        public static double[] Destination(IKmlPoint origin, double heading, double distance)
+        public static double[] Destination(dynamic origin, double heading, double distance)
         {
             return Destination(origin.PointToDouble(), heading, distance);
         }
@@ -216,7 +215,7 @@ namespace FC.GEPluginCtrls
         /// <param name="origin">The first point</param>
         /// <param name="destination">The second point</param>
         /// <returns>The distance between the given points in metres</returns>
-        public static double DistanceHaversine(IKmlPoint origin, IKmlPoint destination)
+        public static double DistanceHaversine(dynamic origin, dynamic destination)
         {
             return EarthRadius * AngularDistance(origin, destination);
         }
@@ -353,7 +352,7 @@ namespace FC.GEPluginCtrls
         /// <param name="origin">The first point</param>
         /// <param name="destination">The second point</param>
         /// <returns>The distance between the given points in metres</returns>
-        public static double DistanceVincenty(IKmlPoint origin, IKmlPoint destination)
+        public static double DistanceVincenty(dynamic origin, dynamic destination)
         {
             return DistanceVincenty(
                 new double[] { origin.getLatitude(), origin.getLongitude() },
@@ -414,7 +413,7 @@ namespace FC.GEPluginCtrls
         /// <param name="origin">The first point</param>
         /// <param name="destination">The second point</param>
         /// <returns>The initial heading required ibn degrees</returns>
-        public static double Heading(IKmlPoint origin, IKmlPoint destination)
+        public static double Heading(dynamic origin, dynamic destination)
         {
             return Heading(origin.PointToDouble(), destination.PointToDouble());
         }
@@ -466,7 +465,7 @@ namespace FC.GEPluginCtrls
         /// <param name="destination">The second point</param>
         /// <param name="fraction">Intermediate location as a decimal fraction (T value)</param>
         /// <returns>The point at the specified fraction along the geodesic</returns>
-        public static double[] IntermediatePoint(IKmlPoint origin, IKmlPoint destination, double fraction)
+        public static double[] IntermediatePoint(dynamic origin, dynamic destination, double fraction)
         {
             return IntermediatePoint(origin.PointToDouble(), destination.PointToDouble(), fraction);
         }
@@ -476,7 +475,7 @@ namespace FC.GEPluginCtrls
         /// </summary>
         /// <param name="point">The point to convert</param>
         /// <returns>The point as an array of doubles</returns>
-        public static double[] PointToDouble(this IKmlPoint point)
+        public static double[] PointToDouble(dynamic point)
         {
             return new double[]
             { 

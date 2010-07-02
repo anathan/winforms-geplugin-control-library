@@ -26,7 +26,6 @@ namespace FC.GEPluginCtrls
     using System.Drawing.Imaging;
     using System.Runtime.InteropServices;
     using System.Windows.Forms;
-    using GEPlugin;
 
     /// <summary>
     /// The GEToolStrip provides a quick way to access and set the plugin options
@@ -39,7 +38,7 @@ namespace FC.GEPluginCtrls
         /// Use the IGEPlugin COM interface. 
         /// Equivalent to QueryInterface for COM objects
         /// </summary>
-        private IGEPlugin geplugin = null;
+        private dynamic geplugin = null;
 
         /// <summary>
         /// An instance of the current document
@@ -387,7 +386,7 @@ namespace FC.GEPluginCtrls
             if (this.gewb.PluginIsReady)
             {
                 // options
-                IGEOptions options = this.geplugin.getOptions();
+                dynamic options = this.geplugin.getOptions();
                 options.setStatusBarVisibility(Convert.ToInt16(this.statusBarMenuItem.Checked));
                 options.setGridVisibility(Convert.ToInt16(this.gridMenuItem.Checked));
                 options.setOverviewMapVisibility(Convert.ToInt16(this.overviewMapMenuItem.Checked));
@@ -410,7 +409,7 @@ namespace FC.GEPluginCtrls
                     // layers 
                     try
                     {
-                        IKmlLayerRoot root = this.geplugin.getLayerRoot();
+                        dynamic root = this.geplugin.getLayerRoot();
                         root.enableLayerById(this.geplugin.LAYER_BORDERS, Convert.ToInt16(this.bordersMenuItem.Checked));
                         root.enableLayerById(this.geplugin.LAYER_BUILDINGS, Convert.ToInt16(this.buildingsMenuItem.Checked));
                         root.enableLayerById(this.geplugin.LAYER_BUILDINGS_LOW_RESOLUTION, Convert.ToInt16(this.buildingsGreyMenuItem.Checked));

@@ -24,7 +24,6 @@ namespace FC.GEPluginCtrls
     using System.IO.Compression;
     using System.Runtime.InteropServices;
     using System.Xml;
-    using GEPlugin;
 
     /// <summary>
     /// This class provides basic Kml helper methods
@@ -35,7 +34,7 @@ namespace FC.GEPluginCtrls
         /// A callback delegate for all items iterated over in WalkKmlDom
         /// </summary>
         /// <param name="kmlObject">The current KmlObject</param>
-        public delegate void CallBack(IKmlObject kmlObject);
+        public delegate void CallBack(dynamic kmlObject);
 
         /// <summary>
         /// Based on kmldomwalk.js
@@ -43,7 +42,7 @@ namespace FC.GEPluginCtrls
         /// </summary>
         /// <param name="kmlObject">The kml object to parse</param>
         /// <param name="callBack">A function to call on each node visited</param>
-        public static void WalkKmlDom(IKmlObject kmlObject, CallBack callBack)
+        public static void WalkKmlDom(dynamic kmlObject, CallBack callBack)
         {
             string type = kmlObject.getType();
 
@@ -51,14 +50,14 @@ namespace FC.GEPluginCtrls
             {
                 case "KmlDocument":
                 case "KmlFolder":
-                    IKmlContainer container = kmlObject as IKmlContainer;
+                    dynamic container = kmlObject;
                     if (Convert.ToBoolean(container.getFeatures().hasChildNodes()))
                     {
-                        IKmlObjectList subNodes = container.getFeatures().getChildNodes();
+                        dynamic subNodes = container.getFeatures().getChildNodes();
 
                         for (int i = 0; i < subNodes.getLength(); i++)
                         {
-                            IKmlObject subNode = subNodes.item(i);
+                            dynamic subNode = subNodes.item(i);
                             WalkKmlDom(subNode, callBack);
                             callBack(subNode);
                         }
@@ -77,7 +76,7 @@ namespace FC.GEPluginCtrls
         /// </summary>
         /// <param name="networklink">The network link to look for a url in</param>
         /// <returns>The url value or an empty string</returns>
-        public static string GetUrl(this IKmlNetworkLink networklink)
+        public static string GetUrl(dynamic networklink)
         {
             string kml = networklink.getKml();
             System.Xml.XmlDocument doc = new System.Xml.XmlDocument();
@@ -100,7 +99,7 @@ namespace FC.GEPluginCtrls
         /// </summary>
         /// <param name="feature">feature to get data from</param>
         /// <returns>A list of key value pairs</returns>
-        public static List<KeyValuePair<string, string>> GetExtendedData(this IKmlFeature feature)
+        public static List<KeyValuePair<string, string>> GetExtendedData(dynamic feature)
         {
             List<KeyValuePair<string, string>> keyValues = 
                 new List<KeyValuePair<string, string>>();

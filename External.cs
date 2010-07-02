@@ -18,12 +18,14 @@
 // </summary>
 namespace FC.GEPluginCtrls
 {
+   // using Microsoft.CSharp.RuntimeBinder;
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.Reflection;
     using System.Runtime.InteropServices;
-    using GEPlugin;
+
+    //using GEPlugin;
 
     /// <summary>
     /// Event handler for methods to be called from javascript
@@ -43,8 +45,8 @@ namespace FC.GEPluginCtrls
         /// <summary>
         /// Stores fetched Kml Objects
         /// </summary>
-        private static Dictionary<string, IKmlObject> kmlObjectCache =
-            new Dictionary<string, IKmlObject>();
+        private static Dictionary<string, object> kmlObjectCache =
+            new Dictionary<string, object>();
 
         #endregion
 
@@ -94,7 +96,7 @@ namespace FC.GEPluginCtrls
         /// <summary>
         /// Gets the store of fetched IKmlObjects
         /// </summary>
-        public static Dictionary<string, IKmlObject> KmlObjectCache
+        public static Dictionary<string, object> KmlObjectCache
         {
             get
             {
@@ -141,13 +143,15 @@ namespace FC.GEPluginCtrls
         /// Called from javascript when the plugin is ready
         /// </summary>
         /// <param name="ge">the plugin instance</param>
-        public void Ready(IGEPlugin ge)
+        public void Ready(object ge)
         {
+            dynamic pluginObject = ge;
+
             try
             {
                 this.OnPluginReady(
                     ge,
-                    new GEEventArgs(ge.getApiVersion(), ge.getPluginVersion()));
+                    new GEEventArgs(pluginObject.getApiVersion(), pluginObject.getPluginVersion()));
             }
             catch (COMException cex)
             {
@@ -173,13 +177,15 @@ namespace FC.GEPluginCtrls
         /// </summary>
         /// <param name="kmlEvent">the kml event</param>
         /// <param name="action">the event id</param>
-        public void KmlEventCallBack(IKmlEvent kmlEvent, string action)
+        public void KmlEventCallBack(object kmlEvent, string action)
         {
+            dynamic runtimeEvent = kmlEvent;
+
             try
             {
                 this.OnKmlEvent(
                     kmlEvent,
-                    new GEEventArgs(kmlEvent.getType(), action, kmlEvent.getTarget()));
+                    new GEEventArgs(runtimeEvent.getType(), action, runtimeEvent.getTarget()));
             }
             catch (COMException cex)
             {
@@ -193,7 +199,7 @@ namespace FC.GEPluginCtrls
         /// </summary>
         /// <param name="plugin">The plugin object</param>
         /// <param name="action">The event action</param>
-        public void PluginEventCallBack(IGEPlugin plugin, string action)
+        public void PluginEventCallBack(object plugin, string action)
         {
             this.OnPluginEvent(plugin, new GEEventArgs(action));
         }
@@ -203,7 +209,7 @@ namespace FC.GEPluginCtrls
         /// </summary>
         /// <param name="sender">The GEView object</param>
         /// <param name="action">The event action (viewchangebegin, viewchange or viewchangeend)</param>
-        public void ViewEventCallBack(IGEView sender, string action)
+        public void ViewEventCallBack(object sender, string action)
         {
             this.OnViewEvent(sender, new GEEventArgs(action));
         }
@@ -217,7 +223,7 @@ namespace FC.GEPluginCtrls
         /// </summary>
         /// <param name="ge">The plugin object</param>
         /// <param name="e">The Event arguments</param>
-        protected virtual void OnPluginReady(IGEPlugin ge, GEEventArgs e)
+        protected virtual void OnPluginReady(object ge, GEEventArgs e)
         {
             if (this.PluginReady != null)
             {
@@ -230,7 +236,7 @@ namespace FC.GEPluginCtrls
         /// </summary>
         /// <param name="kmlEvent">The kmlEvent object</param>
         /// <param name="e">The Event arguments</param>
-        protected virtual void OnKmlEvent(IKmlEvent kmlEvent, GEEventArgs e)
+        protected virtual void OnKmlEvent(object kmlEvent, GEEventArgs e)
         {
             if (this.KmlEvent != null)
             {
@@ -244,7 +250,7 @@ namespace FC.GEPluginCtrls
         /// <param name="e">The Event arguments</param>
         protected virtual void OnKmlLoaded(GEEventArgs e)
         {
-            IKmlObject kmlObject = (IKmlObject)((object[])e.Tag)[0];
+            object kmlObject = ((object[])e.Tag)[0];
 
             if (this.KmlLoaded != null)
             {
@@ -258,7 +264,7 @@ namespace FC.GEPluginCtrls
         /// <param name="e">The Event arguments</param>
         protected virtual void OnKmlFetched(GEEventArgs e)
         {
-            IKmlObject kmlObject = (IKmlObject)((object[])e.Tag)[0];
+            object kmlObject = ((object[])e.Tag)[0];
             string url = (string)((object[])e.Tag)[1];
             lock (KmlObjectCache)
             {
@@ -285,7 +291,7 @@ namespace FC.GEPluginCtrls
         /// </summary>
         /// <param name="sender">The sending object</param>
         /// <param name="e">Event arguments</param>
-        protected virtual void OnPluginEvent(IGEPlugin sender, GEEventArgs e)
+        protected virtual void OnPluginEvent(object sender, GEEventArgs e)
         {
             if (this.PluginEvent != null)
             {
@@ -298,7 +304,7 @@ namespace FC.GEPluginCtrls
         /// </summary>
         /// <param name="sender">The sending object</param>
         /// <param name="e">Event arguments</param>
-        protected virtual void OnViewEvent(IGEView sender, GEEventArgs e)
+        protected virtual void OnViewEvent(object sender, GEEventArgs e)
         {
             if (this.ViewEvent != null)
             {
