@@ -23,6 +23,7 @@ namespace FC.GEPluginCtrls
     using System.Runtime.InteropServices;
     using System.Text;
     using System.Windows.Forms;
+    using Microsoft.CSharp.RuntimeBinder;
 
     /// <summary>
     /// This class provides some basic Google Earth plugin helpers functions.
@@ -52,9 +53,9 @@ namespace FC.GEPluginCtrls
                     dynamic la = ge.getView().copyAsLookAt(ge.ALTITUDE_CLAMP_TO_GROUND);
                     latLngAlt = new double[] { la.getLatitude(), la.getLongitude(), la.getAltitude() };
                 }
-                catch (COMException cex)
+                catch (RuntimeBinderException ex)
                 {
-                    Debug.WriteLine("CreatePlacemark: " + cex.ToString());
+                    Debug.WriteLine("CreatePlacemark: " + ex.ToString());
                 }
             }
             else if (agrs1 == 2)
@@ -114,9 +115,9 @@ namespace FC.GEPluginCtrls
 
                 placemark.setGeometry(p);
             }
-            catch (COMException cex)
+            catch (RuntimeBinderException ex)
             {
-                Debug.WriteLine("CreatePlacemark: " + cex.ToString());
+                Debug.WriteLine("CreatePlacemark: " + ex.ToString());
             }
 
             return placemark;
@@ -142,9 +143,9 @@ namespace FC.GEPluginCtrls
                 lineString.getCoordinates().pushLatLngAlt(p1.getLatitude(), p1.getLongitude(), 0);
                 lineString.getCoordinates().pushLatLngAlt(p2.getLatitude(), p2.getLongitude(), 0);
             }
-            catch (COMException cex)
+            catch (RuntimeBinderException ex)
             {
-                Debug.WriteLine("CreateLineString: " + cex.ToString());
+                Debug.WriteLine("CreateLineString: " + ex.ToString());
             }
 
             return placemark;
@@ -172,9 +173,9 @@ namespace FC.GEPluginCtrls
                     }
                 }
             }
-            catch (COMException cex)
+            catch (RuntimeBinderException ex)
             {
-                Debug.WriteLine("GetAllFeaturesKml: " + cex.ToString());
+                Debug.WriteLine("GetAllFeaturesKml: " + ex.ToString());
             }
 
             return kml.ToString();
@@ -201,9 +202,9 @@ namespace FC.GEPluginCtrls
                     0,
                     0);
             }
-            catch (COMException cex)
+            catch (RuntimeBinderException ex)
             {
-                Debug.WriteLine("GetCurrentViewAsPoint: " + cex.ToString());
+                Debug.WriteLine("GetCurrentViewAsPoint: " + ex.ToString());
             }
 
             return point;
@@ -248,9 +249,9 @@ namespace FC.GEPluginCtrls
                 ge.getView().setAbstractView(lookat);
                 return true;
             }
-            catch (COMException cex)
+            catch (RuntimeBinderException ex)
             {
-                Debug.WriteLine("LookAt: " + cex.ToString());
+                Debug.WriteLine("LookAt: " + ex.ToString());
                 return false;
             }
         }
@@ -315,6 +316,7 @@ namespace FC.GEPluginCtrls
                                     }
                                 }
                             }
+
                             break;
                         case "KmlPoint":
                             return LookAt(ge, feature.getLatitude(), feature.getLongitude());
@@ -357,9 +359,9 @@ namespace FC.GEPluginCtrls
                         return false;
                     }
                 }
-                catch (COMException cex)
+                catch (RuntimeBinderException ex)
                 {
-                    Debug.WriteLine("LookAt: " + cex.ToString());
+                    Debug.WriteLine("LookAt: " + ex.ToString());
                     return false;
                 }
             }
@@ -392,9 +394,9 @@ namespace FC.GEPluginCtrls
                     ge.setBalloon(balloon);
                 }
             }
-            catch (COMException cex)
+            catch (RuntimeBinderException ex)
             {
-                Debug.WriteLine("OpenFeatureBalloon: " + cex.ToString());
+                Debug.WriteLine("OpenFeatureBalloon: " + ex.ToString());
             }
         }
 
@@ -412,9 +414,9 @@ namespace FC.GEPluginCtrls
                     features.removeChild(features.getLastChild());
                 }
             }
-            catch (COMException cex)
+            catch (RuntimeBinderException ex)
             {
-                Debug.WriteLine("RemoveAllFeatures: " + cex.ToString());
+                Debug.WriteLine("RemoveAllFeatures: " + ex.ToString());
             }
         }
 
@@ -456,9 +458,9 @@ namespace FC.GEPluginCtrls
                 // launch the default browser with the url
                 System.Diagnostics.Process.Start(url.ToString());
             }
-            catch (COMException cex)
+            catch (RuntimeBinderException ex)
             {
-                Debug.WriteLine("ShowCurrentViewInMaps: " + cex.ToString());
+                Debug.WriteLine("ShowCurrentViewInMaps: " + ex.ToString());
             }
         }
     }

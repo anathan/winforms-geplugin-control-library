@@ -18,14 +18,12 @@
 // </summary>
 namespace FC.GEPluginCtrls
 {
-   // using Microsoft.CSharp.RuntimeBinder;
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.Reflection;
     using System.Runtime.InteropServices;
-
-    //using GEPlugin;
+    using Microsoft.CSharp.RuntimeBinder;
 
     /// <summary>
     /// Event handler for methods to be called from javascript
@@ -132,9 +130,9 @@ namespace FC.GEPluginCtrls
                 MethodInfo info = this.GetType().GetMethod(name, BindingFlags.Instance | BindingFlags.NonPublic);
                 info.Invoke(this, new object[] { ea });
             }
-            catch (COMException cex)
+            catch (RuntimeBinderException ex)
             {
-                Debug.WriteLine("InvokeCallBack: " + cex.ToString(), "External");
+                Debug.WriteLine("InvokeCallBack: " + ex.ToString(), "External");
                 throw;
             }
         }
@@ -153,9 +151,9 @@ namespace FC.GEPluginCtrls
                     ge,
                     new GEEventArgs(pluginObject.getApiVersion(), pluginObject.getPluginVersion()));
             }
-            catch (COMException cex)
+            catch (RuntimeBinderException ex)
             {
-                Debug.WriteLine("Ready: " + cex.ToString(), "External");
+                Debug.WriteLine("Ready: " + ex.ToString(), "External");
                 throw;
             }
         }
@@ -187,9 +185,9 @@ namespace FC.GEPluginCtrls
                     kmlEvent,
                     new GEEventArgs(runtimeEvent.getType(), action, runtimeEvent.getTarget()));
             }
-            catch (COMException cex)
+            catch (RuntimeBinderException ex)
             {
-                Debug.WriteLine("KmlEventCallBack: " + cex.ToString(), "External");
+                Debug.WriteLine("KmlEventCallBack: " + ex.ToString(), "External");
                 throw;
             }
         }

@@ -24,6 +24,7 @@ namespace FC.GEPluginCtrls
     using System.Drawing;
     using System.Runtime.InteropServices;
     using System.Windows.Forms;
+    using Microsoft.CSharp.RuntimeBinder;
 
     /// <summary>
     /// The GEStatusStrip shows various information about the plug-in
@@ -263,9 +264,9 @@ namespace FC.GEPluginCtrls
                     this.apiVersionStatusLabel.Text = "api " + this.geplugin.getApiVersion();
                     this.pluginVersionStatusLabel.Text = "plugin " + this.geplugin.getPluginVersion();
                 }
-                catch (COMException cex)
+                catch (RuntimeBinderException ex)
                 {
-                    Debug.WriteLine("SetBrowserInstance: " + cex.ToString(), "StatusStrip");
+                    Debug.WriteLine("SetBrowserInstance: " + ex.ToString(), "StatusStrip");
                     throw;
                 }
             }

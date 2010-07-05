@@ -24,6 +24,7 @@ namespace FC.GEPluginCtrls
     using System.Reflection;
     using System.Runtime.InteropServices;
     using System.Text;
+    using Microsoft.CSharp.RuntimeBinder;
 
     /// <summary>
     /// Helper methods to invoke properties on unamanged types
@@ -71,9 +72,9 @@ namespace FC.GEPluginCtrls
                     dispObject,
                     null);
             }
-            catch (COMException cex) 
+            catch (RuntimeBinderException ex) 
             {
-                Debug.WriteLine(cex.ToString());
+                Debug.WriteLine(ex.ToString());
                 throw;
             }
 
