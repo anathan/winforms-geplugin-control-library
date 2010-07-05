@@ -31,6 +31,7 @@ namespace FC.GEPluginCtrls
     using System.Security.Permissions;
     using System.Threading;
     using System.Windows.Forms;
+    using Microsoft.CSharp.RuntimeBinder;
 
     /// <summary>
     /// Main delegate event handler
@@ -362,9 +363,9 @@ namespace FC.GEPluginCtrls
                     Debug.WriteLine(uaex.ToString(), "GEWebBrowser");
                     throw;
                 }
-                catch (COMException cex)
+                catch (RuntimeBinderException ex)
                 {
-                    Debug.WriteLine(cex.ToString(), "GEWebBrowser");
+                    Debug.WriteLine(ex.ToString(), "GEWebBrowser");
                     throw;
                 }
                 finally
@@ -373,6 +374,7 @@ namespace FC.GEPluginCtrls
                     {
                         stream.Close();
                     }
+
                     if (reader != null)
                     {
                         reader.Close();
@@ -397,9 +399,9 @@ namespace FC.GEPluginCtrls
                         new object[] { kmlObj });
                 }
             }
-            catch (COMException cex)
+            catch (RuntimeBinderException ex)
             {
-                Debug.WriteLine("ParseKml: " + cex.ToString());
+                Debug.WriteLine("ParseKml: " + ex.ToString());
                 throw;
             }
         }
@@ -738,9 +740,9 @@ namespace FC.GEPluginCtrls
                 {
                     e.Data = this.geplugin.getPluginVersion();
                 }
-                catch (COMException cex)
+                catch (RuntimeBinderException ex)
                 {
-                    Debug.WriteLine(cex.ToString(), "GEWebBrowser");
+                    Debug.WriteLine(ex.ToString(), "GEWebBrowser");
                     throw;
                 }
             }

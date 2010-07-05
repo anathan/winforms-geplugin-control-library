@@ -24,7 +24,8 @@ namespace FC.GEPluginCtrls
     using System.Drawing;
     using System.Runtime.InteropServices;
     using System.Windows.Forms;
-    
+    using Microsoft.CSharp.RuntimeBinder;
+
     /// <summary>
     /// The KmlTree view provides a quick way to display kml content
     /// </summary>
@@ -205,7 +206,6 @@ namespace FC.GEPluginCtrls
         /// <param name="kmlObject">The kml object to parse</param>
         public void ParseKmlObject(dynamic kmlObject)
         {
-  
             if (null != kmlObject)
             {
                 string type = string.Empty;
@@ -237,9 +237,9 @@ namespace FC.GEPluginCtrls
                             break;
                     }
                 }
-                catch (COMException cex)
+                catch (RuntimeBinderException ex)
                 {
-                    Debug.WriteLine("ParsekmlObject: " + cex.ToString(), "KmlTreeView");
+                    Debug.WriteLine("ParsekmlObject: " + ex.ToString(), "KmlTreeView");
                     throw;
                 }
             }
@@ -306,9 +306,9 @@ namespace FC.GEPluginCtrls
                     }
                 }
             }
-            catch (COMException cex)
+            catch (RuntimeBinderException ex)
             {
-                Debug.WriteLine("ParsekmlContainer: " + cex.ToString(), "KmlTreeView");
+                Debug.WriteLine("ParsekmlContainer: " + ex.ToString(), "KmlTreeView");
                 throw;
             }
 
@@ -352,9 +352,9 @@ namespace FC.GEPluginCtrls
                     }
                 }
             }
-            catch (COMException cex)
+            catch (RuntimeBinderException ex)
             {
-                Debug.WriteLine("CreateTreeNodeFromKmlFeature:" + cex.ToString(), "KmlTreeView");
+                Debug.WriteLine("CreateTreeNodeFromKmlFeature:" + ex.ToString(), "KmlTreeView");
                 throw;
             }
 
@@ -411,8 +411,9 @@ namespace FC.GEPluginCtrls
                     return this.ParseKmlContainer(kmlObject);
                 }
             }
-            catch (NullReferenceException)
+            catch (RuntimeBinderException ex)
             {
+                Debug.WriteLine(ex.ToString(), "KmlTreeView");
             }
 
             return this.ParseKmlContainer(kmlObject);
@@ -423,9 +424,9 @@ namespace FC.GEPluginCtrls
         /// </summary>
         /// <param name="kmlObject">The network link object</param>
         /// <returns>The tree node for the networklink</returns>
-        private TreeNode CreateTreeNodeFromKmlNetworkLink(object kmlObject)
+        private TreeNode CreateTreeNodeFromKmlNetworkLink(dynamic kmlObject)
         {
-            dynamic link = kmlObject as dynamic;
+            
 
             string url = string.Empty;
 
@@ -433,11 +434,11 @@ namespace FC.GEPluginCtrls
             // in these cases the getHref call will return null
             try
             {
-                url = link.getLink().getHref();
+                url = kmlObject.getLink().getHref();
             }
             catch (NullReferenceException)
             {
-                url = link.GetUrl();
+                url = kmlObject.GetUrl();
             }
 
             // getComputedStyle is not part of the current Api and has issues.
@@ -463,7 +464,7 @@ namespace FC.GEPluginCtrls
 
             // return a simple treenode...
             ////TreeNode node = new TreeNode(kmlObject.getType());
-            TreeNode node = new TreeNode(link.getName());
+            TreeNode node = new TreeNode(kmlObject.getName());
             node.Tag = kmlObject;
             return node;
         }
@@ -548,11 +549,11 @@ namespace FC.GEPluginCtrls
 
             try
             {
-                type = feature.getType();
+                type = GEHelpers.GetTypeFromRcw(feature);
             }
-            catch (COMException cex)
+            catch (RuntimeBinderException ex)
             {
-                Debug.WriteLine(cex.ToString(), "KmlTree_AfterCheck");
+                Debug.WriteLine(ex.ToString(), "KmlTree_AfterCheck");
                 ////throw;
             }
 
@@ -614,9 +615,9 @@ namespace FC.GEPluginCtrls
                     {
                         type = feature.getType();
                     }
-                    catch (COMException cex)
+                    catch (RuntimeBinderException ex)
                     {
-                        Debug.WriteLine(cex.ToString(), "KmlTree_DoubleClick");
+                        Debug.WriteLine(ex.ToString(), "KmlTree_DoubleClick");
                         ////throw;
                     }
 
@@ -668,9 +669,9 @@ namespace FC.GEPluginCtrls
                 {
                     type = feature.getType();
                 }
-                catch (COMException cex)
+                catch (RuntimeBinderException ex)
                 {
-                    Debug.WriteLine(cex.ToString(), "KmlTreeView_AfterExpand");
+                    Debug.WriteLine(ex.ToString(), "KmlTreeView_AfterExpand");
                     ////throw;
                 }
 
@@ -698,7 +699,7 @@ namespace FC.GEPluginCtrls
                 dynamic feature = e.Node.Tag;
                 if (feature != null)
                 {
-                    string type = feature.getType();
+                    string type = GEHelpers.GetTypeFromRcw(feature);
 
                     switch (type)
                     {
