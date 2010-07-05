@@ -31,8 +31,8 @@ namespace FC.GEPluginCtrls
     using System.Security.Permissions;
     using System.Threading;
     using System.Windows.Forms;
-    using GEPlugin;
-    
+    using Microsoft.CSharp.RuntimeBinder;
+
     /// <summary>
     /// Main delegate event handler
     /// </summary>
@@ -66,7 +66,7 @@ namespace FC.GEPluginCtrls
         /// Use the IGEPlugin COM interface. 
         /// Equivalent to QueryInterface for COM objects
         /// </summary>
-        private IGEPlugin geplugin = null;
+        private dynamic geplugin = null;
 
         /// <summary>
         /// Current plug-in imagery database
@@ -294,7 +294,7 @@ namespace FC.GEPluginCtrls
         /// <param name="url">path to a kml/kmz file</param>
         /// <returns>The kml as a kmlObject</returns>
         /// <example>GEWebBrowser.FetchKmlSynchronous("http://www.site.com/file.kml");</example>
-        public IKmlObject FetchKmlSynchronous(string url)
+        public object FetchKmlSynchronous(string url)
         {
             return this.FetchKmlSynchronous(url, 1000);
         }
@@ -306,7 +306,7 @@ namespace FC.GEPluginCtrls
         /// <param name="timeout">time to wait for return in ms</param>
         /// <returns>The kml as a kmlObject</returns>
         /// <example>GEWebBrowser.FetchKmlSynchronous("http://www.site.com/file.kml");</example>
-        public IKmlObject FetchKmlSynchronous(string url, int timeout)
+        public object FetchKmlSynchronous(string url, int timeout)
         {
             string completionCallback = String.Format("createCallback_('OnKmlFetched', '{0}')", url);
 
@@ -347,11 +347,11 @@ namespace FC.GEPluginCtrls
                 {
                     stream = File.Open(path, FileMode.Open, FileAccess.Read);
                     reader = new StreamReader(stream);
-                    IKmlObject kml = this.geplugin.parseKml(reader.ReadToEnd());
+                    dynamic kml = this.geplugin.parseKml(reader.ReadToEnd());
 
                     this.external.InvokeCallBack(
                         "OnKmlLoaded",
-                        new object[] { kml as IKmlFeature });
+                        new object[] { kml });
                 }
                 catch (FileNotFoundException fnfex)
                 {
@@ -363,9 +363,9 @@ namespace FC.GEPluginCtrls
                     Debug.WriteLine(uaex.ToString(), "GEWebBrowser");
                     throw;
                 }
-                catch (COMException cex)
+                catch (RuntimeBinderException ex)
                 {
-                    Debug.WriteLine(cex.ToString(), "GEWebBrowser");
+                    Debug.WriteLine(ex.ToString(), "GEWebBrowser");
                     throw;
                 }
                 finally
@@ -374,6 +374,7 @@ namespace FC.GEPluginCtrls
                     {
                         stream.Close();
                     }
+
                     if (reader != null)
                     {
                         reader.Close();
@@ -390,17 +391,17 @@ namespace FC.GEPluginCtrls
         {
             try
             {
-                IKmlObject kmlObj = this.geplugin.parseKml(kml);
+                dynamic kmlObj = this.geplugin.parseKml(kml);
                 if (null != kmlObj)
                 {
                     this.external.InvokeCallBack(
                         "OnKmlLoaded",
-                        new object[] { kmlObj as IKmlFeature });
+                        new object[] { kmlObj });
                 }
             }
-            catch (COMException cex)
+            catch (RuntimeBinderException ex)
             {
-                Debug.WriteLine("ParseKml: " + cex.ToString());
+                Debug.WriteLine("ParseKml: " + ex.ToString());
                 throw;
             }
         }
@@ -409,7 +410,7 @@ namespace FC.GEPluginCtrls
         /// Get the plugin instance associated with the control
         /// </summary>
         /// <returns>The plugin instance</returns>
-        public IGEPlugin GetPlugin()
+        public dynamic GetPlugin()
         {
             return this.geplugin;
         }
@@ -421,11 +422,11 @@ namespace FC.GEPluginCtrls
         /// <param name="input">the location to geocode</param>
         /// <returns>the point object (if any)</returns>
         /// <example>GEWebBrowser.InvokeDoGeocode("London");</example>
-        public IKmlPoint InvokeDoGeocode(string input)
+        public object InvokeDoGeocode(string input)
         {
             if (null != this.Document)
             {
-                return (IKmlPoint)this.InvokeJavascript("jsDoGeocode", new object[] { input });
+                return (dynamic)this.InvokeJavascript("jsDoGeocode", new object[] { input });
             }
             else
             {
@@ -726,10 +727,10 @@ namespace FC.GEPluginCtrls
         /// </summary>
         /// <param name="plugin">The plugin instance</param>
         /// <param name="e">Event arguments</param>
-        private void External_PluginReady(object plugin, GEEventArgs e)
+        private void External_PluginReady(dynamic plugin, GEEventArgs e)
         {
             // plugin is the 'ge' object passed from javascript
-            this.geplugin = plugin as IGEPlugin;
+            this.geplugin = plugin;
 
             if (null != this.geplugin)
             {
@@ -739,9 +740,9 @@ namespace FC.GEPluginCtrls
                 {
                     e.Data = this.geplugin.getPluginVersion();
                 }
-                catch (COMException cex)
+                catch (RuntimeBinderException ex)
                 {
-                    Debug.WriteLine(cex.ToString(), "GEWebBrowser");
+                    Debug.WriteLine(ex.ToString(), "GEWebBrowser");
                     throw;
                 }
             }

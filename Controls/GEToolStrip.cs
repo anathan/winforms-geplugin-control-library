@@ -26,7 +26,7 @@ namespace FC.GEPluginCtrls
     using System.Drawing.Imaging;
     using System.Runtime.InteropServices;
     using System.Windows.Forms;
-    using GEPlugin;
+    using Microsoft.CSharp.RuntimeBinder;
 
     /// <summary>
     /// The GEToolStrip provides a quick way to access and set the plugin options
@@ -39,7 +39,7 @@ namespace FC.GEPluginCtrls
         /// Use the IGEPlugin COM interface. 
         /// Equivalent to QueryInterface for COM objects
         /// </summary>
-        private IGEPlugin geplugin = null;
+        private dynamic geplugin = null;
 
         /// <summary>
         /// An instance of the current document
@@ -387,7 +387,7 @@ namespace FC.GEPluginCtrls
             if (this.gewb.PluginIsReady)
             {
                 // options
-                IGEOptions options = this.geplugin.getOptions();
+                dynamic options = this.geplugin.getOptions();
                 options.setStatusBarVisibility(Convert.ToInt16(this.statusBarMenuItem.Checked));
                 options.setGridVisibility(Convert.ToInt16(this.gridMenuItem.Checked));
                 options.setOverviewMapVisibility(Convert.ToInt16(this.overviewMapMenuItem.Checked));
@@ -410,16 +410,16 @@ namespace FC.GEPluginCtrls
                     // layers 
                     try
                     {
-                        IKmlLayerRoot root = this.geplugin.getLayerRoot();
+                        dynamic root = this.geplugin.getLayerRoot();
                         root.enableLayerById(this.geplugin.LAYER_BORDERS, Convert.ToInt16(this.bordersMenuItem.Checked));
                         root.enableLayerById(this.geplugin.LAYER_BUILDINGS, Convert.ToInt16(this.buildingsMenuItem.Checked));
                         root.enableLayerById(this.geplugin.LAYER_BUILDINGS_LOW_RESOLUTION, Convert.ToInt16(this.buildingsGreyMenuItem.Checked));
                         root.enableLayerById(this.geplugin.LAYER_ROADS, Convert.ToInt16(this.roadsMenuItem.Checked));
                         root.enableLayerById(this.geplugin.LAYER_TERRAIN, Convert.ToInt16(this.terrainMenuItem.Checked));
                     }
-                    catch (COMException cex)
+                    catch (RuntimeBinderException ex)
                     {
-                        Debug.WriteLine(cex.ToString(), "ResetToolStripDefaults layers");
+                        Debug.WriteLine(ex.ToString(), "ResetToolStripDefaults layers");
                         ////throw;
                     }
 
@@ -567,10 +567,14 @@ namespace FC.GEPluginCtrls
                             break;
                     }
                 }
+                catch (RuntimeBinderException ex)
+                {
+                    Debug.WriteLine("LayersItem_Clicked: " + ex.ToString(), "ToolStrip");
+                    throw;
+                }
                 catch (COMException cex)
                 {
                     Debug.WriteLine("LayersItem_Clicked: " + cex.ToString(), "ToolStrip");
-                    throw;
                 }
             }
         }
@@ -625,9 +629,9 @@ namespace FC.GEPluginCtrls
                             break;
                     }
                 }
-                catch (COMException cex)
+                catch (RuntimeBinderException ex)
                 {
-                    Debug.WriteLine("OptionsItem_Clicked: " + cex.ToString(), "ToolStrip");
+                    Debug.WriteLine("OptionsItem_Clicked: " + ex.ToString(), "ToolStrip");
                     throw;
                 }
             }
@@ -652,6 +656,7 @@ namespace FC.GEPluginCtrls
                     switch (type)
                     {
                         case "SKY":
+                            this.layersDropDownButton.Enabled = !Convert.ToBoolean(value);
                             this.geplugin.getOptions().setMapType(value + 1);
                             break;
                         case "SUN":
@@ -661,9 +666,9 @@ namespace FC.GEPluginCtrls
                             break;
                     }
                 }
-                catch (COMException cex)
+                catch (RuntimeBinderException ex)
                 {
-                    Debug.WriteLine("ViewItem_Clicked: " + cex.ToString(), "ToolStrip");
+                    Debug.WriteLine("ViewItem_Clicked: " + ex.ToString(), "ToolStrip");
                     throw;
                 }
             }
@@ -718,9 +723,9 @@ namespace FC.GEPluginCtrls
                             break;
                     }
                 }
-                catch (COMException cex)
+                catch (RuntimeBinderException ex)
                 {
-                    Debug.WriteLine("ImageryItem_Clicked: " + cex.ToString(), "ToolStrip");
+                    Debug.WriteLine("ImageryItem_Clicked: " + ex.ToString(), "ToolStrip");
                     throw;
                 }
 

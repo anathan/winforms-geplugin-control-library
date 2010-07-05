@@ -24,7 +24,7 @@ namespace FC.GEPluginCtrls
     using System.Drawing;
     using System.Runtime.InteropServices;
     using System.Windows.Forms;
-    using GEPlugin;
+    using Microsoft.CSharp.RuntimeBinder;
 
     /// <summary>
     /// The KmlTree view provides a quick way to display kml content
@@ -36,7 +36,7 @@ namespace FC.GEPluginCtrls
         /// <summary>
         /// The plugin
         /// </summary>
-        private IGEPlugin geplugin = null;
+        private dynamic geplugin = null;
 
         /// <summary>
         /// The current document
@@ -204,28 +204,26 @@ namespace FC.GEPluginCtrls
         /// Recursively parses a kml object into the tree
         /// </summary>
         /// <param name="kmlObject">The kml object to parse</param>
-        public void ParseKmlObject(object kmlObject)
+        public void ParseKmlObject(dynamic kmlObject)
         {
-            IKmlObject obj = kmlObject as IKmlObject;
-
-            if (null != obj)
+            if (null != kmlObject)
             {
                 string type = string.Empty;
 
                 try
                 {
-                    type = obj.getType();
+                    type = kmlObject.getType();
 
                     switch (type)
                     {
                         case "KmlDocument":
                         case "KmlFolder":
                             this.Nodes.Add(
-                                this.CreateTreeNodeFromKmlFolder(obj));
+                                this.CreateTreeNodeFromKmlFolder(kmlObject));
                             break;
                         case "KmlNetworkLink":
                             this.Nodes.Add(
-                                this.CreateTreeNodeFromKmlNetworkLink(obj));
+                                this.CreateTreeNodeFromKmlNetworkLink(kmlObject));
                             break;
                         case "KmlGroundOverlay":
                         case "KmlScreenOverlay":
@@ -233,15 +231,15 @@ namespace FC.GEPluginCtrls
                         case "KmlTour":
                         case "KmlPhotoOverlay":
                             this.Nodes.Add(
-                                this.CreateTreeNodeFromKmlFeature(obj as IKmlFeature));
+                                this.CreateTreeNodeFromKmlFeature(kmlObject));
                             break;
                         default:
                             break;
                     }
                 }
-                catch (COMException cex)
+                catch (RuntimeBinderException ex)
                 {
-                    Debug.WriteLine("ParsekmlObject: " + cex.ToString(), "KmlTreeView");
+                    Debug.WriteLine("ParsekmlObject: " + ex.ToString(), "KmlTreeView");
                     throw;
                 }
             }
@@ -268,9 +266,9 @@ namespace FC.GEPluginCtrls
         /// </summary>
         /// <param name="kmlContainer">The object to parse</param>
         /// <returns>The current tree node</returns>
-        private TreeNode ParseKmlContainer(IKmlContainer kmlContainer)
+        private TreeNode ParseKmlContainer(dynamic kmlContainer)
         {
-            TreeNode parentNode = this.CreateTreeNodeFromKmlFeature(kmlContainer as IKmlFeature);
+            TreeNode parentNode = this.CreateTreeNodeFromKmlFeature(kmlContainer);
 
             try
             {
@@ -278,11 +276,11 @@ namespace FC.GEPluginCtrls
                 {
                     TreeNode childNode = new TreeNode();
 
-                    IKmlObjectList subNodes = kmlContainer.getFeatures().getChildNodes();
+                    dynamic subNodes = kmlContainer.getFeatures().getChildNodes();
 
                     for (int i = 0; i < subNodes.getLength(); i++)
                     {
-                        IKmlObject subNode = subNodes.item(i);
+                        dynamic subNode = subNodes.item(i);
                         string type = subNode.getType();
 
                         switch (type)
@@ -300,7 +298,7 @@ namespace FC.GEPluginCtrls
 
                             // all other features
                             default:
-                                childNode = this.CreateTreeNodeFromKmlFeature(subNode as IKmlFeature);
+                                childNode = this.CreateTreeNodeFromKmlFeature(subNode);
                                 break;
                         }
 
@@ -308,9 +306,9 @@ namespace FC.GEPluginCtrls
                     }
                 }
             }
-            catch (COMException cex)
+            catch (RuntimeBinderException ex)
             {
-                Debug.WriteLine("ParsekmlContainer: " + cex.ToString(), "KmlTreeView");
+                Debug.WriteLine("ParsekmlContainer: " + ex.ToString(), "KmlTreeView");
                 throw;
             }
 
@@ -322,7 +320,7 @@ namespace FC.GEPluginCtrls
         /// </summary>
         /// <param name="kmlFeature">The kml feature to add</param>
         /// <returns>The tree node for the feature</returns>
-        private TreeNode CreateTreeNodeFromKmlFeature(IKmlFeature kmlFeature)
+        private TreeNode CreateTreeNodeFromKmlFeature(dynamic kmlFeature)
         {
             TreeNode treenode = new TreeNode();
 
@@ -354,9 +352,9 @@ namespace FC.GEPluginCtrls
                     }
                 }
             }
-            catch (COMException cex)
+            catch (RuntimeBinderException ex)
             {
-                Debug.WriteLine("CreateTreeNodeFromKmlFeature:" + cex.ToString(), "KmlTreeView");
+                Debug.WriteLine("CreateTreeNodeFromKmlFeature:" + ex.ToString(), "KmlTreeView");
                 throw;
             }
 
@@ -396,7 +394,7 @@ namespace FC.GEPluginCtrls
         /// </summary>
         /// <param name="kmlObject">The kml folder object</param>
         /// <returns>The tree node for the folder</returns>
-        private TreeNode CreateTreeNodeFromKmlFolder(IKmlObject kmlObject)
+        private TreeNode CreateTreeNodeFromKmlFolder(dynamic kmlObject)
         {
             try
             {
@@ -406,18 +404,19 @@ namespace FC.GEPluginCtrls
                     kmlObject.getOwnerDocument().getComputedStyle().getListStyle().getListItemType() ==
                     this.geplugin.LIST_ITEM_CHECK_HIDE_CHILDREN)
                 {
-                    return this.CreateTreeNodeFromKmlFeature(kmlObject as IKmlFeature);
+                    return this.CreateTreeNodeFromKmlFeature(kmlObject);
                 }
                 else
                 {
-                    return this.ParseKmlContainer(kmlObject as IKmlContainer);
+                    return this.ParseKmlContainer(kmlObject);
                 }
             }
-            catch (NullReferenceException)
+            catch (RuntimeBinderException ex)
             {
+                Debug.WriteLine(ex.ToString(), "KmlTreeView");
             }
 
-            return this.ParseKmlContainer(kmlObject as IKmlContainer);
+            return this.ParseKmlContainer(kmlObject);
         }
 
         /// <summary>
@@ -425,38 +424,38 @@ namespace FC.GEPluginCtrls
         /// </summary>
         /// <param name="kmlObject">The network link object</param>
         /// <returns>The tree node for the networklink</returns>
-        private TreeNode CreateTreeNodeFromKmlNetworkLink(IKmlObject kmlObject)
+        private TreeNode CreateTreeNodeFromKmlNetworkLink(dynamic kmlObject)
         {
-            IKmlNetworkLink link = kmlObject as IKmlNetworkLink;
+            
+
             string url = string.Empty;
 
             // Kml documents using the pre 2.1 spec may contain the <Url> element 
             // in these cases the getHref call will return null
             try
             {
-                url = link.getLink().getHref();
+                url = kmlObject.getLink().getHref();
             }
             catch (NullReferenceException)
             {
-                url = link.GetUrl();
+                url = kmlObject.GetUrl();
             }
 
             // getComputedStyle is not part of the current Api and has issues.
             // if the call fails we manualy create a tree node for the link
             try
             {
-                IKmlObject obj = this.gewb.FetchKmlSynchronous(url);
-                KmlStyleCoClass foo = obj.getOwnerDocument().getComputedStyle();
+                dynamic obj = this.gewb.FetchKmlSynchronous(url);
 
                 if (obj.getOwnerDocument() != null &&
                     obj.getOwnerDocument().getComputedStyle().getListStyle().getListItemType() ==
                     this.geplugin.LIST_ITEM_CHECK_HIDE_CHILDREN)
                 {
-                    return this.CreateTreeNodeFromKmlFeature(obj as IKmlFeature);
+                    return this.CreateTreeNodeFromKmlFeature(obj);
                 }
                 else
                 {
-                    return this.ParseKmlContainer(obj as IKmlContainer);
+                    return this.ParseKmlContainer(obj);
                 }
             }
             catch (NullReferenceException)
@@ -465,7 +464,7 @@ namespace FC.GEPluginCtrls
 
             // return a simple treenode...
             ////TreeNode node = new TreeNode(kmlObject.getType());
-            TreeNode node = new TreeNode(link.getName());
+            TreeNode node = new TreeNode(kmlObject.getName());
             node.Tag = kmlObject;
             return node;
         }
@@ -545,16 +544,16 @@ namespace FC.GEPluginCtrls
         /// <param name="e">Event Arugments</param>
         private void KmlTree_AfterCheck(object sender, TreeViewEventArgs e)
         {
-            IKmlFeature feature = e.Node.Tag as IKmlFeature;
+            dynamic feature = e.Node.Tag;
             string type = string.Empty;
 
             try
             {
-                type = feature.getType();
+                type = GEHelpers.GetTypeFromRcw(feature);
             }
-            catch (COMException cex)
+            catch (RuntimeBinderException ex)
             {
-                Debug.WriteLine(cex.ToString(), "KmlTree_AfterCheck");
+                Debug.WriteLine(ex.ToString(), "KmlTree_AfterCheck");
                 ////throw;
             }
 
@@ -605,7 +604,7 @@ namespace FC.GEPluginCtrls
         {
             if (this.SelectedNode != null)
             {
-                IKmlFeature feature = SelectedNode.Tag as IKmlFeature;
+                dynamic feature = SelectedNode.Tag;
                 string type = string.Empty;
 
                 this.SelectedNode.Checked = true;
@@ -616,9 +615,9 @@ namespace FC.GEPluginCtrls
                     {
                         type = feature.getType();
                     }
-                    catch (COMException cex)
+                    catch (RuntimeBinderException ex)
                     {
-                        Debug.WriteLine(cex.ToString(), "KmlTree_DoubleClick");
+                        Debug.WriteLine(ex.ToString(), "KmlTree_DoubleClick");
                         ////throw;
                     }
 
@@ -627,7 +626,7 @@ namespace FC.GEPluginCtrls
                         case "KmlPlacemark":
                             if (this.openBalloonOnDoubleClickNode)
                             {
-                                IGEFeatureBalloon balloon = this.geplugin.createFeatureBalloon(String.Empty);
+                                dynamic balloon = this.geplugin.createFeatureBalloon(String.Empty);
                                 balloon.setMinHeight(this.balloonMinimumHeight);
                                 balloon.setMinWidth(this.balloonMinimumWidth);
                                 balloon.setFeature(feature);
@@ -661,7 +660,7 @@ namespace FC.GEPluginCtrls
         /// <param name="e">Event Arugments</param>
         private void KmlTreeView_AfterExpand(object sender, TreeViewEventArgs e)
         {
-            IKmlFeature feature = e.Node.Tag as IKmlFeature;
+            dynamic feature = e.Node.Tag;
             string type = string.Empty;
 
             if (null != feature)
@@ -670,9 +669,9 @@ namespace FC.GEPluginCtrls
                 {
                     type = feature.getType();
                 }
-                catch (COMException cex)
+                catch (RuntimeBinderException ex)
                 {
-                    Debug.WriteLine(cex.ToString(), "KmlTreeView_AfterExpand");
+                    Debug.WriteLine(ex.ToString(), "KmlTreeView_AfterExpand");
                     ////throw;
                 }
 
@@ -697,10 +696,12 @@ namespace FC.GEPluginCtrls
         {
             try
             {
-                IKmlFeature feature = (IKmlFeature)e.Node.Tag;
+                dynamic feature = e.Node.Tag;
                 if (feature != null)
                 {
-                    switch (feature.getType())
+                    string type = GEHelpers.GetTypeFromRcw(feature);
+
+                    switch (type)
                     {
                         case "KmlDocument":
                         case "KmlFolder":

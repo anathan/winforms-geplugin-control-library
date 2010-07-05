@@ -19,8 +19,7 @@
 namespace FC.GEPluginCtrls
 {
     using System;
-    using GEPlugin;
-    
+   
     /// <summary>
     /// This interface should be implemented by any object
     /// that is designed to act as the interface between javascript and managed code
@@ -58,7 +57,7 @@ namespace FC.GEPluginCtrls
         /// Should be called from javascript when the plugin is ready
         /// </summary>
         /// <param name="ge">the plugin instance</param>
-        void Ready(IGEPlugin ge);
+        void Ready(object ge);
 
         /// <summary>
         /// Should be called from javascript when there is an error
@@ -72,6 +71,6 @@ namespace FC.GEPluginCtrls
         /// </summary>
         /// <param name="kmlEvent">the kml event</param>
         /// <param name="action">the event id</param>
-        void KmlEventCallBack(IKmlEvent kmlEvent, string action);
+        void KmlEventCallBack(object kmlEvent, string action);
     }
 }
