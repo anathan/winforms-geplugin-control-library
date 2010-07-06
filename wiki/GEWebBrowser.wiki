@@ -72,7 +72,7 @@ _void_ *CreateInstance(ImageryBase)*<br>
 Wrapper for the  google.earth.createInstance method
 *Parameters*<br>
 ImageryBase: The ImageryBase to use<br>
-example: GEWebBrowser.CreateInstance(ImageryBase.Moon);</example>
+example: GEWebBrowser.CreateInstance(ImageryBase.Moon);
 
 _IGEPlugin_ *GetPlugin()*<br>
 Get the plugin instance associated with the control<br>
