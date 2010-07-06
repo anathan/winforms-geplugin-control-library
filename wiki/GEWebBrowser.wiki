@@ -20,7 +20,30 @@ The GEWebBrowser inherits from the standard [http://msdn.microsoft.com/en-us/lib
 
 The GEWebBrowser control cannot be used by partially trusted code. For more information, see [http://msdn.microsoft.com/en-us/library/8skskf63.aspx Using Libraries from Partially Trusted Code]
 
+== Public Events ==
+
+event _GEWebBrowserEventHandler_ *PluginReady*<br>
+Raised when the plugin is ready
+
+event _GEWebBrowserEventHandler_ *KmlEvent*<br>
+Raised when there is a kmlEvent
+
+event _GEWebBrowserEventHandler_ *KmlLoaded*<br>
+Raised when a kml/kmz file has loaded
+
+event _GEWebBrowserEventHandler_ *ScriptError*<br>
+Raised when there is a script error in the document 
+
+event _GEWebBrowserEventHandler_ *PluginEvent*<br>
+Rasied when there is a GEPlugin event
+
+event _GEWebBrowserEventHandler_ *ViewEvent*<br>
+Rasied when there is a viewchangebegin, viewchange or viewchangeend event 
+
 == Public Properties ==
+
+static _Dictionary<string, AutoResetEvent>_ *KmlObjectCacheSyncEvents*<br>
+Gets thread event handles for IKmlObjects collected
 
 _ImageryBase_ *ImageryBase*<br>
 Gets or sets a value indicating the current plug-in imagery base<br>
@@ -30,11 +53,26 @@ Gets a value indicating if the plug-in is ready to use<br>
 
 == Public Methods ==
 
-_Void_ *AddEventListener(System.object, System.String)*<br>
+_Void_ *AddEventListener(object, string)*<br>
 Wrapper for the the google.earth.addEventListener method<br>
 *Parameters*<br>
-object: The target object<br>
+object: The target plug-in Api object<br>
 string: The event Id<br>
+example: GEWebBrowser.AddEventListener(ge.getGlobe(), "mousedown");<br>
+
+_Void_ *AddEventListener(object, string, string)*<br>
+Wrapper for the the google.earth.addEventListener method<br>
+*Parameters*<br>
+object: The target plug-in Api object<br>
+string: The event Id<br>
+string: The name of javascript callback function to use<br>
+example: GEWebBrowser.AddEventListener(object, "click", "function(event){alert(event.getType());}");<br>
+
+_void_ *CreateInstance(ImageryBase)*<br>
+Wrapper for the  google.earth.createInstance method
+*Parameters*<br>
+ImageryBase: The ImageryBase to use<br>
+example: GEWebBrowser.CreateInstance(ImageryBase.Moon);</example>
 
 _IGEPlugin_ *GetPlugin()*<br>
 Get the plugin instance associated with the control<br>
