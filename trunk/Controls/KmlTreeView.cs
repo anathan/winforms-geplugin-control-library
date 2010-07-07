@@ -425,9 +425,7 @@ namespace FC.GEPluginCtrls
         /// <param name="kmlObject">The network link object</param>
         /// <returns>The tree node for the networklink</returns>
         private TreeNode CreateTreeNodeFromKmlNetworkLink(dynamic kmlObject)
-        {
-            
-
+        {    
             string url = string.Empty;
 
             // Kml documents using the pre 2.1 spec may contain the <Url> element 

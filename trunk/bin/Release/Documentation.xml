@@ -383,6 +383,12 @@
             Gets a value indicating whether the plug-in is ready
             </summary>
         </member>
+        <member name="P:FC.GEPluginCtrls.GEWebBrowser.ObjectForScripting">
+            <summary>
+            Gets or sets a COM visible object to bind to the base ObjectForScripting property.
+            This method hides the default WebBrowswer.ObjectForScripting property
+            </summary>
+        </member>
         <member name="T:FC.GEPluginCtrls.IExternal">
             <summary>
             This interface should be implemented by any object
@@ -989,14 +995,14 @@
             <summary>
             Called from javascript when there is a kml event
             </summary>
-            <param name="kmlEvent">the kml event</param>
+            <param name="sender">the kml event</param>
             <param name="action">the event id</param>
         </member>
         <member name="M:FC.GEPluginCtrls.External.PluginEventCallBack(System.Object,System.String)">
             <summary>
             Called from javascript when there is a GEPlugin event
             </summary>
-            <param name="plugin">The plugin object</param>
+            <param name="sender">The plugin object</param>
             <param name="action">The event action</param>
         </member>
         <member name="M:FC.GEPluginCtrls.External.ViewEventCallBack(System.Object,System.String)">

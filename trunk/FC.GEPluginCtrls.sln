@@ -11,6 +11,7 @@ Global
 		Release|Any CPU = Release|Any CPU
 		Release|Mixed Platforms = Release|Mixed Platforms
 		Release|x86 = Release|x86
+		Description = A library of controls to work with the Google Earth Plug-in Api
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{C06F0F75-6B29-4BA2-9EC5-BBFA3CA28617}.Debug|Any CPU.ActiveCfg = Debug|Any CPU

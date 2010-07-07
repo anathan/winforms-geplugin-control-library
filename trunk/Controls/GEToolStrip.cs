@@ -491,11 +491,13 @@ namespace FC.GEPluginCtrls
                     this.navigationTextBoxStringCollection.Add(input);
                 }
 
-                if (System.IO.File.Exists(input) &&
-                    input.EndsWith("kml", true, System.Globalization.CultureInfo.CurrentCulture))
+                if (System.IO.File.Exists(input))
                 {
-                    // input is a local kml file
-                    this.gewb.FetchKmlLocal(input);
+                    if (input.EndsWith("kml", true, System.Globalization.CultureInfo.CurrentCulture))
+                    {
+                        // input is a local kml file
+                        this.gewb.FetchKmlLocal(input);
+                    }             
                 }
                 else if (input.StartsWith("http", true, System.Globalization.CultureInfo.CurrentCulture))
                 {
@@ -776,7 +778,7 @@ namespace FC.GEPluginCtrls
         /// <param name="e">LayoutEvent arguments</param>
         private void GEToolStrip_Layout(object sender, LayoutEventArgs e)
         {
-            this.navigationTextBox.Width = this.Width / 2;
+            this.navigationTextBox.Width = this.Width / 3;
         }
 
         /// <summary>
