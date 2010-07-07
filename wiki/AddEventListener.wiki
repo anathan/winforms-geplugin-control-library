@@ -3,7 +3,7 @@
 
 = Introduction =
 
-As you can probably guess by the name, this method allows you to insert add an event listener to the plug-in. The method is basically a wrapper function for the Google.Earth.addEventListener method.
+This method allows you to add an event listener to the plug-in, it is basically a 'wrapper' function for the Google.Earth.addEventListener method in the Api.
 
 == Overload List ==
 
@@ -18,7 +18,7 @@ public void AddEventListener (object, string, string)
 
 == Examples ==
 
-To use an event listener with the built in callback functions simply register the KmlEvent listener then add the events you wish. It is worth noting that KmlLoaded and ViewEvent's have their own in-built delegates. The following example shows how to use the in-bult evenys to handle kml and view events.
+To use an event listener with the built in callback functions simply register the KmlEvent listener then add the events you wish. It is worth noting that KmlLoaded and ViewEvent's have their own in-built delegates. The following example shows how to use the in-bult events to handle kml and view events.
 
 {{{
 namespace TestApplication
@@ -46,9 +46,6 @@ namespace TestApplication
         void geWebBrowser1_PluginReady(object sender, GEEventArgs e)
         {
             ge = geWebBrowser1.GetPlugin();
-
-            // Use the NewExternal class 
-            geWebBrowser1.External = new NewExternal();
 
             // Add an event listener that calls NewExternal.Method() passing the event object e
             geWebBrowser1.KmlEvent += new GEWebBrowserEventHandler(geWebBrowser1_KmlEvent);
