@@ -36,7 +36,7 @@ namespace FC.GEPluginCtrls
     /// This COM Visible class contains all the methods to be called from Javascript
     /// </summary>
     [ComVisibleAttribute(true)]
-    public class External : IExternal
+    public partial class External : IExternal
     {
         #region Private fields
 
@@ -173,17 +173,17 @@ namespace FC.GEPluginCtrls
         /// <summary>
         /// Called from javascript when there is a kml event
         /// </summary>
-        /// <param name="kmlEvent">the kml event</param>
+        /// <param name="sender">the kml event</param>
         /// <param name="action">the event id</param>
-        public void KmlEventCallBack(object kmlEvent, string action)
+        public void KmlEventCallBack(object sender, string action)
         {
-            dynamic runtimeEvent = kmlEvent;
+            dynamic kmlEvent = sender;
 
             try
             {
                 this.OnKmlEvent(
-                    kmlEvent,
-                    new GEEventArgs(runtimeEvent.getType(), action, runtimeEvent.getTarget()));
+                    sender,
+                    new GEEventArgs(kmlEvent.getType(), action, kmlEvent.getTarget()));
             }
             catch (RuntimeBinderException ex)
             {
@@ -195,11 +195,23 @@ namespace FC.GEPluginCtrls
         /// <summary>
         /// Called from javascript when there is a GEPlugin event
         /// </summary>
-        /// <param name="plugin">The plugin object</param>
+        /// <param name="sender">The plugin object</param>
         /// <param name="action">The event action</param>
-        public void PluginEventCallBack(object plugin, string action)
+        public void PluginEventCallBack(object sender, string action)
         {
-            this.OnPluginEvent(plugin, new GEEventArgs(action));
+            dynamic pluginEvent = sender;
+
+            try
+            {
+                this.OnPluginEvent(
+                    pluginEvent,
+                    new GEEventArgs(pluginEvent.getType(), action, string.Empty));
+            }
+            catch (RuntimeBinderException ex)
+            {
+                Debug.WriteLine("ViewEventCallBack: " + ex.ToString(), "External");
+                ////throw;
+            }
         }
 
         /// <summary>
@@ -209,7 +221,19 @@ namespace FC.GEPluginCtrls
         /// <param name="action">The event action (viewchangebegin, viewchange or viewchangeend)</param>
         public void ViewEventCallBack(object sender, string action)
         {
-            this.OnViewEvent(sender, new GEEventArgs(action));
+            dynamic viewEvent  = sender;
+
+            try
+            {
+                this.OnViewEvent(
+                    sender,
+                    new GEEventArgs(viewEvent.getType(), action, string.Empty));
+            }
+            catch (ArgumentException ex)
+            {
+                Debug.WriteLine("ViewEventCallBack: " + ex.ToString(), "External");
+                ////throw;
+            }
         }
 
         #endregion

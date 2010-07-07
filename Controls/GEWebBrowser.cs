@@ -196,6 +196,32 @@ namespace FC.GEPluginCtrls
             }
         }
 
+        /// <summary>
+        /// Gets or sets a COM visible object to bind to the base ObjectForScripting property.
+        /// This method hides the default WebBrowswer.ObjectForScripting property
+        /// </summary>
+        public new object ObjectForScripting
+        {
+            get
+            {
+                return this.external;
+            }
+
+            set
+            {
+                try
+                {
+                    this.external = (External)value;
+                    base.ObjectForScripting = value;
+                }
+                catch (InvalidCastException icex)
+                {
+                    Debug.WriteLine(icex.ToString(), "ObjectForScripting");
+                    throw;
+                }
+            }
+        }
+
         #endregion
 
         #region Public methods
@@ -224,7 +250,7 @@ namespace FC.GEPluginCtrls
         {
             this.InvokeJavascript(
                 "jsAddEventListener",
-                new object[] { feature, action, callBackFunction });
+                new object[] { feature, action, "_x=" + callBackFunction });
         }
 
         /// <summary>
@@ -255,7 +281,7 @@ namespace FC.GEPluginCtrls
         /// </summary>
         public void ExecuteBatch()
         {
-            throw new NotImplementedException("ExecuteBatch");
+            throw new NotImplementedException("ExecuteBatch method is not yet implemented");
         }  
 
         /// <summary>
