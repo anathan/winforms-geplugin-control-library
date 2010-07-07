@@ -1,0 +1,140 @@
+#summary Various uses for the AddEventListener method.
+#labels Featured
+
+= Introduction =
+
+As you can probably guess by the name, this method allows you to insert add an event listener to the plug-in. The method is basically a wrapper function for the Google.Earth.addEventListener method.
+
+== Overload List ==
+
+
+{{{
+public void AddEventListener (object, string)
+}}}
+
+{{{
+public void AddEventListener (object, string, string)
+}}}
+
+== Examples ==
+
+To use an event listener with the built in callback functions simply register the KmlEvent listener then add the events you wish. It is worth noting that KmlLoaded and ViewEvent's have their own in-built delegates. The following example shows how to use the in-bult evenys to handle kml and view events.
+
+{{{
+namespace TestApplication
+{
+    using System.Windows.Forms;
+    using FC.GEPluginCtrls;
+
+    public partial class Form1 : Form
+    {
+        // to hold the plug-in
+        private dynamic ge = null;
+   
+        public Form1()
+        {
+            InitializeComponent();
+
+            // load the embeded plug-in
+            geWebBrowser1.LoadEmbededPlugin();
+
+            // set various event handler
+            geWebBrowser1.PluginReady += 
+                new GEWebBrowserEventHandler(geWebBrowser1_PluginReady);
+        }
+
+        void geWebBrowser1_PluginReady(object sender, GEEventArgs e)
+        {
+            ge = geWebBrowser1.GetPlugin();
+
+            // Use the NewExternal class 
+            geWebBrowser1.External = new NewExternal();
+
+            // Add an event listener that calls NewExternal.Method() passing the event object e
+            geWebBrowser1.KmlEvent += new GEWebBrowserEventHandler(geWebBrowser1_KmlEvent);
+            geWebBrowser1.AddEventListener(ge.getGlobe(),"click");
+
+            // view events are handled 
+            geWebBrowser1.ViewEvent += new GEWebBrowserEventHandler(geWebBrowser1_ViewEvent);
+            geWebBrowser1.AddEventListener(ge.getView(), "viewchangeend");
+        }
+
+        void geWebBrowser1_KmlEvent(object sender, GEEventArgs e)
+        {
+            dynamic kmlEvent = sender;
+            string action = e.Data; //click
+            MessageBox.Show(kmlEvent.getTarget().getType(), action);
+        }
+
+        void geWebBrowser1_ViewEvent(object sender, GEEventArgs e)
+        {
+            MessageBox.Show(kmlEvent.getTarget().getType());
+        }
+    }
+}
+}}}
+
+The easiest way to use your own callback functions in managed code is to extend the External class. This allows you to register your own COM visible methods and to pass event objects to them from the plug-in. The following example shows how to register a custom external class and how to use a method of the class as an event handler.
+
+{{{
+namespace TestApplication
+{
+    using System.Windows.Forms;
+    using FC.GEPluginCtrls;
+
+    /// <summary>
+    /// This is our custom COM visible class
+    /// </summary>
+    [System.Runtime.InteropServices.ComVisibleAttribute(true)]
+    public class NewExternal : External
+    {
+        /// <summary>
+        /// This is the method we will use as the callback
+        /// </summary>
+        /// <param name="e">the KmlEvent</param>
+        public void Method(dynamic e)
+        {
+            MessageBox.Show(e.getTarget().getType()); // GEGlobe
+        }
+    }
+
+    public partial class Form1 : Form
+    {
+        // the plug-in instance
+        private dynamic ge = null;
+   
+        public Form1()
+        {
+            InitializeComponent();
+
+            // load the embeded plug-in
+            geWebBrowser1.LoadEmbededPlugin();
+            geWebBrowser1.PluginReady += new GEWebBrowserEventHandler(geWebBrowser1_PluginReady);
+        }
+
+        void geWebBrowser1_PluginReady(object sender, GEEventArgs e)
+        {
+            ge = geWebBrowser1.GetPlugin();
+
+            // Use our new external class 
+            geWebBrowser1.External = new NewExternal();
+
+            // Add an event listener that calls NewExternal.Method() passing the event object e
+            geWebBrowser1.AddEventListener(
+                ge.getGlobe(),
+                "click",
+                "function(e){window.external.Method(e);}");
+        }
+    }
+}
+
+}}}
+
+
+== Remarks ===
+
+These functions allow you to easily handle any of the events in the Google Earth Plug-in Api in javascript or managed code.
+
+== Ads ==
+
+<wiki:gadget url="http://earthapi.googlepages.com/ad.xml" border="0" width="728" height="90" />
