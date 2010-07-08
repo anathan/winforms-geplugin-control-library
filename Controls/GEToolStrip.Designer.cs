@@ -1,4 +1,6 @@
-﻿// <copyright file="GEToolStrip.Designer.cs" company="FC">
+﻿
+
+// <copyright file="GEToolStrip.Designer.cs" company="FC">
 // Copyright (c) 2008 Fraser Chapman
 // </copyright>
 // <author>Fraser Chapman</author>
@@ -62,6 +64,11 @@ namespace FC.GEPluginCtrls
         /// The sun menu item
         /// </summary>
         private System.Windows.Forms.ToolStripMenuItem sunMenuItem;
+
+        /// <summary>
+        /// The history menu item
+        /// </summary>
+        private System.Windows.Forms.ToolStripMenuItem historyMenuItem;
 
         /// <summary>
         /// The options drop down button
@@ -234,6 +241,7 @@ namespace FC.GEPluginCtrls
             this.viewDropDownButton = new System.Windows.Forms.ToolStripDropDownButton();
             this.skyMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.sunMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.historyMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.optionsDropDownButton = new System.Windows.Forms.ToolStripDropDownButton();
             this.imperialUnitsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.fadeInOutMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -339,7 +347,8 @@ namespace FC.GEPluginCtrls
             this.viewDropDownButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.viewDropDownButton.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.skyMenuItem,
-            this.sunMenuItem});
+            this.sunMenuItem,
+            this.historyMenuItem});
             this.viewDropDownButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.viewDropDownButton.Name = "viewDropDownButton";
             this.viewDropDownButton.Size = new System.Drawing.Size(42, 17);
@@ -366,6 +375,16 @@ namespace FC.GEPluginCtrls
             this.sunMenuItem.Text = "Sun";
             this.sunMenuItem.ToolTipText = "Toggle the sun visiblity";
             this.sunMenuItem.Click += new System.EventHandler(this.ViewItem_Clicked);
+            //
+            // historyMenuItem
+            //
+            this.historyMenuItem.CheckOnClick = true;
+            this.historyMenuItem.Name = "historyMenuItem";
+            this.historyMenuItem.Size = new System.Drawing.Size(126, 22);
+            this.historyMenuItem.Tag = "HISTORY";
+            this.historyMenuItem.Text = "Historical imagery";
+            this.historyMenuItem.ToolTipText = "Toggle the historical imagery";
+            this.historyMenuItem.Click += new System.EventHandler(this.ViewItem_Clicked);
             // 
             // optionsDropDownButton
             // 

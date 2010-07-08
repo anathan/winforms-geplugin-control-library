@@ -133,7 +133,7 @@ namespace FC.GEPluginCtrls
             catch (RuntimeBinderException ex)
             {
                 Debug.WriteLine("InvokeCallBack: " + ex.ToString(), "External");
-                throw;
+                ////throw;
             }
         }
 
@@ -154,7 +154,7 @@ namespace FC.GEPluginCtrls
             catch (RuntimeBinderException ex)
             {
                 Debug.WriteLine("Ready: " + ex.ToString(), "External");
-                throw;
+                ////throw;
             }
         }
 
@@ -188,7 +188,7 @@ namespace FC.GEPluginCtrls
             catch (RuntimeBinderException ex)
             {
                 Debug.WriteLine("KmlEventCallBack: " + ex.ToString(), "External");
-                throw;
+                ////throw;
             }
         }
 

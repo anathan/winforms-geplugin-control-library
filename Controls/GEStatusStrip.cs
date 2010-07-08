@@ -267,7 +267,7 @@ namespace FC.GEPluginCtrls
                 catch (RuntimeBinderException ex)
                 {
                     Debug.WriteLine("SetBrowserInstance: " + ex.ToString(), "StatusStrip");
-                    throw;
+                    ////throw;
                 }
             }
         }

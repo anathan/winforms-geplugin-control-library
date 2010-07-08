@@ -1513,6 +1513,11 @@
             The sun menu item
             </summary>
         </member>
+        <member name="F:FC.GEPluginCtrls.GEToolStrip.historyMenuItem">
+            <summary>
+            The history menu item
+            </summary>
+        </member>
         <member name="F:FC.GEPluginCtrls.GEToolStrip.optionsDropDownButton">
             <summary>
             The options drop down button
