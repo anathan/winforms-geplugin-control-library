@@ -47,11 +47,13 @@ namespace TestApplication
         {
             ge = geWebBrowser1.GetPlugin();
 
-            // Add an event listener that calls NewExternal.Method() passing the event object e
+            // Add a listener for clicks on the globe
+            // we can handle the event in the generic GEPluginCtrls.KmlEvent
             geWebBrowser1.KmlEvent += new GEWebBrowserEventHandler(geWebBrowser1_KmlEvent);
             geWebBrowser1.AddEventListener(ge.getGlobe(),"click");
 
-            // view events are handled 
+            // Add a listner for the viewchangeend event
+            // We handle this with the generic GEPluginCtrls.ViewEvent
             geWebBrowser1.ViewEvent += new GEWebBrowserEventHandler(geWebBrowser1_ViewEvent);
             geWebBrowser1.AddEventListener(ge.getView(), "viewchangeend");
         }
@@ -116,7 +118,8 @@ namespace TestApplication
             // Use our new external class 
             geWebBrowser1.External = new NewExternal();
 
-            // Add an event listener that calls NewExternal.Method() passing the event object e
+            // Add a listener for clicks on the globe
+            // the listener calls the NewExternal.Method() passing the event object e
             geWebBrowser1.AddEventListener(
                 ge.getGlobe(),
                 "click",
