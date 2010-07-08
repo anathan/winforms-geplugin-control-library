@@ -572,7 +572,7 @@ namespace FC.GEPluginCtrls
                 catch (RuntimeBinderException ex)
                 {
                     Debug.WriteLine("LayersItem_Clicked: " + ex.ToString(), "ToolStrip");
-                    throw;
+                    ////throw;
                 }
                 catch (COMException cex)
                 {
@@ -634,7 +634,7 @@ namespace FC.GEPluginCtrls
                 catch (RuntimeBinderException ex)
                 {
                     Debug.WriteLine("OptionsItem_Clicked: " + ex.ToString(), "ToolStrip");
-                    throw;
+                    ////throw;
                 }
             }
         }
@@ -664,6 +664,9 @@ namespace FC.GEPluginCtrls
                         case "SUN":
                             this.geplugin.getSun().setVisibility(value);
                             break;
+                        case "HISTORY":
+                            this.geplugin.getTime().setHistoricalImageryEnabled(value);
+                            break;
                         default:
                             break;
                     }
@@ -671,7 +674,7 @@ namespace FC.GEPluginCtrls
                 catch (RuntimeBinderException ex)
                 {
                     Debug.WriteLine("ViewItem_Clicked: " + ex.ToString(), "ToolStrip");
-                    throw;
+                    ////throw;
                 }
             }
         }
@@ -728,7 +731,7 @@ namespace FC.GEPluginCtrls
                 catch (RuntimeBinderException ex)
                 {
                     Debug.WriteLine("ImageryItem_Clicked: " + ex.ToString(), "ToolStrip");
-                    throw;
+                    ////throw;
                 }
 
                 // reset the default options to match the default view

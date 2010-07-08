@@ -217,7 +217,7 @@ namespace FC.GEPluginCtrls
                 catch (InvalidCastException icex)
                 {
                     Debug.WriteLine(icex.ToString(), "ObjectForScripting");
-                    throw;
+                    ////throw;
                 }
             }
         }
@@ -382,17 +382,17 @@ namespace FC.GEPluginCtrls
                 catch (FileNotFoundException fnfex)
                 {
                     Debug.WriteLine(fnfex.ToString(), "GEWebBrowser");
-                    throw;
+                    ////throw;
                 }
                 catch (UnauthorizedAccessException uaex)
                 {
                     Debug.WriteLine(uaex.ToString(), "GEWebBrowser");
-                    throw;
+                    ////throw;
                 }
                 catch (RuntimeBinderException ex)
                 {
                     Debug.WriteLine(ex.ToString(), "GEWebBrowser");
-                    throw;
+                    ////throw;
                 }
                 finally
                 {
@@ -428,7 +428,7 @@ namespace FC.GEPluginCtrls
             catch (RuntimeBinderException ex)
             {
                 Debug.WriteLine("ParseKml: " + ex.ToString());
-                throw;
+                ////throw;
             }
         }
 
@@ -484,7 +484,7 @@ namespace FC.GEPluginCtrls
                 {
                     Debug.WriteLine(ioex.ToString(), "GEWebBrowser");
                     this.OnScriptError(this, new GEEventArgs(ioex.Message, ioex.ToString()));
-                    throw;
+                    ////throw;
                 }
             }
         }
@@ -542,14 +542,14 @@ namespace FC.GEPluginCtrls
                     catch (InvalidOperationException ioex)
                     {
                         Debug.WriteLine(ioex.ToString(), "GEWebBrowser");
-                        throw;
+                        ////throw;
                     }
                 }
             }
             catch (InvalidOperationException ioex)
             {
                 Debug.WriteLine(ioex.ToString(), "GEWebBrowser");
-                throw;
+                ////throw;
             }
         }
 
@@ -603,17 +603,18 @@ namespace FC.GEPluginCtrls
         /// <returns>bitmap image</returns>
         public Bitmap ScreenGrab()
         {
+            // create a drawing object based on the webbrowser control
+            Rectangle rectangle = this.DisplayRectangle;
+            Bitmap bitmap =
+                new Bitmap(
+                    rectangle.Width,
+                    rectangle.Height,
+                    PixelFormat.Format32bppArgb);
             try
             {
-                // create a drawing object based on the webbrowser control
-                Rectangle rectangle = this.DisplayRectangle;
-                Bitmap bitmap =
-                    new Bitmap(
-                        rectangle.Width,
-                        rectangle.Height,
-                        PixelFormat.Format32bppArgb);
+
                 Graphics graphics = Graphics.FromImage(bitmap);
-                System.Drawing.Point point = 
+                System.Drawing.Point point =
                     new System.Drawing.Point();
 
                 // copy the current display as a bitmap
@@ -622,14 +623,13 @@ namespace FC.GEPluginCtrls
                     point,
                     new Size(rectangle.Width, rectangle.Height));
                 graphics.Dispose();
-
-                return bitmap;
             }
             catch (ArgumentNullException anex)
             {
                 Debug.WriteLine(anex.ToString(), "GEWebBrowser");
                 throw;
             }
+            return bitmap;
         }
 
         /// <summary>

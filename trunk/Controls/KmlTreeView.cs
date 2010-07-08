@@ -240,7 +240,7 @@ namespace FC.GEPluginCtrls
                 catch (RuntimeBinderException ex)
                 {
                     Debug.WriteLine("ParsekmlObject: " + ex.ToString(), "KmlTreeView");
-                    throw;
+                    ////throw;
                 }
             }
         }
@@ -309,7 +309,7 @@ namespace FC.GEPluginCtrls
             catch (RuntimeBinderException ex)
             {
                 Debug.WriteLine("ParsekmlContainer: " + ex.ToString(), "KmlTreeView");
-                throw;
+                ////throw;
             }
 
             return parentNode;
@@ -355,7 +355,7 @@ namespace FC.GEPluginCtrls
             catch (RuntimeBinderException ex)
             {
                 Debug.WriteLine("CreateTreeNodeFromKmlFeature:" + ex.ToString(), "KmlTreeView");
-                throw;
+                ////throw;
             }
 
             switch (type)
@@ -713,7 +713,7 @@ namespace FC.GEPluginCtrls
             catch (InvalidCastException icex)
             {
                 Debug.WriteLine(icex.ToString(), "KmlTreeView");
-                throw;
+                ////throw;
             }
         }
 
