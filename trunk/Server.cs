@@ -366,8 +366,6 @@ namespace FC.GEPluginCtrls.HttpServer
             data.AppendLine("Accept-Ranges: bytes");
             data.AppendFormat("Content-Length: {0}{1}", bytes, Environment.NewLine);
             data.AppendFormat("Content-Type: {0}{1}", mime, Environment.NewLine);
-
-            // end
             data.AppendLine("Connection: close");
             data.AppendLine();
 
@@ -576,7 +574,7 @@ namespace FC.GEPluginCtrls.HttpServer
                     }
 
                     // The physical path to the local file
-                    string localPath = localDirectory + localFile;
+                    string localPath = localDirectory + Path.DirectorySeparatorChar + localFile;
 
                     if (File.Exists(localPath))
                     {
