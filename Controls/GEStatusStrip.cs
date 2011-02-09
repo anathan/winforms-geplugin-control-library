@@ -304,7 +304,13 @@ namespace FC.GEPluginCtrls
                 {
                     this.streamingStatusLabel.ForeColor = Color.Gray;
                     this.streamingStatusLabel.Text = "idle";
-                    this.streamingProgressBar.Value = 0;
+                    try
+                    {
+                        this.streamingProgressBar.Value = 0;
+                    }
+                    catch (NullReferenceException) { 
+                        //occasional on exit...
+                    }        
                 }
                 else
                 {
