@@ -25,7 +25,7 @@ geWebBrowser1.InjectJavascript("function jsExec(s){window.execScript(s);}");
 
 If you were to view the documents markup after the InjectJavascript function had run you would see the following 
 
-{{{<SCRIPT type=text/javascript>/* <![CDATA[ */ function jsExec(s){window.execScript(s);} /* ]]> */</SCRIPT>}}}
+{{{<SCRIPT type="text/javascript">/* <![CDATA[ */ function jsExec(s){window.execScript(s);} /* ]]> */</SCRIPT>}}}
 
 Likewise the following example injects the 'jsEval' function
 
