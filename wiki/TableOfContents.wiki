@@ -7,7 +7,7 @@
   * Helpers
     * !KmlHelpers (soon!)
     * [GEHelpers]
-  * [Server]
+    * [Server HttpServer]
   * Working with !JavaScript
     * [InjectJavascript]
     * [InvokeJavascript]
