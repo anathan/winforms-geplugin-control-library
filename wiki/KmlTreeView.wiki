@@ -1,6 +1,8 @@
 #summary KMLTreeView control notes
 #labels Phase-Implementation,Featured
 
+<wiki:toc max_depth="2" /> 
+
 http://earthapi.googlepages.com/KmlTreeView.jpg
 
 = Introduction =
@@ -55,7 +57,5 @@ kmlObject: The kml object to parse<br>
 [http://code.google.com/p/winforms-geplugin-control-library/source/browse/trunk/KmlTreeView.Designer.cs KmlTreeView.Designer.cs]
 
 [http://code.google.com/p/winforms-geplugin-control-library/source/browse/trunk/KmlTreeView.resx KmlTreeViewresx]
-
-== Ads ==
 
 <wiki:gadget url="http://earthapi.googlepages.com/ad.xml" border="0" width="728" height="90" />
