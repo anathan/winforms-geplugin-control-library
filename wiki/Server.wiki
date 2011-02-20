@@ -6,7 +6,7 @@
 
 = Introduction =
 
-The Server class can be used to serve files over a standard HTTP connection.
+The Server class can be used to serve files over a standard HTTP connection. 
 
 = Details =
 
@@ -24,7 +24,12 @@ The server itself supports a limited number of file / Content-types (MIME types)
  
 The server uses version 1.1 of HTTP.
 
-By default the server only accepts connections from GoogleEarth User-agents on the same machine.
+By default the server only accepts connections from !GoogleEarth User-agents on the same machine.
+
+With the default settings the application start up folder is the virtual root directory and can be accessed via the loopback address or the localhost alias.
+
+ * http://127.0.0.1:8080/ 
+ * http://locahost:8080/ 
 
 == Constructor == 
 
@@ -39,7 +44,7 @@ Initializes a new instance of the Server class
 
 == Public Properties ==
 
-_string_ *DefaultFileName*<br>
+_string_ *!DefaultFileName*<br>
 Gets or sets the default file name<br>
 The default value is "default.kml"<br>
 
@@ -51,10 +56,10 @@ _System.ushort_ *Port*<br>
 Gets or sets the port for the server to use 
 The default value is 8080
 
-_string_  *RootDirectory*<br>
+_string_ *!RootDirectory*<br>
 Gets or sets the root server directory (webroot)<br>
 The default value is "\" (the application root)
-http://localhost:port/ will point to this directory<br>
+{{{http://localhost:port/}}} will point to this directory<br>
 
 == Public methods ==
 
@@ -67,7 +72,5 @@ Stops the server
 == Source == 
 
 http://code.google.com/p/winforms-geplugin-control-library/source/browse/trunk/Server.cs
-
-== Ads ==
 
 <wiki:gadget url="http://earthapi.googlepages.com/ad.xml" border="0" width="728" height="90" />
