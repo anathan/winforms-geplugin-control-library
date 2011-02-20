@@ -35,7 +35,7 @@ geWebBrowser1.InjectJavascript("function jsEval(s){return eval(s);}");
 
 Producing this markup
 
-{{{<SCRIPT type=text/javascript>/* <![CDATA[ */ function jsEval(s){return eval(s);} /* ]]> */</SCRIPT>}}}
+{{{<SCRIPT type="text/javascript">/* <![CDATA[ */ function jsEval(s){return eval(s);} /* ]]> */</SCRIPT>}}}
 
 
 == Remarks ==
