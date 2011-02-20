@@ -1,5 +1,8 @@
 #summary GEHelpers class notes
 #labels Phase-Implementation
+#sidebar TableOfContents
+
+<wiki:toc max_depth="2" />
 
 = Introduction =
 
@@ -8,7 +11,7 @@ http://earth-api-samples.googlecode.com/svn/trunk/lib/geplugin-helpers.js
 
 = Details =
 
-To follow shortly...
+The various methods in this class 
 
 == Public Methods ==
 
