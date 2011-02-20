@@ -1,5 +1,8 @@
 #summary Overview of the Server class
 #labels Phase-Implementation,Featured
+#sidebar TableOfContents
+
+<wiki:toc max_depth="2" />
 
 = Introduction =
 
