@@ -1,5 +1,8 @@
 #summary GEWebBrowser control notes
 #labels Phase-Implementation,Featured
+#sidebar TableOfContents
+
+<wiki:toc max_depth="2" />
 
 http://earthapi.googlepages.com/GEWebBrowser.jpg
 
