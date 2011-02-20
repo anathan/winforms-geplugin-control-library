@@ -15,37 +15,37 @@ The KMLTreeViewcontrol inherits from the standard [http://msdn.microsoft.com/en-
 
 == Constructor == 
 
-_KMLTreeView_ *KMLTreeView()*<br>
+_KMLTreeView_ *!KMLTreeView()*<br>
 Initializes a new instance of the KMLTreeView class
 
 == Public properties ==
 
-_Bool_ *CheckAllChildrenOnParentChecked*<br>
+_Bool_ *!CheckAllChildrenOnParentChecked*<br>
 Gets or sets a value ndicating if the treeview should check all child nodes when the parent is checked. 
 
-_Int_ *BalloonMinimumWidth*<br>
+_Int_ *!BalloonMinimumWidth*<br>
 Gets or sets the minimum width of any balloons triggered from the control 
 
-_Int_ *BalloonMinimumHeight*<br>
+_Int_ *!BalloonMinimumHeight*<br>
 Gets or sets the minimum height of any balloons triggered from the control 
 
-_Bool_ *ExpandVisibleFeatures*<br>
+_Bool_ *!ExpandVisibleFeatures*<br>
 Gets or sets a value indicating whether to expand the tree node of features with the visible element set to true The default setting is false 
 
-_Bool_ *FlyToOnDoubleClickNode*<br>
+_Bool_ *!FlyToOnDoubleClickNode*<br>
 Gets or sets a value indicating whether the plugin should 'fly to' the location (if any) of the feature represented by the treenode The default setting is true 
 
-_Bool_ *OpenBalloonOnDoubleClickNode*<br>
+_Bool_ *!OpenBalloonOnDoubleClickNode*<br>
 Gets or sets a value indicating whether to open the balloon (if any) when feature represented by the treenode is double clicked The default setting is true 
 
 == Public methods == 
 
-_Void_ *SetBrowserInstance*(FC.GEPluginCtrls.GEWebBrowser)<br>
+_Void_ *!SetBrowserInstance*(FC.GEPluginCtrls.GEWebBrowser)<br>
 Set the browser instance for the control to work with <br>
 *Parameters*<br>
 browser: The GEWebBrowser instance<br>
 
-_Void_ *ParsekmlObject*(System.Object)<br>
+_Void_ *!ParsekmlObject*(System.Object)<br>
 Recursively parses a kml object into the tree <br>
 *Parameters*<br>
 kmlObject: The kml object to parse<br>
