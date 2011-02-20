@@ -1,10 +1,10 @@
 #labels Phase-Implementation
-  * [Controls]
+  * Controls
     * [GEStatusStrip]
     * [GEToolStrip]
     * [GEWebBrowser]
     * [KmlTreeView]
-  * [Helpers]
+  * Helpers
     * [KmlHelpers]
     * [GEHelpers]
   * [Server]
