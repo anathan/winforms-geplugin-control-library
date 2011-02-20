@@ -1,5 +1,7 @@
 #summary Using the InvokeJavascript method
 
+#sidebar TableOfContents
+
 = Introduction =
 
 Invokes/executes a javascript function defined in the current document
