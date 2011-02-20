@@ -1,7 +1,8 @@
 #summary KMLTreeView control notes
 #labels Phase-Implementation,Featured
+#sidebar TableOfContents
 
-<wiki:toc max_depth="2" /> 
+<wiki:toc max_depth="2" />
 
 http://earthapi.googlepages.com/KmlTreeView.jpg
 
