@@ -11,4 +11,4 @@
     * [InjectJavascript]
     * [InvokeJavascript]
   * Local server
-    * [Server HttpServer]
+    * [Server]
