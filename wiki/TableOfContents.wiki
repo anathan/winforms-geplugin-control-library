@@ -5,9 +5,9 @@
     * [GEWebBrowser]
     * [KmlTreeView]
   * Helpers
-    * [KmlHelpers]
+    * !KmlHelpers (soon!)
     * [GEHelpers]
   * [Server]
-  * Working with JavaScript
+  * Working with !JavaScript
     * [InjectJavascript]
     * [InvokeJavascript]
