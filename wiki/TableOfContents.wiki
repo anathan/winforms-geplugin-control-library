@@ -1,13 +1,14 @@
 #labels Phase-Implementation
-  * Controls
+  * Main controls
     * [GEStatusStrip]
     * [GEToolStrip]
     * [GEWebBrowser]
     * [KmlTreeView]
-  * Helpers
+  * Helpers and utilites
     * !KmlHelpers (soon!)
     * [GEHelpers]
-    * [Server HttpServer]
   * Working with !JavaScript
     * [InjectJavascript]
     * [InvokeJavascript]
+  * Local server
+    * [Server HttpServer]
