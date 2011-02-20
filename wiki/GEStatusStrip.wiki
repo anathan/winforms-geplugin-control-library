@@ -1,6 +1,8 @@
 #summary GEStatusStrip control notes
 #labels Phase-Implementation,Featured
 
+<wiki:toc max_depth="2" /> 
+
 http://earthapi.googlepages.com/GEStatusStrip.jpg
 
 = Introduction =
