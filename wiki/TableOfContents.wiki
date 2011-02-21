@@ -14,7 +14,7 @@
       * [SetBrowserInstance]
   * Helpers and utilities
     * [Maths]
-    * !KmlHelpers (coming soon!)
+    * [KmlHelpers]
     * [GEHelpers]
   * Working with !JavaScript
     * [InjectJavascript]
