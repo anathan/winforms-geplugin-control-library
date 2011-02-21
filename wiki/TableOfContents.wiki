@@ -3,6 +3,7 @@
     * [GEWebBrowser]
       * [AddEventListener]
       * [CreateInstance]
+      * [FetchKml]
       * [PluginReady]
       * [ScreenGrab]
     * [GEStatusStrip]
