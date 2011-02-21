@@ -1,0 +1,48 @@
+#summary KmlHelpers class notes
+#labels Phase-Implementation
+#sidebar TableOfContents
+
+<wiki:toc max_depth="2" />
+
+= Introduction =
+
+This class provides some useful Kml helper methods to easy working with !KmlObjects in managed code.
+
+It makes extensive use of Named and optional arguments to allow a high level of flexibility when working with the methods. Named and optional arguments, along with support for dynamic objects greatly improve the interoperability with the Google Earth Plugin.
+
+For detailed information on named/optional Arguments' please see: http://msdn.microsoft.com/en-us/library/dd264739.aspx 
+
+= Details =
+
+The various methods in this class 
+
+== Public Delegates ==
+
+public delegate void CallBack(dynamic kmlObject);
+
+== Public Methods ==
+
+{{{
+public static void WalkKmlDom(dynamic kmlObject, CallBack callBack)
+}}}
+
+{{{
+public static string GetUrl(dynamic networklink)
+}}}
+
+{{{
+public static List<KeyValuePair<string, string>> GetExtendedData(dynamic feature)
+}}}
+
+...more to add...
+
+== Source == 
+
+[http://code.google.com/p/winforms-geplugin-control-library/source/browse/trunk/GEHelpers.cs KmlHelpers.cs]
+
+== Remarks ==
+
+Some of the methods are based on the GEHelpers javasctipt library found at: 
+http://earth-api-samples.googlecode.com/svn/trunk/lib/geplugin-helpers.js
+
+<wiki:gadget url="http://earthapi.googlepages.com/ad.xml" border="0" width="728" height="90" />
