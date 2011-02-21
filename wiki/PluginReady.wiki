@@ -12,7 +12,7 @@ You should use this event to determine when calls can be made to the can be made
 == Syntax ==
 
 {{{
-public event GEWebBrowserEventHandler PluginReady;
+public void SetBrowserInstance(GEWebBrowser)    
 }}}
 
 == Examples ==
@@ -51,7 +51,7 @@ public partial class Form1 : Form
 }
 }}}
 
-= Details =
+= Remarks =
 
 The PluginReady event is the basis for working with the plugin from managed code. In it allows you to safely use the plugin once it has initialized.
 
