@@ -3,6 +3,7 @@
     * [GEStatusStrip]
     * [GEToolStrip]
     * [GEWebBrowser]
+      * [PluginReady]
     * [KmlTreeView]
   * Helpers and utilites
     * !KmlHelpers (soon!)
