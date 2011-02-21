@@ -40,7 +40,7 @@ public static bool LookAt(
 }}}
 
 {{{
-public static bool LookAt(dynamic ge, dynamic feature, GEWebBrowser browser)
+public static bool LookAt(dynamic feature, GEWebBrowser browser)
 }}}
 
 {{{
