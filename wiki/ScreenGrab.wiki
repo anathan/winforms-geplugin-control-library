@@ -6,7 +6,7 @@
 
 = Introduction =
 
-Takes a 'Screen Grab' of the GEWebBrowser control
+Takes a 'Screen Grab' of the [GEWebBrowser] control
 
 == Syntax ==
 
@@ -36,6 +36,6 @@ if (dialog.ShowDialog() == DialogResult.OK)
 
 == Remarks ===
 
-This is basically the functionality used by the GEToolStrip Screen Grab button
+This is basically the functionality used by the [GEToolStrip] Screen Grab button
 
 <wiki:gadget url="http://earthapi.googlepages.com/ad.xml" border="0" width="728" height="90" />
