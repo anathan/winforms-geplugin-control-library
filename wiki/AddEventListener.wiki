@@ -1,12 +1,14 @@
 #summary Various uses for the AddEventListener method.
-#labels Featured
+#labels Featured,Phase-Implementation
+#sidebar TableOfContents
+
+<wiki:toc max_depth="2" />
 
 = Introduction =
 
 This method allows you to add an event listener to the plug-in, it is basically a 'wrapper' function for the Google.Earth.addEventListener method in the Api.
 
 == Overload List ==
-
 
 {{{
 public void AddEventListener (object target, string signature)
@@ -134,7 +136,5 @@ namespace TestApplication
 == Remarks ===
 
 These functions allow you to easily handle any of the events in the Google Earth Plug-in Api in javascript or managed code.
-
-== Ads ==
-
+ 
 <wiki:gadget url="http://earthapi.googlepages.com/ad.xml" border="0" width="728" height="90" />
