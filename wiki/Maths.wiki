@@ -6,8 +6,7 @@
 
 = Introduction =
 
-Various Geodesic methods to work with the plug-in Api. This class is based on the ideas and methods in the javascript library "geojs" by Roman Nurik.<br>
-See: http://code.google.com/p/geojs/
+Various geodesic methods to help with geographic calculations in the Api. 
 
 == Constants ==
 
@@ -121,6 +120,10 @@ origin: The first point<br>
 heading: heading in degrees<br>
 distance: distance in metres<br>
 *Return Value:* The point at the location along the geodesic<br>
+
+== Remarks ==
+
+Some of the methods in this class are based on the ideas and methods in the javascript library "geojs" by Roman Nurik, please see: http://code.google.com/p/geojs/
 
 == Source == 
 
