@@ -54,18 +54,6 @@ public partial class Form1 : Form
 
         // Set the imagery to the moon database 
         geWebBrowser1.CreateInstance(ImageryBase.Moon);
-
-        // register a listener for the PluginReady event
-        geWebBrowser1.PluginReady += 
-            new GEWebBrowserEventHandler(geWebBrowser1_PluginReady);
-    }
-    
-    // Called when the PluginReady event fires
-    void geWebBrowser1_PluginReady(object sender, GEEventArgs e)
-    {
-        // set the 'ge' object to the plug-in instance
-        ge = geWebBrowser1.GetPlugin();
-        
     }
 }
 }}}
