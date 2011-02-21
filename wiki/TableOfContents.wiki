@@ -3,11 +3,11 @@
     * [GEWebBrowser]
       * [PluginReady]
     * [GEStatusStrip]
-      * [SetBrowserInstance ]
+      * [SetBrowserInstance]
     * [GEToolStrip]
-      * [SetBrowserInstance ]
+      * [SetBrowserInstance]
     * [KmlTreeView]
-      * [SetBrowserInstance ]
+      * [SetBrowserInstance]
   * Helpers and utilites
     * !KmlHelpers (soon!)
     * [GEHelpers]
@@ -16,4 +16,3 @@
     * [InvokeJavascript]
   * Local server
     * [Server]
-
