@@ -15,12 +15,80 @@ The various methods in this class
 
 == Public Methods ==
 
-To follow shortly...
+{{{
+public static string GetAllFeaturesKml(dynamic ge)
+}}}
+
+{{{
+public static dynamic GetCurrentViewAsPoint(dynamic ge)
+}}}
+
+{{{
+public static string GetTypeFromRcw(object wrapper)
+}}}
+
+{{{
+public static bool LookAt(
+    dynamic ge,
+    double latitude,
+    double longitude,
+    double altitude = 0.0,
+    AltitudeMode altitudeMode = AltitudeMode.RelativeToGround,
+    double heading = 0.0,
+    double tilt = 0.0,
+    double range = 1000)
+}}}
+
+{{{
+public static bool LookAt(dynamic ge, dynamic feature, GEWebBrowser browser)
+}}}
+
+{{{
+public static void OpenFeatureBalloon(dynamic ge, dynamic feature)
+}}}
+
+{{{
+public static void RemoveAllFeatures(dynamic ge)
+}}}
+
+{{{
+public static void ShowCurrentViewInMaps(dynamic ge)
+}}}
+
+{{{
+public static dynamic CreateHtmlStringBalloon(
+    dynamic ge,
+    string id = "",
+    dynamic feature = null,
+    string content = "",
+    bool closeButtonEnabled = true,
+    bool setBalloon = true)
+}}}
+
+{{{
+public static dynamic CreateHtmlDivBalloon(
+    dynamic ge,
+    dynamic document,
+    string id = "",
+    dynamic feature = null,
+    string element = "DIV",
+    string innerHTML = "",
+    bool closeButtonEnabled = true,
+    string foregroundColor = "#000000",
+    string backgroundColor = "#FFFFFF",
+    bool setBalloon = true)
+}}}
+
+{{{
+public static void EnableLayerById(dynamic ge, Layer type, bool value = true)
+}}}
 
 == Source == 
 
 [http://code.google.com/p/winforms-geplugin-control-library/source/browse/trunk/GEHelpers.cs GEHelpers.cs]
 
-== Ads ==
+== Remarks ==
+
+These methods provide shortcuts for working with plugin objects.
 
 <wiki:gadget url="http://earthapi.googlepages.com/ad.xml" border="0" width="728" height="90" />
