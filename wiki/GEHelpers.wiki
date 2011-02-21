@@ -83,6 +83,45 @@ public static dynamic CreateHtmlDivBalloon(
 }}}
 
 {{{
+public static dynamic CreatePlacemark(
+    dynamic ge,
+    double? latitude = null,
+    double longitude = 0.0,
+    double altitude = 0,
+    string id = "",
+    string name = "",
+    string description = "",
+    bool addFeature = true)
+}}}
+
+{{{
+public static dynamic CreateLineString(
+    dynamic ge,
+    dynamic p1,
+    dynamic p2,
+    bool tessellate = true,
+    bool addFeature = true)
+}}}
+
+{{{
+public static dynamic CreateNetworkLink(
+    dynamic ge,
+    string href,
+    string id = "",
+    string description = "",
+    string name = "",
+    bool flyToView = true,
+    double refreshInterval = 0.0,
+    RefreshMode refreshMode = RefreshMode.OnExpire,
+    ViewRefreshMode viewRefreshMode = ViewRefreshMode.Never,
+    double viewBoundScale = 1.0,
+    double viewRefreshTime = 1.0,
+    string viewFormat = "",
+    bool addFeature = true
+}}}
+
+
+{{{
 public static void EnableLayerById(dynamic ge, Layer type, bool value = true)
 }}}
 
