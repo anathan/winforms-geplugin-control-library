@@ -12,7 +12,7 @@
       * [SetBrowserInstance]
     * [KmlTreeView]
       * [SetBrowserInstance]
-  * Helpers and utilites
+  * Helpers and utilities
     * [Maths]
     * !KmlHelpers (coming soon!)
     * [GEHelpers]
