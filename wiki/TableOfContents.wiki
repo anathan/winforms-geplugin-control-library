@@ -2,6 +2,7 @@
   * Main controls
     * [GEWebBrowser]
       * [AddEventListener]
+      * [CreateInstance]
       * [PluginReady]
       * [ScreenGrab]
     * [GEStatusStrip]
