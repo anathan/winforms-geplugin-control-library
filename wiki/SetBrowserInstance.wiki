@@ -6,7 +6,7 @@
 
 = Introduction =
 
-The SetBrowserInstance method is used to tell the various controls which instance of the GEWebBrowser to work with. All the controls apart from the GEWebBrowser support this method.
+The SetBrowserInstance method is used to tell the various controls which instance of the [GEWebBrowser] to work with. All the controls apart from the [GEWebBrowser] support this method.
 
 == Syntax ==
 
