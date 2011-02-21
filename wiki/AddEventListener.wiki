@@ -9,11 +9,11 @@ This method allows you to add an event listener to the plug-in, it is basically 
 
 
 {{{
-public void AddEventListener (object, string)
+public void AddEventListener (object target, string signature)
 }}}
 
 {{{
-public void AddEventListener (object, string, string)
+public void AddEventListener (object target, string signature, string javascript)
 }}}
 
 == Examples ==
