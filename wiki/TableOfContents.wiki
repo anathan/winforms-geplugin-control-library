@@ -13,7 +13,8 @@
     * [KmlTreeView]
       * [SetBrowserInstance]
   * Helpers and utilites
-    * !KmlHelpers (soon!)
+    * [Maths]
+    * !KmlHelpers (coming soon!)
     * [GEHelpers]
   * Working with !JavaScript
     * [InjectJavascript]
