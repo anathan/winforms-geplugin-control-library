@@ -1,6 +1,7 @@
 #labels Phase-Implementation
   * Main controls
     * [GEWebBrowser]
+      * [AddEventListener]
       * [PluginReady]
       * [ScreenGrab]
     * [GEStatusStrip]
