@@ -42,9 +42,6 @@ using FC.GEPluginCtrls;
 
 public partial class Form1 : Form
 {
-    // To hold the plugin object
-    dynamic ge = null;
-
     public Form1()
     {
         InitializeComponent();
