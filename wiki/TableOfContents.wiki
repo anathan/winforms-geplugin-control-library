@@ -2,6 +2,7 @@
   * Main controls
     * [GEWebBrowser]
       * [PluginReady]
+      * [ScreenGrab]
     * [GEStatusStrip]
       * [SetBrowserInstance]
     * [GEToolStrip]
