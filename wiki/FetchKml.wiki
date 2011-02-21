@@ -1,9 +1,14 @@
 #summary Using the FetchKml method
 #labels Phase-Implementation
+#sidebar TableOfContents
+
+<wiki:toc max_depth="2" />
 
 = Introduction =
 
 This is a wrapper for the google.earth.fetchKml method. Because it is not possible to work directly with the members of the google.earth namespace in managed code a pair of wrapper functions are required; one in javascript and one in managed code.
+
+For more information on the google.earth.fetchKml method please see: http://code.google.com/apis/earth/documentation/reference/google_earth_namespace.html#afca518f43d5f863b254c5fa23a5967f2
 
 == Syntax ==
 
@@ -40,7 +45,7 @@ var jsFetchKml = function(url)
 }
 }}}
 
-As you can see this function calls the loadKmlCallBack_ method which is defined as:
+As you can see this function calls the !LoadKmlCallBack method which is defined in javascript as follows:
 
 {{{
 var loadKmlCallBack_ = function(kmlObject)
@@ -56,10 +61,10 @@ var loadKmlCallBack_ = function(kmlObject)
 }
 }}}
 
-Here, in turn, the Kml data is returned to managed code using the LoadKmlCallBack method.
+Here, in turn, the Kml data is returned to managed code using the !LoadKmlCallBack method.
 
-So to add the actual data to GEPlugin or KmlTreeView you would use the KmlLoaded event in GEWebBrowser.
+So to add the actual data to GEPlugin or KmlTreeView you would use the [KmlLoaded] event in [GEWebBrowser].
 
-== Ads ==
+== Remarks ==
 
 <wiki:gadget url="http://earthapi.googlepages.com/ad.xml" border="0" width="728" height="90" />
