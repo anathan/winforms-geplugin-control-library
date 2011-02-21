@@ -6,8 +6,11 @@
 
 = Introduction =
 
-This class provides a very basic Google Earth plugin helpers. Most of the methods are based on the GEHelpers javasctipt library found at: 
-http://earth-api-samples.googlecode.com/svn/trunk/lib/geplugin-helpers.js
+This class provides some useful Google Earth plugin helper methods.
+
+It makes extensive use of 'Named arguments' and 'Optional Arguments' to allow very easy use of the methods. For detailed information on named/optional Arguments' please see:
+
+http://msdn.microsoft.com/en-us/library/dd264739.aspx 
 
 = Details =
 
@@ -89,6 +92,7 @@ public static void EnableLayerById(dynamic ge, Layer type, bool value = true)
 
 == Remarks ==
 
-These methods provide shortcuts for working with plugin objects.
+Some of the methods are based on the GEHelpers javasctipt library found at: 
+http://earth-api-samples.googlecode.com/svn/trunk/lib/geplugin-helpers.js
 
 <wiki:gadget url="http://earthapi.googlepages.com/ad.xml" border="0" width="728" height="90" />
