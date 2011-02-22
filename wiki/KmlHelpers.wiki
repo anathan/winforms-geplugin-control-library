@@ -19,7 +19,7 @@ The main function WalkKmlDom can be to iterate over any Kml structure, a CallBac
 /// A callback delegate for all items iterated over in WalkKmlDom
 /// </summary>
 /// <param name="kmlObject">The current KmlObject</param>
-public delegate void CallBack(dynamic kmlObject);
+public delegate void WalkKmlDomCallBack(dynamic kmlObject);
 }}}
 
 == Public Methods ==
