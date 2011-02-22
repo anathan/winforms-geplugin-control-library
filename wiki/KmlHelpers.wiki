@@ -15,20 +15,42 @@ The main function WalkKmlDom can be to iterate over any Kml structure, a CallBac
 == Public Delegates ==
 
 {{{
+/// <summary>
+/// A callback delegate for all items iterated over in WalkKmlDom
+/// </summary>
+/// <param name="kmlObject">The current KmlObject</param>
 public delegate void CallBack(dynamic kmlObject);
 }}}
 
 == Public Methods ==
 
 {{{
+/// <summary>
+/// Based on kmldomwalk.js
+/// see: http://code.google.com/p/earth-api-samples/source/browse/trunk/lib/kmldomwalk.js
+/// </summary>
+/// <param name="kmlObject">The kml object to parse</param>
+/// <param name="callBack">A function to call on each node visited</param>
 public static void WalkKmlDom(dynamic kmlObject, CallBack callBack)
 }}}
 
 {{{
+/// <summary>
+///  Gives access to Url element in pre KML Release 2.1 documents
+///  This allows the controls to work with legacy Kml formats
+/// </summary>
+/// <param name="networklink">The network link to look for a url in</param>
+/// <returns>The url value or an empty string</returns>
 public static string GetUrl(dynamic networklink)
 }}}
 
 {{{
+/// <summary>
+/// Gives access to untyped data/value pairs using the basic Data element
+/// See http://code.google.com/apis/kml/documentation/kmlreference.html#extendeddata
+/// </summary>
+/// <param name="feature">feature to get data from</param>
+/// <returns>A list of key value pairs</returns>
 public static List<KeyValuePair<string, string>> GetExtendedData(dynamic feature)
 }}}
 
