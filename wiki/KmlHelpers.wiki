@@ -14,6 +14,7 @@ The main function WalkKmlDom can be to iterate over any Kml structure, a CallBac
 
 == Public Delegates ==
 
+WalkKmlDomCallBack
 {{{
 /// <summary>
 /// A callback delegate for all items iterated over in WalkKmlDom
