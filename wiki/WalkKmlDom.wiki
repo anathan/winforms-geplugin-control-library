@@ -16,8 +16,8 @@ This method is based on the function of the same name the !KmlDomWalk.js file: h
 /// Walks a KML object, calling a given visit function for each object in the KML DOM.
 /// </summary>
 /// <param name="kmlObject">The kml object to parse</param>
-/// <param name="callBack">A WalkKmlDomCallBack delegate method to call on each node visited</param>
-public static void WalkKmlDom(dynamic kmlObject, CallBack callBack)
+/// <param name="callBack">A delegate method to call on each node visited</param>
+public static void WalkKmlDom(dynamic kmlObject, WalkKmlDomCallBack  callBack)
 }}}
 
 == Examples ==
