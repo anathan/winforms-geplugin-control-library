@@ -29,7 +29,7 @@ public partial class Form1 : Form
 {
     dynamic ge = null;
 
-    internal void MyDeleagate(dynamic kmlObject)
+    internal void WalkKmlDomCallback(dynamic kmlObject)
     {
        // Displays the type of each object in the DOM
        MessageBox.Show("Type:" + kmlObject.getType());
@@ -47,7 +47,10 @@ public partial class Form1 : Form
 
         // set the kml load event handler
         geWebBrowser1.KmlLoaded += new GEWebBrowserEventHandler(geWebBrowser1_KmlLoaded);
-        KmlHelpers.WalkKmlDomCallBack MyDeleagate = new KmlHelpers.WalkKmlDomCallBack(WalkKmlDomCallback);
+
+        // Assign the callback delegate method
+        KmlHelpers.WalkKmlDomCallBack myDelegate= new KmlHelpers.WalkKmlDomCallBack(WalkKmlDomCallback);
+
     }
 
     void geWebBrowser1_PluginReady(object sender, FC.GEPluginCtrls.GEEventArgs e)
