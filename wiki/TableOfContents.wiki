@@ -15,6 +15,7 @@
   * Helpers and utilities
     * [Maths]
     * [KmlHelpers]
+      * [WalkKmlDom]
     * [GEHelpers]
   * Working with !JavaScript
     * [InjectJavascript]
