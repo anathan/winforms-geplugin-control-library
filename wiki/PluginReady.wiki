@@ -7,7 +7,14 @@
 = Introduction =
 
 This event is raised when the embedded Google Earth plugin plugin is ready.
-You should use this event to determine when calls can be made to the can be made (just like an 'init callback' function in the !JavaScript Api when using the createInstance method.) 
+
+= Details =
+
+The PluginReady event is the basis for working with the plugin from managed code. In it allows you to safely use the plugin once it has initialized. 
+
+You should use this event to determine when the plugin is ready for you to use in your application.
+
+This event is essentially just like the 'init callback' function one would use in !JavaScript when using the createInstance method of the native Api.
 
 == Syntax ==
 
@@ -52,8 +59,6 @@ public partial class Form1 : Form
 }}}
 
 = Remarks =
-
-The PluginReady event is the basis for working with the plugin from managed code. In it allows you to safely use the plugin once it has initialized.
 
 It is worth noting that the actual event logic is actually handled via an instance of External class and an active scripting method in the embedded page.
 
