@@ -5,9 +5,10 @@
 
 = Introduction =
 
-This method is based on the function of the same name the KmlDomWalk.js file: http://code.google.com/p/earth-api-samples/source/browse/trunk/lib/kmldomwalk.js
 
-The method itterates over a Kml DOM calling the specifed method on each node.
+The method can be used to iterate over a KML DOM calling the specifed method on each node.
+
+This method is based on the function of the same name the !KmlDomWalk.js file: http://code.google.com/p/earth-api-samples/source/browse/trunk/lib/kmldomwalk.js
 
 == Syntax ==
 
