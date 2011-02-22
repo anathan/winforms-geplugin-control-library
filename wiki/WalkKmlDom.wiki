@@ -5,7 +5,6 @@
 
 = Introduction =
 
-
 The method can be used to iterate over a KML DOM calling the specifed method on each node.
 
 This method is based on the function of the same name the !KmlDomWalk.js file: http://code.google.com/p/earth-api-samples/source/browse/trunk/lib/kmldomwalk.js
@@ -21,7 +20,6 @@ This method is based on the function of the same name the !KmlDomWalk.js file: h
 public static void WalkKmlDom(dynamic kmlObject, CallBack callBack)
 }}}
 
-        
 == Examples ==
 
 This example shows how to use the WalkKmlDom method and the WalkKmlDomCallBack delegate to iterate over a Kml Dom.
@@ -31,7 +29,7 @@ public partial class Form1 : Form
 {
     dynamic ge = null;
 
-    internal void WalkKmlDomCallback(dynamic kmlObject)
+    internal void MyDeleagate(dynamic kmlObject)
     {
        // Displays the type of each object in the DOM
        MessageBox.Show("Type:" + kmlObject.getType());
@@ -49,8 +47,7 @@ public partial class Form1 : Form
 
         // set the kml load event handler
         geWebBrowser1.KmlLoaded += new GEWebBrowserEventHandler(geWebBrowser1_KmlLoaded);
-        KmlHelpers.WalkKmlDomCallBack WalkKmlDomDelegate = 
-            new KmlHelpers.WalkKmlDomCallBack(WalkKmlDomCallback);
+        KmlHelpers.WalkKmlDomCallBack MyDeleagate = new KmlHelpers.WalkKmlDomCallBack(WalkKmlDomCallback);
     }
 
     void geWebBrowser1_PluginReady(object sender, FC.GEPluginCtrls.GEEventArgs e)
