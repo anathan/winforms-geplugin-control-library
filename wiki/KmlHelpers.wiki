@@ -10,7 +10,7 @@ This class provides some useful methods to ease working with !KmlObjects in mana
 
 = Details =
 
-The main function WalkKmlDom can be to iterate over any Kml structure, a CallBack is used to delegate a method to be called on each item in the structure. The GetUrl method is to help with resolving URLs within !KmlNetworkLinks.
+The main function WalkKmlDom can be to iterate over any Kml structure, a WalkKmlDomCallBack delegate is used to specify e a method to be called on each item in the DOM. The GetUrl method is to help with resolving URLs within !KmlNetworkLinks.
 
 == Public Delegates ==
 
