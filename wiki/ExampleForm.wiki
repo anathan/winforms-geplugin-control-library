@@ -3,23 +3,21 @@
 
 = Introduction =
 
-Imagine we have all the controls on a form.
-
-{{{
-
-GEToolStrip geToolStrip1;
-GEWebBrowser geWebBrowser1;
-KmlTreeView kmlTreeView1;
-GEStatusStrip geStatusStrip1;
-
-}}}
+This form shows the most basic set up of the GEWebBrowser, there are no other controls added.
 
 = Details =
+
+Here the plugin behaves exactly as it would with the default set-up in a web page. You can use the mouse and keys to navigate when the control has focus.
+
+The dynamic type 'ge' returned by the PluginReady event allows one to work seemlessly with the GEPlugin object, just as if you were programming in the native !javaScript API.
+
+However, it is worth noting that the other controls (GEStatusBar, GEToolStrip, KmlTreeView) and the other helper classes ([GEHelpers], [KmlHelpers], [GEOptions], etc) in this library offer much cleaner, safer, managed, ways to work with the Api.
 
 {{{
  public partial class Form1 : Form
     {
-        private dynamic ge;
+        // To hold the plugin object 
+        private dynamic ge = null;
 
         public Form1()
         {
@@ -30,64 +28,28 @@ GEStatusStrip geStatusStrip1;
 
             // set up some event handelers
             geWebBrowser1.PluginReady += new GEWebBrowserEventHandeler(geWebBrowser1_PluginReady);
-            geWebBrowser1.KmlLoaded += new GEWebBrowserEventHandeler(geWebBrowser1_KmlLoaded);
-            geWebBrowser1.KmlEvent += new GEWebBrowserEventHandeler(geWebBrowser1_KmlEvent);
-            geWebBrowser1.ViewEvent += new GEWebBrowserEventHandeler(geWebBrowser1_ViewEvent);
-            geWebBrowser1.ScriptError += new GEWebBrowserEventHandeler(geWebBrowser1_ScriptError);
-        }
-
-        void geWebBrowser1_KmlLoaded(object sender, GEEventArgs e)
-        {
-            dynamic kml = sender;
-
-            if (null != kml)
-            {
-                // add the kml to the tree view and plug-in
-                ge.getFeatures().appendChild(kml);
-                kmlTreeView1.ParsekmlObject(kml);
-            }
-        }
-   
-        void geWebBrowser1_KmlEvent(object sender, GEEventArgs e)
-        {
-            dynamic mouseEvent = sender;
-
-            if (null != mouseEvent)
-            {
-                MessageBox.Show(mouseEvent.getTarget());
-            }
-        }
-
-        void geWebBrowser1_ViewEvent(object sender, GEEventArgs e)
-        {
-            MessageBox.Show(e.message);
-            // the message should fire once as we now remove the event
-            geWebBrowser1.RemoveEventListener(ge.getView(), "viewchangeend");
         }
 
         void geWebBrowser1_PluginReady(object sender, GEEventArgs e)
         {
-            GEWebBrowser browser = sender as GEWebBrowser;
+           // Set the variable to the plugin object
+           ge = browser.GetPlugin();
 
-            if(null != browser)
-            {
-              // set a reference to the plug-in object
-              ge = browser.GetPlugin();
- 
-              // register the controls with the plug-in
-              kmlTreeView1.SetBrowserInstance(browser);
-              geToolStrip1.SetBrowserInstance(browser);
-              geStatusStrip1.SetBrowserInstance(browser);
+           // Here you can now use 'ge' exactly as you would
+           // in the native javascript api. It is worth noting 
+           // that any direct calls to Api members should be
+           // wrapped in a try/catch for RuntimeBinder exceptions
 
-              // add some events
-              browser.AddEventListener(ge.getGlobe(), "click");
-              browser.AddEventListener(ge.getView(), "viewchangeend");
-            }
-        }
-
-        void geWebBrowser1_ScriptError(object sender, GEEventArgs e)
-        {
-            MessageBox.Show(e.message, e.data);
+           // for example:
+           try
+           {
+              var options = ge.getOptions();
+              options.setGridVisibility(1);
+           }
+           catch(RuntimeBinderException rbex)
+           {
+              //Handle the exception
+           }
         }
     }
 
