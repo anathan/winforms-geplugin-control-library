@@ -10,7 +10,7 @@ The Server class can be used to serve files over a standard HTTP connection.
 
 = Details =
 
-This class provide a basic web server for the Plug-in to work with. A local server provides a way to circumvent all access issues between JavaScript and the local file system by serving the local files over a standard HTTP connection.
+This class provide a basic web server for the Plug-in to work with. A local server provides a way to circumvent all access issues between !JavaScript and the local file system by serving the local files over a standard HTTP connection.
 
 The server itself supports a limited number of file / Content-types (MIME types), these are;
 
@@ -33,6 +33,7 @@ With the default settings the application start up folder is the virtual root di
 
 == Constructors == 
 
+[usingTheServer Server]
 {{{
 /// <summary>
 /// Initializes a new instance of the Server class
@@ -40,6 +41,7 @@ With the default settings the application start up folder is the virtual root di
 public Server() 
 }}}
 
+[usingTheServer Server]
 {{{
 /// <summary>
 /// Initializes a new instance of the Server class
@@ -48,6 +50,7 @@ public Server()
 public Server(string rootDirectory)
 }}}
 
+[usingTheServer Server]
 {{{
 /// <summary>
 /// Initializes a new instance of the Server class
