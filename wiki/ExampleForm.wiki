@@ -11,7 +11,7 @@ Here the plugin behaves exactly as it would with the default set-up in a web pag
 
 The dynamic type 'ge' returned by the PluginReady event allows one to work seemlessly with the GEPlugin object, just as if you were programming in the native !javaScript API.
 
-However, it is worth noting that the other controls (GEStatusBar, GEToolStrip, KmlTreeView) and the other helper classes ([GEHelpers], [KmlHelpers], [GEOptions], etc) in this library offer much cleaner, safer, managed, ways to work with the Api.
+However, it is worth noting that the other controls ([GEStatusBar], [GEToolStrip], [KmlTreeView]) and the other helper classes ([GEHelpers], [KmlHelpers], [GEOptions], etc) in this library offer much cleaner, safer, managed, ways to work with the Api.
 
 {{{
  public partial class Form1 : Form
