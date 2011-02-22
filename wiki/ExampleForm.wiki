@@ -19,7 +19,7 @@ GEStatusStrip geStatusStrip1;
 {{{
  public partial class Form1 : Form
     {
-        private IGEPlugin ge;
+        private dynamic ge;
 
         public Form1()
         {
@@ -38,7 +38,7 @@ GEStatusStrip geStatusStrip1;
 
         void geWebBrowser1_KmlLoaded(object sender, GEEventArgs e)
         {
-            IKmlObject kml = sender as IKmlObject;
+            dynamic kml = sender;
 
             if (null != kml)
             {
@@ -50,7 +50,7 @@ GEStatusStrip geStatusStrip1;
    
         void geWebBrowser1_KmlEvent(object sender, GEEventArgs e)
         {
-            IkmlMouseEvent mouseEvent = sender as IkmlMouseEvent;
+            dynamic mouseEvent = sender;
 
             if (null != mouseEvent)
             {
