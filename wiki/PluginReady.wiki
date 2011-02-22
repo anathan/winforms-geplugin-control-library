@@ -58,7 +58,7 @@ public partial class Form1 : Form
 }
 }}}
 
-= Remarks =
+== Remarks ==
 
 It is worth noting that the actual event logic is actually handled via an instance of External class and an active scripting method in the embedded page.
 
