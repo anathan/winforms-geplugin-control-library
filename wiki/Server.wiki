@@ -31,43 +31,80 @@ With the default settings the application start up folder is the virtual root di
  * http://127.0.0.1:8080/ 
  * http://locahost:8080/ 
 
-== Constructor == 
+== Constructors == 
 
-_HttpServer.Server_ *Server()*<br>
-Initializes a new instance of the Server class
+{{{
+/// <summary>
+/// Initializes a new instance of the Server class
+/// </summary>
+public Server() 
+}}}
 
-_HttpServer.Server_ *Server(string rootDirectory)*<br>
-Initializes a new instance of the Server class
+{{{
+/// <summary>
+/// Initializes a new instance of the Server class
+/// </summary>
+/// <param name="rootDirectory">The server root directory</param>
+public Server(string rootDirectory)
+}}}
 
-_HttpServer.Server_ *Server(string rootDirectory, string defaultFileName)*<br>
-Initializes a new instance of the Server class
+{{{
+/// <summary>
+/// Initializes a new instance of the Server class
+/// </summary>
+/// <param name="rootDirectory">The server root directory</param>
+/// <param name="defaultFileName">Default file name to use</param>
+public Server(string rootDirectory, string defaultFileName)
+}}}
 
 == Public Properties ==
 
-_string_ *!DefaultFileName*<br>
-Gets or sets the default file name<br>
-The default value is "default.kml"<br>
+{{{
+/// <summary>
+/// Gets or sets the default file name 
+/// The default value is "default.kml"
+/// </summary>
+public string DefaultFileName
+}}}
 
-_System.Net.IPAddress_ *IPAddress*<br>
-Gets or sets the IP Address for the server to use<br>
-The default is 127.0.0.1 (localhost/loopback)<br>
+{{{
+/// <summary>
+/// Gets or sets the IP Address for the server to use 
+/// The default is 127.0.0.1 (localhost/loopback)
+/// </summary>
+public IPAddress IPAddress
+}}}
 
-_System.ushort_ *Port*<br>
-Gets or sets the port for the server to use 
-The default value is 8080
+{{{
+/// <summary>
+/// Gets or sets the root server directory (webroot) 
+/// http://localhost:port/ will point to this directory
+/// </summary>
+public string RootDirectory
+}}}
 
-_string_ *!RootDirectory*<br>
-Gets or sets the root server directory (webroot)<br>
-The default value is "\" (the application root)
-{{{http://localhost:port/}}} will point to this directory<br>
+{{{
+/// <summary>
+/// Gets or sets a value indicating the port for the server to use
+/// </summary>
+public int Port
+}}}
 
 == Public methods ==
 
-_Void_ *Start()*<br>
-Starts the server
+{{{
+/// <summary>
+/// Starts the server
+/// </summary>
+public void Start()
+}}}
 
-_Void_ *Stop()*<br>
-Stops the server
+{{{
+/// <summary>
+/// Stops the server
+/// </summary>
+public void Stop()
+}}}
 
 == Source == 
 
