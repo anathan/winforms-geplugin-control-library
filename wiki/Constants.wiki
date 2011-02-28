@@ -1,11 +1,13 @@
 #summary Values of constants in the Api
-#labels Deprecated,Phase-Design,Phase-Requirements
+#labels Phase-Design,Phase-Requirements
 
 = Introduction =
 
-A list (incomplete) of the constants defined in the GEPlugin COM object.
+A list (incomplete) of the Enums and Constants defined in the GEPlugin COM object.
 
-= Details =
+See: http://code.google.com/apis/earth/documentation/reference/interface_g_e_plugin-members.html
+
+= Members =
 
 {{{
 GEPlugin.VIEW_REFRESH_NEVER=0
