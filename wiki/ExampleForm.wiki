@@ -33,7 +33,7 @@ However, it is worth noting that the other controls ([GEStatusStrip], [GEToolStr
         void geWebBrowser1_PluginReady(object sender, GEEventArgs e)
         {
            // Set the variable to the plugin object
-           ge = browser.GetPlugin();
+           ge = geWebBrowser1.GetPlugin();
 
            // Here you can now use 'ge' exactly as you would
            // in the native javascript api. It is worth noting 
