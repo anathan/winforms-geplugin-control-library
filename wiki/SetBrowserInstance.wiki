@@ -69,4 +69,4 @@ public partial class Form1 : Form
 
 == Remarks ==
 
-Until is has been SetBrowserInstance has been successfully called for a  control, the control is disabled by default.
+Until SetBrowserInstance has been successfully called on a control, the control is disabled by default.
