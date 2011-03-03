@@ -23,9 +23,9 @@ controls.setStreetViewEnabled(1);
 c# (managed code)
 {{{
 // where 'ge' is a dynamic type wrapping the GEPlugin COM object 
-GENavigationControl control = new GENavigationControl (ge);
-bool streetViewEnabled = control.TerrainExaggeration;
-control.streetViewEnabled = true;
+GENavigationControl control = new GENavigationControl(ge);
+bool streetViewEnabled = control.StreetViewEnabled;
+control.StreetViewEnabled = true;
 }}}
 
 = Members =
