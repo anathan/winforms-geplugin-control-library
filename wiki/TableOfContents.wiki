@@ -17,6 +17,9 @@
     * [KmlHelpers]
       * [WalkKmlDom]
     * [GEHelpers]
+  * Wrapper classes
+    * [GEOptions]
+    * [GENavigationControl]
   * Working with !JavaScript
     * [InjectJavascript]
     * [InvokeJavascript]
