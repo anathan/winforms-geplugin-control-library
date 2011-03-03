@@ -22,7 +22,8 @@ namespace FC.GEPluginCtrls
     using System.ComponentModel;
     using System.Diagnostics;
     using System.Drawing;
-    using System.Runtime.InteropServices;
+    using System.Linq;
+    using System.Reflection;
     using System.Windows.Forms;
     using Microsoft.CSharp.RuntimeBinder;
 
@@ -253,7 +254,7 @@ namespace FC.GEPluginCtrls
             this.gewb = browser;
             this.geplugin = browser.GetPlugin();
 
-            if (!GEHelpers.IsGe(geplugin))
+            if (!GEHelpers.IsGe(this.geplugin))
             {
                 throw new ApplicationException("ge is not of the type GEPlugin");
             }
@@ -275,7 +276,7 @@ namespace FC.GEPluginCtrls
         private TreeNode ParseKmlContainer(dynamic kmlContainer)
         {
             TreeNode parentNode = this.CreateTreeNodeFromKmlFeature(kmlContainer);
-
+      
             try
             {
                 if (Convert.ToBoolean(kmlContainer.getFeatures().hasChildNodes()))
@@ -315,7 +316,6 @@ namespace FC.GEPluginCtrls
             catch (RuntimeBinderException ex)
             {
                 Debug.WriteLine("ParsekmlContainer: " + ex.ToString(), "KmlTreeView");
-                ////throw;
             }
 
             return parentNode;
@@ -335,7 +335,6 @@ namespace FC.GEPluginCtrls
             try
             {
                 type = kmlFeature.getType();
-
                 treenode.Text = kmlFeature.getName();
                 treenode.Tag = kmlFeature;
                 treenode.Name = type;
@@ -419,7 +418,7 @@ namespace FC.GEPluginCtrls
             }
             catch (RuntimeBinderException ex)
             {
-                Debug.WriteLine(ex.ToString(), "KmlTreeView");
+                Debug.WriteLine("CreateTreeNodeFromKmlFolder: " + ex.ToString(), "KmlTreeView");
             }
 
             return this.ParseKmlContainer(kmlObject);
@@ -433,6 +432,7 @@ namespace FC.GEPluginCtrls
         private TreeNode CreateTreeNodeFromKmlNetworkLink(dynamic kmlObject)
         {    
             string url = string.Empty;
+            TreeNode treeNode = new TreeNode();
 
             // Kml documents using the pre 2.1 spec may contain the <Url> element 
             // in these cases the getHref call will return null
@@ -451,25 +451,37 @@ namespace FC.GEPluginCtrls
             {
                 dynamic obj = this.gewb.FetchKmlSynchronous(url);
 
-                if (obj.getOwnerDocument() != null &&
-                    obj.getOwnerDocument().getComputedStyle().getListStyle().getListItemType() ==
-                    this.geplugin.LIST_ITEM_CHECK_HIDE_CHILDREN)
+                if (obj != null)
                 {
-                    return this.CreateTreeNodeFromKmlFeature(obj);
-                }
-                else
-                {
-                    return this.ParseKmlContainer(obj);
+                    object networkLink = obj as object;
+                    MethodInfo method = networkLink.GetType().GetMethods().
+                        FirstOrDefault(x => x.Name == "getOwnerDocument");
+
+                    if (method != null)
+                    {
+                        dynamic listItemType = obj.getOwnerDocument().getComputedStyle().getListStyle().getListItemType();
+
+                        if (listItemType == this.geplugin.LIST_ITEM_CHECK_HIDE_CHILDREN)
+                        {
+                            return this.CreateTreeNodeFromKmlFeature(obj);
+                        }
+                        else
+                        {
+                            return this.ParseKmlContainer(obj);
+                        }
+                    }
                 }
             }
-            catch (NullReferenceException)
+            catch (RuntimeBinderException rbex)
             {
+                System.Diagnostics.Debug.WriteLine(rbex.Message);
             }
 
             // return a simple treenode...
-            ////TreeNode node = new TreeNode(kmlObject.getType());
-            TreeNode node = new TreeNode(kmlObject.getName());
+            string name = kmlObject.getName();
+            TreeNode node = new TreeNode(name);
             node.Tag = kmlObject;
+
             return node;
         }
 

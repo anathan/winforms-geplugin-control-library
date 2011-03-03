@@ -52,6 +52,10 @@ namespace FC.GEPluginCtrls
             {
                 Debug.WriteLine("AddFeaturesToPlugin: " + rbex.ToString(), "GEHelpers");
             }
+            catch (COMException cex)
+            {
+                Debug.WriteLine("AddFeaturesToPlugin: " + cex.ToString(), "GEHelpers");
+            }
         }
 
         /// <summary>
@@ -282,7 +286,7 @@ namespace FC.GEPluginCtrls
                    wrapper,
                    null);
             }
-            catch (NullReferenceException)
+            catch (System.Reflection.TargetInvocationException)
             {
             }
 
