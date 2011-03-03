@@ -15,8 +15,9 @@ This wrapper class works by converting all the google earth plugin COM getter an
 javascript 
 {{{
 // where 'ge' is a COM object (GEPlugin)
-var terrainExaggeration = ge.getOptions().getTerrainExaggeration();
-ge.getOptions().setTerrainExaggeration(2); 
+var options = ge.getOptions();
+var terrainExaggeration = options.getTerrainExaggeration();
+options.setTerrainExaggeration(2); 
 }}}
 
 managed
