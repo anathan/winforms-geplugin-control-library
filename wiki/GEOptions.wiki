@@ -1,4 +1,5 @@
 #summary GEOptions class notes
+#labels Phase-Implementation
 #sidebar TableOfContents
 
 <wiki:toc max_depth="2" />
@@ -176,5 +177,7 @@ public bool AutoGroundLevelViewEnabled
 [http://code.google.com/p/winforms-geplugin-control-library/source/browse/trunk/GEOptions.cs GEOptions.cs]
 
 == Remarks ==
+
+This class is used by the [GEToolStrip] to set the various plugin options.
 
 <wiki:gadget url="http://earthapi.googlepages.com/ad.xml" border="0" width="728" height="90" />
