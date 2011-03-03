@@ -335,26 +335,31 @@ namespace FC.GEPluginCtrls
         public object FetchKmlSynchronous(string url, int timeout)
         {
             string completionCallback = String.Format("createCallback_('OnKmlFetched', '{0}')", url);
-
-            if (this.Document != null)
+            try
             {
-                KmlObjectCacheSyncEvents[url] = new AutoResetEvent(false);
-
-                this.Document.InvokeScript(
-                    "jsFetchKml",
-                    new string[] { url, completionCallback });
-
-                WaitHandle.WaitAll(
-                    new WaitHandle[] { KmlObjectCacheSyncEvents[url] },
-                    timeout);
-
-                if (External.KmlObjectCache.ContainsKey(url))
+                if (this.Document != null)
                 {
-                    return External.KmlObjectCache[url];
+                    KmlObjectCacheSyncEvents[url] = new AutoResetEvent(false);
+
+                    this.Document.InvokeScript(
+                        "jsFetchKml",
+                        new string[] { url, completionCallback });
+
+                    WaitHandle.WaitAll(
+                        new WaitHandle[] { KmlObjectCacheSyncEvents[url] },
+                        timeout);
+
+                    if (External.KmlObjectCache.ContainsKey(url))
+                    {
+                        return External.KmlObjectCache[url];
+                    }
                 }
             }
+            catch (InvalidCastException)
+            { 
+            }
 
-            return null;
+            return new object { };
         }
         
         /// <summary>

@@ -133,7 +133,6 @@ namespace FC.GEPluginCtrls
             catch (RuntimeBinderException ex)
             {
                 Debug.WriteLine("InvokeCallBack: " + ex.ToString(), "External");
-                ////throw;
             }
         }
 
@@ -141,17 +140,18 @@ namespace FC.GEPluginCtrls
         /// Called from javascript when the plugin is ready
         /// </summary>
         /// <param name="ge">the plugin instance</param>
-        public void Ready(object ge)
+        public void Ready(dynamic ge)
         {
-            dynamic pluginObject = ge;
-            string api = pluginObject.getApiVersion();
-            string plugin = pluginObject.getPluginVersion();
+            if (!GEHelpers.IsGe(ge))
+            {
+                throw new ApplicationException("ge is not of the type GEPlugin");
+            }
 
             try
             {
                 this.OnPluginReady(
                     ge,
-                    new GEEventArgs(api, plugin));
+                    new GEEventArgs(ge.getApiVersion(), ge.getPluginVersion()));
             }
             catch (RuntimeBinderException ex)
             {
@@ -260,7 +260,7 @@ namespace FC.GEPluginCtrls
         /// </summary>
         /// <param name="kmlEvent">The kmlEvent object</param>
         /// <param name="e">The Event arguments</param>
-        protected virtual void OnKmlEvent(object kmlEvent, GEEventArgs e)
+        protected virtual void OnKmlEvent(dynamic kmlEvent, GEEventArgs e)
         {
             if (this.KmlEvent != null)
             {
@@ -274,7 +274,7 @@ namespace FC.GEPluginCtrls
         /// <param name="e">The Event arguments</param>
         protected virtual void OnKmlLoaded(GEEventArgs e)
         {
-            object kmlObject = ((dynamic[])e.Tag)[0];
+            dynamic kmlObject = ((object[])e.Tag)[0];
 
             if (this.KmlLoaded != null)
             {
@@ -288,7 +288,7 @@ namespace FC.GEPluginCtrls
         /// <param name="e">The Event arguments</param>
         protected virtual void OnKmlFetched(GEEventArgs e)
         {
-            object kmlObject = ((object[])e.Tag)[0];
+            dynamic kmlObject = ((object[])e.Tag)[0];
             string url = (string)((object[])e.Tag)[1];
             lock (KmlObjectCache)
             {

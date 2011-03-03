@@ -249,7 +249,7 @@ namespace FC.GEPluginCtrls
             this.gewb = browser;
             this.geplugin = browser.GetPlugin();
 
-            if (!GEHelpers.IsGe(geplugin))
+            if (!GEHelpers.IsGe(this.geplugin))
             {
                 throw new ApplicationException("ge is not of the type GEPlugin");
             }
