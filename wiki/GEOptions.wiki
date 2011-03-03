@@ -171,11 +171,11 @@ public double TerrainExaggeration
 public bool AutoGroundLevelViewEnabled
 }}}
 
-== Source == 
+= Source = 
 
 [http://code.google.com/p/winforms-geplugin-control-library/source/browse/trunk/Wrappers/GEOptions.cs]
 
-== Remarks ==
+= Remarks =
 
 This class is used by the [GEToolStrip] to set the various plugin options.
 
