@@ -39,15 +39,17 @@ options.TerrainExaggeration = 2;
 public GEOptions(dynamic gePlugin)
 }}}
 
-== Public Properties ==
+== Public Methods ==
 
 {{{
 /// <summary>
-/// Gets or sets the map type to Earth or sky mode.
+/// Sets the map type to Earth or sky mode.
 /// </summary>
 /// <param name="type"></param>
 public void setMapType(MapType type)
 }}}
+
+== Public Properties ==
 
 {{{
 /// <summary>
@@ -170,7 +172,7 @@ public bool AutoGroundLevelViewEnabled
 
 == Source == 
 
-[http://code.google.com/p/winforms-geplugin-control-library/source/browse/trunk/GEOptions.cs GEOptions.cs]
+[http://code.google.com/p/winforms-geplugin-control-library/source/browse/trunk/Wrappers/GEOptions.cs]
 
 == Remarks ==
 
