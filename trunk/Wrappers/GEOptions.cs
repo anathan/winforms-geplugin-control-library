@@ -80,7 +80,7 @@ namespace FC.GEPluginCtrls
         /// This view provides pan and lookAt controls, but no zoom slider. 
         /// The tilt will be set to 90, or parallel with level ground.
         /// </summary>
-        public double AutoGroundLevelViewEnabled
+        public bool AutoGroundLevelViewEnabled
         {
             get
             {
@@ -89,7 +89,7 @@ namespace FC.GEPluginCtrls
 
             set
             {
-                this.options.setAutoGroundLevelViewEnabled(value);
+                this.options.setAutoGroundLevelViewEnabled(Convert.ToInt16(value));
             }
         }
 
