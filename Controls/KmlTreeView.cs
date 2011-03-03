@@ -51,12 +51,12 @@ namespace FC.GEPluginCtrls
         /// <summary>
         /// The minimum width of any balloons triggered from the treeview
         /// </summary>
-        private int balloonMinimumWidth = 200;
+        private int balloonMinimumWidth = 0;
 
         /// <summary>
         /// The minimum height of any balloons triggered from the treeview
         /// </summary>
-        private int balloonMinimumHeight = 200;
+        private int balloonMinimumHeight = 0;
 
         /// <summary>
         /// Indicates if the tree view should expand all visible feature nodes
@@ -122,7 +122,7 @@ namespace FC.GEPluginCtrls
         /// </summary>
         [Category("Control Options"),
         Description("Gets or sets the minimum width of any balloons triggered from the control. Default 250"),
-        DefaultValueAttribute(250)]
+        DefaultValueAttribute(0)]
         public int BalloonMinimumWidth
         {
             get { return this.balloonMinimumWidth; }
@@ -134,7 +134,7 @@ namespace FC.GEPluginCtrls
         /// </summary>
         [Category("Control Options"),
         Description("Gets or sets the minimum height of any balloons triggered from the control. Default 100"),
-        DefaultValueAttribute(100)]
+        DefaultValueAttribute(0)]
         public int BalloonMinimumHeight
         {
             get { return this.balloonMinimumHeight; }
@@ -186,19 +186,6 @@ namespace FC.GEPluginCtrls
         #endregion
 
         #region Public methods
-
-        /// <summary>
-        /// Set the browser instance for the control to work with
-        /// </summary>
-        /// <param name="browser">The GEWebBrowser instance</param>
-        public void SetBrowserInstance(GEWebBrowser browser)
-        {
-            this.gewb = browser;
-            this.geplugin = browser.GetPlugin();
-            this.htmlDocument = browser.Document;
-            this.Nodes.Clear();
-            this.Enabled = true;
-        }
 
         /// <summary>
         /// Recursively parses a kml object into the tree
@@ -255,6 +242,25 @@ namespace FC.GEPluginCtrls
             {
                 this.ParseKmlObject(kmlObject);
             }
+        }
+
+        /// <summary>
+        /// Set the browser instance for the control to work with
+        /// </summary>
+        /// <param name="browser">The GEWebBrowser instance</param>
+        public void SetBrowserInstance(GEWebBrowser browser)
+        {
+            this.gewb = browser;
+            this.geplugin = browser.GetPlugin();
+
+            if (!GEHelpers.IsGe(geplugin))
+            {
+                throw new ApplicationException("ge is not of the type GEPlugin");
+            }
+
+            this.htmlDocument = browser.Document;
+            this.Nodes.Clear();
+            this.Enabled = true;
         }
 
         #endregion
@@ -551,7 +557,7 @@ namespace FC.GEPluginCtrls
             }
             catch (RuntimeBinderException ex)
             {
-                Debug.WriteLine(ex.ToString(), "KmlTree_AfterCheck");
+                Debug.WriteLine("KmlTree_AfterCheck: " + ex.ToString(), "KmlTreeView");
                 ////throw;
             }
 
@@ -645,7 +651,7 @@ namespace FC.GEPluginCtrls
 
                     if (this.flyToOnDoubleClickNode)
                     {
-                        GEHelpers.LookAt(this.geplugin, feature, this.gewb);
+                        GEHelpers.LookAt(feature, this.gewb);
                     }
                 }
             }

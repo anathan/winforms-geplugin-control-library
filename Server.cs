@@ -161,6 +161,12 @@ namespace FC.GEPluginCtrls.HttpServer
             {
                 if (Directory.Exists(value))
                 {
+                    // Add the trailing slash if missing!
+                    if (!value.EndsWith("/"))
+                    {
+                        value = value + "/";
+                    }
+
                     this.rootDirectory = value;
                 }
                 else
@@ -366,6 +372,8 @@ namespace FC.GEPluginCtrls.HttpServer
             data.AppendLine("Accept-Ranges: bytes");
             data.AppendFormat("Content-Length: {0}{1}", bytes, Environment.NewLine);
             data.AppendFormat("Content-Type: {0}{1}", mime, Environment.NewLine);
+
+            // end
             data.AppendLine("Connection: close");
             data.AppendLine();
 
@@ -574,7 +582,7 @@ namespace FC.GEPluginCtrls.HttpServer
                     }
 
                     // The physical path to the local file
-                    string localPath = localDirectory + Path.DirectorySeparatorChar + localFile;
+                    string localPath = localDirectory + localFile;
 
                     if (File.Exists(localPath))
                     {

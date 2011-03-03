@@ -52,6 +52,16 @@ namespace FC.GEPluginCtrls
         private GEWebBrowser gewb = null;
 
         /// <summary>
+        /// An instance of the options wrapper class
+        /// </summary>
+        private GEOptions geoptions = null;
+
+        /// <summary>
+        /// The plugin navigation cotrol 
+        /// </summary>
+        private GENavigationControl control = null;
+
+        /// <summary>
         /// Indicates whether the navigation items are visible
         /// </summary>
         private bool navigationItemsVisibility = true;
@@ -344,8 +354,16 @@ namespace FC.GEPluginCtrls
         {
             this.gewb = browser;
             this.geplugin = browser.GetPlugin();
+
+            if (!GEHelpers.IsGe(geplugin))
+            {
+                throw new ApplicationException("ge is not of the type GEPlugin");
+            }
+
             if (this.gewb.PluginIsReady)
             {
+                this.geoptions = new GEOptions(this.geplugin);
+                this.control = new GENavigationControl(this.geplugin);
                 this.SynchronizeOptions();
                 this.htmlDocument = browser.Document;
                 this.Enabled = true;
@@ -386,18 +404,18 @@ namespace FC.GEPluginCtrls
         {
             if (this.gewb.PluginIsReady)
             {
-                // options
-                dynamic options = this.geplugin.getOptions();
-                options.setStatusBarVisibility(Convert.ToInt16(this.statusBarMenuItem.Checked));
-                options.setGridVisibility(Convert.ToInt16(this.gridMenuItem.Checked));
-                options.setOverviewMapVisibility(Convert.ToInt16(this.overviewMapMenuItem.Checked));
-                options.setScaleLegendVisibility(Convert.ToInt16(this.scaleLegendMenuItem.Checked));
-                options.setAtmosphereVisibility(Convert.ToInt16(this.atmosphereMenuItem.Checked));
-                options.setMouseNavigationEnabled(Convert.ToInt16(this.mouseNavigationMenuItem.Checked));
-                options.setScaleLegendVisibility(Convert.ToInt16(this.scaleLegendMenuItem.Checked));
-                options.setOverviewMapVisibility(Convert.ToInt16(this.overviewMapMenuItem.Checked));
-                options.setUnitsFeetMiles(Convert.ToInt16(this.imperialUnitsMenuItem.Checked));
-                options.setMapType(Convert.ToInt16(this.skyMenuItem.Checked) + 1);
+                this.geoptions.StatusBarVisibility = this.statusBarMenuItem.Checked;
+                this.geoptions.StatusBarVisibility = this.statusBarMenuItem.Checked;
+                this.geoptions.GridVisibility = this.gridMenuItem.Checked;
+                this.geoptions.OverviewMapVisibility = this.overviewMapMenuItem.Checked;
+                this.geoptions.ScaleLegendVisibility = this.scaleLegendMenuItem.Checked;
+                this.geoptions.AtmosphereVisibility = this.atmosphereMenuItem.Checked;
+                this.geoptions.MouseNavigationEnabled = this.mouseNavigationMenuItem.Checked;
+                this.geoptions.ScaleLegendVisibility = this.scaleLegendMenuItem.Checked;
+                this.geoptions.OverviewMapVisibility = this.overviewMapMenuItem.Checked;
+                this.geoptions.UnitsFeetMiles = this.imperialUnitsMenuItem.Checked;
+     
+                this.geoptions.SetMapType(((MapType)Convert.ToInt16(this.skyMenuItem.Checked) + 1));
 
                 // sun
                 this.geplugin.getSun().setVisibility(Convert.ToInt16(this.sunMenuItem.Checked));
@@ -407,21 +425,12 @@ namespace FC.GEPluginCtrls
 
                 if (this.gewb.ImageyBase == ImageryBase.Earth)
                 {
-                    // layers 
-                    try
-                    {
-                        dynamic root = this.geplugin.getLayerRoot();
-                        root.enableLayerById(this.geplugin.LAYER_BORDERS, Convert.ToInt16(this.bordersMenuItem.Checked));
-                        root.enableLayerById(this.geplugin.LAYER_BUILDINGS, Convert.ToInt16(this.buildingsMenuItem.Checked));
-                        root.enableLayerById(this.geplugin.LAYER_BUILDINGS_LOW_RESOLUTION, Convert.ToInt16(this.buildingsGreyMenuItem.Checked));
-                        root.enableLayerById(this.geplugin.LAYER_ROADS, Convert.ToInt16(this.roadsMenuItem.Checked));
-                        root.enableLayerById(this.geplugin.LAYER_TERRAIN, Convert.ToInt16(this.terrainMenuItem.Checked));
-                    }
-                    catch (RuntimeBinderException ex)
-                    {
-                        Debug.WriteLine(ex.ToString(), "ResetToolStripDefaults layers");
-                        ////throw;
-                    }
+                    GEHelpers.EnableLayerById(this.geplugin, Layer.Borders, this.bordersMenuItem.Checked);
+                    GEHelpers.EnableLayerById(this.geplugin, Layer.Buildings, this.buildingsMenuItem.Checked);
+                    GEHelpers.EnableLayerById(this.geplugin, Layer.BuildingsLowRes, this.buildingsGreyMenuItem.Checked);
+                    GEHelpers.EnableLayerById(this.geplugin, Layer.Roads, this.roadsMenuItem.Checked);
+                    GEHelpers.EnableLayerById(this.geplugin, Layer.Terrain, this.terrainMenuItem.Checked);
+                    GEHelpers.EnableLayerById(this.geplugin, Layer.Trees, this.treesMenuItem.Checked);
 
                     // imagery 
                     foreach (ToolStripMenuItem item in this.imageryDropDownButton.DropDownItems)
@@ -542,42 +551,7 @@ namespace FC.GEPluginCtrls
 
             if (this.gewb.PluginIsReady && (item != null))
             {
-                string type = item.Tag.ToString();
-
-                int value = Convert.ToInt16(item.Checked);
-
-                try
-                {
-                    switch (type)
-                    {
-                        case "BORDERS":
-                            this.geplugin.getLayerRoot().enableLayerById(this.geplugin.LAYER_BORDERS, value);
-                            break;
-                        case "BUILDINGS":
-                            this.geplugin.getLayerRoot().enableLayerById(this.geplugin.LAYER_BUILDINGS, value);
-                            break;
-                        case "BUILDINGS_GREY_LOW_RES":
-                            this.geplugin.getLayerRoot().enableLayerById(this.geplugin.LAYER_BUILDINGS_LOW_RESOLUTION, value);
-                            break;
-                        case "ROADS":
-                            this.geplugin.getLayerRoot().enableLayerById(this.geplugin.LAYER_ROADS, value);
-                            break;
-                        case "TERRAIN":
-                            this.geplugin.getLayerRoot().enableLayerById(this.geplugin.LAYER_TERRAIN, value);
-                            break;
-                        default:
-                            break;
-                    }
-                }
-                catch (RuntimeBinderException ex)
-                {
-                    Debug.WriteLine("LayersItem_Clicked: " + ex.ToString(), "ToolStrip");
-                    ////throw;
-                }
-                catch (COMException cex)
-                {
-                    Debug.WriteLine("LayersItem_Clicked: " + cex.ToString(), "ToolStrip");
-                }
+                GEHelpers.EnableLayerById(this.geplugin, (Layer)item.Tag, item.Checked);
             }
         }
 
@@ -594,38 +568,36 @@ namespace FC.GEPluginCtrls
             {
                 string type = item.Tag.ToString();
 
-                int value = Convert.ToInt16(item.Checked);
-
                 try
                 {
                     switch (type)
                     {
                         case "FADEINOUT":
-                            this.geplugin.getOptions().setFadeInOutEnabled(value);
+                            this.geoptions.FadeInOutEnabled = item.Checked;
                             break;
                         case "IMPERIAL":
-                            this.geplugin.getOptions().setUnitsFeetMiles(value);
+                            this.geoptions.UnitsFeetMiles = item.Checked;
                             break;
                         case "ATMOSPHERE":
-                            this.geplugin.getOptions().setAtmosphereVisibility(value);
+                            this.geoptions.AtmosphereVisibility = item.Checked;
                             break;
                         case "CONTROLS":
-                            this.geplugin.getNavigationControl().setVisibility(value);
+                            this.control.Visiblity = (Visiblity)Convert.ToInt16(item.Checked);
                             break;
                         case "GRID":
-                            this.geplugin.getOptions().setGridVisibility(value);
+                            this.geoptions.GridVisibility = item.Checked;
                             break;
                         case "MOUSE":
-                            this.geplugin.getOptions().setMouseNavigationEnabled(value);
+                            this.geoptions.MouseNavigationEnabled = item.Checked;
                             break;
                         case "OVERVIEW":
-                            this.geplugin.getOptions().setOverviewMapVisibility(value);
+                            this.geoptions.OverviewMapVisibility = item.Checked;
                             break;
                         case "SCALE":
-                            this.geplugin.getOptions().setScaleLegendVisibility(value);
+                            this.geoptions.ScaleLegendVisibility = item.Checked;
                             break;
                         case "STATUS":
-                            this.geplugin.getOptions().setStatusBarVisibility(value);
+                            this.geoptions.StatusBarVisibility = item.Checked;
                             break;
                         default:
                             break;
@@ -658,8 +630,16 @@ namespace FC.GEPluginCtrls
                     switch (type)
                     {
                         case "SKY":
-                            this.layersDropDownButton.Enabled = !Convert.ToBoolean(value);
-                            this.geplugin.getOptions().setMapType(value + 1);
+                            this.layersDropDownButton.Enabled = !item.Checked;
+                            if (item.Checked)
+                            {
+                                this.geoptions.SetMapType(MapType.Sky);
+                            }
+                            else
+                            {
+                                this.geoptions.SetMapType(MapType.Earth);
+                            }
+
                             break;
                         case "SUN":
                             this.geplugin.getSun().setVisibility(value);

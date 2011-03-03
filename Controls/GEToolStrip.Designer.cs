@@ -101,6 +101,11 @@ namespace FC.GEPluginCtrls
         private System.Windows.Forms.ToolStripMenuItem terrainMenuItem;
 
         /// <summary>
+        /// The trees menu item
+        /// </summary>
+        private System.Windows.Forms.ToolStripMenuItem treesMenuItem;
+
+        /// <summary>
         /// The layers menu item
         /// </summary>
         private System.Windows.Forms.ToolStripDropDownButton layersDropDownButton;
@@ -258,6 +263,7 @@ namespace FC.GEPluginCtrls
             this.buildingsGreyMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.roadsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.terrainMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.treesMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.imageryDropDownButton = new System.Windows.Forms.ToolStripDropDownButton();
             this.earthMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.marsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -510,7 +516,8 @@ namespace FC.GEPluginCtrls
             this.buildingsMenuItem,
             this.buildingsGreyMenuItem,
             this.roadsMenuItem,
-            this.terrainMenuItem});
+            this.terrainMenuItem,
+            this.treesMenuItem});
             this.layersDropDownButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.layersDropDownButton.Name = "layersDropDownButton";
             this.layersDropDownButton.Size = new System.Drawing.Size(52, 17);
@@ -523,7 +530,7 @@ namespace FC.GEPluginCtrls
             this.bordersMenuItem.CheckOnClick = true;
             this.bordersMenuItem.Name = "bordersMenuItem";
             this.bordersMenuItem.Size = new System.Drawing.Size(168, 22);
-            this.bordersMenuItem.Tag = "BORDERS";
+            this.bordersMenuItem.Tag = Layer.Borders;
             this.bordersMenuItem.Text = "Borders";
             this.bordersMenuItem.ToolTipText = "Toggle the Borders layer";
             this.bordersMenuItem.Click += new System.EventHandler(this.LayersItem_Clicked);
@@ -533,7 +540,7 @@ namespace FC.GEPluginCtrls
             this.buildingsMenuItem.CheckOnClick = true;
             this.buildingsMenuItem.Name = "buildingsMenuItem";
             this.buildingsMenuItem.Size = new System.Drawing.Size(168, 22);
-            this.buildingsMenuItem.Tag = "BUILDINGS";
+            this.buildingsMenuItem.Tag = Layer.Buildings;
             this.buildingsMenuItem.Text = "Buildings";
             this.buildingsMenuItem.ToolTipText = "Toggle the Low Resolution Buildings layer";
             this.buildingsMenuItem.Click += new System.EventHandler(this.LayersItem_Clicked);
@@ -543,7 +550,7 @@ namespace FC.GEPluginCtrls
             this.buildingsGreyMenuItem.CheckOnClick = true;
             this.buildingsGreyMenuItem.Name = "buildingsGreyMenuItem";
             this.buildingsGreyMenuItem.Size = new System.Drawing.Size(168, 22);
-            this.buildingsGreyMenuItem.Tag = "BUILDINGS_GREY_LOW_RES";
+            this.buildingsGreyMenuItem.Tag = Layer.BuildingsLowRes;
             this.buildingsGreyMenuItem.Text = "Buildings Low-res";
             this.buildingsGreyMenuItem.Click += new System.EventHandler(this.LayersItem_Clicked);
             // 
@@ -552,7 +559,7 @@ namespace FC.GEPluginCtrls
             this.roadsMenuItem.CheckOnClick = true;
             this.roadsMenuItem.Name = "roadsMenuItem";
             this.roadsMenuItem.Size = new System.Drawing.Size(168, 22);
-            this.roadsMenuItem.Tag = "ROADS";
+            this.roadsMenuItem.Tag = Layer.Roads;
             this.roadsMenuItem.Text = "Roads";
             this.roadsMenuItem.ToolTipText = "Toggle the Roads layer";
             this.roadsMenuItem.Click += new System.EventHandler(this.LayersItem_Clicked);
@@ -564,10 +571,21 @@ namespace FC.GEPluginCtrls
             this.terrainMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.terrainMenuItem.Name = "terrainMenuItem";
             this.terrainMenuItem.Size = new System.Drawing.Size(168, 22);
-            this.terrainMenuItem.Tag = "TERRAIN";
+            this.terrainMenuItem.Tag = Layer.Terrain;
             this.terrainMenuItem.Text = "Terrain";
             this.terrainMenuItem.ToolTipText = "Toggle the Terrain layer";
             this.terrainMenuItem.Click += new System.EventHandler(this.LayersItem_Clicked);
+            // 
+            // treesMenuItem
+            // 
+            this.treesMenuItem.CheckOnClick = true;
+            this.treesMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.treesMenuItem.Name = "treesMenuItem";
+            this.treesMenuItem.Size = new System.Drawing.Size(168, 22);
+            this.treesMenuItem.Tag = Layer.Trees;
+            this.treesMenuItem.Text = "Trees";
+            this.treesMenuItem.ToolTipText = "Toggle the Trees layer";
+            this.treesMenuItem.Click += new System.EventHandler(this.LayersItem_Clicked);
             // 
             // imageryDropDownButton
             // 

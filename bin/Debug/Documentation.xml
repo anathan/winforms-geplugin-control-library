@@ -137,9 +137,15 @@
         </member>
         <member name="M:FC.GEPluginCtrls.GEWebBrowser.ParseKml(System.String)">
             <summary>
-            Parse kml string and loads in plugin
+            Parse  a kml string and loads in plugin
             </summary>
             <param name="kml">kml string to process</param>
+        </member>
+        <member name="M:FC.GEPluginCtrls.GEWebBrowser.ParseKmlObject(System.Object)">
+            <summary>
+            Parse a kml object and loads in plugin
+            </summary>
+            <param name="kml">kml object to process</param>
         </member>
         <member name="M:FC.GEPluginCtrls.GEWebBrowser.GetPlugin">
             <summary>
@@ -515,12 +521,6 @@
             Initializes a new instance of the KmlTreeView class.
             </summary>
         </member>
-        <member name="M:FC.GEPluginCtrls.KmlTreeView.SetBrowserInstance(FC.GEPluginCtrls.GEWebBrowser)">
-            <summary>
-            Set the browser instance for the control to work with
-            </summary>
-            <param name="browser">The GEWebBrowser instance</param>
-        </member>
         <member name="M:FC.GEPluginCtrls.KmlTreeView.ParseKmlObject(System.Object)">
             <summary>
             Recursively parses a kml object into the tree
@@ -532,6 +532,12 @@
             Recursively parses a collection of kml object into the tree
             </summary>
             <param name="kmlObjects">The kml objects to parse</param>
+        </member>
+        <member name="M:FC.GEPluginCtrls.KmlTreeView.SetBrowserInstance(FC.GEPluginCtrls.GEWebBrowser)">
+            <summary>
+            Set the browser instance for the control to work with
+            </summary>
+            <param name="browser">The GEWebBrowser instance</param>
         </member>
         <member name="M:FC.GEPluginCtrls.KmlTreeView.ParseKmlContainer(System.Object)">
             <summary>
@@ -893,6 +899,79 @@
             <summary>
             Gets or sets the event data tag
             </summary>
+        </member>
+        <member name="T:FC.GEPluginCtrls.NavigationControl">
+            <summary>
+            The available navigation control types in the plugin
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.NavigationControl.Large">
+            <summary>
+            The large navigation control type, used with GENavigationControl.setControlType().
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.NavigationControl.Small">
+            <summary>
+            The small navigation control type, used with GENavigationControl.setControlType().
+            </summary>
+        </member>
+        <member name="T:FC.GEPluginCtrls.Layer">
+            <summary>
+            The available layer types in the plugin
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.Layer.Terrain">
+            <summary>
+            The Terrain layer
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.Layer.Buildings">
+            <summary>
+            The Buildings layer
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.Layer.BuildingsLowRes">
+            <summary>
+            The Low Resolution (grey) Buildings layer
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.Layer.Borders">
+            <summary>
+            The Borders layer
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.Layer.Trees">
+            <summary>
+            The Trees layer
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.Layer.Roads">
+            <summary>
+            The Roads layer
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.Layer.layerId">
+            <summary>
+            The id of the layer
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.Layer.value">
+            <summary>
+            The 'enum' value
+            </summary>
+        </member>
+        <member name="M:FC.GEPluginCtrls.Layer.#ctor(System.Int32,System.String)">
+            <summary>
+            Initializes a new instance of the Layer class.
+            </summary>
+            <param name="value">the 'enum' value</param>
+            <param name="layerId">the layer id</param>
+        </member>
+        <member name="M:FC.GEPluginCtrls.Layer.ToString">
+            <summary>
+            Overrides the ToString method to give the layer-id to pass to the plug-in
+            </summary>
+            <returns>The layer id  as a string value</returns>
         </member>
         <member name="T:FC.GEPluginCtrls.ImageryBase">
             <summary>
@@ -1548,6 +1627,11 @@
             The terrain menu item
             </summary>
         </member>
+        <member name="F:FC.GEPluginCtrls.GEToolStrip.treesMenuItem">
+            <summary>
+            The trees menu item
+            </summary>
+        </member>
         <member name="F:FC.GEPluginCtrls.GEToolStrip.layersDropDownButton">
             <summary>
             The layers menu item
@@ -1679,6 +1763,16 @@
         <member name="F:FC.GEPluginCtrls.GEToolStrip.gewb">
             <summary>
             An instance of the current browser
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.GEToolStrip.geoptions">
+            <summary>
+            An instance of the options wrapper class
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.GEToolStrip.control">
+            <summary>
+            The plugin navigation cotrol 
             </summary>
         </member>
         <member name="F:FC.GEPluginCtrls.GEToolStrip.navigationItemsVisibility">
@@ -1909,82 +2003,116 @@
             See: http://earth-api-samples.googlecode.com/svn/trunk/lib/geplugin-helpers.js
             </summary>
         </member>
-        <member name="M:FC.GEPluginCtrls.GEHelpers.CreatePlacemark(System.Object,System.Double[],System.String[])">
+        <member name="M:FC.GEPluginCtrls.GEHelpers.AddFeaturesToPlugin(System.Object,System.Object)">
             <summary>
-            Creates a kml placemark
+            This is a simple "ge.getFeatures().appendChild(kml)" wrapper
             </summary>
-            <param name="ge">The plugin instance</param>
-            <param name="latLngAlt">The latitude and longitude in decimal degrees</param>
-            <param name="data">Optional string data (id, name, description)</param>
-            <returns>The placemark object</returns>
+            <param name="ge">the plugin instance to add the features to</param>
+            <param name="kml">the faetures to add</param>
         </member>
-        <member name="M:FC.GEPluginCtrls.GEHelpers.CreatePlacemark(System.Object,System.Double,System.Double,System.Double,System.String,System.String,System.String)">
+        <member name="M:FC.GEPluginCtrls.GEHelpers.CreatePlacemark(System.Object,System.Double,System.Double,System.Double,FC.GEPluginCtrls.AltitudeMode,System.String,System.String,System.String,System.Boolean)">
             <summary>
             Creates a kml placemark
             </summary>
             <param name="ge">The plugin instance</param>
             <param name="latitude">The placemark latitude in decimal degrees</param>
             <param name="longitude">The placemark longitude in decimal degrees</param>
-            <param name="altitude">The placemark altitude in metres</param>
-            <param name="id">The placemark Id</param>
-            <param name="name">The name of the placemark</param>
-            <param name="description">The placemark description text</param>
-            <returns>The placemark object</returns>
+            <param name="altitude">Optional placemark altitude in metres. Default is 0</param>
+            <param name="altitudeMode">Optional altitudeMode. Default is AltitudeMode.RelativeToGround</param>
+            <param name="id">Optional placemark Id. Default is empty</param>
+            <param name="name">Optional name of the placemark. Default is empty</param>
+            <param name="description">Optional placemark description text. Default is empty</param>
+            <param name="addFeature">Optionally adds the placemark directly to the plugin. Default is true</param>
+            <returns>A placemark (or an empty object)</returns>
         </member>
-        <member name="M:FC.GEPluginCtrls.GEHelpers.CreateLineString(System.Object,System.Object,System.Object)">
+        <member name="M:FC.GEPluginCtrls.GEHelpers.CreateLineString(System.Object,System.Object,System.Object,System.String,System.Boolean,System.Boolean)">
             <summary>
             Draws a line string between the given points
             </summary>
             <param name="ge">The plugin instance</param>
             <param name="p1">The first point</param>
             <param name="p2">The second point</param>
-            <returns>A linestring placemark</returns>
+            <param name="id">Optional ID of the placemark. Default is empty</param>
+            <param name="tessellate">Optionally sets tessellation for the linestring. Default is true</param>
+            <param name="addFeature">Optionally adds the linestring directly to the plugin. Default is true</param>
+            <returns>A linestring placemark (or an empty object)</returns>
+        </member>
+        <member name="M:FC.GEPluginCtrls.GEHelpers.EnableLayerById(System.Object,FC.GEPluginCtrls.Layer,System.Boolean)">
+            <summary>
+            Enables or disables a plugin layer - wrapper for ge.getLayerRoot().enableLayerById()
+            </summary>
+            <param name="ge">The plugin instance</param>
+            <param name="id">The id of the layer to work with</param>
+            <param name="value">True turns the layer on, false off</param>
         </member>
         <member name="M:FC.GEPluginCtrls.GEHelpers.GetAllFeaturesKml(System.Object)">
             <summary>
             Gets the Kml of all the features in the plug-in
             </summary>
             <param name="ge">The plugin</param>
-            <returns>String of Kml</returns>
+            <returns>String of all the Kml from the plugin - or an empty string</returns>
         </member>
         <member name="M:FC.GEPluginCtrls.GEHelpers.GetCurrentViewAsPoint(System.Object)">
             <summary>
             Get the current pluin view as a point object
             </summary>
             <param name="ge">the plugin</param>
-            <returns>Point set to the current view</returns>
+            <returns>Point set to the current view (or an empty object)</returns>
         </member>
         <member name="M:FC.GEPluginCtrls.GEHelpers.GetTypeFromRcw(System.Object)">
             <summary>
             Get the type of an active scripting object from a generic runtime callable wrapper.
+            This method invokes the member getType on the com object.
             </summary>
             <param name="wrapper">The com object wrapper</param>
-            <returns>The managed type</returns>
+            <returns>The managed type, or an empty string on failure</returns>
         </member>
-        <member name="M:FC.GEPluginCtrls.GEHelpers.LookAt(System.Object,System.Double,System.Double)">
+        <member name="M:FC.GEPluginCtrls.GEHelpers.IsObjectType(System.Object,System.String)">
+            <summary>
+            Checks is an objects type name matches the given string
+            </summary>
+            <param name="wrapper">The object to check</param>
+            <param name="type">The name to check for</param>
+            <returns></returns>
+        </member>
+        <member name="M:FC.GEPluginCtrls.GEHelpers.IsGe(System.Object)">
+            <summary>
+            Checks if the given object in an RCW is of the type GEPlugin
+            </summary>
+            <param name="wrapper">The object to check</param>
+            <returns>true if the object is of the type GEPlugin </returns>
+        </member>
+        <member name="M:FC.GEPluginCtrls.GEHelpers.LookAt(System.Object,System.Double,System.Double,System.String,System.Double,FC.GEPluginCtrls.AltitudeMode,System.Double,System.Double,System.Double)">
             <summary>
             Look at the given coordinates
             </summary>
             <param name="ge">the plugin</param>
             <param name="latitude">latitude in decimal degrees</param>
             <param name="longitude">longitude in decimal degrees</param>
+            <param name="id">Optional LookAt Id. Default is empty</param>
+            <param name="altitude">Optional altitude. Default is 0</param>
+            <param name="altitudeMode">Optional altitudeMode. Default is AltitudeMode.RelativeToGround</param>
+            <param name="heading">Optional heading in degrees. Default is 0 (north)</param>
+            <param name="tilt">Optional tilt in degrees. Default is 0</param>
+            <param name="range">Optional range in metres. Default is 1000</param>
             <returns>true on success</returns>
         </member>
-        <member name="M:FC.GEPluginCtrls.GEHelpers.LookAt(System.Object,System.Object,FC.GEPluginCtrls.GEWebBrowser)">
+        <member name="M:FC.GEPluginCtrls.GEHelpers.LookAt(System.Object,FC.GEPluginCtrls.GEWebBrowser)">
             <summary>
             Look at the given geometry 
             </summary>
-            <param name="ge">the plugin</param>
             <param name="feature">the geomerty to look at</param>
             <param name="browser">A instance of the GEWebBrowser object</param>
             <returns>true on success</returns>
         </member>
-        <member name="M:FC.GEPluginCtrls.GEHelpers.OpenFeatureBalloon(System.Object,System.Object)">
+        <member name="M:FC.GEPluginCtrls.GEHelpers.OpenFeatureBalloon(System.Object,System.Object,System.Boolean)">
             <summary>
-            Opens a balloon for the given feature
+            Opens the balloon for the given feature in the plugin
             </summary>
-            <param name="ge">the plugin</param>
-            <param name="feature">the feature</param>
+            <param name="ge">the plugin instance</param>
+            <param name="feature">the feature to open a ballon for</param>
+            <param name="setBalloon">Optionally opens the balloon in the plugin. Default is true</param>
+            <returns>The balloon object (GEFeatureBalloon) or and empty object</returns>
         </member>
         <member name="M:FC.GEPluginCtrls.GEHelpers.RemoveAllFeatures(System.Object)">
             <summary>
@@ -1997,6 +2125,174 @@
             Displays the current plugin view in Google Maps using the default system browser
             </summary>
             <param name="ge">The plugin instance</param>
+        </member>
+        <member name="T:FC.GEPluginCtrls.GEOptions">
+            <summary>
+            Wrapper for the GEOptions com object.
+            Maps all its getter and setter methods to managed properties
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.GEOptions.ge">
+            <summary>
+            The plugin object 
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.GEOptions.options">
+            <summary>
+            The options object 
+            </summary>
+        </member>
+        <member name="M:FC.GEPluginCtrls.GEOptions.#ctor(System.Object)">
+            <summary>
+            Initializes a new instance of the GEOptions class.
+            </summary>
+            <param name="ge">the plugin object</param>
+        </member>
+        <member name="M:FC.GEPluginCtrls.GEOptions.SetMapType(FC.GEPluginCtrls.MapType)">
+            <summary>
+            Sets the map type to Earth or sky mode.
+            </summary>
+            <param name="mapType">The maptype to use in the plugin</param>
+        </member>
+        <member name="P:FC.GEPluginCtrls.GEOptions.AtmosphereVisibility">
+            <summary>
+            Gets or sets a value indicating whether to show the blue atmosphere that appears around the perimeter of the Earth
+            On by default.
+            </summary>
+        </member>
+        <member name="P:FC.GEPluginCtrls.GEOptions.AutoGroundLevelViewEnabled">
+            <summary>
+            Gets or sets a value indicating whether automatic ground level view is enabled.
+            When enabled, the view will change to 'ground level view' when the camera reaches ground level.
+            This view provides pan and lookAt controls, but no zoom slider. 
+            The tilt will be set to 90, or parallel with level ground.
+            </summary>
+        </member>
+        <member name="P:FC.GEPluginCtrls.GEOptions.BuildingHighlightingEnabled">
+            <summary>
+            Gets or sets a value indicating whether building highlighting is enabled. 
+            When enabled, buildings will be highlighted when they are moused over.
+            Disabled by default
+            </summary>
+        </member>
+        <member name="P:FC.GEPluginCtrls.GEOptions.BuildingSelectionEnabled">
+            <summary>
+            Gets or sets a value indicating whether building selection is enabled. 
+            If enabled, clicking a building will pop a feature balloon containing information from the Google 3D Warehouse database.
+            </summary>
+        </member>
+        <member name="P:FC.GEPluginCtrls.GEOptions.FadeInOutEnabled">
+            <summary>
+            Gets or sets a value indicating whether animation of a features when added/removed from the plugin is enabled
+            The animation consists of a slight change of scale.
+            Default is true.
+            </summary>
+        </member>
+        <member name="P:FC.GEPluginCtrls.GEOptions.FlyToSpeed">
+            <summary>
+            Gets or sets a value indicating the speed at which the camera moves (0 to 5.0).
+            Set to SPEED_TELEPORT to immediately appear at selected destination.
+            </summary>
+        </member>
+        <member name="P:FC.GEPluginCtrls.GEOptions.GridVisibility">
+            <summary>
+            Gets or sets a value indicating whether the grid is visible. Disabled by default.
+            </summary>
+        </member>
+        <member name="P:FC.GEPluginCtrls.GEOptions.MouseNavigationEnabled">
+            <summary>
+            Gets or sets a value indicating whether user mouse control is enabled. Enabled by default.
+            Note: This also enables and disables keyboard navigation (arrow keys, page-up/page-down, etc).
+            </summary>
+        </member>
+        <member name="P:FC.GEPluginCtrls.GEOptions.OverviewMapVisibility">
+            <summary>
+            Gets or sets a value indicating whether the overview map is visible. Disabled by default.
+            </summary>
+        </member>
+        <member name="P:FC.GEPluginCtrls.GEOptions.ScaleLegendVisibility">
+            <summary>
+            Gets or sets a value indicating whether the scale legend is visible. Disabled by default.
+            </summary>
+        </member>
+        <member name="P:FC.GEPluginCtrls.GEOptions.ScrollWheelZoomSpeed">
+            <summary>
+            Gets or sets a value indicating the speed of zoom when user rolls the mouse wheel. 
+            Default is 1. Set to a negative number to reverse the zoom direction.
+            </summary>
+        </member>
+        <member name="P:FC.GEPluginCtrls.GEOptions.StatusBarVisibility">
+            <summary>
+            Gets or sets a value indicating whether the status bar is visible. Disabled by default.
+            </summary>
+        </member>
+        <member name="P:FC.GEPluginCtrls.GEOptions.TerrainExaggeration">
+            <summary>
+            Gets or sets a value indicating the terrain exaggeration value.
+            Valid values are in the range of 1.0 through 3.0. 
+            Attempting to set outside of this range will result in the value being clamped.
+            </summary>
+        </member>
+        <member name="P:FC.GEPluginCtrls.GEOptions.UnitsFeetMiles">
+            <summary>
+            Gets or sets a value indicating whether to display units in imperial (feet and miles)
+            or metric (meters and kilometers). A value of true uses imperial, false metric.
+            This setting affects only the values displayed in the status bar and the scale bar.
+            The values passed and returned with an object's properties are always metric.
+            Default value is false (metric)
+            </summary>
+        </member>
+        <member name="T:FC.GEPluginCtrls.GENavigationControl">
+            <summary>
+            Wrapper used to used to manipulate the navigation controls in Google Earth.
+            </summary>
+            <remarks>http://code.google.com/apis/earth/documentation/reference/interface_g_e_navigation_control.html</remarks>
+        </member>
+        <member name="M:FC.GEPluginCtrls.GENavigationControl.#ctor(System.Object)">
+            <summary>
+            Initializes a new instance of the GEOptions class.
+            </summary>
+            <param name="ge">GEPlugin COM object</param>
+        </member>
+        <member name="M:FC.GEPluginCtrls.GENavigationControl.#ctor(System.Object,FC.GEPluginCtrls.NavigationControl,FC.GEPluginCtrls.Visiblity,System.Boolean)">
+            <summary>
+            Initializes a new instance of the GEOptions class.
+            </summary>
+            <param name="ge">GEPlugin COM object</param>
+            <param name="controlType">The control type. Defualt is NavigationControl.Large</param>
+            <param name="visiblity">The visiblity of the control. Defualt is Visiblity.Show</param>
+            <param name="streetViewEnabled">Optionally enables the streetview features. Default is true (on)</param>
+        </member>
+        <member name="P:FC.GEPluginCtrls.GENavigationControl.Type">
+            <summary>
+            Gets or sets the navigaton control type
+            </summary>
+        </member>
+        <member name="P:FC.GEPluginCtrls.GENavigationControl.StreetViewEnabled">
+            <summary>
+            Gets or sets a value indicating if the street view functionality is enabled
+            </summary>
+        </member>
+        <member name="P:FC.GEPluginCtrls.GENavigationControl.Visiblity">
+            <summary>
+            Gets or sets a value indicating whether the control is:
+            always visible, always hidden, or visible only when the user intends to use the control.
+            </summary>
+        </member>
+        <member name="T:FC.GEPluginCtrls.MapType">
+            <summary>
+            Enumeration of the available map typs for the plug-in (earth/sky)
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.MapType.Earth">
+            <summary>
+            The Earth map type, used with GEOptions setMapType
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.MapType.Sky">
+            <summary>
+            The Earth map type, used with GEOptions setMapType
+            </summary>
         </member>
         <member name="T:FC.GEPluginCtrls.Properties.Resources">
             <summary>
@@ -2031,6 +2327,64 @@
               it under the terms of the GNU General Public License as published by
               the Free Software  [rest of string was truncated]&quot;;.
              </summary>
+        </member>
+        <member name="T:FC.GEPluginCtrls.Visiblity">
+            <summary>
+            The available navigation control types in the plugin
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.Visiblity.Hide">
+            <summary>
+            Hide the UI element.
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.Visiblity.Show">
+            <summary>
+            Show the UI element always.
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.Visiblity.Auto">
+            <summary>
+            Automatically show or hide the UI element depending on user interaction.
+            </summary>
+        </member>
+        <member name="T:FC.GEPluginCtrls.AltitudeMode">
+            <summary>
+            Enumeration of the available imagery bases for the plug-in.
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.AltitudeMode.ClampToGround">
+            <summary>
+            Specifies that altitudes are at ground level.
+            For Ground overlays, this means that the image will be draped over the terrain.
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.AltitudeMode.RelativeToGround">
+            <summary>
+            Specifies that altitudes are to be interpreted as meters above or below ground level.
+            (i.e. the elevation of the terrain at the location).
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.AltitudeMode.Absolute">
+            <summary>
+            Specifies that altitudes are to be interpreted as meters above or below sea level,
+            regardless of the actual elevation of the terrain beneath the object.
+            For example, if you set the altitude of an object to 10 meters with an absolute altitude mode,
+            the object will appear to be at ground level if the terrain beneath is also 10 meters above sea level.
+            If the terrain is 3 meters above sea level, the object will appear elevated above the terrain by 7 meters.
+            If, on the other hand, the terrain is 15 meters above sea level, the object may be completely invisible.
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.AltitudeMode.ClampToSeaFloor">
+            <summary>
+            Specifies that altitudes are at sea floor level.
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.AltitudeMode.RelativeToSeaFloor">
+            <summary>
+            Specifies that altitudes are to be interpreted as meters above sea floor.
+            (i.e. the elevation of the sea floor at the location).
+            </summary>
         </member>
         <member name="T:FC.GEPluginCtrls.Languages">
             <summary>
