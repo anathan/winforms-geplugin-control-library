@@ -144,12 +144,14 @@ namespace FC.GEPluginCtrls
         public void Ready(object ge)
         {
             dynamic pluginObject = ge;
+            string api = pluginObject.getApiVersion();
+            string plugin = pluginObject.getPluginVersion();
 
             try
             {
                 this.OnPluginReady(
                     ge,
-                    new GEEventArgs(pluginObject.getApiVersion(), pluginObject.getPluginVersion()));
+                    new GEEventArgs(api, plugin));
             }
             catch (RuntimeBinderException ex)
             {
@@ -272,7 +274,7 @@ namespace FC.GEPluginCtrls
         /// <param name="e">The Event arguments</param>
         protected virtual void OnKmlLoaded(GEEventArgs e)
         {
-            object kmlObject = ((object[])e.Tag)[0];
+            object kmlObject = ((dynamic[])e.Tag)[0];
 
             if (this.KmlLoaded != null)
             {

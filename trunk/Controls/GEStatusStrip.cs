@@ -248,7 +248,11 @@ namespace FC.GEPluginCtrls
         {
             this.gewb = browser;
             this.geplugin = browser.GetPlugin();
-            this.Enabled = true;
+
+            if (!GEHelpers.IsGe(geplugin))
+            {
+                throw new ApplicationException("ge is not of the type GEPlugin");
+            }
 
             if (this.gewb.PluginIsReady)
             {
@@ -304,13 +308,7 @@ namespace FC.GEPluginCtrls
                 {
                     this.streamingStatusLabel.ForeColor = Color.Gray;
                     this.streamingStatusLabel.Text = "idle";
-                    try
-                    {
-                        this.streamingProgressBar.Value = 0;
-                    }
-                    catch (NullReferenceException) { 
-                        //occasional on exit...
-                    }        
+                    this.streamingProgressBar.Value = 0;
                 }
                 else
                 {

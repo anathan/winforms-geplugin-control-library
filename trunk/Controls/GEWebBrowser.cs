@@ -410,14 +410,17 @@ namespace FC.GEPluginCtrls
         }
 
         /// <summary>
-        /// Parse kml string and loads in plugin
+        /// Parse  a kml string and loads in plugin
         /// </summary>
         /// <param name="kml">kml string to process</param>
         public void ParseKml(string kml)
         {
+            dynamic kmlObj = null;
+
             try
             {
-                dynamic kmlObj = this.geplugin.parseKml(kml);
+                kmlObj = this.geplugin.parseKml(kml);
+
                 if (null != kmlObj)
                 {
                     this.external.InvokeCallBack(
@@ -425,11 +428,23 @@ namespace FC.GEPluginCtrls
                         new object[] { kmlObj });
                 }
             }
-            catch (RuntimeBinderException ex)
+            catch (RuntimeBinderException rbex)
             {
-                Debug.WriteLine("ParseKml: " + ex.ToString());
-                ////throw;
+                Debug.WriteLine("ParseKml: " + rbex.Message, "GEHelpers");
             }
+            catch (COMException cex)
+            {
+                Debug.WriteLine("ParseKml: " + cex.Message, "GEHelpers");
+            }
+        }
+
+        /// <summary>
+        /// Parse a kml object and loads in plugin
+        /// </summary>
+        /// <param name="kml">kml object to process</param>
+        public void ParseKmlObject(dynamic kml)
+        {
+            GEHelpers.AddFeaturesToPlugin(this.geplugin, kml);
         }
 
         /// <summary>
@@ -612,7 +627,6 @@ namespace FC.GEPluginCtrls
                     PixelFormat.Format32bppArgb);
             try
             {
-
                 Graphics graphics = Graphics.FromImage(bitmap);
                 System.Drawing.Point point =
                     new System.Drawing.Point();
@@ -629,6 +643,7 @@ namespace FC.GEPluginCtrls
                 Debug.WriteLine(anex.ToString(), "GEWebBrowser");
                 throw;
             }
+
             return bitmap;
         }
 
