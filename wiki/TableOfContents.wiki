@@ -1,11 +1,13 @@
 #labels Phase-Implementation
   * Main controls
     * [GEWebBrowser]
-      * [AddEventListener]
-      * [CreateInstance]
-      * [FetchKml]
-      * [PluginReady]
-      * [ScreenGrab]
+      * Methods      
+        * [AddEventListener]
+        * [CreateInstance]
+        * [FetchKml]
+        * [ScreenGrab]
+      * Events
+        * [PluginReady]
     * [GEStatusStrip]
       * [SetBrowserInstance]
     * [GEToolStrip]
