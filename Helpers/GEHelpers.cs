@@ -161,11 +161,6 @@ namespace FC.GEPluginCtrls
                 Debug.WriteLine("CreateLineString: " + ex.ToString(), "GEHelpers");
             }
 
-            if (placemark == null)
-            {
-                return new object { };
-            }
-
             if (addFeature)
             {
                 GEHelpers.AddFeaturesToPlugin(ge, placemark);
