@@ -121,12 +121,12 @@ heading: heading in degrees<br>
 distance: distance in metres<br>
 *Return Value:* The point at the location along the geodesic<br>
 
-== Remarks ==
-
-Some of the methods in this class are based on the ideas and methods in the javascript library "geojs" by Roman Nurik, please see: http://code.google.com/p/geojs/
-
-== Source == 
+= Source = 
 
 [http://code.google.com/p/winforms-geplugin-control-library/source/browse/trunk/Maths.cs Maths.cs]
+
+= Remarks =
+
+Some of the methods in this class are based on the ideas and methods in the javascript library "geojs" by Roman Nurik, please see: http://code.google.com/p/geojs/
 
 <wiki:gadget url="http://earthapi.googlepages.com/ad.xml" border="0" width="728" height="90" />
