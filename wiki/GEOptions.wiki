@@ -42,10 +42,6 @@ public GEOptions(dynamic gePlugin)
 == Public Properties ==
 
 {{{
-public dynamic gePlugin
-}}}
-
-{{{
 /// <summary>
 /// Gets or sets the map type to Earth or sky mode.
 /// </summary>
