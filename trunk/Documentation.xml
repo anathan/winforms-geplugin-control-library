@@ -539,6 +539,12 @@
             </summary>
             <param name="browser">The GEWebBrowser instance</param>
         </member>
+        <member name="M:FC.GEPluginCtrls.KmlTreeView.ObjectParser(System.Object)">
+            <summary>
+            Recursively parses a kml object into the tree
+            </summary>
+            <param name="kmlObject">The kml object to parse</param>
+        </member>
         <member name="M:FC.GEPluginCtrls.KmlTreeView.ParseKmlContainer(System.Object)">
             <summary>
             Recursively iterates through a Kml Container adding any child features to the tree
@@ -2066,6 +2072,14 @@
             </summary>
             <param name="wrapper">The com object wrapper</param>
             <returns>The managed type, or an empty string on failure</returns>
+        </member>
+        <member name="M:FC.GEPluginCtrls.GEHelpers.HasMethod(System.Object,System.String)">
+            <summary>
+            Checks if an object in a RCW supports a given method
+            </summary>
+            <param name="wrapper">The com object wrapper</param>
+            <param name="methodName">The name of the method to check for</param>
+            <returns>True if the object supports the method, false if not</returns>
         </member>
         <member name="M:FC.GEPluginCtrls.GEHelpers.IsObjectType(System.Object,System.String)">
             <summary>
