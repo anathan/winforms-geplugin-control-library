@@ -1,5 +1,5 @@
 #summary Various uses for the AddEventListener method.
-#labels Featured,Phase-Implementation
+#labels Phase-Implementation
 #sidebar TableOfContents
 
 <wiki:toc max_depth="2" />
