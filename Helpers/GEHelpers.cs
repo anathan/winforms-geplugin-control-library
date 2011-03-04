@@ -20,6 +20,8 @@ namespace FC.GEPluginCtrls
 {
     using System;
     using System.Diagnostics;
+    using System.Linq;
+    using System.Reflection;
     using System.Runtime.InteropServices;
     using System.Text;
     using System.Windows.Forms;
@@ -289,6 +291,28 @@ namespace FC.GEPluginCtrls
         }
 
         /// <summary>
+        /// Checks if an object in a RCW supports a given method
+        /// </summary>
+        /// <param name="wrapper">The com object wrapper</param>
+        /// <param name="methodName">The name of the method to check for</param>
+        /// <returns>True if the object supports the method, false if not</returns>
+        public static bool HasMethod(dynamic wrapper, string methodName)
+        {
+            object obj = wrapper as object;
+            MethodInfo method = obj.GetType().GetMethods().
+                FirstOrDefault(x => x.Name == methodName);
+
+            if (null == method)
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
+
+        /// <summary>
         /// Checks is an objects type name matches the given string
         /// </summary>
         /// <param name="wrapper">The object to check</param>
@@ -417,18 +441,17 @@ namespace FC.GEPluginCtrls
                         }
                         else
                         {
-
                             string linkUrl = string.Empty;
 
                             // Kml documents using the pre 2.1 spec may contain the <Url> element 
                             // in these cases the getHref call will return null
-                            try
+                            if (GEHelpers.HasMethod(feature, "getLink"))
                             {
                                 linkUrl = feature.getLink().getHref();
                             }
-                            catch (NullReferenceException)
+                            else
                             {
-                                linkUrl = feature.GetUrl();
+                                linkUrl = feature.getUrl();
                             }
 
                             dynamic kmlObject = browser.FetchKmlSynchronous(linkUrl);

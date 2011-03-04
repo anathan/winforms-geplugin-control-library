@@ -27,6 +27,8 @@ namespace FC.GEPluginCtrls
     using System.Windows.Forms;
     using Microsoft.CSharp.RuntimeBinder;
 
+    using System.Threading.Tasks;
+
     /// <summary>
     /// The KmlTree view provides a quick way to display kml content
     /// </summary>
@@ -194,43 +196,10 @@ namespace FC.GEPluginCtrls
         /// <param name="kmlObject">The kml object to parse</param>
         public void ParseKmlObject(dynamic kmlObject)
         {
-            if (null != kmlObject)
-            {
-                string type = string.Empty;
-
-                try
-                {
-                    type = kmlObject.getType();
-
-                    switch (type)
-                    {
-                        case "KmlDocument":
-                        case "KmlFolder":
-                            this.Nodes.Add(
-                                this.CreateTreeNodeFromKmlFolder(kmlObject));
-                            break;
-                        case "KmlNetworkLink":
-                            this.Nodes.Add(
-                                this.CreateTreeNodeFromKmlNetworkLink(kmlObject));
-                            break;
-                        case "KmlGroundOverlay":
-                        case "KmlScreenOverlay":
-                        case "KmlPlacemark":
-                        case "KmlTour":
-                        case "KmlPhotoOverlay":
-                            this.Nodes.Add(
-                                this.CreateTreeNodeFromKmlFeature(kmlObject));
-                            break;
-                        default:
-                            break;
-                    }
-                }
-                catch (RuntimeBinderException ex)
-                {
-                    Debug.WriteLine("ParsekmlObject: " + ex.ToString(), "KmlTreeView");
-                    ////throw;
-                }
-            }
+            object kml = kmlObject;
+            var task = Task.Factory.StartNew(
+                () => ObjectParser(kml),
+                TaskCreationOptions.LongRunning);
         }
 
         /// <summary>
@@ -241,7 +210,7 @@ namespace FC.GEPluginCtrls
         {
             foreach (object kmlObject in kmlObjects)
             {
-                this.ParseKmlObject(kmlObject);
+                this.ObjectParser(kmlObject);
             }
         }
 
@@ -267,6 +236,71 @@ namespace FC.GEPluginCtrls
         #endregion
 
         #region Private methods
+
+        /// <summary>
+        /// Recursively parses a kml object into the tree
+        /// </summary>
+        /// <param name="kmlObject">The kml object to parse</param>
+        private void ObjectParser(dynamic kmlObject)
+        {
+            if (null != kmlObject)
+            {
+                string type = string.Empty;
+
+                try
+                {
+                    type = kmlObject.getType();
+                }
+                catch (RuntimeBinderException ex)
+                {
+                    Debug.WriteLine("ParsekmlObject: " + ex.ToString(), "KmlTreeView");
+                    return;
+                }
+
+                switch (type)
+                {
+                    case "KmlDocument":
+                    case "KmlFolder":
+                        if (this.InvokeRequired)
+                        {
+                            this.Invoke((MethodInvoker)delegate()
+                            {
+                                this.Nodes.Add(this.CreateTreeNodeFromKmlFolder(kmlObject));
+                            });
+                        }
+
+                        break;
+                    case "KmlNetworkLink":
+                        if (this.InvokeRequired)
+                        {
+                            this.Invoke((MethodInvoker)delegate()
+                            {
+                                this.Nodes.Add(
+                                    this.CreateTreeNodeFromKmlNetworkLink(kmlObject));
+                            });
+                        }
+
+                        break;
+                    case "KmlGroundOverlay":
+                    case "KmlScreenOverlay":
+                    case "KmlPlacemark":
+                    case "KmlTour":
+                    case "KmlPhotoOverlay":
+                        if (this.InvokeRequired)
+                        {
+                            this.Invoke((MethodInvoker)delegate()
+                            {
+                                this.Nodes.Add(
+                                    this.CreateTreeNodeFromKmlFeature(kmlObject));
+                            });
+                        }
+
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
 
         /// <summary>
         /// Recursively iterates through a Kml Container adding any child features to the tree
@@ -436,13 +470,13 @@ namespace FC.GEPluginCtrls
 
             // Kml documents using the pre 2.1 spec may contain the <Url> element 
             // in these cases the getHref call will return null
-            try
+            if (GEHelpers.HasMethod(kmlObject, "getLink"))
             {
                 url = kmlObject.getLink().getHref();
             }
-            catch (NullReferenceException)
+            else
             {
-                url = kmlObject.GetUrl();
+                url = kmlObject.getUrl();
             }
 
             // getComputedStyle is not part of the current Api and has issues.
@@ -453,11 +487,7 @@ namespace FC.GEPluginCtrls
 
                 if (obj != null)
                 {
-                    object networkLink = obj as object;
-                    MethodInfo method = networkLink.GetType().GetMethods().
-                        FirstOrDefault(x => x.Name == "getOwnerDocument");
-
-                    if (method != null)
+                    if (GEHelpers.HasMethod(obj, "getOwnerDocument"))
                     {
                         dynamic listItemType = obj.getOwnerDocument().getComputedStyle().getListStyle().getListItemType();
 
@@ -479,7 +509,9 @@ namespace FC.GEPluginCtrls
 
             // return a simple treenode...
             string name = kmlObject.getName();
+            string desc = kmlObject.getDescription();
             TreeNode node = new TreeNode(name);
+            node.ToolTipText = desc;
             node.Tag = kmlObject;
 
             return node;
