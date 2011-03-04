@@ -33,7 +33,7 @@ With the default settings the application start up folder is the virtual root di
 
 == Constructors == 
 
-[usingTheServer Server]
+[ExampleFormServer Server]
 {{{
 /// <summary>
 /// Initializes a new instance of the Server class
@@ -41,7 +41,7 @@ With the default settings the application start up folder is the virtual root di
 public Server() 
 }}}
 
-[usingTheServer Server]
+[ExampleFormServer Server]
 {{{
 /// <summary>
 /// Initializes a new instance of the Server class
@@ -50,7 +50,7 @@ public Server()
 public Server(string rootDirectory)
 }}}
 
-[usingTheServer Server]
+[ExampleFormServer Server]
 {{{
 /// <summary>
 /// Initializes a new instance of the Server class
@@ -62,7 +62,7 @@ public Server(string rootDirectory, string defaultFileName)
 
 == Public Properties ==
 
-[usingTheServer IPAddress]
+[ExampleFormServer IPAddress]
 {{{
 /// <summary>
 /// Gets or sets the default file name 
@@ -71,7 +71,7 @@ public Server(string rootDirectory, string defaultFileName)
 public string DefaultFileName
 }}}
 
-[usingTheServer IPAddress]
+[ExampleFormServer IPAddress]
 {{{
 /// <summary>
 /// Gets or sets the IP Address for the server to use 
@@ -80,7 +80,7 @@ public string DefaultFileName
 public IPAddress IPAddress
 }}}
 
-[usingTheServer RootDirectory]
+[ExampleFormServer RootDirectory]
 {{{
 /// <summary>
 /// Gets or sets the root server directory (webroot) 
@@ -89,7 +89,7 @@ public IPAddress IPAddress
 public string RootDirectory
 }}}
 
-[usingTheServer Port]
+[ExampleFormServer Port]
 {{{
 /// <summary>
 /// Gets or sets a value indicating the port for the server to use
@@ -99,7 +99,7 @@ public int Port
 
 == Public methods ==
 
-[usingTheServer Start]
+[ExampleFormServer Start]
 {{{
 /// <summary>
 /// Starts the server
@@ -107,7 +107,7 @@ public int Port
 public void Start()
 }}}
 
-[usingTheServer Stop]
+[ExampleFormServer Stop]
 {{{
 /// <summary>
 /// Stops the server
