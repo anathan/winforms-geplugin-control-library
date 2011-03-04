@@ -25,16 +25,22 @@ namespace WindowsFormsApplication1
         /// By default the server uses the "application root directory" as its root directory
         /// It listens on port 8080 for incomming connections from the Google Earth plugn client.
         /// The default file name is default.kml
-        /// All these can be set in the contructor or via the server's properties
+        /// These can all be set via the server's properties
+        /// Here we set the directory to "webroot"
         /// </summary>
-        private Server server = new Server();
+        private Server server = new Server("webroot");
 
         public Form1()
         {
             InitializeComponent();
 
-            // set the root directory and start the server
-            server.RootDirectory = "webroot";
+            // set the root directory, port, ip address and if desired...
+            //server.RootDirectory = "somefolder";
+            //server.Port = 80;
+            //server.DefaultFileName = "index.kml";
+            //server.IPAddress = System.Net.IPAddress.Any;
+            
+            // start the server
             server.Start();
 
             // load the plug-in
@@ -43,6 +49,9 @@ namespace WindowsFormsApplication1
             // register handlers for the plugin ready and kml loaded events
             geWebBrowser1.PluginReady += new GEWebBrowserEventHandler(geWebBrowser1_PluginReady);
             geWebBrowser1.KmlLoaded += new GEWebBrowserEventHandler(geWebBrowser1_KmlLoaded);
+
+            // stop the server when the form is closing...
+            this.FormClosing += new FormClosingEventHandler(Form1_FormClosing);
         }
 
         // Handle kml loaded events 
@@ -60,9 +69,16 @@ namespace WindowsFormsApplication1
             // load a local kml file "./webroot/samples.kml"
             geWebBrowser1.FetchKml("http://localhost:8080/samples.kml");
         }
+
+
+        // handle the form closing
+        void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            // Stops the server
+            server.Stop();
+        }
     }
 }
-
 }}}
 
 <wiki:gadget url="http://earthapi.googlepages.com/ad.xml" border="0" width="728" height="90" />
