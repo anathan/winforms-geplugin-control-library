@@ -75,7 +75,6 @@ namespace FC.GEPluginCtrls
             catch (RuntimeBinderException ex) 
             {
                 Debug.WriteLine(ex.ToString());
-                ////throw;
             }
 
             return propValueRef;

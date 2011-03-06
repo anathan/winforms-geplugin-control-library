@@ -367,7 +367,7 @@ namespace FC.GEPluginCtrls
                 this.SynchronizeOptions();
                 this.htmlDocument = browser.Document;
                 this.Enabled = true;
-                this.gewb.PluginReady += new GEWebBrowserEventHandler(this.Gewb_PluginReady);
+                this.gewb.PluginReady += (o, e) => this.Gewb_PluginReady(o, e);
             }
         }
 
@@ -414,7 +414,7 @@ namespace FC.GEPluginCtrls
                 this.geoptions.ScaleLegendVisibility = this.scaleLegendMenuItem.Checked;
                 this.geoptions.OverviewMapVisibility = this.overviewMapMenuItem.Checked;
                 this.geoptions.UnitsFeetMiles = this.imperialUnitsMenuItem.Checked;
-     
+
                 this.geoptions.SetMapType(((MapType)Convert.ToInt16(this.skyMenuItem.Checked) + 1));
 
                 // sun
@@ -506,7 +506,7 @@ namespace FC.GEPluginCtrls
                     {
                         // input is a local kml file
                         this.gewb.FetchKmlLocal(input);
-                    }             
+                    }
                 }
                 else if (input.StartsWith("http", true, System.Globalization.CultureInfo.CurrentCulture))
                 {
@@ -698,12 +698,15 @@ namespace FC.GEPluginCtrls
                         case ImageryBase.Moon:
                             this.layersDropDownButton.Enabled = false;
                             this.viewInMapsButton.Enabled = false;
+                            this.historyMenuItem.Enabled = false;
+                            this.Enabled = false;
                             this.gewb.CreateInstance(type);
                             break;
                         case ImageryBase.Earth:
                         default:
                             this.layersDropDownButton.Enabled = true;
                             this.viewInMapsButton.Enabled = true;
+                            this.historyMenuItem.Enabled = true;
                             this.gewb.CreateInstance(ImageryBase.Earth);
                             break;
                     }

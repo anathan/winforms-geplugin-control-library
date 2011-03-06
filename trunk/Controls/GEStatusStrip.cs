@@ -23,6 +23,7 @@ namespace FC.GEPluginCtrls
     using System.Diagnostics;
     using System.Drawing;
     using System.Runtime.InteropServices;
+    using System.Threading.Tasks;
     using System.Windows.Forms;
     using Microsoft.CSharp.RuntimeBinder;
 
@@ -260,7 +261,7 @@ namespace FC.GEPluginCtrls
                 this.timer = new Timer();
                 this.timer.Interval = this.interval;
                 this.timer.Start();
-                this.timer.Tick += new EventHandler(this.Timer_Tick);
+                this.timer.Tick += (o, e) => this.Timer_Tick(o, e);
 
                 try
                 {
@@ -299,22 +300,25 @@ namespace FC.GEPluginCtrls
                 {
                     this.timer.Stop();
                 }
-                catch (Microsoft.CSharp.RuntimeBinder.RuntimeBinderException rbex)
-                {
-                    MessageBox.Show(rbex.ToString());
-                }
 
-                if (100 == percent || 0 == percent)
+                try
                 {
-                    this.streamingStatusLabel.ForeColor = Color.Gray;
-                    this.streamingStatusLabel.Text = "idle";
-                    this.streamingProgressBar.Value = 0;
+                    if (100 == percent || 0 == percent)
+                    {
+                        this.streamingStatusLabel.ForeColor = Color.Gray;
+                        this.streamingStatusLabel.Text = "idle";
+                        this.streamingProgressBar.Value = 0;
+                    }
+                    else
+                    {
+                        this.streamingStatusLabel.ForeColor = Color.Black;
+                        this.streamingProgressBar.Value = (int)percent;
+                        this.streamingStatusLabel.Text = percent + "%";
+                    }
                 }
-                else
+                catch (NullReferenceException)
                 {
-                    this.streamingStatusLabel.ForeColor = Color.Black;
-                    this.streamingProgressBar.Value = (int)percent;
-                    this.streamingStatusLabel.Text = percent + "%";
+                    // TODO sometimes on application close...need to look into this...
                 }
             }
         }

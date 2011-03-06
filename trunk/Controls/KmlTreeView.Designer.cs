@@ -83,9 +83,9 @@ namespace FC.GEPluginCtrls
             this.ShowNodeToolTips = true;
             this.AfterCheck += new System.Windows.Forms.TreeViewEventHandler(this.KmlTree_AfterCheck);
             this.AfterCollapse += new System.Windows.Forms.TreeViewEventHandler(this.KmlTreeView_AfterCollapse);
+            this.AfterExpand += new System.Windows.Forms.TreeViewEventHandler(this.KmlTreeView_AfterExpand);
             this.DoubleClick += new System.EventHandler(this.KmlTree_DoubleClick);
             this.MouseUp += new System.Windows.Forms.MouseEventHandler(this.KmlTreeView_MouseUp);
-            this.AfterExpand += new System.Windows.Forms.TreeViewEventHandler(this.KmlTreeView_AfterExpand);
             this.ResumeLayout(false);
 
         }

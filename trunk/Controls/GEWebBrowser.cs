@@ -34,13 +34,6 @@ namespace FC.GEPluginCtrls
     using Microsoft.CSharp.RuntimeBinder;
 
     /// <summary>
-    /// Main delegate event handler
-    /// </summary>
-    /// <param name="sender">The sending object</param>
-    /// <param name="e">The event arguments</param>
-    public delegate void GEWebBrowserEventHandler(object sender, GEEventArgs e);
-
-    /// <summary>
     /// This browser control holds the Google Earth Plug-in,
     /// it also provides wrapper methods to work with the Google.Earth namespace
     /// </summary>
@@ -78,11 +71,6 @@ namespace FC.GEPluginCtrls
         /// </summary>
         private bool pluginIsReady = false;
 
-        /// <summary>
-        /// The parent form, if any, that is hosting the control 
-        /// </summary>
-        private Form parentForm = null;
-
         #endregion
 
         /// <summary>
@@ -93,12 +81,13 @@ namespace FC.GEPluginCtrls
         {
             // External - COM visible class
             this.external = new External();
-            this.external.KmlLoaded += new ExternalEventHandler(this.External_KmlLoaded);
-            this.external.PluginReady += new ExternalEventHandler(this.External_PluginReady);
-            this.external.ScriptError += new ExternalEventHandler(this.External_ScriptError);
-            this.external.KmlEvent += new ExternalEventHandler(this.External_KmlEvent);
-            this.external.PluginEvent += new ExternalEventHandler(this.External_PluginEvent);
-            this.external.ViewEvent += new ExternalEventHandler(this.External_ViewEvent);
+
+            this.external.KmlLoaded += (o, e) => this.OnKmlLoaded(o, e);
+            this.external.PluginReady += (o, e) => this.External_PluginReady(o, e);
+            this.external.ScriptError += (o, e) => this.OnScriptError(o, e);
+            this.external.KmlEvent += (o, e) => this.OnKmlEvent(o, e);
+            this.external.PluginEvent += (o, e) => this.OnPluginEvent(o, e);
+            this.external.ViewEvent += (o, e) => this.OnViewEvent(o, e);
 
             // Setup the desired control defaults
             this.AllowNavigation = false;
@@ -106,8 +95,8 @@ namespace FC.GEPluginCtrls
             this.ScrollBarsEnabled = false;
             this.ScriptErrorsSuppressed = false;
             this.WebBrowserShortcutsEnabled = false;
-            this.DocumentCompleted +=
-                new WebBrowserDocumentCompletedEventHandler(this.GEWebBrowser_DocumentCompleted);
+
+            this.DocumentCompleted += (o, e) => this.GEWebBrowser_DocumentCompleted(o, e);
 
             try
             {
@@ -124,32 +113,32 @@ namespace FC.GEPluginCtrls
         /// <summary>
         /// Raised when the plugin is ready
         /// </summary>
-        public event GEWebBrowserEventHandler PluginReady;
+        public event EventHandler<GEEventArgs> PluginReady;
 
         /// <summary>
         /// Raised when there is a kmlEvent
         /// </summary>
-        public event GEWebBrowserEventHandler KmlEvent;
+        public event EventHandler<GEEventArgs> KmlEvent;
 
         /// <summary>
         /// Raised when a kml/kmz file has loaded
         /// </summary>
-        public event GEWebBrowserEventHandler KmlLoaded;
+        public event EventHandler<GEEventArgs> KmlLoaded;
 
         /// <summary>
         /// Raised when there is a script error in the document 
         /// </summary>
-        public event GEWebBrowserEventHandler ScriptError;
+        public event EventHandler<GEEventArgs> ScriptError;
 
         /// <summary>
         /// Rasied when there is a GEPlugin event
         /// </summary>
-        public event GEWebBrowserEventHandler PluginEvent;
+        public event EventHandler<GEEventArgs> PluginEvent;
 
         /// <summary>
         /// Rasied when there is a viewchangebegin, viewchange or viewchangeend event 
         /// </summary>
-        public event GEWebBrowserEventHandler ViewEvent;
+        public event EventHandler<GEEventArgs> ViewEvent;
 
         #endregion
 
@@ -169,9 +158,6 @@ namespace FC.GEPluginCtrls
         /// <summary>
         /// Gets or sets the current imagery base for the plug-in
         /// </summary>
-        [Category("Control Options"),
-        Description("Gets or sets the current imagery base for the plug-in."),
-        DefaultValueAttribute(ImageryBase.Earth)]
         public ImageryBase ImageyBase
         {
             get
@@ -322,7 +308,7 @@ namespace FC.GEPluginCtrls
         /// <example>GEWebBrowser.FetchKmlSynchronous("http://www.site.com/file.kml");</example>
         public object FetchKmlSynchronous(string url)
         {
-            return this.FetchKmlSynchronous(url, 1000);
+            return this.FetchKmlSynchronous(url, 2000);
         }
 
         /// <summary>
@@ -335,6 +321,7 @@ namespace FC.GEPluginCtrls
         public object FetchKmlSynchronous(string url, int timeout)
         {
             string completionCallback = String.Format("createCallback_('OnKmlFetched', '{0}')", url);
+
             try
             {
                 if (this.Document != null)
@@ -359,7 +346,7 @@ namespace FC.GEPluginCtrls
             { 
             }
 
-            return new object { };
+            return null;
         }
         
         /// <summary>
@@ -476,7 +463,7 @@ namespace FC.GEPluginCtrls
             }
             else
             {
-                return null;
+                return new object { };
             }
         }
 
@@ -759,16 +746,6 @@ namespace FC.GEPluginCtrls
         #region Event handlers
 
         /// <summary>
-        /// Called when the document has a ScriptError
-        /// </summary>
-        /// <param name="sender">The sending object</param>
-        /// <param name="e">Event arguments</param>
-        private void External_ScriptError(object sender, GEEventArgs e)
-        {
-            this.OnScriptError(sender, e);
-        }
-
-        /// <summary>
         /// Called when the Plugin is Ready, rasies OnPluginReady 
         /// </summary>
         /// <param name="plugin">The plugin instance</param>
@@ -801,46 +778,6 @@ namespace FC.GEPluginCtrls
         }
 
         /// <summary>
-        /// Called when there is a Kml event 
-        /// </summary>
-        /// <param name="kmlEvent">the kml event</param>
-        /// <param name="e">The event arguments</param>
-        private void External_KmlEvent(object kmlEvent, GEEventArgs e)
-        {
-            this.OnKmlEvent(kmlEvent, e);
-        }
-
-        /// <summary>
-        /// Called when there is a GEPlugin event
-        /// </summary>
-        /// <param name="sender">The plugin object</param>
-        /// <param name="e">The event arguments</param>
-        private void External_PluginEvent(object sender, GEEventArgs e)
-        {
-            this.OnPluginEvent(sender, e);
-        }
-
-        /// <summary>
-        /// Called when there is a viewchange event 
-        /// </summary>
-        /// <param name="sender">the GEView object</param>
-        /// <param name="e">The event arguments</param>
-        private void External_ViewEvent(object sender, GEEventArgs e)
-        {
-            this.OnViewEvent(sender, e);
-        }
-
-        /// <summary>
-        /// Called when a Kml/Kmz file has loaded
-        /// </summary>
-        /// <param name="kmlFeature">The kml feature</param>
-        /// <param name="e">Event arguments</param>
-        private void External_KmlLoaded(object kmlFeature, GEEventArgs e)
-        {
-            this.OnKmlLoaded(kmlFeature, e);
-        }
-
-        /// <summary>
         /// Called when the Html document has finished loading
         /// </summary>
         /// <param name="sender">The sending object</param>
@@ -848,41 +785,16 @@ namespace FC.GEPluginCtrls
         private void GEWebBrowser_DocumentCompleted(object sender, WebBrowserDocumentCompletedEventArgs e)
         {
             // Set up the error handler for a loaded Document
-            this.Document.Window.Error += new HtmlElementErrorEventHandler(this.Window_Error);
-        }
+            ////this.Document.Window.Error += new HtmlElementErrorEventHandler(this.Window_Error);
 
-        /// <summary>
-        /// Called when the parent form of the control is closing.
-        /// This requires that the ParentForm property has been correctly set
-        /// </summary>
-        /// <param name="sender">The sending object</param>
-        /// <param name="e">The event arguments</param>
-        private void ParentForm_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            this.pluginIsReady = false;
-            Debug.WriteLine("ParentForm_FormClosing: " + this.parentForm.Name, "GEWebBrowser");
-        }
-
-        /// <summary>
-        /// Called when there is a script error in the window
-        /// </summary>
-        /// <param name="sender">The sending object</param>
-        /// <param name="e">Event arguments</param>
-        private void Window_Error(object sender, HtmlElementErrorEventArgs e)
-        {
-            // Handle the original error
-            e.Handled = true;
-
-            // Build the error data
-            GEEventArgs ea = new GEEventArgs();
-
-            ea.Message = "Document Error";
-            ea.Data = "line " + e.LineNumber.ToString() + " - " + e.Description;
-
-            ////string badline = Properties.Resources.Plugin.Split('\n')[e.LineNumber - 1];
-
-            // Bubble the error
-            this.OnScriptError(e.ToString(), ea);
+            this.Document.Window.Error += (o, ev) =>
+            {
+                ev.Handled = true;
+                GEEventArgs ea = new GEEventArgs();
+                ea.Message = "Document Error";
+                ea.Data = "line " + ev.LineNumber.ToString() + " - " + ev.Description;
+                this.OnScriptError(e.ToString(), ea);
+            };
         }
 
         #endregion

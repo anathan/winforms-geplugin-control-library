@@ -184,7 +184,13 @@ namespace FC.GEPluginCtrls
                 throw new ApplicationException("ge is not of the type GEPlugin");
             }
 
-            ge.getLayerRoot().EnableLayerById(id.ToString(), value);
+            try
+            {
+                ge.getLayerRoot().EnableLayerById(id.ToString(), value);
+            }
+            catch (RuntimeBinderException)
+            {
+            }
         }
 
         /// <summary>
@@ -283,33 +289,11 @@ namespace FC.GEPluginCtrls
                    wrapper,
                    null);
             }
-            catch (System.Reflection.TargetInvocationException)
+            catch (NullReferenceException)
             {
             }
 
             return type;
-        }
-
-        /// <summary>
-        /// Checks if an object in a RCW supports a given method
-        /// </summary>
-        /// <param name="wrapper">The com object wrapper</param>
-        /// <param name="methodName">The name of the method to check for</param>
-        /// <returns>True if the object supports the method, false if not</returns>
-        public static bool HasMethod(dynamic wrapper, string methodName)
-        {
-            object obj = wrapper as object;
-            MethodInfo method = obj.GetType().GetMethods().
-                FirstOrDefault(x => x.Name == methodName);
-
-            if (null == method)
-            {
-                return false;
-            }
-            else
-            {
-                return true;
-            }
         }
 
         /// <summary>
@@ -362,7 +346,7 @@ namespace FC.GEPluginCtrls
             AltitudeMode altitudeMode = AltitudeMode.RelativeToGround,
             double heading = 0,
             double tilt = 0,
-            double range = 1000
+            double range = 60000
             )
         {
             if (!IsGe(ge))
@@ -423,108 +407,125 @@ namespace FC.GEPluginCtrls
             try
             {
                 type = feature.getType();
+            }
+            catch (RuntimeBinderException)
+            {
+                return false;
+            }
 
-                switch (type)
-                {
-                    case "KmlFolder":
-                    case "KmlDocument":
-                        if (null != feature.getAbstractView())
+            switch (type)
+            {
+                case "KmlFolder":
+                case "KmlDocument":
+                    if (null != feature.getAbstractView())
+                    {
+                        abstractView = feature.getAbstractView();
+                    }
+
+                    break;
+                case "KmlNetworkLink":
+                    if (null != feature.getAbstractView())
+                    {
+                        abstractView = feature.getAbstractView();
+                    }
+                    else
+                    {
+                        string linkUrl = string.Empty;
+
+                        // Kml documents using the pre 2.1 spec may contain the <Url> element 
+                        // in these cases the getHref call will return null
+                        try
                         {
-                            abstractView = feature.getAbstractView();
+                            linkUrl = feature.getUrl();
+                        }
+                        catch (RuntimeBinderException)
+                        {
                         }
 
-                        break;
-                    case "KmlNetworkLink":
-                        if (null != feature.getAbstractView())
+                        if (linkUrl == string.Empty)
                         {
-                            abstractView = feature.getAbstractView();
-                        }
-                        else
-                        {
-                            string linkUrl = string.Empty;
-
-                            // Kml documents using the pre 2.1 spec may contain the <Url> element 
-                            // in these cases the getHref call will return null
-                            if (GEHelpers.HasMethod(feature, "getLink"))
+                            try
                             {
                                 linkUrl = feature.getLink().getHref();
                             }
-                            else
+                            catch (RuntimeBinderException)
                             {
-                                linkUrl = feature.getUrl();
                             }
+                        }
 
-                            dynamic kmlObject = browser.FetchKmlSynchronous(linkUrl);
+                        dynamic kmlObject = browser.FetchKmlSynchronous(linkUrl);
 
-                            if (null != kmlObject)
+                        if (null != browser.FetchKmlSynchronous(linkUrl))
+                        {
+                            if (null != kmlObject.getOwnerDocument())
                             {
-                                if (kmlObject.getOwnerDocument() != null)
-                                {
-                                    abstractView = kmlObject.getOwnerDocument().getAbstractView();
-                                }
+                                abstractView = kmlObject.getOwnerDocument().getAbstractView();
                             }
-
                         }
+                    }
 
-                        break;
-                    case "KmlPoint":
-                        return LookAt(ge, feature.getLatitude(), feature.getLongitude());
-                    case "KmlPolygon":
-                        return LookAt(
-                            ge,
-                            feature.getOuterBoundary().getCoordinates().get(0).getLatitude(),
-                            feature.getOuterBoundary().getCoordinates().get(0).getLongitude());
-                    case "KmlPlacemark":
-                        if (null != feature.getAbstractView())
-                        {
-                            abstractView = feature.getAbstractView();
-                        }
-                        else
-                        {
-                            return LookAt(feature.getGeometry(), browser);
-                        }
+                    break;
+                case "KmlPoint":
+                    return LookAt(ge, feature.getLatitude(), feature.getLongitude());
+                case "KmlPolygon":
+                    dynamic p = feature.getOuterBoundary().getCoordinates().get(0);
+                    return LookAt(
+                        ge,
+                        latitude: p.getLatitude(),
+                        longitude: p.getLongitude(),
+                        altitude: p.getAltitude());
 
-                        break;
-                    case "KmlLineString":
-                        return LookAt(
-                            ge,
-                            feature.getCoordinates().get(0).getLatitude(),
-                            feature.getCoordinates().get(0).getLongitude());
-                    case "KmlMultiGeometry":
-                        ////IKmlMultiGeometry multiGeometry = (IKmlMultiGeometry)geometry;
-                        ////multiGeometry.getGeometries().getFirstChild().getType();
-                        return false;
-                    default:
-                        return false;
-                }
+                case "KmlPlacemark":
+                    if (null != feature.getAbstractView())
+                    {
+                        abstractView = feature.getAbstractView();
+                    }
+                    else
+                    {
+                        return LookAt(feature.getGeometry(), browser);
+                    }
 
-                if (null != abstractView)
-                {
-                    ge.getView().setAbstractView(abstractView);
-                    return true;
-                }
-                else
-                {
+                    break;
+                case "KmlLineString":
+                    return LookAt(
+                        ge,
+                        feature.getCoordinates().get(0).getLatitude(),
+                        feature.getCoordinates().get(0).getLongitude());
+                case "KmlMultiGeometry":
+                    return LookAt(feature.getGeometries().getFirstChild(), browser);
+                default:
                     return false;
-                }
             }
-            catch (RuntimeBinderException ex)
+
+            if (null != abstractView)
             {
-                Debug.WriteLine("LookAt: " + ex.ToString());
+                ge.getView().setAbstractView(abstractView);
+                return true;
+            }
+            else
+            {
                 return false;
             }
         }
 
         /// <summary>
-        /// Opens the balloon for the given feature in the plugin
+        /// Opens the balloon for the given feature in the plugin using OpenFeatureBalloon()
         /// </summary>
         /// <param name="ge">the plugin instance</param>
-        /// <param name="feature">the feature to open a ballon for</param>
-        /// <param name="setBalloon">Optionally opens the balloon in the plugin. Default is true</param>
-        /// <returns>The balloon object (GEFeatureBalloon) or and empty object</returns>
+        /// <param name="feature">the feature to open a balloon for</param>
+        /// <param name="minWidth">Optional minimum balloon width</param>
+        /// <param name="minHeight">Optional minimum balloon height</param>
+        /// <param name="maxWidth">Optional maximum balloon width</param>
+        /// <param name="maxHeight">Optional maximum balloon height</param>
+        /// <param name="setBalloon">Optionally set the balloon to be the current in the plugin</param>
+        /// <returns>The feature balloon</returns>
         public static dynamic OpenFeatureBalloon(
             dynamic ge,
             dynamic feature,
+            int minWidth = 0,
+            int minHeight = 0,
+            int maxWidth = 800,
+            int maxHeight = 600,
             bool setBalloon = true)
         {
             if (!IsGe(ge))
@@ -544,6 +545,10 @@ namespace FC.GEPluginCtrls
                 }
 
                 balloon.setFeature(feature);
+                balloon.setMinHeight(minHeight);
+                balloon.setMaxHeight(maxHeight);
+                balloon.setMinWidth(minWidth);
+                balloon.setMaxWidth(maxWidth);
 
                 if (setBalloon)
                 {
@@ -553,6 +558,59 @@ namespace FC.GEPluginCtrls
             catch (RuntimeBinderException ex)
             {
                 Debug.WriteLine("OpenFeatureBalloon: " + ex.ToString(), "GEHelpers");
+            }
+
+            if (balloon == null)
+            {
+                return new object { };
+            }
+
+            return balloon;
+        }
+
+        /// <summary>
+        /// Opens the balloon for the given feature in the plugin using getBalloonHtmlUnsafe()
+        /// </summary>
+        /// <param name="ge">the plugin instance</param>
+        /// <param name="feature">the feature to open a balloon for</param>
+        /// <param name="minWidth">Optional minimum balloon width</param>
+        /// <param name="minHeight">Optional minimum balloon height</param>
+        /// <param name="maxWidth">Optional maximum balloon width</param>
+        /// <param name="maxHeight">Optional maximum balloon height</param>
+        /// <param name="setBalloon">Optionally set the balloon to be the current in the plugin</param>
+        /// <returns>The unsafe html balloon</returns>
+        public static dynamic OpenBalloonHtmlUnsafe(
+            dynamic ge,
+            dynamic feature,
+            int minWidth = 0,
+            int minHeight = 0,
+            int maxWidth = 800,
+            int maxHeight = 600,
+            bool setBalloon = true)
+        {
+            if (!IsGe(ge))
+            {
+                throw new ApplicationException("ge is not of the type GEPlugin");
+            }
+
+            dynamic balloon = null;
+            dynamic content = null;
+
+            try
+            {
+                content = feature.getBalloonHtmlUnsafe();
+                balloon = ge.createHtmlStringBalloon(string.Empty);
+                balloon.setFeature(feature);
+                balloon.setContentString(content);
+                balloon.setMinHeight(minHeight);
+                balloon.setMaxHeight(maxHeight);
+                balloon.setMinWidth(minWidth);
+                balloon.setMaxWidth(maxWidth);
+                ge.setBalloon(balloon);
+            }
+            catch (RuntimeBinderException rbex)
+            {
+                Debug.WriteLine("OpenBalloonHtmlUnsafe: " + rbex.ToString(), "GEHelpers");
             }
 
             if (balloon == null)

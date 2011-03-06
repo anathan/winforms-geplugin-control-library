@@ -26,7 +26,7 @@ namespace FC.GEPluginCtrls.HttpServer
     using System.Net;
     using System.Net.Sockets;
     using System.Text;
-    using System.Threading;
+    using System.Threading.Tasks;
 
     /// <summary>
     /// A simple HTTP server class to allow the use of local files
@@ -61,7 +61,7 @@ namespace FC.GEPluginCtrls.HttpServer
         private string rootDirectory = @"\";
 
         /// <summary>
-        /// Default file name
+        /// Default file name to look for in the root directory
         /// </summary>
         private string defaultFileName = "default.kml";
 
@@ -71,9 +71,14 @@ namespace FC.GEPluginCtrls.HttpServer
         private string httpVersion = "HTTP/1.1";
 
         /// <summary>
-        /// Keep listening
+        /// Keep listening switch
         /// </summary>
         private volatile bool keepListening = true;
+
+        /// <summary>
+        /// Task for listining to incomming connections
+        /// </summary>
+        private Task listenTask = null;
 
         #endregion
 
@@ -214,9 +219,11 @@ namespace FC.GEPluginCtrls.HttpServer
             }
 
             // start the listen thread
-            Thread listenThread = new Thread(new ThreadStart(this.StartListen));
-            listenThread.Start();
-
+            this.listenTask = Task.Factory.StartNew(
+                () =>
+                this.StartListen(),
+                TaskCreationOptions.LongRunning);
+   
             this.keepListening = true;
             Debug.WriteLine("Start...", "Server-Info");
         }
@@ -372,8 +379,6 @@ namespace FC.GEPluginCtrls.HttpServer
             data.AppendLine("Accept-Ranges: bytes");
             data.AppendFormat("Content-Length: {0}{1}", bytes, Environment.NewLine);
             data.AppendFormat("Content-Type: {0}{1}", mime, Environment.NewLine);
-
-            // end
             data.AppendLine("Connection: close");
             data.AppendLine();
 
@@ -436,7 +441,7 @@ namespace FC.GEPluginCtrls.HttpServer
                 // this allows the listenThread to teminate cleanly
                 if (!this.tcpListener.Pending())
                 {
-                    Thread.Sleep(100);
+                    this.listenTask.Wait(100);
                     continue;
                 }
                 else
