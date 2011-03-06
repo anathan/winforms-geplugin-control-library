@@ -24,10 +24,9 @@ namespace FC.GEPluginCtrls
     using System.Drawing;
     using System.Linq;
     using System.Reflection;
+    using System.Threading.Tasks;
     using System.Windows.Forms;
     using Microsoft.CSharp.RuntimeBinder;
-
-    using System.Threading.Tasks;
 
     /// <summary>
     /// The KmlTree view provides a quick way to display kml content
@@ -85,6 +84,11 @@ namespace FC.GEPluginCtrls
         /// </summary>
         private bool checkAllChildren = true;
 
+        /// <summary>
+        /// Indicates if the treeview should use unsafe html balloons when node is clicked
+        /// </summary>
+        private bool useUnsafeHtmlBalloons = false;
+
         #endregion
 
         /// <summary>
@@ -95,11 +99,35 @@ namespace FC.GEPluginCtrls
         {
             this.InitializeComponent();
             this.ShowNodeToolTips = true;
-            this.ShowLines = false;
+            this.ShowLines = false;  
         }
 
         #region Public properties
-        
+
+        /// <summary>
+        /// Gets or sets the minimum height of any balloons triggered from the control
+        /// </summary>
+        [Category("Control Options"),
+        Description("Gets or sets the minimum height of any balloons triggered from the control. Default 0"),
+        DefaultValueAttribute(0)]
+        public int BalloonMinimumHeight
+        {
+            get { return this.balloonMinimumHeight; }
+            set { this.balloonMinimumHeight = value; }
+        }
+
+        /// <summary>
+        /// Gets or sets the minimum width of any balloons triggered from the control
+        /// </summary>
+        [Category("Control Options"),
+        Description("Gets or sets the minimum width of any balloons triggered from the control. Default 0"),
+        DefaultValueAttribute(0)]
+        public int BalloonMinimumWidth
+        {
+            get { return this.balloonMinimumWidth; }
+            set { this.balloonMinimumWidth = value; }
+        }
+
         /// <summary>
         /// Gets or sets a value indicating whether the treeview should check all child nodes
         /// when a parent tree node is checked
@@ -109,39 +137,15 @@ namespace FC.GEPluginCtrls
         DefaultValueAttribute(true)]
         public bool CheckAllChildrenOnParentChecked
         {
-            get 
+            get
             {
-                return this.checkAllChildren; 
+                return this.checkAllChildren;
             }
 
             set
-            { 
+            {
                 this.checkAllChildren = value;
             }
-        }
-
-        /// <summary>
-        /// Gets or sets the minimum width of any balloons triggered from the control
-        /// </summary>
-        [Category("Control Options"),
-        Description("Gets or sets the minimum width of any balloons triggered from the control. Default 250"),
-        DefaultValueAttribute(0)]
-        public int BalloonMinimumWidth
-        {
-            get { return this.balloonMinimumWidth; }
-            set { this.balloonMinimumWidth = value; }
-        }
-
-        /// <summary>
-        /// Gets or sets the minimum height of any balloons triggered from the control
-        /// </summary>
-        [Category("Control Options"),
-        Description("Gets or sets the minimum height of any balloons triggered from the control. Default 100"),
-        DefaultValueAttribute(0)]
-        public int BalloonMinimumHeight
-        {
-            get { return this.balloonMinimumHeight; }
-            set { this.balloonMinimumHeight = value; }
         }
 
         /// <summary>
@@ -186,6 +190,20 @@ namespace FC.GEPluginCtrls
             set { this.openBalloonOnDoubleClickNode = value; }
         }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether to use unsafe html balloons (if any) when
+        /// feature represented by the treenode is double clicked
+        /// The default setting is false
+        /// </summary>
+        [Category("Control Options"),
+        Description("Specifies if the plugin should use unsafe html balloons when opening balloons. Default false"),
+        DefaultValueAttribute(false)]
+        public bool UseUnsafeHtmlBalloons
+        {
+            get { return this.useUnsafeHtmlBalloons; }
+            set { this.useUnsafeHtmlBalloons = value; }
+        }
+
         #endregion
 
         #region Public methods
@@ -197,9 +215,7 @@ namespace FC.GEPluginCtrls
         public void ParseKmlObject(dynamic kmlObject)
         {
             object kml = kmlObject;
-            var task = Task.Factory.StartNew(
-                () => ObjectParser(kml),
-                TaskCreationOptions.LongRunning);
+            Task.Factory.StartNew(() => this.ObjectParser(kml), TaskCreationOptions.None);
         }
 
         /// <summary>
@@ -210,7 +226,7 @@ namespace FC.GEPluginCtrls
         {
             foreach (object kmlObject in kmlObjects)
             {
-                this.ObjectParser(kmlObject);
+                this.ParseKmlObject(kmlObject);
             }
         }
 
@@ -238,124 +254,6 @@ namespace FC.GEPluginCtrls
         #region Private methods
 
         /// <summary>
-        /// Recursively parses a kml object into the tree
-        /// </summary>
-        /// <param name="kmlObject">The kml object to parse</param>
-        private void ObjectParser(dynamic kmlObject)
-        {
-            if (null != kmlObject)
-            {
-                string type = string.Empty;
-
-                try
-                {
-                    type = kmlObject.getType();
-                }
-                catch (RuntimeBinderException ex)
-                {
-                    Debug.WriteLine("ParsekmlObject: " + ex.ToString(), "KmlTreeView");
-                    return;
-                }
-
-                switch (type)
-                {
-                    case "KmlDocument":
-                    case "KmlFolder":
-                        if (this.InvokeRequired)
-                        {
-                            this.Invoke((MethodInvoker)delegate()
-                            {
-                                this.Nodes.Add(this.CreateTreeNodeFromKmlFolder(kmlObject));
-                            });
-                        }
-
-                        break;
-                    case "KmlNetworkLink":
-                        if (this.InvokeRequired)
-                        {
-                            this.Invoke((MethodInvoker)delegate()
-                            {
-                                this.Nodes.Add(
-                                    this.CreateTreeNodeFromKmlNetworkLink(kmlObject));
-                            });
-                        }
-
-                        break;
-                    case "KmlGroundOverlay":
-                    case "KmlScreenOverlay":
-                    case "KmlPlacemark":
-                    case "KmlTour":
-                    case "KmlPhotoOverlay":
-                        if (this.InvokeRequired)
-                        {
-                            this.Invoke((MethodInvoker)delegate()
-                            {
-                                this.Nodes.Add(
-                                    this.CreateTreeNodeFromKmlFeature(kmlObject));
-                            });
-                        }
-
-                        break;
-                    default:
-                        break;
-                }
-            }
-        }
-
-        /// <summary>
-        /// Recursively iterates through a Kml Container adding any child features to the tree
-        /// </summary>
-        /// <param name="kmlContainer">The object to parse</param>
-        /// <returns>The current tree node</returns>
-        private TreeNode ParseKmlContainer(dynamic kmlContainer)
-        {
-            TreeNode parentNode = this.CreateTreeNodeFromKmlFeature(kmlContainer);
-      
-            try
-            {
-                if (Convert.ToBoolean(kmlContainer.getFeatures().hasChildNodes()))
-                {
-                    TreeNode childNode = new TreeNode();
-
-                    dynamic subNodes = kmlContainer.getFeatures().getChildNodes();
-
-                    for (int i = 0; i < subNodes.getLength(); i++)
-                    {
-                        dynamic subNode = subNodes.item(i);
-                        string type = subNode.getType();
-
-                        switch (type)
-                        {
-                            // features that implement the IkmlContainer interface
-                            case "KmlDocument":
-                            case "KmlFolder":
-                                childNode = this.CreateTreeNodeFromKmlFolder(subNode);
-                                break;
-
-                            // network links
-                            case "KmlNetworkLink":
-                                childNode = this.CreateTreeNodeFromKmlNetworkLink(subNode);
-                                break;
-
-                            // all other features
-                            default:
-                                childNode = this.CreateTreeNodeFromKmlFeature(subNode);
-                                break;
-                        }
-
-                        parentNode.Nodes.Add(childNode);
-                    }
-                }
-            }
-            catch (RuntimeBinderException ex)
-            {
-                Debug.WriteLine("ParsekmlContainer: " + ex.ToString(), "KmlTreeView");
-            }
-
-            return parentNode;
-        }
-
-        /// <summary>
         /// Creates a tree node from a Kml Feature
         /// </summary>
         /// <param name="kmlFeature">The kml feature to add</param>
@@ -374,7 +272,7 @@ namespace FC.GEPluginCtrls
                 treenode.Name = type;
 
                 // TODO: and length as property
-                treenode.ToolTipText = this.ShortenToolTip(kmlFeature.getDescription(), 200);
+                treenode.ToolTipText = this.StripHTML(kmlFeature.getDescription());
 
                 if (Convert.ToBoolean(kmlFeature.getOpen()))
                 {
@@ -394,7 +292,6 @@ namespace FC.GEPluginCtrls
             catch (RuntimeBinderException ex)
             {
                 Debug.WriteLine("CreateTreeNodeFromKmlFeature:" + ex.ToString(), "KmlTreeView");
-                ////throw;
             }
 
             switch (type)
@@ -464,56 +361,79 @@ namespace FC.GEPluginCtrls
         /// <param name="kmlObject">The network link object</param>
         /// <returns>The tree node for the networklink</returns>
         private TreeNode CreateTreeNodeFromKmlNetworkLink(dynamic kmlObject)
-        {    
-            string url = string.Empty;
-            TreeNode treeNode = new TreeNode();
+        {
+            // Create a simple node 
+            TreeNode node = new TreeNode();
+            node.Text = kmlObject.getName();
+            node.ToolTipText = this.StripHTML(kmlObject.getDescription());
+            node.Tag = kmlObject;
+  
+            // TODO some image key for networkinks - node.ImageKey = "folderLinkClosed";
 
             // Kml documents using the pre 2.1 spec may contain the <Url> element 
-            // in these cases the getHref call will return null
-            if (GEHelpers.HasMethod(kmlObject, "getLink"))
-            {
-                url = kmlObject.getLink().getHref();
-            }
-            else
-            {
-                url = kmlObject.getUrl();
-            }
+            // in these cases the getHref call will return null 
+            string url = KmlHelpers.GetUrl(kmlObject);
 
+            // if that didn't work we can try getUrl()
+            if (url == string.Empty)
+            {
+                try
+                {
+                    url = kmlObject.getUrl();
+                }
+                catch (RuntimeBinderException)
+                {
+                }
+
+                // and if that didn't work we can try getLink().getHref()
+                if (url == string.Empty)
+                {
+                    try
+                    {
+                        url = kmlObject.getLink().getHref();
+                    }
+                    catch (RuntimeBinderException)
+                    {
+                    }
+                }
+            }
+            
             // getComputedStyle is not part of the current Api and has issues.
-            // if the call fails we manualy create a tree node for the link
+            // if the call fails we manualy create a tree node for the link.
             try
             {
                 dynamic obj = this.gewb.FetchKmlSynchronous(url);
 
                 if (obj != null)
                 {
-                    if (GEHelpers.HasMethod(obj, "getOwnerDocument"))
+                    if (obj.getOwnerDocument() != null)
                     {
-                        dynamic listItemType = obj.getOwnerDocument().getComputedStyle().getListStyle().getListItemType();
+                        int listItemType = obj.getOwnerDocument().getComputedStyle().getListStyle().getListItemType();
 
                         if (listItemType == this.geplugin.LIST_ITEM_CHECK_HIDE_CHILDREN)
                         {
+                            // The childnodes are hidden so we create a basic feature node.
                             return this.CreateTreeNodeFromKmlFeature(obj);
                         }
                         else
                         {
-                            return this.ParseKmlContainer(obj);
+                            // Create a temporary subnode, when this is expaneded 
+                            // we will call ParseKmlContainer on the kmlObject held in the 
+                            // tag property 
+                            TreeNode nl = new TreeNode(obj.getName());
+                            nl.Tag = obj;
+                            nl.ToolTipText = this.StripHTML(obj.getDescription());
+                            node.Nodes.Add(nl);
+                            return node;
                         }
                     }
                 }
             }
-            catch (RuntimeBinderException rbex)
+            catch (RuntimeBinderException)
             {
-                System.Diagnostics.Debug.WriteLine(rbex.Message);
             }
 
-            // return a simple treenode...
-            string name = kmlObject.getName();
-            string desc = kmlObject.getDescription();
-            TreeNode node = new TreeNode(name);
-            node.ToolTipText = desc;
-            node.Tag = kmlObject;
-
+            // if all else has failed we return the simple treenode...
             return node;
         }
 
@@ -528,6 +448,13 @@ namespace FC.GEPluginCtrls
                 foreach (TreeNode child in treeNode.Nodes)
                 {
                     child.Checked = true;
+                    dynamic obj = child.Tag as dynamic;
+
+                    if (obj != null)
+                    {
+                        obj.setVisibility(1);
+                    }
+
                     this.CheckAllChildNodes(child);
                 }
             }
@@ -542,8 +469,168 @@ namespace FC.GEPluginCtrls
             if (treeNode.Parent != null)
             {
                 treeNode.Parent.Checked = true;
+                dynamic obj = treeNode.Parent.Tag as dynamic;
+
+                if (obj != null)
+                {
+                    obj.setVisibility(1);
+                }
+
                 this.CheckAllParentNodes(treeNode.Parent);
             }
+        }
+
+        /// <summary>
+        /// Recursively parses a kml object into the tree
+        /// </summary>
+        /// <param name="kmlObject">The kml object to parse</param>
+        private void ObjectParser(dynamic kmlObject)
+        {
+            if (null != kmlObject)
+            {
+                string type = string.Empty;
+
+                try
+                {
+                    type = kmlObject.getType();
+                }
+                catch (RuntimeBinderException ex)
+                {
+                    Debug.WriteLine("ParsekmlObject: " + ex.ToString(), "KmlTreeView");
+                    return;
+                }
+
+                switch (type)
+                {
+                    case "KmlDocument":
+                    case "KmlFolder":
+                        if (this.InvokeRequired)
+                        {
+                            this.Invoke((MethodInvoker)delegate
+                            {
+                                this.Nodes.Add(this.CreateTreeNodeFromKmlFolder(kmlObject));
+                                this.Update();
+                            });
+                        }
+                        else
+                        {
+                            this.Nodes.Add(this.CreateTreeNodeFromKmlFolder(kmlObject));
+                            this.Update();
+                        }
+
+                        break;
+                    case "KmlNetworkLink":
+                        string name = kmlObject.getName();
+
+                        if (this.InvokeRequired)
+                        {
+                            this.Invoke((MethodInvoker)delegate
+                            {
+                                this.Nodes.Add(this.CreateTreeNodeFromKmlNetworkLink(kmlObject));
+                                this.Update();
+                            });
+                        }
+                        else
+                        {
+                            this.Nodes.Add(this.CreateTreeNodeFromKmlNetworkLink(kmlObject));
+                            this.Update();
+                        }
+
+                        break;
+                    case "KmlGroundOverlay":
+                    case "KmlScreenOverlay":
+                    case "KmlPlacemark":
+                    case "KmlTour":
+                    case "KmlPhotoOverlay":
+                        if (this.InvokeRequired)
+                        {
+                            this.Invoke((MethodInvoker)delegate
+                            {
+                                this.Nodes.Add(this.CreateTreeNodeFromKmlFeature(kmlObject));
+                                this.Update();
+                            });
+                        }
+                        else
+                        {
+                            this.Nodes.Add(this.CreateTreeNodeFromKmlFeature(kmlObject));
+                            this.Update();
+                        }
+
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Recursively iterates through a Kml Container adding any child features to the tree
+        /// </summary>
+        /// <param name="kmlContainer">The object to parse</param>
+        /// <returns>The current tree node</returns>
+        private TreeNode ParseKmlContainer(dynamic kmlContainer)
+        {
+            TreeNode parentNode = this.CreateTreeNodeFromKmlFeature(kmlContainer);
+
+            try
+            {
+                if (Convert.ToBoolean(kmlContainer.getFeatures().hasChildNodes()))
+                {
+                    TreeNode childNode = new TreeNode();
+
+                    dynamic subNodes = kmlContainer.getFeatures().getChildNodes();
+
+                    for (int i = 0; i < subNodes.getLength(); i++)
+                    {
+                        dynamic subNode = subNodes.item(i);
+                        string type = subNode.getType();
+
+                        switch (type)
+                        {
+                            // features that implement the IkmlContainer interface
+                            case "KmlDocument":
+                            case "KmlFolder":
+                                childNode = this.CreateTreeNodeFromKmlFolder(subNode);
+                                break;
+
+                            // network links
+                            case "KmlNetworkLink":
+                                childNode = this.CreateTreeNodeFromKmlNetworkLink(subNode);
+                                break;
+
+                            // all other features
+                            default:
+                                childNode = this.CreateTreeNodeFromKmlFeature(subNode);
+                                break;
+                        }
+
+                        parentNode.Nodes.Add(childNode);
+                    }
+                }
+            }
+            catch (RuntimeBinderException ex)
+            {
+                Debug.WriteLine("ParsekmlContainer: " + ex.ToString(), "KmlTreeView");
+            }
+
+            return parentNode;
+        }
+
+        /// <summary>
+        /// Clean any html and add linebreaks for use with tooltips.
+        /// </summary>
+        /// <param name="html">a html string</param>
+        /// <returns>plain text with linebreaks</returns>
+        private string StripHTML(string html)
+        {
+            System.Text.RegularExpressions.Regex reg =
+                new System.Text.RegularExpressions.Regex(
+                    "<[^>]+>",
+                    System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+
+            html = reg.Replace(html, Environment.NewLine);
+
+            return html.Replace(Environment.NewLine + Environment.NewLine, string.Empty);
         }
 
         /// <summary>
@@ -552,35 +639,16 @@ namespace FC.GEPluginCtrls
         /// <param name="treeNode">The starting node to check from</param>
         private void UncheckAllChildNodes(TreeNode treeNode)
         {
-            if (treeNode.Nodes.Count > 0)
+            foreach (TreeNode node in treeNode.Nodes)
             {
-                foreach (TreeNode child in treeNode.Nodes)
+                node.Checked = false;
+                if (node.Nodes.Count > 0)
                 {
-                    child.Checked = false;
-                    this.UncheckAllChildNodes(child);
+                    this.UncheckAllChildNodes(node);
                 }
             }
         }
-
-        /// <summary>
-        /// Trucates a any string over the given number of chars
-        /// Appends an ellipsis (...)
-        /// </summary>
-        /// <param name="text">The text to truncated</param>
-        /// <param name="length">The maximum string length </param>
-        /// <returns>The truncated text</returns>
-        private string ShortenToolTip(string text, int length)
-        {
-            if (text.Length > length)
-            {
-                return text.Substring(0, length) + "...";
-            }
-            else
-            {
-                return text;
-            }
-        }
-
+        
         #endregion
 
         #region Event handlers
@@ -593,24 +661,15 @@ namespace FC.GEPluginCtrls
         private void KmlTree_AfterCheck(object sender, TreeViewEventArgs e)
         {
             dynamic feature = e.Node.Tag;
-            string type = string.Empty;
 
-            try
-            {
-                type = GEHelpers.GetTypeFromRcw(feature);
-            }
-            catch (RuntimeBinderException ex)
-            {
-                Debug.WriteLine("KmlTree_AfterCheck: " + ex.ToString(), "KmlTreeView");
-                ////throw;
-            }
+            string type = feature.getType();
 
             if (feature != null && type != string.Empty)
             {
+                feature.setVisibility(Convert.ToInt16(e.Node.Checked));
+            
                 if (e.Node.Checked)
                 {
-                    feature.setVisibility(1);
-
                     if (e.Action != TreeViewAction.Unknown)
                     {
                         if (this.checkAllChildren)
@@ -623,13 +682,19 @@ namespace FC.GEPluginCtrls
 
                     if ("KmlTour" == type)
                     {
-                       this.geplugin.getTourPlayer().setTour(feature);
+                        this.geplugin.getTourPlayer().setTour(feature);
+                    }
+                    else if ("KmlNetworkLink" == type)
+                    {
+                        this.geplugin.getFeatures().appendChild(feature);
                     }
                 }
                 else
                 {
-                    feature.setVisibility(0);
-                    this.UncheckAllChildNodes(e.Node);
+                    if (e.Action != TreeViewAction.Unknown)
+                    {
+                        this.UncheckAllChildNodes(e.Node);
+                    }
 
                     if ("KmlTour" == type)
                     {
@@ -639,6 +704,83 @@ namespace FC.GEPluginCtrls
                     {
                         this.geplugin.getPhotoOverlayViewer().setPhotoOverlay(null);
                     }
+                    else if ("KmlNetworkLink" == type)
+                    {
+                        this.geplugin.getFeatures().removeChild(feature);
+                    }
+                }
+            }
+        }
+        
+        /// <summary>
+        /// Called after a tree node has collapsed
+        /// </summary>
+        /// <param name="sender">The TreeView</param>
+        /// <param name="e">Event Arugments</param>
+        private void KmlTreeView_AfterCollapse(object sender, TreeViewEventArgs e)
+        {
+            try
+            {
+                dynamic feature = e.Node.Tag;
+                if (feature != null)
+                {
+                    string type = GEHelpers.GetTypeFromRcw(feature);
+
+                    switch (type)
+                    {
+                        case "KmlDocument":
+                        case "KmlFolder":
+                            e.Node.ImageKey = "folderClosed";
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            }
+            catch (InvalidCastException icex)
+            {
+                Debug.WriteLine(icex.ToString(), "KmlTreeView");
+                ////throw;
+            }
+        }
+
+        /// <summary>
+        /// Called after a tree node has expanded
+        /// </summary>
+        /// <param name="sender">The TreeView</param>
+        /// <param name="e">Event Arugments</param>
+        private void KmlTreeView_AfterExpand(object sender, TreeViewEventArgs e)
+        {
+            dynamic feature = e.Node.Tag;
+            string type = string.Empty;
+
+            if (null != feature)
+            {
+                try
+                {
+                    type = feature.getType();
+                }
+                catch (RuntimeBinderException ex)
+                {
+                    Debug.WriteLine(ex.ToString(), "KmlTreeView_AfterExpand");
+                    ////throw;
+                }
+
+                switch (type)
+                {
+                    case "KmlDocument":
+                    case "KmlFolder":
+                        e.Node.ImageKey = "folderOpen";
+                        break;
+                    case "KmlNetworkLink":
+                        // handle networklink recursion here...?
+                        TreeNode subnode = e.Node.Nodes[0];
+                        e.Node.Nodes.Add(this.ParseKmlContainer(subnode.Tag));
+                        e.Node.Nodes.Remove(subnode);
+
+                        break;
+                    default:
+                        break;
                 }
             }
         }
@@ -674,11 +816,22 @@ namespace FC.GEPluginCtrls
                         case "KmlPlacemark":
                             if (this.openBalloonOnDoubleClickNode)
                             {
-                                dynamic balloon = this.geplugin.createFeatureBalloon(String.Empty);
-                                balloon.setMinHeight(this.balloonMinimumHeight);
-                                balloon.setMinWidth(this.balloonMinimumWidth);
-                                balloon.setFeature(feature);
-                                this.geplugin.setBalloon(balloon);
+                                if (this.useUnsafeHtmlBalloons)
+                                {
+                                    GEHelpers.OpenBalloonHtmlUnsafe(
+                                        this.geplugin,
+                                        feature,
+                                        this.balloonMinimumWidth,
+                                        this.balloonMinimumHeight);
+                                }
+                                else
+                                {
+                                    GEHelpers.OpenFeatureBalloon(
+                                        this.geplugin,
+                                        feature,
+                                        this.balloonMinimumWidth,
+                                        this.balloonMinimumHeight);
+                                }
                             }
 
                             break;
@@ -698,72 +851,6 @@ namespace FC.GEPluginCtrls
                         GEHelpers.LookAt(feature, this.gewb);
                     }
                 }
-            }
-        }
-
-        /// <summary>
-        /// Called after a tree node has expanded
-        /// </summary>
-        /// <param name="sender">The TreeView</param>
-        /// <param name="e">Event Arugments</param>
-        private void KmlTreeView_AfterExpand(object sender, TreeViewEventArgs e)
-        {
-            dynamic feature = e.Node.Tag;
-            string type = string.Empty;
-
-            if (null != feature)
-            {
-                try
-                {
-                    type = feature.getType();
-                }
-                catch (RuntimeBinderException ex)
-                {
-                    Debug.WriteLine(ex.ToString(), "KmlTreeView_AfterExpand");
-                    ////throw;
-                }
-
-                switch (type)
-                {
-                    case "KmlDocument":
-                    case "KmlFolder":
-                        e.Node.ImageKey = "folderOpen";
-                        break;
-                    default:
-                        break;
-                }
-            }
-        }
-
-        /// <summary>
-        /// Called after a tree node has collapsed
-        /// </summary>
-        /// <param name="sender">The TreeView</param>
-        /// <param name="e">Event Arugments</param>
-        private void KmlTreeView_AfterCollapse(object sender, TreeViewEventArgs e)
-        {
-            try
-            {
-                dynamic feature = e.Node.Tag;
-                if (feature != null)
-                {
-                    string type = GEHelpers.GetTypeFromRcw(feature);
-
-                    switch (type)
-                    {
-                        case "KmlDocument":
-                        case "KmlFolder":
-                            e.Node.ImageKey = "folderClosed";
-                            break;
-                        default:
-                            break;
-                    }
-                }
-            }
-            catch (InvalidCastException icex)
-            {
-                Debug.WriteLine(icex.ToString(), "KmlTreeView");
-                ////throw;
             }
         }
 

@@ -31,18 +31,12 @@ namespace FC.GEPluginCtrls
     public static class KmlHelpers
     {
         /// <summary>
-        /// A callback delegate for all items iterated over in WalkKmlDom
-        /// </summary>
-        /// <param name="kmlObject">The current KmlObject</param>
-        public delegate void CallBack(dynamic kmlObject);
-
-        /// <summary>
         /// Based on kmldomwalk.js
         /// see: http://code.google.com/p/earth-api-samples/source/browse/trunk/lib/kmldomwalk.js
         /// </summary>
         /// <param name="kmlObject">The kml object to parse</param>
         /// <param name="callBack">A function to call on each node visited</param>
-        public static void WalkKmlDom(dynamic kmlObject, CallBack callBack)
+        public static void WalkKmlDom(dynamic kmlObject, Action<dynamic> callBack)
         {
             string type = kmlObject.getType();
 
@@ -79,9 +73,10 @@ namespace FC.GEPluginCtrls
         public static string GetUrl(dynamic networklink)
         {
             string kml = networklink.getKml();
-            System.Xml.XmlDocument doc = new System.Xml.XmlDocument();
+            XmlDocument doc = new System.Xml.XmlDocument();
             doc.InnerXml = kml;
-            System.Xml.XmlNodeList list = doc.GetElementsByTagName("Url");
+            XmlNodeList list = doc.GetElementsByTagName("href");
+           
             int c = list.Count;
             if (c > 0)
             {

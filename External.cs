@@ -26,13 +26,6 @@ namespace FC.GEPluginCtrls
     using Microsoft.CSharp.RuntimeBinder;
 
     /// <summary>
-    /// Event handler for methods to be called from javascript
-    /// </summary>
-    /// <param name="sender">the sending object</param>
-    /// <param name="e">the event arguments</param>
-    public delegate void ExternalEventHandler(object sender, GEEventArgs e);
-
-    /// <summary>
     /// This COM Visible class contains all the methods to be called from Javascript
     /// </summary>
     [ComVisibleAttribute(true)]
@@ -60,32 +53,32 @@ namespace FC.GEPluginCtrls
         /// <summary>
         /// Raised when the plugin is ready
         /// </summary>
-        public event ExternalEventHandler PluginReady;
+        public event EventHandler<GEEventArgs> PluginReady;
 
         /// <summary>
         /// Raised when there is a kml event
         /// </summary>
-        public event ExternalEventHandler KmlEvent;
+        public event EventHandler<GEEventArgs> KmlEvent;
 
         /// <summary>
         /// Raised when a kml/kmz file has loaded
         /// </summary>
-        public event ExternalEventHandler KmlLoaded;
+        public event EventHandler<GEEventArgs> KmlLoaded;
 
         /// <summary>
         /// Raised when there is a script error in the document 
         /// </summary>
-        public event ExternalEventHandler ScriptError;
+        public event EventHandler<GEEventArgs> ScriptError;
 
         /// <summary>
         /// Raised when there is a GEPlugin event (frameend, balloonclose) 
         /// </summary>
-        public event ExternalEventHandler PluginEvent;
+        public event EventHandler<GEEventArgs> PluginEvent;
 
         /// <summary>
         /// Rasied when there is a viewchangebegin, viewchange or viewchangeend event 
         /// </summary>
-        public event ExternalEventHandler ViewEvent;
+        public event EventHandler<GEEventArgs> ViewEvent;
 
         #endregion
 
@@ -210,28 +203,6 @@ namespace FC.GEPluginCtrls
                     new GEEventArgs(pluginEvent.getType(), action, string.Empty));
             }
             catch (RuntimeBinderException ex)
-            {
-                Debug.WriteLine("ViewEventCallBack: " + ex.ToString(), "External");
-                ////throw;
-            }
-        }
-
-        /// <summary>
-        /// Called from javascript when there is a viewchange event
-        /// </summary>
-        /// <param name="sender">The GEView object</param>
-        /// <param name="action">The event action (viewchangebegin, viewchange or viewchangeend)</param>
-        public void ViewEventCallBack(object sender, string action)
-        {
-            dynamic viewEvent  = sender;
-
-            try
-            {
-                this.OnViewEvent(
-                    sender,
-                    new GEEventArgs(viewEvent.getType(), action, string.Empty));
-            }
-            catch (ArgumentException ex)
             {
                 Debug.WriteLine("ViewEventCallBack: " + ex.ToString(), "External");
                 ////throw;

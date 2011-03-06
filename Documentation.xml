@@ -4,13 +4,6 @@
         <name>FC.GEPluginCtrls</name>
     </assembly>
     <members>
-        <member name="T:FC.GEPluginCtrls.GEWebBrowserEventHandler">
-            <summary>
-            Main delegate event handler
-            </summary>
-            <param name="sender">The sending object</param>
-            <param name="e">The event arguments</param>
-        </member>
         <member name="T:FC.GEPluginCtrls.GEWebBrowser">
             <summary>
             This browser control holds the Google Earth Plug-in,
@@ -46,11 +39,6 @@
         <member name="F:FC.GEPluginCtrls.GEWebBrowser.pluginIsReady">
             <summary>
             Indicates whether the plug-in is ready to use
-            </summary>
-        </member>
-        <member name="F:FC.GEPluginCtrls.GEWebBrowser.parentForm">
-            <summary>
-            The parent form, if any, that is hosting the control 
             </summary>
         </member>
         <member name="M:FC.GEPluginCtrls.GEWebBrowser.#ctor">
@@ -263,13 +251,6 @@
             <param name="sender">The GEView object</param>
             <param name="e">Event arguments</param>
         </member>
-        <member name="M:FC.GEPluginCtrls.GEWebBrowser.External_ScriptError(System.Object,FC.GEPluginCtrls.GEEventArgs)">
-            <summary>
-            Called when the document has a ScriptError
-            </summary>
-            <param name="sender">The sending object</param>
-            <param name="e">Event arguments</param>
-        </member>
         <member name="M:FC.GEPluginCtrls.GEWebBrowser.External_PluginReady(System.Object,FC.GEPluginCtrls.GEEventArgs)">
             <summary>
             Called when the Plugin is Ready, rasies OnPluginReady 
@@ -277,52 +258,9 @@
             <param name="plugin">The plugin instance</param>
             <param name="e">Event arguments</param>
         </member>
-        <member name="M:FC.GEPluginCtrls.GEWebBrowser.External_KmlEvent(System.Object,FC.GEPluginCtrls.GEEventArgs)">
-            <summary>
-            Called when there is a Kml event 
-            </summary>
-            <param name="kmlEvent">the kml event</param>
-            <param name="e">The event arguments</param>
-        </member>
-        <member name="M:FC.GEPluginCtrls.GEWebBrowser.External_PluginEvent(System.Object,FC.GEPluginCtrls.GEEventArgs)">
-            <summary>
-            Called when there is a GEPlugin event
-            </summary>
-            <param name="sender">The plugin object</param>
-            <param name="e">The event arguments</param>
-        </member>
-        <member name="M:FC.GEPluginCtrls.GEWebBrowser.External_ViewEvent(System.Object,FC.GEPluginCtrls.GEEventArgs)">
-            <summary>
-            Called when there is a viewchange event 
-            </summary>
-            <param name="sender">the GEView object</param>
-            <param name="e">The event arguments</param>
-        </member>
-        <member name="M:FC.GEPluginCtrls.GEWebBrowser.External_KmlLoaded(System.Object,FC.GEPluginCtrls.GEEventArgs)">
-            <summary>
-            Called when a Kml/Kmz file has loaded
-            </summary>
-            <param name="kmlFeature">The kml feature</param>
-            <param name="e">Event arguments</param>
-        </member>
         <member name="M:FC.GEPluginCtrls.GEWebBrowser.GEWebBrowser_DocumentCompleted(System.Object,System.Windows.Forms.WebBrowserDocumentCompletedEventArgs)">
             <summary>
             Called when the Html document has finished loading
-            </summary>
-            <param name="sender">The sending object</param>
-            <param name="e">Event arguments</param>
-        </member>
-        <member name="M:FC.GEPluginCtrls.GEWebBrowser.ParentForm_FormClosing(System.Object,System.Windows.Forms.FormClosingEventArgs)">
-            <summary>
-            Called when the parent form of the control is closing.
-            This requires that the ParentForm property has been correctly set
-            </summary>
-            <param name="sender">The sending object</param>
-            <param name="e">The event arguments</param>
-        </member>
-        <member name="M:FC.GEPluginCtrls.GEWebBrowser.Window_Error(System.Object,System.Windows.Forms.HtmlElementErrorEventArgs)">
-            <summary>
-            Called when there is a script error in the window
             </summary>
             <param name="sender">The sending object</param>
             <param name="e">Event arguments</param>
@@ -516,6 +454,11 @@
             when a parent tree node is checked
             </summary>
         </member>
+        <member name="F:FC.GEPluginCtrls.KmlTreeView.useUnsafeHtmlBalloons">
+            <summary>
+            Indicates if the treeview should use unsafe html balloons when node is clicked
+            </summary>
+        </member>
         <member name="M:FC.GEPluginCtrls.KmlTreeView.#ctor">
             <summary>
             Initializes a new instance of the KmlTreeView class.
@@ -538,19 +481,6 @@
             Set the browser instance for the control to work with
             </summary>
             <param name="browser">The GEWebBrowser instance</param>
-        </member>
-        <member name="M:FC.GEPluginCtrls.KmlTreeView.ObjectParser(System.Object)">
-            <summary>
-            Recursively parses a kml object into the tree
-            </summary>
-            <param name="kmlObject">The kml object to parse</param>
-        </member>
-        <member name="M:FC.GEPluginCtrls.KmlTreeView.ParseKmlContainer(System.Object)">
-            <summary>
-            Recursively iterates through a Kml Container adding any child features to the tree
-            </summary>
-            <param name="kmlContainer">The object to parse</param>
-            <returns>The current tree node</returns>
         </member>
         <member name="M:FC.GEPluginCtrls.KmlTreeView.CreateTreeNodeFromKmlFeature(System.Object)">
             <summary>
@@ -585,20 +515,31 @@
             </summary>
             <param name="treeNode">The starting node to check from</param>
         </member>
+        <member name="M:FC.GEPluginCtrls.KmlTreeView.ObjectParser(System.Object)">
+            <summary>
+            Recursively parses a kml object into the tree
+            </summary>
+            <param name="kmlObject">The kml object to parse</param>
+        </member>
+        <member name="M:FC.GEPluginCtrls.KmlTreeView.ParseKmlContainer(System.Object)">
+            <summary>
+            Recursively iterates through a Kml Container adding any child features to the tree
+            </summary>
+            <param name="kmlContainer">The object to parse</param>
+            <returns>The current tree node</returns>
+        </member>
+        <member name="M:FC.GEPluginCtrls.KmlTreeView.StripHTML(System.String)">
+            <summary>
+            Clean any html and add linebreaks for use with tooltips.
+            </summary>
+            <param name="html">a html string</param>
+            <returns>plain text with linebreaks</returns>
+        </member>
         <member name="M:FC.GEPluginCtrls.KmlTreeView.UncheckAllChildNodes(System.Windows.Forms.TreeNode)">
             <summary>
             Sets the checked state of any child nodes to false
             </summary>
             <param name="treeNode">The starting node to check from</param>
-        </member>
-        <member name="M:FC.GEPluginCtrls.KmlTreeView.ShortenToolTip(System.String,System.Int32)">
-            <summary>
-            Trucates a any string over the given number of chars
-            Appends an ellipsis (...)
-            </summary>
-            <param name="text">The text to truncated</param>
-            <param name="length">The maximum string length </param>
-            <returns>The truncated text</returns>
         </member>
         <member name="M:FC.GEPluginCtrls.KmlTreeView.KmlTree_AfterCheck(System.Object,System.Windows.Forms.TreeViewEventArgs)">
             <summary>
@@ -607,9 +548,9 @@
             <param name="sender">A tree node</param>
             <param name="e">Event Arugments</param>
         </member>
-        <member name="M:FC.GEPluginCtrls.KmlTreeView.KmlTree_DoubleClick(System.Object,System.EventArgs)">
+        <member name="M:FC.GEPluginCtrls.KmlTreeView.KmlTreeView_AfterCollapse(System.Object,System.Windows.Forms.TreeViewEventArgs)">
             <summary>
-            Called when a tree node is double clicked
+            Called after a tree node has collapsed
             </summary>
             <param name="sender">The TreeView</param>
             <param name="e">Event Arugments</param>
@@ -621,9 +562,9 @@
             <param name="sender">The TreeView</param>
             <param name="e">Event Arugments</param>
         </member>
-        <member name="M:FC.GEPluginCtrls.KmlTreeView.KmlTreeView_AfterCollapse(System.Object,System.Windows.Forms.TreeViewEventArgs)">
+        <member name="M:FC.GEPluginCtrls.KmlTreeView.KmlTree_DoubleClick(System.Object,System.EventArgs)">
             <summary>
-            Called after a tree node has collapsed
+            Called when a tree node is double clicked
             </summary>
             <param name="sender">The TreeView</param>
             <param name="e">Event Arugments</param>
@@ -657,10 +598,9 @@
             the contents of this method with the code editor.
             </summary>
         </member>
-        <member name="P:FC.GEPluginCtrls.KmlTreeView.CheckAllChildrenOnParentChecked">
+        <member name="P:FC.GEPluginCtrls.KmlTreeView.BalloonMinimumHeight">
             <summary>
-            Gets or sets a value indicating whether the treeview should check all child nodes
-            when a parent tree node is checked
+            Gets or sets the minimum height of any balloons triggered from the control
             </summary>
         </member>
         <member name="P:FC.GEPluginCtrls.KmlTreeView.BalloonMinimumWidth">
@@ -668,9 +608,10 @@
             Gets or sets the minimum width of any balloons triggered from the control
             </summary>
         </member>
-        <member name="P:FC.GEPluginCtrls.KmlTreeView.BalloonMinimumHeight">
+        <member name="P:FC.GEPluginCtrls.KmlTreeView.CheckAllChildrenOnParentChecked">
             <summary>
-            Gets or sets the minimum height of any balloons triggered from the control
+            Gets or sets a value indicating whether the treeview should check all child nodes
+            when a parent tree node is checked
             </summary>
         </member>
         <member name="P:FC.GEPluginCtrls.KmlTreeView.ExpandVisibleFeatures">
@@ -692,6 +633,13 @@
             Gets or sets a value indicating whether to open the balloon (if any) when
             feature represented by the treenode is double clicked
             The default setting is true
+            </summary>
+        </member>
+        <member name="P:FC.GEPluginCtrls.KmlTreeView.UseUnsafeHtmlBalloons">
+            <summary>
+            Gets or sets a value indicating whether to use unsafe html balloons (if any) when
+            feature represented by the treenode is double clicked
+            The default setting is false
             </summary>
         </member>
         <member name="T:FC.GEPluginCtrls.GEStatusStrip">
@@ -1004,7 +952,7 @@
             This class provides basic Kml helper methods
             </summary>
         </member>
-        <member name="M:FC.GEPluginCtrls.KmlHelpers.WalkKmlDom(System.Object,FC.GEPluginCtrls.KmlHelpers.CallBack)">
+        <member name="M:FC.GEPluginCtrls.KmlHelpers.WalkKmlDom(System.Object,System.Action{System.Object})">
             <summary>
             Based on kmldomwalk.js
             see: http://code.google.com/p/earth-api-samples/source/browse/trunk/lib/kmldomwalk.js
@@ -1027,19 +975,6 @@
             </summary>
             <param name="feature">feature to get data from</param>
             <returns>A list of key value pairs</returns>
-        </member>
-        <member name="T:FC.GEPluginCtrls.KmlHelpers.CallBack">
-            <summary>
-            A callback delegate for all items iterated over in WalkKmlDom
-            </summary>
-            <param name="kmlObject">The current KmlObject</param>
-        </member>
-        <member name="T:FC.GEPluginCtrls.ExternalEventHandler">
-            <summary>
-            Event handler for methods to be called from javascript
-            </summary>
-            <param name="sender">the sending object</param>
-            <param name="e">the event arguments</param>
         </member>
         <member name="T:FC.GEPluginCtrls.External">
             <summary>
@@ -1089,13 +1024,6 @@
             </summary>
             <param name="sender">The plugin object</param>
             <param name="action">The event action</param>
-        </member>
-        <member name="M:FC.GEPluginCtrls.External.ViewEventCallBack(System.Object,System.String)">
-            <summary>
-            Called from javascript when there is a viewchange event
-            </summary>
-            <param name="sender">The GEView object</param>
-            <param name="action">The event action (viewchangebegin, viewchange or viewchangeend)</param>
         </member>
         <member name="M:FC.GEPluginCtrls.External.OnPluginReady(System.Object,FC.GEPluginCtrls.GEEventArgs)">
             <summary>
@@ -1433,7 +1361,7 @@
         </member>
         <member name="F:FC.GEPluginCtrls.HttpServer.Server.defaultFileName">
             <summary>
-            Default file name
+            Default file name to look for in the root directory
             </summary>
         </member>
         <member name="F:FC.GEPluginCtrls.HttpServer.Server.httpVersion">
@@ -1443,7 +1371,12 @@
         </member>
         <member name="F:FC.GEPluginCtrls.HttpServer.Server.keepListening">
             <summary>
-            Keep listening
+            Keep listening switch
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.HttpServer.Server.listenTask">
+            <summary>
+            Task for listining to incomming connections
             </summary>
         </member>
         <member name="M:FC.GEPluginCtrls.HttpServer.Server.#ctor">
@@ -2073,14 +2006,6 @@
             <param name="wrapper">The com object wrapper</param>
             <returns>The managed type, or an empty string on failure</returns>
         </member>
-        <member name="M:FC.GEPluginCtrls.GEHelpers.HasMethod(System.Object,System.String)">
-            <summary>
-            Checks if an object in a RCW supports a given method
-            </summary>
-            <param name="wrapper">The com object wrapper</param>
-            <param name="methodName">The name of the method to check for</param>
-            <returns>True if the object supports the method, false if not</returns>
-        </member>
         <member name="M:FC.GEPluginCtrls.GEHelpers.IsObjectType(System.Object,System.String)">
             <summary>
             Checks is an objects type name matches the given string
@@ -2119,14 +2044,31 @@
             <param name="browser">A instance of the GEWebBrowser object</param>
             <returns>true on success</returns>
         </member>
-        <member name="M:FC.GEPluginCtrls.GEHelpers.OpenFeatureBalloon(System.Object,System.Object,System.Boolean)">
+        <member name="M:FC.GEPluginCtrls.GEHelpers.OpenFeatureBalloon(System.Object,System.Object,System.Int32,System.Int32,System.Int32,System.Int32,System.Boolean)">
             <summary>
-            Opens the balloon for the given feature in the plugin
+            Opens the balloon for the given feature in the plugin using OpenFeatureBalloon()
             </summary>
             <param name="ge">the plugin instance</param>
-            <param name="feature">the feature to open a ballon for</param>
-            <param name="setBalloon">Optionally opens the balloon in the plugin. Default is true</param>
-            <returns>The balloon object (GEFeatureBalloon) or and empty object</returns>
+            <param name="feature">the feature to open a balloon for</param>
+            <param name="minWidth">Optional minimum balloon width</param>
+            <param name="minHeight">Optional minimum balloon height</param>
+            <param name="maxWidth">Optional maximum balloon width</param>
+            <param name="maxHeight">Optional maximum balloon height</param>
+            <param name="setBalloon">Optionally set the balloon to be the current in the plugin</param>
+            <returns>The feature balloon</returns>
+        </member>
+        <member name="M:FC.GEPluginCtrls.GEHelpers.OpenBalloonHtmlUnsafe(System.Object,System.Object,System.Int32,System.Int32,System.Int32,System.Int32,System.Boolean)">
+            <summary>
+            Opens the balloon for the given feature in the plugin using getBalloonHtmlUnsafe()
+            </summary>
+            <param name="ge">the plugin instance</param>
+            <param name="feature">the feature to open a balloon for</param>
+            <param name="minWidth">Optional minimum balloon width</param>
+            <param name="minHeight">Optional minimum balloon height</param>
+            <param name="maxWidth">Optional maximum balloon width</param>
+            <param name="maxHeight">Optional maximum balloon height</param>
+            <param name="setBalloon">Optionally set the balloon to be the current in the plugin</param>
+            <returns>The unsafe html balloon</returns>
         </member>
         <member name="M:FC.GEPluginCtrls.GEHelpers.RemoveAllFeatures(System.Object)">
             <summary>

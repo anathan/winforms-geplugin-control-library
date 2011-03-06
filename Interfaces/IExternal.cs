@@ -29,22 +29,22 @@ namespace FC.GEPluginCtrls
         /// <summary>
         /// Raised when the plugin is ready
         /// </summary>
-        event ExternalEventHandler PluginReady;
+        event EventHandler<GEEventArgs> PluginReady;
 
         /// <summary>
         /// Raised when there is a kml event
         /// </summary>
-        event ExternalEventHandler KmlEvent;
+        event EventHandler<GEEventArgs> KmlEvent;
 
         /// <summary>
         /// Raised when a kml/kmz file has loaded
         /// </summary>
-        event ExternalEventHandler KmlLoaded;
+        event EventHandler<GEEventArgs> KmlLoaded;
 
         /// <summary>
         /// Raised when there is a script error in the document 
         /// </summary>
-        event ExternalEventHandler ScriptError;
+        event EventHandler<GEEventArgs> ScriptError;
 
         /// <summary>
         /// Can be called from javascript to invoke method
