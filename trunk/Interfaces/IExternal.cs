@@ -19,14 +19,15 @@
 namespace FC.GEPluginCtrls
 {
     using System;
-   
+    using System.Collections.Generic;
+
     /// <summary>
     /// This interface should be implemented by any object
     /// that is designed to act as the interface between javascript and managed code
     /// </summary>
     public interface IExternal
     {
-        /// <summary>
+       /// <summary>
         /// Raised when the plugin is ready
         /// </summary>
         event EventHandler<GEEventArgs> PluginReady;
@@ -72,5 +73,12 @@ namespace FC.GEPluginCtrls
         /// <param name="kmlEvent">the kml event</param>
         /// <param name="action">the event id</param>
         void KmlEventCallBack(object kmlEvent, string action);
+
+        /// <summary>
+        /// Should be called from javascript when there is a GEPlugin event
+        /// </summary>
+        /// <param name="sender">The plugin object</param>
+        /// <param name="action">The event action</param>
+        void PluginEventCallBack(object sender, string action);
     }
 }
