@@ -30,7 +30,7 @@ namespace FC.GEPluginCtrls
     /// <summary>
     /// The GEStatusStrip shows various information about the plug-in
     /// </summary>
-    public partial class GEStatusStrip : StatusStrip, IGEControls
+    public sealed partial class GEStatusStrip : StatusStrip, IGEControls
     {
         #region Private fields
 
@@ -248,11 +248,11 @@ namespace FC.GEPluginCtrls
         public void SetBrowserInstance(GEWebBrowser browser)
         {
             this.gewb = browser;
-            this.geplugin = browser.GetPlugin();
+            this.geplugin = browser.Plugin;
 
             if (!GEHelpers.IsGe(this.geplugin))
             {
-                throw new ApplicationException("ge is not of the type GEPlugin");
+                throw new ArgumentException("ge is not of the type GEPlugin");
             }
 
             if (this.gewb.PluginIsReady)
@@ -269,9 +269,9 @@ namespace FC.GEPluginCtrls
                     this.apiVersionStatusLabel.Text = "api " + this.geplugin.getApiVersion();
                     this.pluginVersionStatusLabel.Text = "plugin " + this.geplugin.getPluginVersion();
                 }
-                catch (RuntimeBinderException ex)
+                catch (RuntimeBinderException rbex)
                 {
-                    Debug.WriteLine("SetBrowserInstance: " + ex.ToString(), "StatusStrip");
+                    Debug.WriteLine("SetBrowserInstance: " + rbex.ToString(), "StatusStrip");
                     ////throw;
                 }
             }

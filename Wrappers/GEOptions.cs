@@ -24,7 +24,7 @@ namespace FC.GEPluginCtrls
     /// Wrapper for the GEOptions com object.
     /// Maps all its getter and setter methods to managed properties
     /// </summary>
-    public class GEOptions
+    public sealed class GEOptions
     {
         #region Private Fields
 
@@ -48,7 +48,7 @@ namespace FC.GEPluginCtrls
         {
             if (!GEHelpers.IsGe(ge))
             {
-                throw new ApplicationException("ge is not of the type GEPlugin");
+                throw new ArgumentException("ge is not of the type GEPlugin");
             }
 
             this.ge = ge;

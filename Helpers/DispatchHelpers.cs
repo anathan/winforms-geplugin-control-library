@@ -31,8 +31,8 @@ namespace FC.GEPluginCtrls
     /// Thanks to Bill Jeam from
     /// http://blogs.msdn.com/ericlippert/archive/2003/09/22/jscript-and-vbscript-arrays.aspx
     /// </summary>
-    /// <remarks>See http://code.google.com/p/winforms-geplugin-control-library/issues/detail?id=14</remarks>
-    internal class DispatchHelpers
+    /// <remarks>See http://code.google.com/p/winforms-geplugin-control-library/issues/detail?id=14 </remarks>
+    internal sealed class DispatchHelpers
     {
         /// <summary>
         /// Converts a javascript array to a managed array object
@@ -42,14 +42,15 @@ namespace FC.GEPluginCtrls
         internal static object[] GetObjectArrayFrom__COMObjectArray(object comObject)
         {
             int length = Convert.ToInt32(GetPropertyValue(comObject, "length"));
-            object[] objArr = new object[length];
 
-            for (int idx = 0; idx < length; idx++)
+            object[] objectArray = new object[length];
+
+            for (int i = 0; i < length; i++)
             {
-                objArr[idx] = GetPropertyValue(comObject, idx.ToString());
+                objectArray[i] = GetPropertyValue(comObject, i.ToString());
             }
 
-            return objArr;
+            return objectArray;
         }
 
         /// <summary>
@@ -72,9 +73,9 @@ namespace FC.GEPluginCtrls
                     dispObject,
                     null);
             }
-            catch (RuntimeBinderException ex) 
+            catch (RuntimeBinderException rbex) 
             {
-                Debug.WriteLine(ex.ToString());
+                Debug.WriteLine("GetPropertyValue: ", rbex.ToString(), "DispatchHelpers");
             }
 
             return propValueRef;

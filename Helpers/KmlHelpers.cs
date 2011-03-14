@@ -20,10 +20,13 @@ namespace FC.GEPluginCtrls
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.IO;
     using System.IO.Compression;
     using System.Runtime.InteropServices;
+    using System.Threading.Tasks;
     using System.Xml;
+    using Microsoft.CSharp.RuntimeBinder;
 
     /// <summary>
     /// This class provides basic Kml helper methods
@@ -31,33 +34,38 @@ namespace FC.GEPluginCtrls
     public static class KmlHelpers
     {
         /// <summary>
-        /// Based on kmldomwalk.js
+        /// Based on kmldomwalk.js Parallel
         /// see: http://code.google.com/p/earth-api-samples/source/browse/trunk/lib/kmldomwalk.js
         /// </summary>
         /// <param name="kmlObject">The kml object to parse</param>
-        /// <param name="callBack">A function to call on each node visited</param>
+        /// <param name="callBack">A delegate action, each node visited will be passed to this as the single parameter</param>
         public static void WalkKmlDom(dynamic kmlObject, Action<dynamic> callBack)
         {
             string type = kmlObject.getType();
 
             switch (type)
             {
-                case "KmlDocument":
-                case "KmlFolder":
-                    dynamic container = kmlObject;
-                    if (Convert.ToBoolean(container.getFeatures().hasChildNodes()))
-                    {
-                        dynamic subNodes = container.getFeatures().getChildNodes();
+                case ApiType.KmlDocument:
+                case ApiType.KmlFolder:
 
-                        for (int i = 0; i < subNodes.getLength(); i++)
+                    if (Convert.ToBoolean(kmlObject.getFeatures().hasChildNodes()))
+                    {
+                        dynamic childNodes = kmlObject.getFeatures().getChildNodes();
+                        int count = childNodes.getLength();
+
+                        Parallel.For(
+                            0,
+                            count,
+                            i =>
                         {
-                            dynamic subNode = subNodes.item(i);
-                            WalkKmlDom(subNode, callBack);
-                            callBack(subNode);
-                        }
+                            dynamic node = childNodes.item(i);
+                            WalkKmlDom(node, callBack);
+                            callBack(node);
+                        });
                     }
 
                     break;
+
                 default:
                     callBack(kmlObject);
                     break;
@@ -72,25 +80,78 @@ namespace FC.GEPluginCtrls
         /// <returns>The url value or an empty string</returns>
         public static string GetUrl(dynamic networklink)
         {
-            string kml = networklink.getKml();
-            XmlDocument doc = new System.Xml.XmlDocument();
-            doc.InnerXml = kml;
-            XmlNodeList list = doc.GetElementsByTagName("href");
-           
-            int c = list.Count;
-            if (c > 0)
+            string kml = string.Empty;
+            string url = string.Empty;
+
+            try
             {
-                return list[0].InnerText;
+                kml = networklink.getKml();
             }
-            else
+            catch (RuntimeBinderException)
             {
                 return string.Empty;
             }
+
+            XmlDocument doc = new System.Xml.XmlDocument();
+            doc.InnerXml = kml;
+
+            XmlNodeList list = doc.GetElementsByTagName("href");
+
+            if (list.Count > 0)
+            {
+                url = list[0].InnerText;
+            }
+
+            if (url == string.Empty)
+            {
+                try
+                {
+                    url = networklink.getUrl();
+                }
+                catch (RuntimeBinderException)
+                {
+                }
+
+                if (url == string.Empty)
+                {
+                    try
+                    {
+                        url = networklink.getLink().getHref();
+                    }
+                    catch (RuntimeBinderException)
+                    {
+                    }
+                }
+            }
+
+            return url;
+        }
+
+        /// <summary>
+        /// Wrapper for getOwnerDocument().getComputedStyle().getListStyle().getListItemType()
+        /// See: 
+        /// </summary>
+        /// <param name="feature">The feature to find the list item type of</param>
+        /// <returns>The corresponding ListItem type <see cref="ListItemStyle"/></returns>
+        public static ListItemStyle GetListItemType(dynamic feature)
+        {
+            ListItemStyle listItem = ListItemStyle.Check;
+
+            try
+            {
+                listItem = (ListItemStyle)feature.getComputedStyle().getListStyle().getListItemType();
+            }
+            catch (RuntimeBinderException rbex)
+            {
+                Debug.WriteLine("GetListItemType: " + rbex.ToString(), "KmlHelpers");
+            }
+
+            return listItem;
         }
 
         /// <summary>
         /// Gives access to untyped data/value pairs using the basic Data element
-        /// See http://code.google.com/apis/kml/documentation/kmlreference.html#extendeddata
+        /// See: http://code.google.com/apis/kml/documentation/kmlreference.html#extendeddata
         /// </summary>
         /// <param name="feature">feature to get data from</param>
         /// <returns>A list of key value pairs</returns>

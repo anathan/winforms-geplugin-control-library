@@ -70,6 +70,7 @@
       application = window.external;
       ge.getWindow().setVisibility(true);
       application.Ready(ge);
+      application.DebugMessage("Ready");
     }
 
     /**
@@ -80,8 +81,8 @@
     var createCallback_ = function()
     {
       var name = arguments[0];  
-      var additionalArgs = new Array();
-      
+      var additionalArgs = [];
+
       for (var i = 1; i < arguments.length; i++)
       {
         additionalArgs.push(arguments[i]);
@@ -95,16 +96,16 @@
         {
           parameters.push(additionalArgs[i]);
         }
+        
 
         if (kmlObject)
         {
-          //alert("!");
           application.InvokeCallBack(name, parameters);
         }
         else
         {
           application.Error(name + " CallbackError",
-            "Error in callback: " + name + "(" + parameters.join(', ') + ")");
+            "Error in : " + name + "(" + parameters.join(', ') + ")");
         }
       }
     }
@@ -173,6 +174,10 @@
       window.execScript(script);
     }
     
+    var jsExecuteBatch = function(batchFn, context)
+    {
+      google.earth.executeBatch(this.pluginInstance, function() { batchFn.call(me, context); });
+    }
     /**
     * google.earth.addEventListener wrapper.
     * Attaches a listener to a given object for a specific event; when the event occurs on the object, the given callback is invoked.
@@ -181,7 +186,7 @@
     * @param callback {string} A function that will be called when the event occurs on the object.
     */
     var jsAddEventListener = function(feature, action, callback)
-    {
+    {     
       if(null == callback)
       {
         callback = function(event) { kmlEventListener_(event, action); };
@@ -208,10 +213,10 @@
     * Removes an event listener previously added using google.earth.addEventListener() from the event chain.
     * @param feature {object} The object on which to listen to the event.
     * @param action {string} The event string identifying the event to listen for.
-    * @param callback {string} A function that will be called when the event occurs on the object.
+    * @param callback {string} The function that was set as the callback.
     */
     var jsRemoveEventListener = function(feature, action, callback)
-    {
+    {      
       if(null == callback)
       {
         callback = function(event) { kmlEventListener_(event, action); };
@@ -222,9 +227,14 @@
       {
         google.earth.removeEventListener(feature, action, callback[action]);
       }      
+      else if(action == "frameend" || action == "balloonclose")
+      {
+        callback[action] = function() { pluginEventListener_(action); };
+        google.earth.removeEventListener(feature, action, callback[action]);
+      }      
       else
       {
-        google.earth.removeEventListener(feature, action, eval(callback));
+        google.earth.removeEventListener(featue, action, eval(callback));
       }
     }
     
@@ -307,7 +317,7 @@
     */
     var jsGetLanguage = function()
     {
-      return google.earth.getLanguage(); 	
+      return google.earth.getLanguage();
     }
     
     /**
@@ -317,10 +327,9 @@
     */
     var jsIsInstalled = function()
     {
-      return google.earth.isInstalled(); 	
+      return google.earth.isInstalled();
     }
    
-    
     google.setOnLoadCallback(init_);
     
     /* ]]> */

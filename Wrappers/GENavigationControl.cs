@@ -25,25 +25,31 @@ namespace FC.GEPluginCtrls
     /// Wrapper used to used to manipulate the navigation controls in Google Earth.
     /// </summary>
     /// <remarks>http://code.google.com/apis/earth/documentation/reference/interface_g_e_navigation_control.html</remarks>
-    public class GENavigationControl
+    public sealed class GENavigationControl
     {
         #region Private fields
 
+        /// <summary>
+        /// The plugin object
+        /// </summary>
         private dynamic ge = null;
 
+        /// <summary>
+        /// The com navigation control
+        /// </summary>
         private dynamic navigation = null;
 
         #endregion
 
         /// <summary>
-        /// Initializes a new instance of the GEOptions class.
+        /// Initializes a new instance of the GENavigationControl class.
         /// </summary>
         /// <param name="ge">GEPlugin COM object</param>
         public GENavigationControl(dynamic ge)
         {
             if (!GEHelpers.IsGe(ge))
             {
-                throw new ApplicationException("ge is not of the type GEPlugin");
+                throw new ArgumentException("ge is not of the type GEPlugin");
             }
 
             this.ge = ge;
@@ -51,7 +57,7 @@ namespace FC.GEPluginCtrls
         }
 
         /// <summary>
-        /// Initializes a new instance of the GEOptions class.
+        /// Initializes a new instance of the GENavigationControl class.
         /// </summary>
         /// <param name="ge">GEPlugin COM object</param>
         /// <param name="controlType">The control type. Defualt is NavigationControl.Large</param>
@@ -65,7 +71,7 @@ namespace FC.GEPluginCtrls
         {
             if (!GEHelpers.IsGe(ge))
             {
-                throw new ApplicationException("ge is not of the type GEPlugin");
+                throw new ArgumentException("ge is not of the type GEPlugin");
             }
 
             this.ge = ge;
@@ -87,6 +93,7 @@ namespace FC.GEPluginCtrls
             {
                 return (NavigationControl)this.navigation.getControlType();
             }
+
             set
             {
                 this.navigation.setControlType(value);
@@ -94,7 +101,7 @@ namespace FC.GEPluginCtrls
         }
 
         /// <summary>
-        /// Gets or sets a value indicating if the street view functionality is enabled
+        /// Gets or sets a value indicating whether the street view functionality is enabled
         /// </summary>
         public bool StreetViewEnabled
         {
@@ -102,6 +109,7 @@ namespace FC.GEPluginCtrls
             {
                 return Convert.ToBoolean(this.navigation.getStreetViewEnabled());
             }
+
             set
             {
                 this.navigation.setStreetViewEnabled(value);
@@ -118,6 +126,7 @@ namespace FC.GEPluginCtrls
             {
                 return (Visiblity)this.navigation.getVisibility();
             }
+
             set
             {
                 this.navigation.setVisibility(value);

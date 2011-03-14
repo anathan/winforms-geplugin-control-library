@@ -23,23 +23,8 @@ namespace FC.GEPluginCtrls
     /// <summary>
     /// Custom event arguments 
     /// </summary>
-    public class GEEventArgs : EventArgs
+    public sealed class GEEventArgs : EventArgs
     {
-        /// <summary>
-        /// Event message
-        /// </summary>
-        private string message = string.Empty;
-
-        /// <summary>
-        /// Event data
-        /// </summary>
-        private string data = string.Empty;
-
-        /// <summary>
-        /// Event data object
-        /// </summary>
-        private object tag = null;
-
         /// <summary>
         /// Initializes a new instance of the GEEventArgs class
         /// </summary>
@@ -51,11 +36,11 @@ namespace FC.GEPluginCtrls
         /// <summary>
         /// Initializes a new instance of the GEEventArgs class
         /// </summary>
-        /// <param name="tag">Tag to initialise with.</param>
-        public GEEventArgs(object tag)
+        /// <param name="apiObject">Plugin API object to initialise with.</param>
+        public GEEventArgs(object apiObject)
             : base()
         {
-            this.Tag = tag;
+            this.ApiObject = apiObject;
         }
 
         /// <summary>
@@ -65,7 +50,7 @@ namespace FC.GEPluginCtrls
         public GEEventArgs(string message)
             : base()
         {
-            this.message = message;
+            this.Message = message;
         }
 
         /// <summary>
@@ -74,10 +59,9 @@ namespace FC.GEPluginCtrls
         /// <param name="message">Event message</param>
         /// <param name="data">Event data</param>
         public GEEventArgs(string message, string data)
-            : base()
+            : this(message)
         {
-            this.message = message;
-            this.data = data;
+            this.Data = data;
         }
 
         /// <summary>
@@ -85,62 +69,26 @@ namespace FC.GEPluginCtrls
         /// </summary>
         /// <param name="message">Event message</param>
         /// <param name="data">Event data</param>
-        /// <param name="tag">Event data object</param>
-        public GEEventArgs(string message, string data, object tag)
-            : base()
+        /// <param name="apiObject">Event data object</param>
+        public GEEventArgs(string message, string data, dynamic apiObject)
+            : this(message, data)
         {
-            this.message = message;
-            this.data = data;
-            this.tag = tag;
+            this.ApiObject = apiObject;
         }
 
         /// <summary>
         /// Gets or sets the event message
         /// </summary>
-        public string Message
-        {
-            get 
-            {
-                return this.message;
-            }
-            
-            set
-            {
-                this.message = value; 
-            }
-        }
+        public string Message { get; set; }
 
         /// <summary>
         /// Gets or sets the event data
         /// </summary>
-        public string Data
-        {
-            get 
-            {
-                return this.data;
-            }
-
-            set
-            {
-                this.data = value;
-            }
-        }
+        public string Data { get; set; }
 
         /// <summary>
-        /// Gets or sets the event data tag
+        /// Gets or sets the event data ApiObject 
         /// </summary>
-        public object Tag
-        {
-            get
-            { 
-                return this.tag;
-            }
-
-            set
-            {
-                this.tag = value;
-            }
-        }
+        public dynamic ApiObject { get; set; }
     }
 }
-

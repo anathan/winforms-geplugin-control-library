@@ -26,10 +26,11 @@ namespace FC.GEPluginCtrls
     using Microsoft.CSharp.RuntimeBinder;
 
     /// <summary>
-    /// This COM Visible class contains all the methods to be called from Javascript
+    /// This COM Visible class contains all the public methods to be called from Javascript.
+    /// The various events are used by the <see cref="GEWebBrowser"/> when dealing with the plugin
     /// </summary>
     [ComVisibleAttribute(true)]
-    public partial class External : IExternal
+    public class External : IExternal
     {
         #region Private fields
 
@@ -82,17 +83,15 @@ namespace FC.GEPluginCtrls
 
         #endregion
 
-        #region Public properites
+        #region Internal properites
 
         /// <summary>
-        /// Gets the store of fetched IKmlObjects
+        /// Gets the store of fetched IKmlObjects.
+        /// Used in the process of synchronously loading networklinks
         /// </summary>
-        public static Dictionary<string, object> KmlObjectCache
+        internal static Dictionary<string, object> KmlObjectCache
         {
-            get
-            {
-                return External.kmlObjectCache;
-            }
+            get { return External.kmlObjectCache; }
         }
 
         #endregion
@@ -100,32 +99,41 @@ namespace FC.GEPluginCtrls
         #region Public methods
 
         /// <summary>
-        /// Can be called from javascript to invoke method
+        /// Allow javascript to send debug messages
         /// </summary>
-        /// <param name="name">the name of method to be called</param>
+        /// <param name="message">the debug message</param>
+        public void DebugMessage(string message)
+        {
+            System.Diagnostics.Debug.WriteLine(message, "JS> ");
+        }
+
+        /// <summary>
+        /// Can be called from javascript to invoke method in managed code.
+        /// </summary>
+        /// <param name="name">the name of the managed method to be called</param>
         /// <param name="parameters">array of parameter objects</param>
         public void InvokeCallBack(string name, object parameters)
         {
             try
             {
-                object[] objArr;
-
+                object[] objectArray;
+                
                 if (parameters.GetType().Name == "__ComObject")
                 {
-                    objArr = DispatchHelpers.GetObjectArrayFrom__COMObjectArray(parameters);
+                    objectArray = DispatchHelpers.GetObjectArrayFrom__COMObjectArray(parameters);
                 }
                 else
                 {
-                    objArr = (object[])parameters;
+                    objectArray = (object[])parameters;
                 }
 
-                GEEventArgs ea = new GEEventArgs(objArr);
+                GEEventArgs ea = new GEEventArgs(objectArray);
                 MethodInfo info = this.GetType().GetMethod(name, BindingFlags.Instance | BindingFlags.NonPublic);
                 info.Invoke(this, new object[] { ea });
             }
-            catch (RuntimeBinderException ex)
+            catch (RuntimeBinderException rbex)
             {
-                Debug.WriteLine("InvokeCallBack: " + ex.ToString(), "External");
+                Debug.WriteLine("InvokeCallBack: " + rbex.ToString(), "External");
             }
         }
 
@@ -140,17 +148,7 @@ namespace FC.GEPluginCtrls
                 throw new ApplicationException("ge is not of the type GEPlugin");
             }
 
-            try
-            {
-                this.OnPluginReady(
-                    ge,
-                    new GEEventArgs(ge.getApiVersion(), ge.getPluginVersion()));
-            }
-            catch (RuntimeBinderException ex)
-            {
-                Debug.WriteLine("Ready: " + ex.ToString(), "External");
-                ////throw;
-            }
+            this.OnPluginReady(this, new GEEventArgs("Ready", ge.getPluginVersion(), ge));
         }
 
         /// <summary>
@@ -177,13 +175,12 @@ namespace FC.GEPluginCtrls
             try
             {
                 this.OnKmlEvent(
-                    sender,
-                    new GEEventArgs(kmlEvent.getType(), action, kmlEvent.getTarget()));
+                    this,
+                    new GEEventArgs(kmlEvent.getType(), action, kmlEvent));
             }
-            catch (RuntimeBinderException ex)
+            catch (RuntimeBinderException rbex)
             {
-                Debug.WriteLine("KmlEventCallBack: " + ex.ToString(), "External");
-                ////throw;
+                Debug.WriteLine("KmlEventCallBack: " + rbex.ToString(), "External");
             }
         }
 
@@ -199,13 +196,12 @@ namespace FC.GEPluginCtrls
             try
             {
                 this.OnPluginEvent(
-                    pluginEvent,
-                    new GEEventArgs(pluginEvent.getType(), action, string.Empty));
+                    this,
+                    new GEEventArgs(pluginEvent.getType(), action, pluginEvent));
             }
-            catch (RuntimeBinderException ex)
+            catch (RuntimeBinderException rbex)
             {
-                Debug.WriteLine("ViewEventCallBack: " + ex.ToString(), "External");
-                ////throw;
+                Debug.WriteLine("ViewEventCallBack: " + rbex.ToString(), "External");
             }
         }
 
@@ -216,13 +212,15 @@ namespace FC.GEPluginCtrls
         /// <summary>
         /// Protected method for raising the PluginReady event
         /// </summary>
-        /// <param name="ge">The plugin object</param>
+        /// <param name="sender">The plugin object</param>
         /// <param name="e">The Event arguments</param>
-        protected virtual void OnPluginReady(object ge, GEEventArgs e)
+        protected virtual void OnPluginReady(object sender, GEEventArgs e)
         {
-            if (this.PluginReady != null)
+            EventHandler<GEEventArgs> handler = this.PluginReady;
+
+            if (handler != null)
             {
-                this.PluginReady(ge, e);
+                handler(this, e);
             }
         }
 
@@ -233,9 +231,11 @@ namespace FC.GEPluginCtrls
         /// <param name="e">The Event arguments</param>
         protected virtual void OnKmlEvent(dynamic kmlEvent, GEEventArgs e)
         {
-            if (this.KmlEvent != null)
+            EventHandler<GEEventArgs> handler = this.KmlEvent;
+
+            if (handler != null)
             {
-                this.KmlEvent(kmlEvent, e);
+                handler(this, e);
             }
         }
 
@@ -245,11 +245,13 @@ namespace FC.GEPluginCtrls
         /// <param name="e">The Event arguments</param>
         protected virtual void OnKmlLoaded(GEEventArgs e)
         {
-            dynamic kmlObject = ((object[])e.Tag)[0];
+            EventHandler<GEEventArgs> handler = this.KmlLoaded;
 
-            if (this.KmlLoaded != null)
+            dynamic kmlObject = ((object[])e.ApiObject)[0];
+
+            if (handler != null)
             {
-                this.KmlLoaded(kmlObject, e);
+                handler(this, new GEEventArgs(kmlObject));
             }
         }
 
@@ -259,8 +261,9 @@ namespace FC.GEPluginCtrls
         /// <param name="e">The Event arguments</param>
         protected virtual void OnKmlFetched(GEEventArgs e)
         {
-            dynamic kmlObject = ((object[])e.Tag)[0];
-            string url = (string)((object[])e.Tag)[1];
+            dynamic kmlObject = ((object[])e.ApiObject)[0];
+            string url = (string)((object[])e.ApiObject)[1];
+
             lock (KmlObjectCache)
             {
                 KmlObjectCache[url] = kmlObject;
@@ -277,7 +280,7 @@ namespace FC.GEPluginCtrls
         {
             if (this.ScriptError != null)
             {
-                this.ScriptError(sender, e);
+                this.ScriptError(this, e);
             }
         }
 
@@ -290,7 +293,7 @@ namespace FC.GEPluginCtrls
         {
             if (this.PluginEvent != null)
             {
-                this.PluginEvent(sender, e);
+                this.PluginEvent(this, e);
             }
         }
 
@@ -303,7 +306,7 @@ namespace FC.GEPluginCtrls
         {
             if (this.ViewEvent != null)
             {
-                this.ViewEvent(sender, e);
+                this.ViewEvent(this, e);
             }
         }
 

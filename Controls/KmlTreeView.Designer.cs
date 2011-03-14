@@ -66,26 +66,25 @@ namespace FC.GEPluginCtrls
             this.imageList1.TransparentColor = System.Drawing.Color.Transparent;
             this.imageList1.Images.SetKeyName(0, "ge");
             this.imageList1.Images.SetKeyName(1, "kml");
-            this.imageList1.Images.SetKeyName(2, "folderClosed");
-            this.imageList1.Images.SetKeyName(3, "folderOpen");
-            this.imageList1.Images.SetKeyName(4, "flag");
-            this.imageList1.Images.SetKeyName(5, "overlay");
-            this.imageList1.Images.SetKeyName(6, "photo");
-            this.imageList1.Images.SetKeyName(7, "tour");
+            this.imageList1.Images.SetKeyName(2, "flag");
+            this.imageList1.Images.SetKeyName(3, "overlay");
+            this.imageList1.Images.SetKeyName(4, "photo");
+            this.imageList1.Images.SetKeyName(5, "tour");
+            this.imageList1.Images.SetKeyName(6, "folderClosed");
+            this.imageList1.Images.SetKeyName(7, "folderOpen");
+            this.imageList1.Images.SetKeyName(8, "linkFolderClosed");
+            this.imageList1.Images.SetKeyName(9, "linkFolderOpen");
+            this.imageList1.Images.SetKeyName(10, "linkFolderClosed_0");
+            this.imageList1.Images.SetKeyName(11, "linkFolderClosed_1");
+            this.imageList1.Images.SetKeyName(12, "linkFolderClosed_2");
             // 
             // KmlTreeView
             // 
             this.CheckBoxes = true;
-            this.ImageIndex = 0;
+            this.ImageKey = "ge";
             this.ImageList = this.imageList1;
-            this.LineColor = System.Drawing.Color.Black;
+            this.LineColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(100)))), ((int)(((byte)(100)))));
             this.SelectedImageIndex = 0;
-            this.ShowNodeToolTips = true;
-            this.AfterCheck += new System.Windows.Forms.TreeViewEventHandler(this.KmlTree_AfterCheck);
-            this.AfterCollapse += new System.Windows.Forms.TreeViewEventHandler(this.KmlTreeView_AfterCollapse);
-            this.AfterExpand += new System.Windows.Forms.TreeViewEventHandler(this.KmlTreeView_AfterExpand);
-            this.DoubleClick += new System.EventHandler(this.KmlTree_DoubleClick);
-            this.MouseUp += new System.Windows.Forms.MouseEventHandler(this.KmlTreeView_MouseUp);
             this.ResumeLayout(false);
 
         }
