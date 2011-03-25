@@ -112,22 +112,22 @@ namespace FC.GEPluginCtrls
         /// </summary>
         /// <param name="name">the name of the managed method to be called</param>
         /// <param name="parameters">array of parameter objects</param>
-        public void InvokeCallBack(string name, object parameters)
+        public void InvokeCallBack(string name, dynamic parameters)
         {
             try
             {
-                object[] objectArray;
-                
+                object[] data;
+
                 if (parameters.GetType().Name == "__ComObject")
                 {
-                    objectArray = DispatchHelpers.GetObjectArrayFrom__COMObjectArray(parameters);
+                    data = new object[] { (dynamic)parameters.kmlObject, (string)parameters.url };
                 }
                 else
                 {
-                    objectArray = (object[])parameters;
+                    data = (object[])parameters;
                 }
 
-                GEEventArgs ea = new GEEventArgs(objectArray);
+                GEEventArgs ea = new GEEventArgs(data);
                 MethodInfo info = this.GetType().GetMethod(name, BindingFlags.Instance | BindingFlags.NonPublic);
                 info.Invoke(this, new object[] { ea });
             }
@@ -201,6 +201,27 @@ namespace FC.GEPluginCtrls
             }
             catch (RuntimeBinderException rbex)
             {
+                Debug.WriteLine("PluginEventCallBack: " + rbex.ToString(), "External");
+            }
+        }
+
+        /// <summary>
+        /// Called from javascript when there is a View event
+        /// </summary>
+        /// <param name="sender">The plugin object</param>
+        /// <param name="action">The event action</param>
+        public void ViewEventCallBack(object sender, string action)
+        {
+            dynamic viewEvent = sender;
+
+            try
+            {
+                this.OnViewEvent(
+                    this,
+                    new GEEventArgs(viewEvent.getType(), action, viewEvent));
+            }
+            catch (RuntimeBinderException rbex)
+            {
                 Debug.WriteLine("ViewEventCallBack: " + rbex.ToString(), "External");
             }
         }
@@ -246,7 +267,6 @@ namespace FC.GEPluginCtrls
         protected virtual void OnKmlLoaded(GEEventArgs e)
         {
             EventHandler<GEEventArgs> handler = this.KmlLoaded;
-
             dynamic kmlObject = ((object[])e.ApiObject)[0];
 
             if (handler != null)

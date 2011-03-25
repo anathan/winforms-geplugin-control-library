@@ -69,7 +69,7 @@ namespace FC.GEPluginCtrls
         /// <summary>
         /// Indicates whether the plug-in is ready to use
         /// </summary>
-        private bool pluginIsReady = false;
+        private volatile bool pluginIsReady = false;
 
         #endregion
 
@@ -112,7 +112,26 @@ namespace FC.GEPluginCtrls
                 this.Document.Window.Error += (w, we) =>
                 {
                     we.Handled = true;
-                    this.OnScriptError(this, new GEEventArgs("Error", we.LineNumber + ": " + we.Description));
+                    this.OnScriptError(this, new GEEventArgs("line:" + we.LineNumber, "Description: " + we.Description));
+                };
+
+                this.Navigating += (b, ne) =>
+                {
+                    if (RedirectLinksToSystemBrowser)
+                    {
+                        // prevent WebBrowser navigation
+                        ne.Cancel = true;
+                        
+                        if (ne.Url.Host.Length > 0)
+                        {
+                            this.pluginIsReady = false;
+
+                            // then open the URL in the system browser
+                            Process process = new Process();
+                            process.StartInfo.FileName = ne.Url.ToString();
+                            process.Start();
+                        }
+                    }
                 };
             };
         }
@@ -192,20 +211,18 @@ namespace FC.GEPluginCtrls
             }
         }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether to redirect html links to the system browser
+        /// Default is true, setting this false opens links inside the GEWebBrowser control.
+        /// </summary>
+        [Category("Control Options"),
+        Description("Gets or sets a value indicating whether to redirect html links to the system browser."),
+        DefaultValueAttribute(true)]
+        public bool RedirectLinksToSystemBrowser { get; set; }
+
         #endregion
 
         #region Hidden Properties
-
-        /// <summary>
-        /// Gets or sets a value indicating whether the control can navigate to another
-        /// page after its initial page has been loaded.
-        /// </summary>
-        [Browsable(false)]
-        public new bool AllowNavigation
-        {
-            get { return base.AllowNavigation; }
-            set { base.AllowNavigation = value; }
-        }
 
         /// <summary>
         /// Gets or sets a value indicating whether the  control navigates to documents that are dropped onto it.
@@ -283,26 +300,15 @@ namespace FC.GEPluginCtrls
         /// </summary>
         /// <param name="feature">The target feature</param>
         /// <param name="action">The event Id</param>
-        /// <example>GEWebBrowser.AddEventListener(object, "click");</example>
-        public void AddEventListener(object feature, string action)
-        {
-            this.InvokeJavascript(
-                JSFunction.AddEventListener,
-                new object[] { feature, action });
-        }
-
-        /// <summary>
-        /// Wrapper for the the google.earth.addEventListener method
-        /// </summary>
-        /// <param name="feature">The target feature</param>
-        /// <param name="action">The event Id</param>
-        /// <param name="callBackFunction">The name of javascript callback function to use</param>
+        /// <param name="javascript">The name of javascript callback function to use, or an anonymous function</param>
+        /// <param name="useCapture">Optionally use event capture</param>
+        /// <example>GEWebBrowser.AddEventListener(object, "click", "someFunction");</example>
         /// <example>GEWebBrowser.AddEventListener(object, "click", "function(event){alert(event.getType);}");</example>
-        public void AddEventListener(object feature, string action, string callBackFunction)
+        public void AddEventListener(dynamic feature, EventId action, string javascript = null, bool useCapture = false)
         {
             this.InvokeJavascript(
                 JSFunction.AddEventListener,
-                new object[] { feature, action, "_x=" + callBackFunction });
+                new object[] { feature, action.ToString().ToLower(), javascript });
         }
 
         /// <summary>
@@ -385,19 +391,21 @@ namespace FC.GEPluginCtrls
         {
             try
             {
-                string completionCallback = String.Format("createCallback_('OnKmlFetched', '{0}')", url);
+                string completionCallback = string.Format("createCallback_('OnKmlFetched', '{0}')", url);
+                string[] paramters = new string[] { url, completionCallback };
+
                 KmlObjectCacheSyncEvents[url] = new AutoResetEvent(false);
 
                 if (this.InvokeRequired)
                 {
-                    this.Invoke((MethodInvoker)delegate
+                    this.BeginInvoke((MethodInvoker)delegate
                     {
-                        this.Document.InvokeScript(JSFunction.FetchKml, new string[] { url, completionCallback });
+                        this.Document.InvokeScript(JSFunction.FetchKml, paramters);
                     });
                 }
                 else
                 {
-                    this.Document.InvokeScript(JSFunction.FetchKml, new string[] { url, completionCallback });
+                    this.Document.InvokeScript(JSFunction.FetchKml, paramters);
                 }
 
                 WaitHandle.WaitAll(new WaitHandle[] { KmlObjectCacheSyncEvents[url] }, timeout);
@@ -409,7 +417,7 @@ namespace FC.GEPluginCtrls
             }
             catch (NullReferenceException)
             {
-                /* in mscorlib.dll if exited whilst invoking */
+                /* in mscorlib.dll if method exited whilst InvokeScript */
             }
 
             return null;
@@ -571,10 +579,7 @@ namespace FC.GEPluginCtrls
         {
             if (null != this.Document)
             {
-                Debug.WriteLine(string.Format(
-                    "> InvokeJavascript: {0}({1})",
-                    function,
-                    string.Join(", ", args)));
+                Debug.WriteLine(string.Format("> InvokeJavascript: {0}({1})", function, string.Join(", ", args)));
 
                 // see http://msdn.microsoft.com/en-us/library/4b1a88bz.aspx
                 return this.Document.InvokeScript(function, args);
@@ -593,8 +598,7 @@ namespace FC.GEPluginCtrls
             try
             {
                 // find all the running 'geplugin' processes 
-                System.Diagnostics.Process[] gep =
-                    System.Diagnostics.Process.GetProcessesByName("geplugin");
+                Process[] gep = Process.GetProcessesByName("geplugin");
 
                 // whilst there are matching processes
                 while (gep.Length > 0)
@@ -607,7 +611,6 @@ namespace FC.GEPluginCtrls
                     catch (InvalidOperationException ioex)
                     {
                         Debug.WriteLine("KillAllPluginProcesses: ", ioex.ToString(), "GEWebBrowser");
-                        ////throw;
                     }
                 }
             }
@@ -655,9 +658,11 @@ namespace FC.GEPluginCtrls
         /// </summary>
         /// <param name="feature">The target feature</param>
         /// <param name="action">The event Id</param>
-        public void RemoveEventListener(object feature, string action)
+        /// <param name="javascript">Optional, the name of the js function (if any) that was added as the event handler</param>
+        /// <param name="useCapture">Optional, use event capture</param>
+        public void RemoveEventListener(object feature, EventId action, string javascript = null, bool useCapture = false)
         {
-            this.InvokeJavascript(JSFunction.RemoveEventListener, new object[] { feature, action });
+            this.InvokeJavascript(JSFunction.RemoveEventListener, new object[] { feature, action.ToString().ToLower() });
         }
 
         /// <summary>

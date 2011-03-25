@@ -275,6 +275,8 @@ namespace FC.GEPluginCtrls
                     ////throw;
                 }
             }
+
+            this.gewb.PluginReady += (o, e) => this.Enabled = true;
         }
 
         #endregion

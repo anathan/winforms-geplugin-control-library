@@ -24,6 +24,7 @@ namespace FC.GEPluginCtrls
     using System.Drawing;
     using System.Linq;
     using System.Reflection;
+    using System.Runtime.InteropServices;
     using System.Windows.Forms;
     using Microsoft.CSharp.RuntimeBinder;
 
@@ -57,10 +58,6 @@ namespace FC.GEPluginCtrls
         public KmlTreeView()
             : base()
         {
-            // inherited
-            this.InitializeComponent();
-
-            // custom 
             this.BalloonMinimumHeight = 10;
             this.BalloonMinimumWidth = 10;
             this.CheckAllChildren = true;
@@ -68,6 +65,8 @@ namespace FC.GEPluginCtrls
             this.FlyToOnDoubleClickNode = true;
             this.OpenBalloonsOnDoubleClick = true;
             this.UseUnsafeHtmlBalloons = false;
+
+            this.InitializeComponent();
         }
 
         /// <summary>
@@ -88,7 +87,7 @@ namespace FC.GEPluginCtrls
         /// <param name="kmlObject">A kml object to parse into the tree</param>
         /// <remarks>
         /// Equivalent to initializing, calling <see cref="SetBrowserInstance"/>
-        /// then calling <see cref="ParseKmlObject"/>
+        /// then calling ParseKmlObject 
         /// </remarks>
         public KmlTreeView(GEWebBrowser browser, dynamic kmlObject)
             : this(browser)
@@ -340,16 +339,44 @@ namespace FC.GEPluginCtrls
         /// Recursively parses a kml object into the tree
         /// </summary>
         /// <param name="kmlObject">The kml object to parse</param>
-        public void ParseKmlObject(object kmlObject)
+        public void ParseKmlObject(dynamic kmlObject)
         {
             BackgroundWorker worker = new BackgroundWorker();
-            worker.DoWork += (o, e) => { e.Result = this.CreateKmlTreeNode(kmlObject); };
+            worker.DoWork += (o, e) => 
+            {
+                try
+                {
+                    e.Result = this.CreateKmlTreeNode(kmlObject);
+                }
+                catch (COMException)
+                {
+                    /* a pointer to the COM object went away */
+                    return;
+                }
+                catch (InvalidComObjectException)
+                {
+                    /* a pointer to the COM object went away */
+                    return;
+                }
+            };
             worker.RunWorkerCompleted += (o, e) => 
             { 
                 this.Nodes.Add(e.Result as KmlTreeViewNode);
                 this.Update(); 
             };
             worker.RunWorkerAsync(new object[] { kmlObject });
+        }
+
+        /// <summary>
+        /// Recursively parses a collection of kml objects into the tree
+        /// </summary>
+        /// <param name="kmlObject">The kml objects to parse</param>
+        public void ParseKmlObject(dynamic[] kmlObject)
+        {
+            foreach (object o in kmlObject)
+            {
+                this.ParseKmlObject(o);
+            }
         }
         
         /// <summary>
@@ -369,6 +396,11 @@ namespace FC.GEPluginCtrls
             this.htmlDocument = browser.Document;
             this.Nodes.Clear();
             this.Enabled = true;
+
+            this.gewb.PluginReady += (o, e) => 
+            {
+                this.Enabled = true;
+            };
         }
 
         /// <summary>
@@ -386,7 +418,7 @@ namespace FC.GEPluginCtrls
             }
             else
             {
-                return new KmlTreeViewNode();
+                return new TreeNode("not-found") as KmlTreeViewNode;
             }
         }
 
@@ -407,6 +439,8 @@ namespace FC.GEPluginCtrls
                 node.ApiObjectVisible = true;
                 node.Checked = true;
 
+                this.OnAfterCheck(new TreeViewEventArgs(node, TreeViewAction.ByMouse));
+
                 switch (node.KmlType)
                 {
                     case ApiType.KmlPlacemark:
@@ -415,22 +449,13 @@ namespace FC.GEPluginCtrls
                         {
                             if (this.OpenBalloonsOnDoubleClick)
                             {
-                                if (this.UseUnsafeHtmlBalloons)
-                                {
-                                    GEHelpers.OpenBalloonHtmlUnsafe(
-                                        this.geplugin,
-                                        node.ApiObject,
-                                        this.BalloonMinimumWidth,
-                                        this.BalloonMinimumHeight);
-                                }
-                                else
-                                {
-                                    GEHelpers.OpenFeatureBalloon(
-                                        this.geplugin,
-                                        node.ApiObject,
-                                        this.BalloonMinimumWidth,
-                                        this.BalloonMinimumHeight);
-                                }
+                                GEHelpers.OpenFeatureBalloon(
+                                    this.geplugin,
+                                    node.ApiObject,
+                                    this.UseUnsafeHtmlBalloons,
+                                    this.BalloonMinimumWidth,
+                                    this.BalloonMinimumHeight,
+                                    setBalloon: true);
                             }
                         }
 
@@ -455,7 +480,7 @@ namespace FC.GEPluginCtrls
 
                 if (this.FlyToOnDoubleClickNode)
                 {
-                    GEHelpers.LookAt(node.ApiObject, this.gewb);
+                    GEHelpers.FlyToObject(this.geplugin, node.ApiObject);
                 }
             }
         }
@@ -535,19 +560,19 @@ namespace FC.GEPluginCtrls
 
                 if (node.Checked)
                 {
-                    if (node.KmlType == ApiType.KmlTour)
-                    {
-                        this.geplugin.getTourPlayer().setTour(node.ApiObject);
-                    }
-
-                    // Node is checked and the user instigated the action
                     if (e.Action != TreeViewAction.Unknown)
                     {
-                        // we always want to recursivly check the parent nodes
+                        if (node.KmlType == ApiType.KmlTour)
+                        {
+                            this.geplugin.getTourPlayer().setTour(node.ApiObject);
+                        }
+                        else if (node.KmlType == ApiType.KmlPhotoOverlay)
+                        {
+                            this.geplugin.getPhotoOverlayViewer().setPhotoOverlay(node.ApiObject);
+                        }
+
                         this.CheckAllParentNodes(e.Node as KmlTreeViewNode);
 
-                        // also recursivly check all the child nodes as long as 
-                        // neither the control nor the kml specify otherwise...
                         if (this.CheckAllChildren && node.KmlListStyle != ListItemStyle.CheckOffOnly)
                         {
                             this.CheckAllChildNodes(e.Node as KmlTreeViewNode);
@@ -565,10 +590,8 @@ namespace FC.GEPluginCtrls
                         this.geplugin.getPhotoOverlayViewer().setPhotoOverlay(null);
                     }
 
-                    // unchecing and the user instigated the action
                     if (e.Action != TreeViewAction.Unknown)
                     {
-                        // so we recursivly uncheck child nodes 
                         this.CheckAllChildNodes(node, false);
                     }
                 }
@@ -617,9 +640,8 @@ namespace FC.GEPluginCtrls
         /// <returns>The current tree node</returns>
         private KmlTreeViewNode CreateKmlTreeNode(dynamic feature)
         {
-            KmlTreeViewNode treeNode = new KmlTreeViewNode(feature, this);
+            KmlTreeViewNode treeNode = new KmlTreeViewNode(feature);
 
-            // return any node that can't have children
             if (treeNode.KmlType != ApiType.KmlDocument &&
                 treeNode.KmlType != ApiType.KmlFolder &&
                 treeNode.KmlType != ApiType.KmlNetworkLink)
@@ -627,82 +649,108 @@ namespace FC.GEPluginCtrls
                 return treeNode;
             }
 
-            // ...otherwise recursivly check for children 
-            if (Convert.ToBoolean(feature.getFeatures().hasChildNodes()))
+            if (!Convert.ToBoolean(feature.getFeatures().hasChildNodes()))
             {
-                try
+                return treeNode;
+            }
+
+            try
+            {
+                dynamic kmlChildNodes = feature.getFeatures().getChildNodes();
+                int count = kmlChildNodes.getLength();
+
+                for (int i = 0; i < count; i++)
                 {
-                    dynamic kmlChildNodes = feature.getFeatures().getChildNodes();
-                    int count = kmlChildNodes.getLength();
+                    dynamic kmlNode = kmlChildNodes.item(i);
+                    string type = kmlNode.getType();
 
-                    for (int i = 0; i < count; i++)
+                    switch (type)
                     {
-                        if (!this.gewb.PluginIsReady) 
-                        { 
-                            return null;
-                        }
-
-                        dynamic kmlNode = kmlChildNodes.item(i); // COM Exeption if refreshed whilst in the loop
-                        string type = kmlNode.getType();
-
-                        switch (type)
-                        {
-                            // features that implement the IkmlContainer interface 
-                            case ApiType.KmlDocument:
-                            case ApiType.KmlFolder:
+                        // GEFeatureContainers 
+                        case ApiType.KmlDocument:
+                        case ApiType.KmlFolder:
+                            {
+                                // check to see if we should open it...
+                                if (KmlHelpers.GetListItemType(kmlNode) != ListItemStyle.CheckHideChildren)
                                 {
-                                    // check to see if we should open it...
-                                    if (KmlHelpers.GetListItemType(kmlNode) != ListItemStyle.CheckHideChildren)
-                                    {
-                                        // ...if so add it and recurse
-                                        treeNode.Nodes.Add(this.CreateKmlTreeNode(kmlNode));
-                                    }
+                                    // ...if so add it and recurse
+                                    treeNode.Nodes.Add(this.CreateKmlTreeNode(kmlNode));
                                 }
+                            }
 
-                                break;
+                            break;
 
-                            case ApiType.KmlNetworkLink:
+                        case ApiType.KmlNetworkLink:
+                            {
+                                KmlTreeViewNode linkNode = new KmlTreeViewNode(kmlNode);
+                                dynamic kmlObject = this.gewb.FetchKmlSynchronous(linkNode.KmlUrl);
+
+                                // try and get the content of the link
+                                if (kmlObject != null)
                                 {
-                                    KmlTreeViewNode linkNode = new KmlTreeViewNode(kmlNode, this);
-                                    dynamic kmlObject = this.gewb.FetchKmlSynchronous(linkNode.KmlUrl);
-
-                                    // try and get the content of the link
-                                    if (kmlObject != null)
+                                    if (kmlObject.getOwnerDocument() != null)
                                     {
-                                        if (kmlObject.getOwnerDocument() != null)
-                                        {
-                                            KmlTreeViewNode child = new KmlTreeViewNode(kmlObject, this);
+                                        KmlTreeViewNode child = new KmlTreeViewNode(kmlObject);
 
-                                            // if the kml doesn't specify otherwise add the link's children to it
-                                            if (child.KmlListStyle != ListItemStyle.CheckHideChildren)
-                                            {
-                                                linkNode.Nodes.Add(new KmlTreeViewNode(kmlObject, this));
-                                            }
+                                        // if the kml doesn't specify otherwise add the link's child
+                                        // we don't recurse here as we open links when the nodes are expanded
+                                        if (child.KmlListStyle != ListItemStyle.CheckHideChildren)
+                                        {
+                                            linkNode.Nodes.Add(new KmlTreeViewNode(kmlObject));
                                         }
                                     }
-
-                                    // Add the link with or without its children
-                                    treeNode.Nodes.Add(linkNode);
+                                }
+                                else
+                                {
+                                    linkNode.BackColor = Color.Red;
                                 }
 
-                                break;
+                                // Add the link with or without its children
+                                treeNode.Nodes.Add(linkNode);
+                            }
 
-                            // For all other features - simply add a child node...
-                            default:
-                                treeNode.Nodes.Add(new KmlTreeViewNode(kmlNode, this));
-                                break;
-                        }
+                            break;
+
+                        default:
+                            treeNode.Nodes.Add(new KmlTreeViewNode(kmlNode));
+                            break;
                     }
                 }
-                catch (RuntimeBinderException)
-                {
-                }
-                catch (System.Runtime.InteropServices.COMException)
-                {
-                    /* com object was disposed during the loop, application exit, etc */
-                }
-            } // No possible children so...
+            }
+            catch (RuntimeBinderException)
+            {
+                /* a pointer to the COM object went away */
+            }
+            catch (COMException)
+            {
+                /* a pointer to the COM object went away */
+            }
 
+            if (this.UseDescriptionsForToolTips)
+            {
+                treeNode.ToolTipText = treeNode.ApiObject.getDescription();
+            }
+            else
+            {
+                treeNode.ToolTipText = treeNode.ApiObject.getSnippet();
+            }
+
+            if (this.ExpandVisibleFeatures && Convert.ToBoolean(treeNode.ApiObject.getOpen()))
+            {
+                if (treeNode.KmlType != ApiType.KmlNetworkLink)
+                {
+                    treeNode.Expand();
+                }
+                else
+                {
+                    if (this.ExpandVisibleNetworkLinks)
+                    {
+                        treeNode.Expand();
+                    }
+                }
+            }
+
+            // return the treenode with children added as applicable 
             return treeNode;
         }
 
@@ -716,22 +764,21 @@ namespace FC.GEPluginCtrls
         {
             foreach (KmlTreeViewNode child in node.Nodes)
             {
-                // set the state of the child.
                 child.ApiObjectVisible = check;
                 child.Checked = check;
 
-                if (!check)
-                {
-                    // unchecking so recurse whatever
-                    this.CheckAllChildNodes(child, check);
-                }
-                else
+                if (check)
                 {
                     // checking - so only recurse if CheckOffOnly isn't set
                     if (child.KmlListStyle != ListItemStyle.CheckOffOnly)
                     {
                         this.CheckAllChildNodes(child, check);
                     }
+                }
+                else
+                {
+                    // unchecking so recurse whatever
+                    this.CheckAllChildNodes(child, check);     
                 }
             }
         }
