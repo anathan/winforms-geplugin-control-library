@@ -247,7 +247,11 @@ namespace FC.GEPluginCtrls
                 this.Enabled = true;
 
                 // sycn the tool stip options whenever the Ready event is fired by the browser
-                this.gewb.PluginReady += (o, e) => this.SynchronizeOptions();
+                this.gewb.PluginReady += (o, e) =>
+                {
+                    this.Enabled = true;
+                    this.SynchronizeOptions();
+                };
             }
         }
 

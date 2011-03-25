@@ -31,23 +31,14 @@ namespace FC.GEPluginCtrls
         /// <summary>
         /// Initializes a new instance of the KmlTreeViewNode class.
         /// </summary>
-        internal KmlTreeViewNode()
-            : base()
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the KmlTreeViewNode class.
-        /// </summary>
         /// <param name="kmlObject">A kml object to base the treenode on</param>
-        /// <param name="parentTree">Parent tree of the node</param>
         /// <remarks>
         /// The parent tree is usually is available via 'this.TreeView' but for added functionality
         /// we require access to some of the 'target' parent tree's properties in the constructor.
         /// This is the reason for passing it in as a parameter.
         /// </remarks>
-        internal KmlTreeViewNode(dynamic kmlObject, KmlTreeView parentTree)
-            : this()
+        internal KmlTreeViewNode(dynamic kmlObject)
+            : base()
         {
             this.ApiObject = kmlObject;
 
@@ -60,38 +51,23 @@ namespace FC.GEPluginCtrls
                 this.Name = kmlObject.getId();
                 this.KmlType = kmlObject.getType();
                 this.Text = kmlObject.getName();
-                this.ApiObjectVisible = Convert.ToBoolean(kmlObject.getVisibility());
-
-                if (parentTree.UseDescriptionsForToolTips)
-                {
-                    this.ToolTipText = this.TidyToolTip(kmlObject.getDescription());
-                }
-                else
-                {
-                    this.ToolTipText = this.TidyToolTip(kmlObject.getSnippet());
-                }
-
-                if (parentTree.ExpandVisibleFeatures && Convert.ToBoolean(kmlObject.getOpen()))
-                {
-                    if (this.KmlType != ApiType.KmlNetworkLink)
-                    {
-                        this.Expand();
-                    }
-                    else
-                    {
-                        if (parentTree.ExpandVisibleNetworkLinks)
-                        {
-                            this.Expand();
-                        }
-                    }
-                }
+                this.Checked = Convert.ToBoolean(kmlObject.getVisibility());
+                this.ApiObjectVisible = this.Checked;
+                this.SetStyle();
             }
             catch (System.Runtime.InteropServices.COMException)
             {
                 return;
             }
+        }
 
-            this.SetStyle();
+        /// <summary>
+        /// Gets or sets the value of the node tool tip text.
+        /// </summary>
+        public new string ToolTipText
+        {
+            get { return base.ToolTipText; }
+            set { base.ToolTipText = this.TidyToolTip(value); }
         }
 
         #region Internal Properties
@@ -257,17 +233,18 @@ namespace FC.GEPluginCtrls
         internal void Animate()
         {
             this.IsLoading = true;
-
-            Timer t = new Timer();
             int i = 2;
-
+            Timer t = new Timer();
+            t.Interval = 250;
+            t.Enabled = true;
+          
             t.Tick += (o, e) => 
             {
                 if (i >= 0)
                 {
                     this.ImageKey = "linkFolderClosed_" + i;
                     this.SelectedImageKey = "linkFolderClosed_" + i;
-                    i = i - 1;
+                    i -= 1;
                 }
                 else
                 {
@@ -276,9 +253,6 @@ namespace FC.GEPluginCtrls
                     this.SelectedImageKey = "linkFolderClosed_" + i;
                 }
             };
-
-            t.Interval = 250;
-            t.Enabled = true;
         }
 
         #endregion

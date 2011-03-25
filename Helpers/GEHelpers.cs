@@ -25,6 +25,7 @@ namespace FC.GEPluginCtrls
     using System.Runtime.InteropServices;
     using System.Text;
     using System.Windows.Forms;
+    using FC.GEPluginCtrls.Geo;
     using Microsoft.CSharp.RuntimeBinder;
 
     /// <summary>
@@ -90,46 +91,47 @@ namespace FC.GEPluginCtrls
                 throw new ArgumentException("ge is not of the type GEPlugin");
             }
 
-            dynamic placemark = null;
-
             try
             {
-                placemark = ge.createPlacemark(id);
+                dynamic placemark = ge.createPlacemark(id);
                 placemark.setName(name);
                 placemark.setDescription(description);
-                placemark.setGeometry(CreatePoint(ge, latitude, longitude, altitude, altitudeMode));
+                placemark.setGeometry(
+                    CreatePoint(
+                    ge,
+                    Geo.Maths.FixLatitude(latitude),
+                    Geo.Maths.FixLongitude(longitude),
+                    altitude,
+                    altitudeMode));
+
+                if (addFeature)
+                {
+                    GEHelpers.AddFeaturesToPlugin(ge, placemark);
+                }
+
+                return placemark;
             }
             catch (RuntimeBinderException rbex)
             {
                 Debug.WriteLine("CreatePlacemark: " + rbex.ToString(), "GEHelpers");
             }
 
-            if (null == placemark)
-            {
-                return new object { };
-            }
-
-            if (addFeature)
-            {
-                GEHelpers.AddFeaturesToPlugin(ge, placemark);
-            }
-
-            return placemark;
+            return false;
         }
 
         /// <summary>
         /// Creates a kml placemark
         /// </summary>
         /// <param name="ge">The plugin instance</param>
-        /// <param name="point">A KmlPoint object to use for the placemark location.</param>
+        /// <param name="kmlPoint">A KmlPoint object to use for the placemark location.</param>
         /// <param name="id">Optional placemark Id. Default is empty</param>
         /// <param name="name">Optional name of the placemark. Default is empty</param>
         /// <param name="description">Optional placemark description text. Default is empty</param>
         /// <param name="addFeature">Optionally adds the placemark directly to the plugin. Default is true</param>
-        /// <returns>A placemark (or an empty object)</returns>
+        /// <returns>A placemark (or false)</returns>
         public static dynamic CreatePlacemark(
             dynamic ge,
-            dynamic point,
+            dynamic kmlPoint,
             string id = "",
             string name = "",
             string description = "",
@@ -139,33 +141,53 @@ namespace FC.GEPluginCtrls
             {
                 throw new ArgumentException("ge is not of the type GEPlugin");
             }
-            else if (GetTypeFromRcw(point) != ApiType.KmlPoint)
+            else if (GetTypeFromRcw(kmlPoint) != ApiType.KmlPoint)
             {
                 throw new ArgumentException("point is not of the type KmlPoint");
             }
 
-            dynamic placemark = CreatePlacemark(ge, name: name, id: id, description: description);
-
             try
             {
-                placemark.setGeometry(point);
+                dynamic placemark = CreatePlacemark(ge, name: name, id: id, description: description, addFeature: addFeature);
+                placemark.setGeometry(kmlPoint);
+                return placemark;
             }
             catch (RuntimeBinderException rbex)
             {
                 Debug.WriteLine("CreatePlacemark: " + rbex.ToString(), "GEHelpers");
             }
 
-            if (null == placemark)
-            {
-                return new object { };
-            }
+            return false;
+        }
 
-            if (addFeature)
-            {
-                GEHelpers.AddFeaturesToPlugin(ge, placemark);
-            }
-
-            return placemark;
+        /// <summary>
+        /// Creates a kml placemark
+        /// </summary>
+        /// <param name="ge">The plugin instance</param>
+        /// <param name="coord">A Coordinate to use as the placemarks location</param>
+        /// <param name="id">Optional placemark Id. Default is empty</param>
+        /// <param name="name">Optional name of the placemark. Default is empty</param>
+        /// <param name="description">Optional placemark description text. Default is empty</param>
+        /// <param name="addFeature">Optionally adds the placemark directly to the plugin. Default is true</param>
+        /// <returns>A placemark (or false)</returns>
+        public static dynamic CreatePlacemark(
+            dynamic ge,
+            Coordinate coord,
+            string id = "",
+            string name = "",
+            string description = "",
+            bool addFeature = true)
+        {
+            return CreatePlacemark(
+                ge,
+                coord.Latitude,
+                coord.Longitude,
+                coord.Altitude,
+                coord.AltitudeMode,
+                name,
+                id,
+                description,
+                addFeature);
         }
 
         /// <summary>
@@ -177,7 +199,7 @@ namespace FC.GEPluginCtrls
         /// <param name="altitude">Optional placemark altitude in metres. Default is 0</param>
         /// <param name="altitudeMode">Optional altitudeMode. Default is AltitudeMode.RelativeToGround</param>
         /// <param name="id">Optional placemark Id. Default is empty</param>
-        /// <returns>A Kml point</returns>
+        /// <returns>A Kml point (or false)</returns>
         public static dynamic CreatePoint(
             dynamic ge,
             double latitude = 0,
@@ -191,24 +213,34 @@ namespace FC.GEPluginCtrls
                 throw new ArgumentException("ge is not of the type GEPlugin");
             }
 
-            dynamic point = ge.createPoint(id);
-            point.setLatitude(latitude);
-            point.setLongitude(longitude);
-            point.setAltitude(altitude);
-            point.setAltitudeMode(altitudeMode);
-            return point;
+            try
+            {
+                dynamic point = ge.createPoint(id);
+                point.setLatitude(latitude);
+                point.setLongitude(longitude);
+                point.setAltitude(altitude);
+                point.setAltitudeMode(altitudeMode);
+
+                return point;
+            }
+            catch (RuntimeBinderException rbex)
+            {
+                Debug.WriteLine("CreatePoint: " + rbex.ToString(), "GEHelpers");
+            }
+
+            return false;
         }
 
         /// <summary>
-        /// Draws a line string between the given points
+        /// Draws a line string between the given placemarks or points
         /// </summary>
         /// <param name="ge">The plugin instance</param>
-        /// <param name="start">The first point</param>
-        /// <param name="end">The second point</param>
-        /// <param name="id">Optional ID of the placemark. Default is empty</param>
+        /// <param name="start">The first placemark or point</param>
+        /// <param name="end">The second placemark or point</param>
+        /// <param name="id">Optional ID of the linestring placemark. Default is empty</param>
         /// <param name="tessellate">Optionally sets tessellation for the linestring. Default is true</param>
         /// <param name="addFeature">Optionally adds the linestring directly to the plugin. Default is true</param>
-        /// <returns>A linestring placemark (or an empty object)</returns>
+        /// <returns>A linestring placemark (or false)</returns>
         public static object CreateLineString(
             dynamic ge,
             dynamic start,
@@ -222,29 +254,77 @@ namespace FC.GEPluginCtrls
                 throw new ArgumentException("ge is not of the type GEPlugin");
             }
 
-            dynamic placemark = null;
-            dynamic lineString = null;
+            if (start.getType() == ApiType.KmlPlacemark)
+            {
+                start = start.getGeometry();
+            }
+
+            if (end.getType() == ApiType.KmlPlacemark)
+            {
+                end = end.getGeometry();
+            }
 
             try
             {
-                placemark = ge.createPlacemark(id);
-                lineString = ge.createLineString(String.Empty);
+                dynamic placemark = CreatePlacemark(ge, addFeature: addFeature);
+                dynamic lineString = ge.createLineString(String.Empty);
                 lineString.setTessellate(Convert.ToInt16(tessellate));
                 lineString.getCoordinates().pushLatLngAlt(start.getLatitude(), start.getLongitude(), start.getAltitude());
                 lineString.getCoordinates().pushLatLngAlt(end.getLatitude(), end.getLongitude(), end.getAltitude());
                 placemark.setGeometry(lineString);
+
+                return placemark;
             }
             catch (RuntimeBinderException rbex)
             {
                 Debug.WriteLine("CreateLineString: " + rbex.ToString(), "GEHelpers");
             }
 
-            if (addFeature)
+            return false;
+        }
+
+        /// <summary>
+        /// Creates an Html String Balloon
+        /// </summary>
+        /// <param name="ge">The plugin instance</param>
+        /// <param name="htmlString">The balloon content html string</param>
+        /// <param name="minWidth">Optional minimum balloon width, default is 100</param>
+        /// <param name="minHeight">Optional minimum balloon height, default is 100</param>
+        /// <param name="maxWidth">Optional maximum balloon width, default is 800</param>
+        /// <param name="maxHeight">Optional maximum balloon height, default is 600</param>
+        /// <param name="setBalloon">Optionally set the balloon to be the current in the plugin</param>
+        /// <returns>The feature balloon (or false)</returns>
+        public static dynamic CreateHtmlStringBalloon(
+            dynamic ge,
+            string htmlString = "",
+            int minWidth = 0,
+            int minHeight = 0,
+            int maxWidth = 800,
+            int maxHeight = 600,
+            bool setBalloon = true)
+        {
+            try
             {
-                GEHelpers.AddFeaturesToPlugin(ge, placemark);
+                dynamic balloon = ge.createHtmlStringBalloon(String.Empty);
+                balloon.setContentString(htmlString);
+                balloon.setMinHeight(minHeight);
+                balloon.setMaxHeight(maxHeight);
+                balloon.setMinWidth(minWidth);
+                balloon.setMaxWidth(maxWidth);
+
+                if (setBalloon)
+                {
+                    ge.setBalloon(balloon);
+                }
+
+                return balloon;
+            }
+            catch (RuntimeBinderException rbex)
+            {
+                Debug.WriteLine("OpenFeatureBalloon: " + rbex.ToString(), "GEHelpers");
             }
 
-            return placemark;
+            return false;
         }
 
         /// <summary>
@@ -267,6 +347,38 @@ namespace FC.GEPluginCtrls
             catch (RuntimeBinderException rbex)
             {
                 Debug.WriteLine("GetAllFeaturesKml: " + rbex.ToString(), "GEHelpers");
+            }
+        }
+
+        /// <summary>
+        /// Attempts to set the view of the plugin to the given api object 
+        /// </summary>
+        /// <param name="ge">the plugin</param>
+        /// <param name="obj">the api object</param>
+        /// <param name="boundsFallback">Optionally set whether to fallback to the bounds method</param>
+        /// <param name="aspectRatio">Optional aspect ratio</param>
+        /// <param name="defaultRange">Optional default range</param>
+        /// <param name="scaleRange">Optional scale range</param>
+        public static void FlyToObject(
+            dynamic ge,
+            dynamic obj,
+            bool boundsFallback = true,
+            double aspectRatio = 1.0,
+            double defaultRange = 1000,
+            double scaleRange = 1.5)
+        {
+            if (obj.getAbstractView() != null)
+            {
+                ge.getView().setAbstractView(obj.getAbstractView());
+            }
+            else if (boundsFallback)
+            {
+                KmlHelpers.SetBoundsView(
+                    ge,
+                    KmlHelpers.ComputeBounds(obj),
+                    aspectRatio,
+                    defaultRange,
+                    scaleRange);
             }
         }
 
@@ -309,7 +421,7 @@ namespace FC.GEPluginCtrls
         /// Get the current pluin view as a point object
         /// </summary>
         /// <param name="ge">the plugin</param>
-        /// <returns>Point set to the current view (or an empty object)</returns>
+        /// <returns>Point set to the current view (or false)</returns>
         public static dynamic GetCurrentViewAsPoint(dynamic ge)
         {
             if (!IsGe(ge))
@@ -317,13 +429,10 @@ namespace FC.GEPluginCtrls
                 throw new ArgumentException("ge is not of the type GEPlugin");
             }
 
-            dynamic point = null;
-            dynamic lookat = null;
-
             try
             {
-                lookat = ge.getView().copyAsLookAt(ge.ALTITUDE_RELATIVE_TO_GROUND);
-                point = ge.createPoint(String.Empty);
+                dynamic lookat = ge.getView().copyAsLookAt(ge.ALTITUDE_RELATIVE_TO_GROUND);
+                dynamic point = ge.createPoint(String.Empty);
 
                 // latitude, longitude, altitude, altitudeMode, extrude, tessellate
                 point.set(
@@ -333,18 +442,15 @@ namespace FC.GEPluginCtrls
                     ge.ALTITUDE_RELATIVE_TO_GROUND,
                     0,
                     0);
+
+                return point;
             }
             catch (RuntimeBinderException rbex)
             {
                 Debug.WriteLine("GetCurrentViewAsPoint: " + rbex.ToString(), "GEHelpers");
             }
 
-            if (null == point)
-            {
-                return new object { };
-            }
-
-            return point;
+            return false;
         }
 
         /// <summary>
@@ -385,10 +491,12 @@ namespace FC.GEPluginCtrls
             {
                 return wrapper.getType() == ApiType.GEPlugin;
             }
-            catch (RuntimeBinderException)
+            catch (RuntimeBinderException rbex)
             {
-                return false;
+                Debug.WriteLine("IsGe: " + rbex.ToString(), "GEHelpers");
             }
+
+            return false;
         }
 
         /// <summary>
@@ -420,26 +528,18 @@ namespace FC.GEPluginCtrls
                 throw new ArgumentException("ge is not of the type GEPlugin");
             }
 
-            dynamic lookat = null;
-
             try
             {
-                lookat = ge.createLookAt(id);
+                dynamic lookat = ge.createLookAt(id);
                 lookat.set(latitude, longitude, altitude, altitudeMode, heading, tilt, range);
                 ge.getView().setAbstractView(lookat);
+                return true;
             }
             catch (RuntimeBinderException rbex)
             {
                 Debug.WriteLine("LookAt: " + rbex.ToString(), "GEHelpers");
                 return false;
             }
-
-            if (null == lookat)
-            {
-                return false;
-            }
-
-            return true;
         }
 
         /// <summary>
@@ -492,7 +592,7 @@ namespace FC.GEPluginCtrls
 
                 case ApiType.KmlPolygon:
                     {
-                        // TODO - make this work better!
+                        // TODO - make this work better...
                         dynamic p = feature.getOuterBoundary().getCoordinates().get(0);
                         return LookAt(ge, p.getLatitude(), p.getLongitude(), p.getAltitude());
                     }
@@ -521,7 +621,7 @@ namespace FC.GEPluginCtrls
 
                 case ApiType.KmlLineString:
                     {
-                        // TODO - make this work better!
+                        // TODO - make this work better...
                         return LookAt(
                             ge,
                             feature.getCoordinates().get(0).getLatitude(),
@@ -530,7 +630,13 @@ namespace FC.GEPluginCtrls
 
                 case ApiType.KmlMultiGeometry:
                     {
+                        // TODO - again...
                         return LookAt(feature.getGeometries().getFirstChild(), browser);
+                    }
+
+                case ApiType.KmlModel:
+                    {
+                        return LookAt(feature.getLocation(), browser);
                     }
 
                 default:
@@ -553,17 +659,19 @@ namespace FC.GEPluginCtrls
         /// </summary>
         /// <param name="ge">the plugin instance</param>
         /// <param name="feature">the feature to open a balloon for</param>
-        /// <param name="minWidth">Optional minimum balloon width</param>
-        /// <param name="minHeight">Optional minimum balloon height</param>
-        /// <param name="maxWidth">Optional maximum balloon width</param>
-        /// <param name="maxHeight">Optional maximum balloon height</param>
+        /// <param name="useUnsafeHtml">Optional setting to use getBalloonHtmlUnsafe, default is false</param>
+        /// <param name="minWidth">Optional minimum balloon width, default is 100</param>
+        /// <param name="minHeight">Optional minimum balloon height, default is 100</param>
+        /// <param name="maxWidth">Optional maximum balloon width, default is 800</param>
+        /// <param name="maxHeight">Optional maximum balloon height, default is 600</param>
         /// <param name="setBalloon">Optionally set the balloon to be the current in the plugin</param>
-        /// <returns>The feature balloon</returns>
+        /// <returns>The feature balloon (or false)</returns>
         public static dynamic OpenFeatureBalloon(
             dynamic ge,
             dynamic feature,
-            int minWidth = 0,
-            int minHeight = 0,
+            bool useUnsafeHtml = false,
+            int minWidth = 100,
+            int minHeight = 100,
             int maxWidth = 800,
             int maxHeight = 600,
             bool setBalloon = true)
@@ -573,97 +681,55 @@ namespace FC.GEPluginCtrls
             try
             {
                 string type = feature.getType();
+                string content = string.Empty;
+
+                if (useUnsafeHtml)
+                {
+                    content = feature.getBalloonHtmlUnsafe();
+                }
+                else
+                {
+                    content = feature.getBalloonHtml();
+                }
 
                 if (type == ApiType.KmlFolder || type == ApiType.KmlDocument || feature.getGeometry() == null)
                 {
-                    balloon = ge.createHtmlStringBalloon(String.Empty);
-                    string content = feature.getBalloonHtml();
-
                     // Scrubbing string...
                     // see: http://code.google.com/apis/earth/documentation/balloons.html
-                    if (setBalloon && content != "<!--\nContent-type: mhtml-die-die-die\n\n-->")
+                    if (setBalloon &&
+                        content != string.Empty &&
+                        content != "<!--\nContent-type: mhtml-die-die-die\n\n-->")
                     {
-                        balloon.setContentString(content);
-                        ge.setBalloon(balloon);
+                        return CreateHtmlStringBalloon(
+                            ge,
+                            content,
+                            minWidth,
+                            minHeight,
+                            maxWidth,
+                            maxHeight,
+                            setBalloon);
                     }
-
-                    return balloon;
                 }
 
-                balloon = ge.createFeatureBalloon(String.Empty);
+                balloon = CreateHtmlStringBalloon(
+                    ge,
+                    content,
+                    minWidth,
+                    minHeight,
+                    maxWidth,
+                    maxHeight,
+                    setBalloon);
+
                 balloon.setFeature(feature);
-                balloon.setMinHeight(minHeight);
-                balloon.setMaxHeight(maxHeight);
-                balloon.setMinWidth(minWidth);
-                balloon.setMaxWidth(maxWidth);
 
-                if (setBalloon)
-                {
-                    ge.setBalloon(balloon);
-                }
+                return balloon;
             }
             catch (RuntimeBinderException rbex)
             {
                 Debug.WriteLine("OpenFeatureBalloon: " + rbex.ToString(), "GEHelpers");
             }
 
-            if (null == balloon)
-            {
-                return new object { };
-            }
-
-            return balloon;
-        }
-
-        /// <summary>
-        /// Opens the balloon for the given feature in the plugin using getBalloonHtmlUnsafe()
-        /// </summary>
-        /// <param name="ge">the plugin instance</param>
-        /// <param name="feature">the feature to open a balloon for</param>
-        /// <param name="minWidth">Optional minimum balloon width</param>
-        /// <param name="minHeight">Optional minimum balloon height</param>
-        /// <param name="maxWidth">Optional maximum balloon width</param>
-        /// <param name="maxHeight">Optional maximum balloon height</param>
-        /// <param name="setBalloon">Optionally set the balloon to be the current in the plugin</param>
-        /// <returns>The unsafe html balloon</returns>
-        public static dynamic OpenBalloonHtmlUnsafe(
-            dynamic ge,
-            dynamic feature,
-            int minWidth = 0,
-            int minHeight = 0,
-            int maxWidth = 800,
-            int maxHeight = 600,
-            bool setBalloon = true)
-        {
-            if (!IsGe(ge))
-            {
-                throw new ArgumentException("ge is not of the type GEPlugin");
-            }
-
-            dynamic balloon = null;
-
-            try
-            {
-                balloon = ge.createHtmlStringBalloon(string.Empty);
-                balloon.setContentString(feature.getBalloonHtmlUnsafe());
-                balloon.setMinHeight(minHeight);
-                balloon.setMaxHeight(maxHeight);
-                balloon.setMinWidth(minWidth);
-                balloon.setMaxWidth(maxWidth);
-                balloon.setFeature(feature); // optional?
-                ge.setBalloon(balloon);
-            }
-            catch (RuntimeBinderException rbex)
-            {
-                Debug.WriteLine("OpenBalloonHtmlUnsafe: " + rbex.ToString(), "GEHelpers");
-            }
-
-            if (null == balloon)
-            {
-                return new object { };
-            }
-
-            return balloon;
+            return false;
         }
 
         /// <summary>

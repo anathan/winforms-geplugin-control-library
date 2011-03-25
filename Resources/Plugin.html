@@ -33,10 +33,14 @@
     google.load("earth", "1", { 'language': 'en-GB' });
     google.load("maps", "2.xx");
         
-    var ge = null; //GEPlugin
-    var geocoder = null; //GClientGeocoder
-    var application = null; //External
+    var ge = null; // GEPlugin
+    var geocoder = null; // GClientGeocoder
+    var application = null; // External
 
+    var events_ = []; // holder for generic events
+    var viewEvents_ = []; // holder for view events
+    var pluginEvents_ = []; // holder for plugin events
+    
     /**
     * Internal methods called from javascript
     * suffix_
@@ -70,7 +74,6 @@
       application = window.external;
       ge.getWindow().setVisibility(true);
       application.Ready(ge);
-      application.DebugMessage("Ready");
     }
 
     /**
@@ -80,32 +83,23 @@
     */
     var createCallback_ = function()
     {
-      var name = arguments[0];  
-      var additionalArgs = [];
-
-      for (var i = 1; i < arguments.length; i++)
+      var data = 
       {
-        additionalArgs.push(arguments[i]);
-      }
-        
+        method: arguments[0],
+        url: arguments[1]
+      };
+      
       return function(kmlObject)
       {
-        var parameters = [kmlObject];
-
-        for (var i = 0; i < additionalArgs.length; i++)
-        {
-          parameters.push(additionalArgs[i]);
-        }
-        
-
         if (kmlObject)
         {
-          application.InvokeCallBack(name, parameters);
+          data.kmlObject = kmlObject;
+          application.InvokeCallBack(data.method, data);
         }
         else
         {
-          application.Error(name + " CallbackError",
-            "Error in : " + name + "(" + parameters.join(', ') + ")");
+          application.Error("CallbackError",
+            "Error in : " + data.method + "(" + parameters.join(', ') + ")");
         }
       }
     }
@@ -137,7 +131,7 @@
     
     /**
     * GEPlugin event listner callback function.
-    * @param action {string} the event action (frameend or balloonclose).
+    * @param action {string} the event action (frameend, balloonclose or balloonopening).
     */
     var pluginEventListener_ = function(action)
     {
@@ -147,6 +141,28 @@
       }
     }
     
+    /**
+    * Generate a hash based on a featue and an action
+    * @param feature {object} the event target.    
+    * @param action {string} the event action (mousedowm, click, etc).
+    */
+    var hash_ = function(feature, action)
+    {
+      var type = feature.getType();
+      
+      // unique items
+      if(type == "GEPlugin" ||
+        type == "GEView" ||
+        type == "GEWindow" ||
+        type == "GEGlobe")
+      {
+          return feature.getType()+action;
+      }
+      else
+      {
+          return feature.getName()+feature.getId()+feature.getType()+action;
+      }
+    }
     
     /**
     * Methods to be invoked from managed code.
@@ -174,10 +190,18 @@
       window.execScript(script);
     }
     
-    var jsExecuteBatch = function(batchFn, context)
+        
+    /**
+    * google.earth.executeBatch wrapper.
+    * Executes the specified function as a batch method
+    * @param {string} method The javascript to execute.
+    * @param {string} context A pramater to pass to the method
+    */
+    var jsExecuteBatch = function(method, context)
     {
-      google.earth.executeBatch(this.pluginInstance, function() { batchFn.call(me, context); });
+      google.earth.executeBatch(ge, function() { method.call(context); });
     }
+    
     /**
     * google.earth.addEventListener wrapper.
     * Attaches a listener to a given object for a specific event; when the event occurs on the object, the given callback is invoked.
@@ -185,29 +209,33 @@
     * @param action {string} The event string identifying the event to listen for.
     * @param callback {string} A function that will be called when the event occurs on the object.
     */
-    var jsAddEventListener = function(feature, action, callback)
+    var jsAddEventListener = function(feature, action, callback, useCapture)
     {     
-      if(null == callback)
-      {
-        callback = function(event) { kmlEventListener_(event, action); };
-      }
-      
       if(action == "viewchangebegin" || action == "viewchange" || action == "viewchangeend")
       {
-        callback[action] = function() { viewEventListener_(action); };
-        google.earth.addEventListener(feature, action, callback[action]);
+        // view events 
+        viewEvents_[action] = function() { viewEventListener_(action); };
+        google.earth.addEventListener(feature, action, viewEvents_[action], useCapture);
       }
-      else if(action == "frameend" || action == "balloonclose")
+      else if(action == "frameend" || action == "balloonclose" || action == "balloonopening")
       {
-        callback[action] = function() { pluginEventListener_(action); };
-        google.earth.addEventListener(feature, action, callback[action]);
-      }      
+        // plugin events
+        pluginEvents_[action] = function() { pluginEventListener_(action); };
+        google.earth.addEventListener(feature, action, pluginEvents_[action], useCapture);
+      }
       else
       {
-        google.earth.addEventListener(feature, action, eval(callback));
+        // generic events
+        if(null == callback)
+        {
+          callback = function(event) { kmlEventListener_(event, action); };
+        }
+        
+        var id = hash_(feature, action);
+        google.earth.addEventListener(feature, action, eval(events_[id] = callback), useCapture);
       }
     }
-    
+
     /**
     * google.earth.removeEventListener wrapper.
     * Removes an event listener previously added using google.earth.addEventListener() from the event chain.
@@ -215,26 +243,26 @@
     * @param action {string} The event string identifying the event to listen for.
     * @param callback {string} The function that was set as the callback.
     */
-    var jsRemoveEventListener = function(feature, action, callback)
+    var jsRemoveEventListener = function(feature, action, callback, useCapture)
     {      
-      if(null == callback)
+      if(action == "viewchangebegin" || action == "viewchange" || action == "viewchangeend")
       {
-        callback = function(event) { kmlEventListener_(event, action); };
-      }  
-      
-      if(action == "viewchangebegin" || action == "viewchange" || action == "viewchangeend" ||
-      action == "frameend" || action == "balloonclose")
+        // view events 
+        google.earth.removeEventListener(feature, action, viewEvents_[action], useCapture);
+        viewEvents_[action] = null;
+      }
+      else if(action == "frameend" || action == "balloonclose" || action == "balloonopening")
       {
-        google.earth.removeEventListener(feature, action, callback[action]);
-      }      
-      else if(action == "frameend" || action == "balloonclose")
-      {
-        callback[action] = function() { pluginEventListener_(action); };
-        google.earth.removeEventListener(feature, action, callback[action]);
+        // plugin events
+        google.earth.removeEventListener(feature, action, pluginEvents_[action], useCapture);
+        pluginEvents_[action] = null;
       }      
       else
-      {
-        google.earth.removeEventListener(featue, action, eval(callback));
+      {       
+        // generic events
+        var id = hash_(feature, action);
+        google.earth.removeEventListener(feature, action, events_[id], useCapture);
+        events_[id] = null;
       }
     }
     

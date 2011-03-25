@@ -81,6 +81,8 @@
     <Compile Include="Constants\GELayer.cs" />
     <Compile Include="Controls\KmlTreeViewNode.cs" />
     <Compile Include="Enumerations\AltitudeMode.cs" />
+    <Compile Include="Enumerations\EventId.cs" />
+    <Compile Include="Enumerations\UnitSystem.cs" />
     <Compile Include="Enumerations\ListItemStyle.cs" />
     <Compile Include="Enumerations\MapType.cs" />
     <Compile Include="Enumerations\NavigationControl.cs" />
@@ -88,10 +90,11 @@
     <Compile Include="External.cs" />
     <Compile Include="Constants\ApiType.cs" />
     <Compile Include="Constants\JSFunction.cs" />
-    <Compile Include="Maths.cs" />
+    <Compile Include="Geo\Bounds.cs" />
+    <Compile Include="Geo\Coordinate.cs" />
+    <Compile Include="Geo\Maths.cs" />
     <Compile Include="Wrappers\GENavigationControl.cs" />
     <Compile Include="Wrappers\GEOptions.cs" />
-    <Compile Include="Helpers\DispatchHelpers.cs" />
     <Compile Include="GEEventArgs.cs" />
     <Compile Include="Helpers\GEHelpers.cs" />
     <Compile Include="Controls\GEStatusStrip.cs">
@@ -103,7 +106,7 @@
     <Compile Include="Interfaces\IExternal.cs" />
     <Compile Include="Enumerations\ImageryBase.cs" />
     <Compile Include="Helpers\KmlHelpers.cs" />
-    <Compile Include="Languages.cs" />
+    <Compile Include="Controls\Languages.cs" />
     <Compile Include="Controls\GEToolStrip.Designer.cs">
       <DependentUpon>GEToolStrip.cs</DependentUpon>
     </Compile>
@@ -123,6 +126,7 @@
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Wrappers\GETourPlayer.cs" />
+    <Compile Include="Wrappers\GEWindow.cs" />
     <EmbeddedResource Include="Controls\GEToolStrip.resx">
       <DependentUpon>GEToolStrip.cs</DependentUpon>
       <SubType>Designer</SubType>
@@ -187,7 +191,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- Uncomment the folowing line to allow StyleCop to run during the build -->
-  <!-- <Import Project="$(ProgramFiles)\MSBuild\Microsoft\StyleCop\v4.4\Microsoft.StyleCop.targets" /> -->
+  <Import Project="$(ProgramFiles)\MSBuild\Microsoft\StyleCop\v4.4\Microsoft.StyleCop.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

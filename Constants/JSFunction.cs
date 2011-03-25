@@ -20,6 +20,7 @@ namespace FC.GEPluginCtrls
 {
     /// <summary>
     /// A collection the names of javascript functions that should be available in the active document.
+    /// These are wrapper functions to allow access to objects outside the Google Earth Api.
     /// </summary>
     /// <remarks>
     /// This collection can be thought of as a simple kind of an interface for javascipt methods in an active document.
