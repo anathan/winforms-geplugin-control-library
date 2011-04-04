@@ -40,9 +40,15 @@ namespace FC.GEPluginCtrls
         /// </summary>
         /// <param name="kmlObject">The kml object to parse</param>
         /// <param name="callBack">A delegate action, each node visited will be passed to this as the single parameter</param>
+        /// <param name="walkFeatures">Optionally walk features, defualt is true</param>
+        /// <param name="walkGeometries">Optionally walk geometries, default is false</param>
         /// <remarks>This method is used by <see cref="KmlTreeView"/> to build the nodes</remarks>
-        /// <example>KmlHelpers.WalkKmlDom(kml, (Action &lt; dynamic &gt; )(x => { /* each x in the dom */}));</example>
-        public static void WalkKmlDom(dynamic kmlObject, Action<dynamic> callBack)
+        /// <example>KmlHelpers.WalkKmlDom(kml, (Action dynamic)(x => { /* each x in the dom */}));</example>
+        public static void WalkKmlDom(
+            dynamic kmlObject,
+            Action<dynamic> callBack,
+            bool walkFeatures = true,
+            bool walkGeometries = false)
         {
             if (kmlObject == null)
             { 
@@ -54,35 +60,60 @@ namespace FC.GEPluginCtrls
 
             switch (type)
             {
-                // GEFeatureContainer (object supports getFeatures)
+                // objects that support getFeatures (GEFeatureContainer)
                 case ApiType.KmlDocument:
                 case ApiType.KmlFolder:
                 case ApiType.KmlLayer:
                 case ApiType.KmlLayerRoot:
-                    objectContainer = kmlObject.getFeatures();
+                    {
+                        if (walkFeatures)
+                        {
+                            objectContainer = kmlObject.getFeatures();
+                        }
+                    }
+
                     break;
 
-                // Geometry (object supports getGeometry)
+                // objects that support getGeometry
                 case ApiType.KmlAltitudeGeometry:
                 case ApiType.KmlExtrudableGeometry:
                 case ApiType.KmlModel:
                 case ApiType.KmlPlacemark:
-                    WalkKmlDom(kmlObject.getGeometry(), callBack);
+                    {
+                        if (walkGeometries)
+                        {
+                            WalkKmlDom(kmlObject.getGeometry(), callBack);
+                        }
+                    }
+
                     break;
 
                 // KmlPolygon (object supports getOuterBoundary)
                 case ApiType.KmlPolygon:
-                    WalkKmlDom(kmlObject.getOuterBoundary(), callBack);
-                    objectContainer = kmlObject.getInnerBoundaries(); // GELinearRingContainer
+                    {
+                        if (walkGeometries)
+                        {
+                            WalkKmlDom(kmlObject.getOuterBoundary(), callBack);
+                            objectContainer = kmlObject.getInnerBoundaries(); // GELinearRingContainer
+                        }
+                    }
+
                     break;
 
                 // KmlMultiGeometry (object supports getGeometries)
                 case ApiType.KmlMultiGeometry:
-                    objectContainer = kmlObject.getGeometries();
+                    {
+                        if (walkGeometries)
+                        {
+                            objectContainer = kmlObject.getGeometries();
+                        }
+                    }
+                    
                     break;
 
                 ////case ApiType.KmlLineString:
                 ////case ApiType.KmlLinearRing:
+
                 default:
                     break;
             }
@@ -224,8 +255,8 @@ namespace FC.GEPluginCtrls
         public static Bounds ComputeBounds(dynamic kmlFeature)
         {
             Bounds bounds = new Bounds();
-
-            KmlHelpers.WalkKmlDom(kmlFeature, 
+             
+            KmlHelpers.WalkKmlDom(kmlFeature,
                 (Action<dynamic>)(feature =>
             {
                 string type = feature.getType();
@@ -260,6 +291,7 @@ namespace FC.GEPluginCtrls
                             if (coords != null)
                             {
                                 int count = coords.getLength();
+
                                 for (int i = 0; i < count; i++)
                                 {
                                     bounds.Extend(new Coordinate(coords.get(i)));
@@ -276,7 +308,9 @@ namespace FC.GEPluginCtrls
                         bounds.Extend(new Coordinate(feature));
                         break;
                 }
-            }));
+            }),
+            walkFeatures: true,
+            walkGeometries: true);
 
             return bounds;
         }

@@ -302,9 +302,5 @@ namespace FC.GEPluginCtrls.Geo
         {
             return Math.Max(min, Math.Min(max, value));
         }
-
-        ////ConvertDecimalToSexagesimal 
-
-        ////ConvertSexagesimalToDecimal
     }
 }

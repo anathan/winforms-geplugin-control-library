@@ -86,7 +86,7 @@ namespace FC.GEPluginCtrls.HttpServer
         /// Initializes a new instance of the Server class
         /// </summary>
         public Server() :
-            this(Path.DirectorySeparatorChar.ToString())
+            this("/")
         {
         }
 
