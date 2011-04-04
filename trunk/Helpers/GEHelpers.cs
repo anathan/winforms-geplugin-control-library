@@ -692,23 +692,12 @@ namespace FC.GEPluginCtrls
                     content = feature.getBalloonHtml();
                 }
 
-                if (type == ApiType.KmlFolder || type == ApiType.KmlDocument || feature.getGeometry() == null)
+                // Scrubbing string...
+                // see: http://code.google.com/apis/earth/documentation/balloons.html
+                if (content == string.Empty || content == "<!--\nContent-type: mhtml-die-die-die\n\n-->")
                 {
-                    // Scrubbing string...
-                    // see: http://code.google.com/apis/earth/documentation/balloons.html
-                    if (setBalloon &&
-                        content != string.Empty &&
-                        content != "<!--\nContent-type: mhtml-die-die-die\n\n-->")
-                    {
-                        return CreateHtmlStringBalloon(
-                            ge,
-                            content,
-                            minWidth,
-                            minHeight,
-                            maxWidth,
-                            maxHeight,
-                            setBalloon);
-                    }
+                    // no content...
+                    return false;
                 }
 
                 balloon = CreateHtmlStringBalloon(
@@ -720,7 +709,10 @@ namespace FC.GEPluginCtrls
                     maxHeight,
                     setBalloon);
 
-                balloon.setFeature(feature);
+                if (type != ApiType.KmlFolder && type != ApiType.KmlDocument && feature.getGeometry() != null)
+                {
+                    balloon.setFeature(feature);
+                }
 
                 return balloon;
             }

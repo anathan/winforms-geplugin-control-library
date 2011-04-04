@@ -135,7 +135,7 @@
         </member>
         <member name="F:FC.GEPluginCtrls.GEWebBrowser.pluginIsReady">
             <summary>
-            Indicates whether the plug-in is ready to use
+            Indicates whether the plug-in is ready to use.
             </summary>
         </member>
         <member name="M:FC.GEPluginCtrls.GEWebBrowser.#ctor">
@@ -271,13 +271,12 @@
             Load the embeded html document into the browser 
             </summary>
         </member>
-        <member name="M:FC.GEPluginCtrls.GEWebBrowser.RemoveEventListener(System.Object,FC.GEPluginCtrls.EventId,System.String,System.Boolean)">
+        <member name="M:FC.GEPluginCtrls.GEWebBrowser.RemoveEventListener(System.Object,FC.GEPluginCtrls.EventId,System.Boolean)">
             <summary>
             Wrapper for the the google.earth.removeEventListener method
             </summary>
             <param name="feature">The target feature</param>
             <param name="action">The event Id</param>
-            <param name="javascript">Optional, the name of the js function (if any) that was added as the event handler</param>
             <param name="useCapture">Optional, use event capture</param>
         </member>
         <member name="M:FC.GEPluginCtrls.GEWebBrowser.ScreenGrab">
@@ -621,7 +620,7 @@
             <summary>
             Recursively parses a collection of kml objects into the tree
             </summary>
-            <param name="kmlObject">The kml objects to parse</param>
+            <param name="kmlObjects">The kml objects to parse</param>
         </member>
         <member name="M:FC.GEPluginCtrls.KmlTreeView.SetBrowserInstance(FC.GEPluginCtrls.GEWebBrowser)">
             <summary>
@@ -673,6 +672,13 @@
             </summary>
             <param name="feature">The object to parse</param>
             <returns>The current tree node</returns>
+        </member>
+        <member name="M:FC.GEPluginCtrls.KmlTreeView.CreateKmlTreeLinkNode(System.Object)">
+            <summary>
+            Attempts to fetch networklink content to build a tree node
+            </summary>
+            <param name="networkLink">The networklink to parse</param>
+            <returns>The network link node</returns>
         </member>
         <member name="M:FC.GEPluginCtrls.KmlTreeView.CheckAllChildNodes(FC.GEPluginCtrls.KmlTreeViewNode,System.Boolean)">
             <summary>
@@ -1262,15 +1268,17 @@
             This class provides basic Kml helper methods
             </summary>
         </member>
-        <member name="M:FC.GEPluginCtrls.KmlHelpers.WalkKmlDom(System.Object,System.Action{System.Object})">
+        <member name="M:FC.GEPluginCtrls.KmlHelpers.WalkKmlDom(System.Object,System.Action{System.Object},System.Boolean,System.Boolean)">
             <summary>
             Based on kmldomwalk.js 
             see: http://code.google.com/p/earth-api-samples/source/browse/trunk/lib/kmldomwalk.js
             </summary>
             <param name="kmlObject">The kml object to parse</param>
             <param name="callBack">A delegate action, each node visited will be passed to this as the single parameter</param>
+            <param name="walkFeatures">Optionally walk features, defualt is true</param>
+            <param name="walkGeometries">Optionally walk geometries, default is false</param>
             <remarks>This method is used by <see cref="T:FC.GEPluginCtrls.KmlTreeView"/> to build the nodes</remarks>
-            <example>KmlHelpers.WalkKmlDom(kml, (Action &lt; dynamic &gt; )(x =&gt; { /* each x in the dom */}));</example>
+            <example>KmlHelpers.WalkKmlDom(kml, (Action dynamic)(x =&gt; { /* each x in the dom */}));</example>
         </member>
         <member name="M:FC.GEPluginCtrls.KmlHelpers.GetUrl(System.Object)">
             <summary>

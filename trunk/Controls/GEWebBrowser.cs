@@ -30,6 +30,7 @@ namespace FC.GEPluginCtrls
     using System.Runtime.InteropServices;
     using System.Security.Permissions;
     using System.Threading;
+    using System.Threading.Tasks;
     using System.Windows.Forms;
     using Microsoft.CSharp.RuntimeBinder;
 
@@ -67,7 +68,7 @@ namespace FC.GEPluginCtrls
         private ImageryBase imageryBase = ImageryBase.Earth;
 
         /// <summary>
-        /// Indicates whether the plug-in is ready to use
+        /// Indicates whether the plug-in is ready to use.
         /// </summary>
         private volatile bool pluginIsReady = false;
 
@@ -322,7 +323,7 @@ namespace FC.GEPluginCtrls
             if (this.Document != null)
             {
                 this.pluginIsReady = false;
-                string name = Enum.GetName(typeof(ImageryBase), database);
+                string name = database.ToString();
                 this.InvokeJavascript(JSFunction.CreateInstance, new string[] { name });
                 this.imageryBase = database;
             }
@@ -387,7 +388,7 @@ namespace FC.GEPluginCtrls
         /// <param name="timeout">time to wait for return in ms</param>
         /// <returns>The kml as a kmlObject</returns>
         /// <example>GEWebBrowser.FetchKmlSynchronous("http://www.site.com/file.kml");</example>
-        public object FetchKmlSynchronous(string url, int timeout = 2000)
+        public object FetchKmlSynchronous(string url, int timeout = 1000)
         {
             try
             {
@@ -420,7 +421,7 @@ namespace FC.GEPluginCtrls
                 /* in mscorlib.dll if method exited whilst InvokeScript */
             }
 
-            return null;
+            return new object();
         }
 
         /// <summary>
@@ -526,7 +527,7 @@ namespace FC.GEPluginCtrls
             }
             else
             {
-                return new object { };
+                return new object();
             }
         }
 
@@ -586,7 +587,7 @@ namespace FC.GEPluginCtrls
             }
             else
             {
-                return new object { };
+                return new object();
             }
         }
 
@@ -658,9 +659,8 @@ namespace FC.GEPluginCtrls
         /// </summary>
         /// <param name="feature">The target feature</param>
         /// <param name="action">The event Id</param>
-        /// <param name="javascript">Optional, the name of the js function (if any) that was added as the event handler</param>
         /// <param name="useCapture">Optional, use event capture</param>
-        public void RemoveEventListener(object feature, EventId action, string javascript = null, bool useCapture = false)
+        public void RemoveEventListener(object feature, EventId action, bool useCapture = false)
         {
             this.InvokeJavascript(JSFunction.RemoveEventListener, new object[] { feature, action.ToString().ToLower() });
         }

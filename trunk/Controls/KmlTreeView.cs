@@ -342,6 +342,7 @@ namespace FC.GEPluginCtrls
         public void ParseKmlObject(dynamic kmlObject)
         {
             BackgroundWorker worker = new BackgroundWorker();
+
             worker.DoWork += (o, e) => 
             {
                 try
@@ -359,23 +360,28 @@ namespace FC.GEPluginCtrls
                     return;
                 }
             };
+
             worker.RunWorkerCompleted += (o, e) => 
-            { 
-                this.Nodes.Add(e.Result as KmlTreeViewNode);
-                this.Update(); 
+            {
+                if (e.Result != null)
+                {
+                    this.Nodes.Add(e.Result as KmlTreeViewNode);
+                    this.Update();
+                }
             };
+
             worker.RunWorkerAsync(new object[] { kmlObject });
         }
 
         /// <summary>
         /// Recursively parses a collection of kml objects into the tree
         /// </summary>
-        /// <param name="kmlObject">The kml objects to parse</param>
-        public void ParseKmlObject(dynamic[] kmlObject)
+        /// <param name="kmlObjects">The kml objects to parse</param>
+        public void ParseKmlObject(dynamic[] kmlObjects)
         {
-            foreach (object o in kmlObject)
+            foreach (dynamic kmlObject in kmlObjects)
             {
-                this.ParseKmlObject(o);
+                this.ParseKmlObject(kmlObject);
             }
         }
         
@@ -468,11 +474,14 @@ namespace FC.GEPluginCtrls
                             tourPlayer.Play();
                         }
 
-                        break;
+                        return;
 
                     case ApiType.KmlPhotoOverlay:
-                        this.geplugin.getPhotoOverlayViewer().setPhotoOverlay(node.ApiObject);
-                        break;
+                        {
+                            this.geplugin.getPhotoOverlayViewer().setPhotoOverlay(node.ApiObject);
+                        }
+
+                        return;
 
                     default:
                         break;
@@ -524,20 +533,24 @@ namespace FC.GEPluginCtrls
                     // when it is finished
                     worker.RunWorkerCompleted += (o, wc) =>
                     {
-                        // Get the result, add it to the temp-node parent and set the fetched flag, 
-                        // then remove the temp-node.
+                        // Get the result, add it to the temp-node parent and set the fetched flag. 
                         KmlTreeViewNode newnode = wc.Result as KmlTreeViewNode;
+
                         if (tempNode.Parent != null && newnode != null)
                         {
                             tempNode.Parent.Nodes.Add(newnode);
                             ((KmlTreeViewNode)tempNode.Parent).Fetched = true;
+                            tempNode.Remove();
+
+                            if (this.ExpandNetworkLinkContentOnLoad)
+                            {
+                                newnode.Expand();
+                            }
                         }
-
-                        tempNode.Remove();
-
-                        if (this.ExpandNetworkLinkContentOnLoad)
+                        else
                         {
-                            newnode.Expand();
+                            // allow an to attempt reload...
+                            node.Fetched = false;
                         }
                     };
 
@@ -646,14 +659,18 @@ namespace FC.GEPluginCtrls
                 treeNode.KmlType != ApiType.KmlFolder &&
                 treeNode.KmlType != ApiType.KmlNetworkLink)
             {
+                // basic node
                 return treeNode;
             }
 
             if (!Convert.ToBoolean(feature.getFeatures().hasChildNodes()))
             {
+                // container with no children
                 return treeNode;
             }
 
+            // this whole try/catch block is to prevent com exceptions if
+            // the application closes whilst accessing an api object
             try
             {
                 dynamic kmlChildNodes = feature.getFeatures().getChildNodes();
@@ -682,31 +699,7 @@ namespace FC.GEPluginCtrls
 
                         case ApiType.KmlNetworkLink:
                             {
-                                KmlTreeViewNode linkNode = new KmlTreeViewNode(kmlNode);
-                                dynamic kmlObject = this.gewb.FetchKmlSynchronous(linkNode.KmlUrl);
-
-                                // try and get the content of the link
-                                if (kmlObject != null)
-                                {
-                                    if (kmlObject.getOwnerDocument() != null)
-                                    {
-                                        KmlTreeViewNode child = new KmlTreeViewNode(kmlObject);
-
-                                        // if the kml doesn't specify otherwise add the link's child
-                                        // we don't recurse here as we open links when the nodes are expanded
-                                        if (child.KmlListStyle != ListItemStyle.CheckHideChildren)
-                                        {
-                                            linkNode.Nodes.Add(new KmlTreeViewNode(kmlObject));
-                                        }
-                                    }
-                                }
-                                else
-                                {
-                                    linkNode.BackColor = Color.Red;
-                                }
-
-                                // Add the link with or without its children
-                                treeNode.Nodes.Add(linkNode);
+                                treeNode.Nodes.Add(this.CreateKmlTreeLinkNode(kmlNode));
                             }
 
                             break;
@@ -714,6 +707,30 @@ namespace FC.GEPluginCtrls
                         default:
                             treeNode.Nodes.Add(new KmlTreeViewNode(kmlNode));
                             break;
+                    }
+                }
+
+                if (this.UseDescriptionsForToolTips)
+                {
+                    treeNode.ToolTipText = treeNode.ApiObject.getDescription();
+                }
+                else
+                {
+                    treeNode.ToolTipText = treeNode.ApiObject.getSnippet();
+                }
+
+                if (this.ExpandVisibleFeatures && Convert.ToBoolean(treeNode.ApiObject.getOpen()))
+                {
+                    if (treeNode.KmlType != ApiType.KmlNetworkLink)
+                    {
+                        treeNode.Expand();
+                    }
+                    else
+                    {
+                        if (this.ExpandVisibleNetworkLinks)
+                        {
+                            treeNode.Expand();
+                        }
                     }
                 }
             }
@@ -726,32 +743,40 @@ namespace FC.GEPluginCtrls
                 /* a pointer to the COM object went away */
             }
 
-            if (this.UseDescriptionsForToolTips)
-            {
-                treeNode.ToolTipText = treeNode.ApiObject.getDescription();
-            }
-            else
-            {
-                treeNode.ToolTipText = treeNode.ApiObject.getSnippet();
-            }
+            // return the treenode with children added as applicable 
+            return treeNode;
+        }
 
-            if (this.ExpandVisibleFeatures && Convert.ToBoolean(treeNode.ApiObject.getOpen()))
+        /// <summary>
+        /// Attempts to fetch networklink content to build a tree node
+        /// </summary>
+        /// <param name="networkLink">The networklink to parse</param>
+        /// <returns>The network link node</returns>
+        private KmlTreeViewNode CreateKmlTreeLinkNode(dynamic networkLink)
+        {
+            KmlTreeViewNode linkNode = new KmlTreeViewNode(networkLink);
+
+            dynamic kmlObject = this.gewb.FetchKmlSynchronous(linkNode.KmlUrl);
+
+            if (kmlObject != null)
             {
-                if (treeNode.KmlType != ApiType.KmlNetworkLink)
+                if (kmlObject.getOwnerDocument() != null)
                 {
-                    treeNode.Expand();
-                }
-                else
-                {
-                    if (this.ExpandVisibleNetworkLinks)
+                    KmlTreeViewNode child = new KmlTreeViewNode(kmlObject);
+
+                    if (child.KmlListStyle != ListItemStyle.CheckHideChildren)
                     {
-                        treeNode.Expand();
+                        linkNode.Nodes.Add(new KmlTreeViewNode(kmlObject));
                     }
                 }
             }
+            else
+            {
+                // TODO : Icon for failed links - option to retry?
+                linkNode.BackColor = Color.Gray;
+            }
 
-            // return the treenode with children added as applicable 
-            return treeNode;
+            return linkNode;
         }
 
         /// <summary>
