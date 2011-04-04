@@ -16,6 +16,7 @@ Key features
   * Get the current plugin view as a Bitmap
   * Load Kml or Kmz files into the plugin 
   * Inject and invoke Javascript at runtime
+  * Add and remove API event listeners
 
 = Details =
 
