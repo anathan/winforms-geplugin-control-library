@@ -1,0 +1,71 @@
+#summary Set the browser instance for the control to work with.
+#sidebar TableOfContents
+
+<wiki:toc max_depth="2" />
+
+= Introduction =
+
+The SetBrowserInstance method is used to tell the various controls which instance of the [GEWebBrowser] to work with. All the controls apart from the [GEWebBrowser] support this method.
+
+== Syntax ==
+
+{{{
+public void SetBrowserInstance(GEWebBrowser)    
+}}}
+
+== Examples ==
+
+The basic method can be used by any of the controls like so:
+
+{{{
+kmlTreeView1.SetBrowserInstance(geWebBrowser1);
+}}}
+
+{{{
+geStatusStrip1.SetBrowserInstance(geWebBrowser1);
+}}}
+
+{{{
+geToolStrip1.SetBrowserInstance(geWebBrowser1);
+}}}
+
+To see how that works in practice please see the following example form.
+
+{{{
+
+using FC.GEPluginCtrls;
+
+public partial class Form1 : Form
+{
+    // To hold the plugin object
+    dynamic ge = null;
+
+    public Form1()
+    {
+        InitializeComponent();
+        
+        // load the plugin 
+        geWebBrowser1.LoadEmbededPlugin();
+        
+        // register a listener for the PluginReady event
+        geWebBrowser1.PluginReady += 
+            new GEWebBrowserEventHandler(geWebBrowser1_PluginReady);
+    }
+    
+    // Called when the PluginReady event fires
+    void geWebBrowser1_PluginReady(object sender, GEEventArgs e)
+    {
+        // set the 'ge' object to the plug-in instance
+        ge = geWebBrowser1.GetPlugin();
+
+        // Register the controls with the browser
+        kmlTreeView1.SetBrowserInstance(geWebBrowser1);
+        geStatusStrip1.SetBrowserInstance(geWebBrowser1);
+        geToolStrip1.SetBrowserInstance(geWebBrowser1);
+    }
+}
+}}}
+
+== Remarks ==
+
+Until SetBrowserInstance has been successfully called on a control, the control is disabled by default.
