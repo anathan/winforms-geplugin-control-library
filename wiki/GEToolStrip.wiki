@@ -31,28 +31,27 @@ public GEToolStrip()
 public bool ShowNavigationItems
 
 /// <summary>
-/// Gets or sets a value indicating whether the Layers drop down is visible
+/// Gets or sets a value indicating whether the Layers drop down is visible, default is true
 /// </summary>
 public bool ShowLayersDropDown
 
 /// <summary>
-/// Gets or sets a value indicating whether the Options drop down is visible
+/// Gets or sets a value indicating whether the Options drop down is visible, default is true
 /// </summary>
-DefaultValueAttribute(true)]
 public bool ShowOptionsDropDown
 
 /// <summary>
-/// Gets or sets a value indicating whether the View drop down is visible
+/// Gets or sets a value indicating whether the View drop down is visible, default is true
 /// </summary>
 public bool ShowViewDropDown
 
 /// <summary>
-/// Gets or sets a value indicating whether the Imagery drop down is visible
+/// Gets or sets a value indicating whether the Imagery drop down is visible, default is true
 /// </summary>
 public bool ShowImageryDropDown
 
 /// <summary>
-/// Gets or sets a value indicating whether the screen grab button is visible
+/// Gets or sets a value indicating whether the screen grab button is visible, default is true
 /// </summary>
 public bool ShowScreenGrabButton
 
@@ -62,7 +61,7 @@ public bool ShowScreenGrabButton
 public bool ShowViewInMapsButton
 
 /// <summary>
-/// Gets or sets a value indicating whether the language combobox is visible
+/// Gets or sets a value indicating whether the language combobox is visible, default is true
 /// </summary>
 public bool ShowLanguageCombobox
 
