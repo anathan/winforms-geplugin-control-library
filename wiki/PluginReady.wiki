@@ -1,0 +1,64 @@
+#summary The PluginReady event
+#sidebar TableOfContents
+
+<wiki:toc max_depth="2" />
+
+= Introduction =
+
+This event is raised when the embedded Google Earth plugin plugin is ready.
+
+= Details =
+
+The PluginReady event is the basis for working with the plugin from managed code. In it allows you to safely use the plugin once it has initialized. 
+
+You should use this event to determine when the plugin is ready for you to use in your application.
+
+This event is essentially just like the 'init callback' function one would use in !JavaScript when using the createInstance method of the native Api.
+
+== Syntax ==
+
+{{{
+public void SetBrowserInstance(GEWebBrowser)    
+}}}
+
+== Examples ==
+
+To use the event to work with the plugin take a look at the following simple form.
+
+{{{
+
+using FC.GEPluginCtrls;
+
+public partial class Form1 : Form
+{
+    // To hold the plugin object
+    dynamic ge = null;
+
+    public Form1()
+    {
+        InitializeComponent();
+        
+        // load the plugin 
+        geWebBrowser1.LoadEmbededPlugin();
+        
+        // register a listener for the PluginReady event
+        geWebBrowser1.PluginReady += 
+            new GEWebBrowserEventHandler(geWebBrowser1_PluginReady);
+    }
+    
+    // Called when the PluginReady event fires
+    void geWebBrowser1_PluginReady(object sender, GEEventArgs e)
+    {
+        // set the 'ge' object to the plug-in instance
+        ge = geWebBrowser1.GetPlugin();
+
+        MessageBox.Show(ge.getType()) // alerts GEPlugin
+    }
+}
+}}}
+
+== Remarks ==
+
+It is worth noting that the actual event logic is actually handled via an instance of External class and an active scripting method in the embedded page.
+
+The GEWebBrowser simply echoes this "External event" to the application for simplicities sake.
