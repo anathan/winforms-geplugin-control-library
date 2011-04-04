@@ -1,0 +1,85 @@
+#summary GEStatusStrip control notes
+#sidebar TableOfContents
+
+<wiki:toc max_depth="2" />
+
+http://earthapi.googlepages.com/GEStatusStrip.jpg
+
+= Introduction =
+
+The GEStatusStrip control intergrates with the GEWebBrowser to provide useful data such as the api, plugin and browser versions as well as data streaming information.
+
+
+= Details =
+
+The GEToolStrip inherits from the standard [http://msdn.microsoft.com/en-us/library/system.windows.forms.statusstrip.aspx System.Windows.Forms.StatusStrip] control class
+
+== Constructor == 
+
+{{{
+/// <summary>
+/// Initializes a new instance of the GEStatusStrip class.
+/// </summary>
+public GEStatusStrip()
+}}}
+
+== Public Properties ==
+
+{{{
+/// <summary>
+/// Gets or sets the timer interval for polling data
+/// Default is 100ms
+/// </summary>
+public int Interval
+
+/// <summary>
+/// Gets or sets a value indicating whether the progress bar is visible
+/// Default is true
+/// </summary>
+public bool ShowStreamingProgressBar
+
+/// <summary>
+/// Gets or sets a value indicating whether the streaming label is visible
+/// Default is true
+/// </summary>
+public bool ShowStreamingStatusLabel
+
+/// <summary>
+/// Gets or sets a value indicating whether the browser version label is visible
+/// Default is true
+/// </summary>
+public bool ShowBrowserVersionStatusLabel
+
+/// <summary>
+/// Gets or sets a value indicating whether the api version label is visible
+/// Default is true
+/// </summary>
+public bool ShowApiVersionStatusLabel
+
+/// <summary>
+/// Gets or sets a value indicating whether the plug-in version label is visible
+/// Default is true
+/// </summary>
+public bool ShowPluginVersionStatusLabel
+}}}
+
+== Public methods ==
+
+{{{
+/// <summary>
+/// Set the browser instance for the control to work with
+/// </summary>
+/// <param name="browser">The GEWebBrowser instance</param>
+/// <example>GEToolStrip.SetBrowserInstance(GEWebBrowser)</example>
+public void SetBrowserInstance(GEWebBrowser browser)
+}}}
+
+== Source == 
+
+[http://code.google.com/p/winforms-geplugin-control-library/source/browse/trunk/GEStatusStrip.cs GEToolStrip.cs]
+
+[http://code.google.com/p/winforms-geplugin-control-library/source/browse/trunk/GEStatusStrip.Designer.cs GEStatusStrip.Designer.cs]
+
+[http://code.google.com/p/winforms-geplugin-control-library/source/browse/trunk/GEStatusStrip.resx GEStatusStrip.resx]
+
+<wiki:gadget url="http://earthapi.googlepages.com/ad.xml" border="0" width="728" height="90" />
