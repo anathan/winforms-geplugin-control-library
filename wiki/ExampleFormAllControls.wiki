@@ -1,0 +1,43 @@
+#summary A simple winform example
+
+= Introduction =
+
+This form shows the most basic set up of the GEWebBrowser along with all the other controls (KmlTreeView, GEToolStrip and GEStatusStrip)
+
+= Details =
+
+Here the plugin behaves exactly as it would with the default set-up in a web page. You can use the mouse and keys to navigate when the control has focus. 
+
+Here the other controls ([GEStatusStrip], [GEToolStrip], [KmlTreeView]) and the other helper classes ([GEHelpers], [KmlHelpers], [GEOptions], etc) offer a clean, safe and managed, way to work with the Api.
+
+The dynamic type 'ge' returned by the PluginReady event also allows one to work seemlessly with the GEPlugin object, just as if you were programming in the native !javaScript API.
+
+{{{
+
+namespace SimpleControlsTest
+{
+    using System;
+    using System.Windows.Forms;
+    using FC.GEPluginCtrls;
+
+    public partial class Form1 : Form
+    {
+        public Form1()
+        {
+            InitializeComponent();
+
+            geWebBrowser1.LoadEmbededPlugin();
+            geWebBrowser1.PluginReady += (o, e) =>
+            {
+                // Register the controls with the browser
+                kmlTreeView1.SetBrowserInstance(geWebBrowser1);
+                geStatusStrip1.SetBrowserInstance(geWebBrowser1);
+                geToolStrip1.SetBrowserInstance(geWebBrowser1);
+            };
+        }
+    }
+}
+
+}}}
+
+<wiki:gadget url="http://earthapi.googlepages.com/ad.xml" border="0" width="728" height="90" />
