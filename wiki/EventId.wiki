@@ -101,6 +101,6 @@ ViewChangeEnd
 
 = Remarks =
 
-These are used when calling AddEventListener or RemoveEventListener to signify the desired event id.
+These are used when calling AddEventListener or [AddEventListener RemoveEventListener] to signify the desired event id.
 
 <wiki:gadget url="http://earthapi.googlepages.com/ad.xml" border="0" width="728" height="90" />
