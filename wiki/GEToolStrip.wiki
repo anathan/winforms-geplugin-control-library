@@ -3,7 +3,7 @@
 
 <wiki:toc max_depth="2" />
 
-http://earthapi.googlepages.com/GEToolStrip_6.jpg
+https://sites.google.com/site/earthapi2/GEToolStrip7.jpg
 
 = Introduction =
 
