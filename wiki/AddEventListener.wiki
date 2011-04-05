@@ -37,7 +37,6 @@ namespace EventsTest
     public partial class Form1 : Form
     {
         private dynamic ge;
-        private External external;
 
         public Form1()
         {
