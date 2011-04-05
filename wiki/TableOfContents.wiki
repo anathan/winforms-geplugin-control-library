@@ -29,3 +29,4 @@
   * Examples
     * [ExampleForm Basic winform example]
     * [usingTheServer Simple local server use]
+    * [ExampleFormAllControls  Adding the controls]
