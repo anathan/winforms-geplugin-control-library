@@ -42,8 +42,6 @@ namespace EventsTest
         {
             InitializeComponent();
 
-            external = new External();
-
             geWebBrowser1.LoadEmbededPlugin();
             geWebBrowser1.PluginReady += (o, e) =>
             {
