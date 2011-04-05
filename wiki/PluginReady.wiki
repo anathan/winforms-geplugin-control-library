@@ -26,33 +26,28 @@ public void SetBrowserInstance(GEWebBrowser)
 To use the event to work with the plugin take a look at the following simple form.
 
 {{{
-
-using FC.GEPluginCtrls;
-
-public partial class Form1 : Form
+namespace PluginReadyTest
 {
-    // To hold the plugin object
-    dynamic ge = null;
+    using System;
+    using System.Windows.Forms;
+    using FC.GEPluginCtrls;
 
-    public Form1()
+    public partial class Form1 : Form
     {
-        InitializeComponent();
-        
-        // load the plugin 
-        geWebBrowser1.LoadEmbededPlugin();
-        
-        // register a listener for the PluginReady event
-        geWebBrowser1.PluginReady += 
-            new GEWebBrowserEventHandler(geWebBrowser1_PluginReady);
-    }
-    
-    // Called when the PluginReady event fires
-    void geWebBrowser1_PluginReady(object sender, GEEventArgs e)
-    {
-        // set the 'ge' object to the plug-in instance
-        ge = geWebBrowser1.GetPlugin();
+        private dynamic ge;
 
-        MessageBox.Show(ge.getType()) // alerts GEPlugin
+        public Form1()
+        {
+            InitializeComponent();
+
+            geWebBrowser1.LoadEmbededPlugin();
+            geWebBrowser1.PluginReady += (o, e) =>
+            {
+                // ge can now be used exactly as it would be
+                // in the native javascript api
+                ge = e.ApiObject;
+            };
+        }
     }
 }
 }}}
