@@ -28,4 +28,4 @@
     * [Server]
   * Examples
     * [ExampleForm Basic winform example]
-    * [ExampleFormServer Simple local server use]
+    * [usingTheServer Simple local server use]
