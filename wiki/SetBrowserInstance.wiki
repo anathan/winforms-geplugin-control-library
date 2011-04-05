@@ -32,38 +32,30 @@ geToolStrip1.SetBrowserInstance(geWebBrowser1);
 To see how that works in practice please see the following example form.
 
 {{{
-
-using FC.GEPluginCtrls;
-
-public partial class Form1 : Form
+namespace SimpleTest
 {
-    // To hold the plugin object
-    dynamic ge = null;
+    using System;
+    using System.Windows.Forms;
+    using FC.GEPluginCtrls;
 
-    public Form1()
+    public partial class Form1 : Form
     {
-        InitializeComponent();
-        
-        // load the plugin 
-        geWebBrowser1.LoadEmbededPlugin();
-        
-        // register a listener for the PluginReady event
-        geWebBrowser1.PluginReady += 
-            new GEWebBrowserEventHandler(geWebBrowser1_PluginReady);
-    }
-    
-    // Called when the PluginReady event fires
-    void geWebBrowser1_PluginReady(object sender, GEEventArgs e)
-    {
-        // set the 'ge' object to the plug-in instance
-        ge = geWebBrowser1.GetPlugin();
+        public Form1()
+        {
+            InitializeComponent();
 
-        // Register the controls with the browser
-        kmlTreeView1.SetBrowserInstance(geWebBrowser1);
-        geStatusStrip1.SetBrowserInstance(geWebBrowser1);
-        geToolStrip1.SetBrowserInstance(geWebBrowser1);
+            geWebBrowser1.LoadEmbededPlugin();
+            geWebBrowser1.PluginReady += (o, e) =>
+            {
+                // Register the controls with the browser
+                kmlTreeView1.SetBrowserInstance(geWebBrowser1);
+                geStatusStrip1.SetBrowserInstance(geWebBrowser1);
+                geToolStrip1.SetBrowserInstance(geWebBrowser1);
+            };
+        }
     }
 }
+
 }}}
 
 == Remarks ==
