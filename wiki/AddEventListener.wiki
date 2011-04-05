@@ -28,7 +28,63 @@ public void AddEventListener(dynamic feature, EventId action, string javascript 
 To use an event listener with the built in callback functions simply register the KmlEvent listener then add the events you wish. It is worth noting that KmlLoaded and ViewEvent's have their own in-built delegates. The following example shows how to use the in-bult events to handle kml and view events.
 
 {{{
-To follow...
+namespace EventsTest
+{
+    using System;
+    using System.Windows.Forms;
+    using FC.GEPluginCtrls;
+
+    public partial class Form1 : Form
+    {
+        private dynamic ge;
+        private External external;
+
+        public Form1()
+        {
+            InitializeComponent();
+
+            external = new External();
+
+            geWebBrowser1.LoadEmbededPlugin();
+            geWebBrowser1.PluginReady += (o, e) =>
+            {
+                ge = e.ApiObject;
+                
+                // add a click event listner to the globe
+                geWebBrowser1.AddEventListener(ge.getGlobe(), EventId.Click);
+
+                // add a view event to the view object
+                geWebBrowser1.AddEventListener(ge.getView(), EventId.ViewChangeEnd);
+
+                // add a plugin event 
+                geWebBrowser1.AddEventListener(ge, EventId.BalloonClose);
+            };
+            
+            geWebBrowser1.KmlEvent += (o, e) =>
+            {
+                // show the event data...
+                MessageBox.Show(e.Data, e.Message); //KmlMouseEvent click
+                MessageBox.Show(e.ApiObject.getTarget().getType()); // GEGlobe
+
+                // remove the event
+                geWebBrowser1.RemoveEventListener(ge.getGlobe(), EventId.Click);
+            };
+
+            geWebBrowser1.ViewEvent += (o, e) =>
+            {
+                 // remove the event
+                geWebBrowser1.RemoveEventListener(ge.getView(), EventId.ViewChangeEnd);
+            };
+
+            geWebBrowser1.PluginEvent += (o, e) =>
+            {
+                // remove the event
+                geWebBrowser1.RemoveEventListener(ge, EventId.BalloonClose);
+            };
+        }
+    }
+}
+
 }}}
 
 The easiest way to use your own callback functions in managed code is to extend the External class. This allows you to register your own COM visible methods and to pass event objects to them from the plug-in. The following example shows how to register a custom external class and how to use a method of the class as an event handler.
