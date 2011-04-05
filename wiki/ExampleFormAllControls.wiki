@@ -2,7 +2,7 @@
 
 = Introduction =
 
-This form shows the most basic set up of the GEWebBrowser along with all the other controls (KmlTreeView, GEToolStrip and GEStatusStrip)
+This form shows the most basic set up of the GEWebBrowser along with all the other controls.
 
 = Details =
 
