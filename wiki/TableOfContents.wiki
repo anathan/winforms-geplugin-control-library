@@ -21,8 +21,9 @@
   * Wrapper classes
     * [GEOptions]
     * [GENavigationControl]
-  * Managed Enumerations 
+  * Enumerations 
     * [AltitudeMode]
+    * [EventId]
   * Working with !JavaScript
     * [InjectJavascript]
     * [InvokeJavascript]
