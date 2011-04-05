@@ -29,7 +29,8 @@
     * [InvokeJavascript]
   * Local server
     * [Server]
+    * [usingTheServer Basic local server example]
   * Examples
     * [ExampleForm Basic winform example]
-    * [usingTheServer Simple local server use]
+    * [usingTheServer Basic local server example]
     * [ExampleFormAllControls  Adding the controls]
