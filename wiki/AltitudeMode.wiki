@@ -1,4 +1,4 @@
-#summary AltitudeMode class notes
+#summary AltitudeMode Enumeration notes
 #sidebar TableOfContents
 
 <wiki:toc max_depth="2" />
