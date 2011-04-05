@@ -3,7 +3,7 @@
 
 <wiki:toc max_depth="2" />
 
-http://earthapi.googlepages.com/KmlTreeView.jpg
+https://sites.google.com/site/earthapi2/KmlTreeView2.jpg
 
 = Introduction =
 
