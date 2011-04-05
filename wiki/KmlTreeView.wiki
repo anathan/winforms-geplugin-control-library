@@ -13,6 +13,12 @@ The KMLTreeView control intergtes with the GEWebBrowser to display kml/kmz files
 
 The KMLTreeViewcontrol inherits from the standard [http://msdn.microsoft.com/en-us/library/system.web.ui.webcontrols.treeview.aspx System.Windows.Forms.TreeView] control class and has the same base members, methods, properties and events. 
 
+= Visual Designer = 
+
+These are the control options as they appear in the designer when using the control in Visual Studio.
+
+https://sites.google.com/site/earthapi2/KmlTreeViewProperties.jpg
+
 == Constructors == 
 
 {{{
