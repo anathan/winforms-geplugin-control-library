@@ -12,6 +12,12 @@ The GEStatusStrip control intergrates with the GEWebBrowser to provide useful da
 
 = Details =
 
+This control allows you to get visual feedback from the Google Earth Plugin Api. 
+
+The progress bar on the left hand side of the control polls the plug-in using the native Apis getStreamingPercent() method to display the  current streaming status of the plug-in. 
+
+The various labels on the right hand side of the control show the current Internet Explorer, Google Earth Api and Google Earth Plugin versions.
+
 The GEToolStrip inherits from the standard [http://msdn.microsoft.com/en-us/library/system.windows.forms.statusstrip.aspx System.Windows.Forms.StatusStrip] control class
 
 = Members = 
