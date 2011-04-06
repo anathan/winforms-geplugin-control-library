@@ -19,6 +19,11 @@ These are the control options as they appear in the designer when using the cont
 
 https://sites.google.com/site/earthapi2/GEToolStripProperties.jpg
 
+= Members =
+
+This is a complete list of all the custom GEToolStrip public members.
+As noted the GEToolStrip inherits from the standard [http://msdn.microsoft.com/en-us/library/system.windows.forms.toolstrip.aspx System.Windows.Forms.ToolStrip] control.
+ 
 == Constructor == 
 
 {{{
