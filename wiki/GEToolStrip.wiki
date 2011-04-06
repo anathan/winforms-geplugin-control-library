@@ -13,6 +13,12 @@ The GEToolStrip control integrates with the GEWebBrowser to provide controls for
 
 The GEToolStrip inherits from the standard [http://msdn.microsoft.com/en-us/library/system.windows.forms.toolstrip.aspx System.Windows.Forms.ToolStrip] control class
 
+= Visual Designer =
+
+These are the control options as they appear in the designer when using the control in Visual Studio.
+
+https://sites.google.com/site/earthapi2/GEToolStripProperties.jpg
+
 == Constructor == 
 
 {{{
