@@ -11,6 +11,9 @@ This method allows you to walk a Kml DOM and specify a callback function to be c
 
 The WalkKmlDom method optionally allows you to traverse !KmlFeatures and !Geometries. This is useful when one wishes to calculate the view bounds of a model for example. 
 
+This method is based on the function found in:
+http://code.google.com/p/earth-api-samples/source/browse/trunk/lib/kmldomwalk.js
+
 == Method ==
 
 {{{
