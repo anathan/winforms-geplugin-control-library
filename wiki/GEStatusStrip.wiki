@@ -14,6 +14,10 @@ The GEStatusStrip control intergrates with the GEWebBrowser to provide useful da
 
 The GEToolStrip inherits from the standard [http://msdn.microsoft.com/en-us/library/system.windows.forms.statusstrip.aspx System.Windows.Forms.StatusStrip] control class
 
+= Members = 
+
+This is a compleate list of the GEStatusStrip custom members. As noted the The GEToolStrip inherits from the standard [http://msdn.microsoft.com/en-us/library/system.windows.forms.statusstrip.aspx System.Windows.Forms.StatusStrip] control.
+
 == Constructor == 
 
 {{{
