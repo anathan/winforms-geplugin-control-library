@@ -54,6 +54,11 @@ namespace FC.GEPluginCtrls
         public const string Execute = "jsExecute";
 
         /// <summary>
+        /// The javascript method name of the google.earth.executeBatch wrapper.
+        /// </summary>
+        public const string ExecuteBatch = "jsExecuteBatch";
+
+        /// <summary>
         /// The javascript method name of the google.earth.fetchKml wrapper.
         /// </summary>
         public const string FetchKml = "jsFetchKml";

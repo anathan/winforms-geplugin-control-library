@@ -49,7 +49,7 @@ namespace FC.GEPluginCtrls
                 // It makes sense then to bind the Name to the id of the underlying kml object.
                 // This means that the 'keys' should be unique within the tree.
                 this.Name = kmlObject.getId();
-                this.KmlType = kmlObject.getType();
+                this.ApiObjectType = kmlObject.getType();
                 this.Text = kmlObject.getName();
                 this.Checked = Convert.ToBoolean(kmlObject.getVisibility());
                 this.ApiObjectVisible = this.Checked;
@@ -81,11 +81,6 @@ namespace FC.GEPluginCtrls
         /// Gets a value indicating whether networklink content is loading.
         /// </summary>
         internal bool IsLoading { get; private set; }
-
-        /// <summary>
-        /// Gets a value indicating the interface name (i.e. 'KmlPlacemark') of the underlying kml object.
-        /// </summary>
-        internal string KmlType { get; private set; }
 
         /// <summary>
         /// Gets the url of the underlying kml object.
@@ -130,6 +125,11 @@ namespace FC.GEPluginCtrls
         internal dynamic ApiObject { get; private set; }
 
         /// <summary>
+        /// Gets a value indicating the interface name (i.e. 'KmlPlacemark') of the underlying kml object.
+        /// </summary>
+        internal string ApiObjectType { get; private set; }
+
+        /// <summary>
         /// Gets or sets a value indicating whether the node is cheked and the kml object is visible
         /// </summary>
         internal bool ApiObjectVisible
@@ -141,7 +141,7 @@ namespace FC.GEPluginCtrls
 
             set
             {
-                this.ApiObject.setVisibility(Convert.ToInt16(value));
+                this.ApiObject.setVisibility(Convert.ToUInt16(value));
             }
         }
 
@@ -154,7 +154,7 @@ namespace FC.GEPluginCtrls
         /// </summary>
         internal void SetStyle()
         {
-            switch (this.KmlType)
+            switch (this.ApiObjectType)
             {
                 case ApiType.KmlDocument:
                 case ApiType.KmlFolder:

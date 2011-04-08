@@ -21,8 +21,12 @@ namespace FC.GEPluginCtrls.Geo
     using System;
 
     /// <summary>
-    /// Defines bounding objects
+    /// Bounds class
     /// </summary>
+    /// <remarks>
+    /// This class is based on the bounds object in the geojs library.
+    /// http://code.google.com/p/geojs/wiki/GeoBoundsReference
+    /// </remarks>
     public class Bounds : IEquatable<Bounds>
     {
         /// <summary>
@@ -39,8 +43,7 @@ namespace FC.GEPluginCtrls.Geo
         /// Single Coordinate constructor
         /// </summary>
         /// <param name="coord">the southwest/northEast Coordinate</param>
-        public Bounds(Coordinate coord) :
-            this()
+        public Bounds(Coordinate coord) 
         {
             this.SouthWest = this.NorthEast = coord;
         }
@@ -52,7 +55,6 @@ namespace FC.GEPluginCtrls.Geo
         /// <param name="southwest">The southwest Coordinate</param>
         /// <param name="northEast">The northEast Coordinate</param>
         public Bounds(Coordinate southwest, Coordinate northEast)
-            : this()
         {
             this.NorthEast = northEast;
             this.SouthWest = southwest;
@@ -74,7 +76,6 @@ namespace FC.GEPluginCtrls.Geo
         /// </summary>
         /// <param name="bounds">The bounds object to copy</param>
         public Bounds(Bounds bounds)
-            : this()
         {
             this.NorthEast = bounds.NorthEast;
             this.SouthWest = bounds.SouthWest;

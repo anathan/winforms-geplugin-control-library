@@ -76,6 +76,11 @@
             The javascript method name of the  window.execScript wrapper.
             </summary>
         </member>
+        <member name="F:FC.GEPluginCtrls.JSFunction.ExecuteBatch">
+            <summary>
+            The javascript method name of the google.earth.executeBatch wrapper.
+            </summary>
+        </member>
         <member name="F:FC.GEPluginCtrls.JSFunction.FetchKml">
             <summary>
             The javascript method name of the google.earth.fetchKml wrapper.
@@ -162,7 +167,7 @@
             <param name="database">The database name</param>
             <example>GEWebBrowser.CreateInstance(ImageryBase.Moon);</example>
         </member>
-        <member name="M:FC.GEPluginCtrls.GEWebBrowser.ExecuteBatch">
+        <member name="M:FC.GEPluginCtrls.GEWebBrowser.ExecuteBatch(System.String,System.Object)">
             <summary>
             Wrapper for the google.earth.executeBatch method
             See: http://code.google.com/apis/earth/documentation/reference/google_earth_namespace.html#b26414915202d39cad12bcd5bd99e739
@@ -170,6 +175,8 @@
             the amount of overhead incurred during cross-process communication between the browser
             and Google Earth Plugin. 
             </summary>
+            <param name="method">The javascript method to execute</param>
+            <param name="context">An optional parmeter to pass to the method</param>
         </member>
         <member name="M:FC.GEPluginCtrls.GEWebBrowser.FetchKml(System.String)">
             <summary>
@@ -555,8 +562,16 @@
         </member>
         <member name="T:FC.GEPluginCtrls.KmlTreeView">
             <summary>
-            The KmlTree view provides a quick way to display kml content
+            The KmlTreeView provides a quick way to display kml content.
             </summary>
+            <remarks>
+            It supports virtual loading of networklink content using the 
+            <see cref="T:FC.GEPluginCtrls.KmlTreeViewNode"/> class. The KmlTreeView makes hevay use of stacks
+            and background workers to keep the control fast and responsive when dealing with
+            large numbers of nodes. The control supports many user control options including 
+            node specifc context menus, kml tool tips and 'computed views' for objects 
+            without abstract views defined. 
+            </remarks>
             <summary>
             Designer file
             </summary>
@@ -585,6 +600,21 @@
         <member name="F:FC.GEPluginCtrls.KmlTreeView.gewb">
             <summary>
             The current browser
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.KmlTreeView.triStateImageList">
+            <summary>
+            The custom image list for tri-state check-box support
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.KmlTreeView.checkBoxesVisible">
+            <summary>
+            Vaule indicating whether check-boxes are visible.
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.KmlTreeView.preventChecking">
+            <summary>
+            Vaule indicating whether to prevent the check-boxes check event.
             </summary>
         </member>
         <member name="M:FC.GEPluginCtrls.KmlTreeView.#ctor">
@@ -622,6 +652,11 @@
             </summary>
             <param name="kmlObjects">The kml objects to parse</param>
         </member>
+        <member name="M:FC.GEPluginCtrls.KmlTreeView.Refresh">
+            <summary>
+            Refreshes and updates the layout of the control
+            </summary>
+        </member>
         <member name="M:FC.GEPluginCtrls.KmlTreeView.SetBrowserInstance(FC.GEPluginCtrls.GEWebBrowser)">
             <summary>
             Set the browser instance for the control to work with
@@ -652,19 +687,31 @@
             <summary>
             Raised after a tree node has expanded
             </summary>
-            <param name="e">Event Arugments</param>
+            <param name="e">The TreeViewEventArgs arugments</param>
         </member>
         <member name="M:FC.GEPluginCtrls.KmlTreeView.OnAfterCheck(System.Windows.Forms.TreeViewEventArgs)">
             <summary>
-            Called when a tree node is checked
+            Raised when a tree node is checked
             </summary>
-            <param name="e">Event Arugments</param>
+            <param name="e">The TreeViewEventArgs arugments</param>
         </member>
         <member name="M:FC.GEPluginCtrls.KmlTreeView.OnMouseUp(System.Windows.Forms.MouseEventArgs)">
             <summary>
-            Called when the user clicks on the control (TODO)
+            Raised when the user clicks on the control
             </summary>
-            <param name="e">The Event arguments</param>
+            <param name="e">The MouseEventArgs arguments</param>
+        </member>
+        <member name="M:FC.GEPluginCtrls.KmlTreeView.OnNodeMouseClick(System.Windows.Forms.TreeNodeMouseClickEventArgs)">
+            <summary>
+            Raised when the user clicks on a node in the control
+            </summary>
+            <param name="e">The TreeNodeMouseClickEventArgs arguments</param>
+        </member>
+        <member name="M:FC.GEPluginCtrls.KmlTreeView.OnLayout(System.Windows.Forms.LayoutEventArgs)">
+            <summary>
+            Raised when there is Layout event in the the control
+            </summary>
+            <param name="e">The LayoutEventArgs arguments</param>
         </member>
         <member name="M:FC.GEPluginCtrls.KmlTreeView.CreateKmlTreeNode(System.Object)">
             <summary>
@@ -704,6 +751,31 @@
             The image list for the tree nodes
             </summary>
         </member>
+        <member name="F:FC.GEPluginCtrls.KmlTreeView.contextMenuStripNetworkLinks">
+            <summary>
+            The contextMenuStripNetworkLinks item
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.KmlTreeView.toolStripMenuItemReloadLink">
+            <summary>
+             The toolStripMenuItemReloadLink item
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.KmlTreeView.toolStripMenuItemRemoveLink">
+            <summary>
+            The toolStripMenuItemRemoveLink item
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.KmlTreeView.contextMenuStripNodes">
+            <summary>
+            The contextMenuStripNodes item
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.KmlTreeView.toolStripMenuItemRemoveNode">
+            <summary>
+            The toolStripMenuItemRemoveNode item
+            </summary>
+        </member>
         <member name="M:FC.GEPluginCtrls.KmlTreeView.Dispose(System.Boolean)">
             <summary>
             Clean up any resources being used.
@@ -716,14 +788,36 @@
             the contents of this method with the code editor.
             </summary>
         </member>
+        <member name="M:FC.GEPluginCtrls.KmlTreeView.ToolStripMenuItemReload_Click(System.Object,System.EventArgs)">
+            <summary>
+            Called when a reload context menu item is clicked
+            </summary>
+            <param name="sender">the kml tree view</param>
+            <param name="e">The event arguments</param>
+        </member>
+        <member name="M:FC.GEPluginCtrls.KmlTreeView.ToolStripMenuItemRemove_Click(System.Object,System.EventArgs)">
+            <summary>
+            Called when a remove context menu item is clicked
+            </summary>
+            <param name="sender">the kml tree view</param>
+            <param name="e">The event arguments</param>
+        </member>
         <member name="P:FC.GEPluginCtrls.KmlTreeView.BalloonMinimumHeight">
             <summary>
-            Gets or sets the minimum height of any balloons triggered from the control
+            Gets or sets the minimum height of any balloons triggered from the control.
+            Default is 10
             </summary>
         </member>
         <member name="P:FC.GEPluginCtrls.KmlTreeView.BalloonMinimumWidth">
             <summary>
-            Gets or sets the minimum width of any balloons triggered from the control
+            Gets or sets the minimum width of any balloons triggered from the control.
+            Default is 10
+            </summary>
+        </member>
+        <member name="P:FC.GEPluginCtrls.KmlTreeView.CheckBoxes">
+            <summary>
+            Gets or sets a value indicating whether the treeview should display checkboxes or not.
+            Default True
             </summary>
         </member>
         <member name="P:FC.GEPluginCtrls.KmlTreeView.CheckAllChildren">
@@ -797,13 +891,6 @@
             Gets or sets a value indicating whether the control can accept data that
             the user drags onto it.
             </summary>
-        </member>
-        <member name="P:FC.GEPluginCtrls.KmlTreeView.CheckBoxes">
-            <summary>
-            Gets or sets a value indicating whether check boxes are displayed next to
-            the tree nodes in the tree view control.
-            </summary>
-            <remarks>Checkboxes are used to control the visibility of the kml feature they represent</remarks>
         </member>
         <member name="P:FC.GEPluginCtrls.KmlTreeView.ContextMenuStrip">
             <summary>
@@ -1492,6 +1579,10 @@
             <summary>
             Coordinate class
             </summary>
+            <remarks>
+            This class is based on the point object in the geojs library
+            http://code.google.com/p/geojs/wiki/GeoMathReference
+            </remarks>
         </member>
         <member name="M:FC.GEPluginCtrls.Geo.Coordinate.#ctor(System.Double,System.Double,System.Double,FC.GEPluginCtrls.AltitudeMode)">
             <summary>
@@ -1704,11 +1795,6 @@
             Gets a value indicating whether networklink content is loading.
             </summary>
         </member>
-        <member name="P:FC.GEPluginCtrls.KmlTreeViewNode.KmlType">
-            <summary>
-            Gets a value indicating the interface name (i.e. 'KmlPlacemark') of the underlying kml object.
-            </summary>
-        </member>
         <member name="P:FC.GEPluginCtrls.KmlTreeViewNode.KmlUrl">
             <summary>
             Gets the url of the underlying kml object.
@@ -1723,6 +1809,11 @@
         <member name="P:FC.GEPluginCtrls.KmlTreeViewNode.ApiObject">
             <summary>
             Gets the underlying kml object that the node represents.
+            </summary>
+        </member>
+        <member name="P:FC.GEPluginCtrls.KmlTreeViewNode.ApiObjectType">
+            <summary>
+            Gets a value indicating the interface name (i.e. 'KmlPlacemark') of the underlying kml object.
             </summary>
         </member>
         <member name="P:FC.GEPluginCtrls.KmlTreeViewNode.ApiObjectVisible">
@@ -2703,8 +2794,12 @@
         </member>
         <member name="T:FC.GEPluginCtrls.Geo.Bounds">
             <summary>
-            Defines bounding objects
+            Bounds class
             </summary>
+            <remarks>
+            This class is based on the bounds object in the geojs library.
+            http://code.google.com/p/geojs/wiki/GeoBoundsReference
+            </remarks>
         </member>
         <member name="M:FC.GEPluginCtrls.Geo.Bounds.#ctor">
             <summary>
@@ -2912,7 +3007,7 @@
         </member>
         <member name="T:FC.GEPluginCtrls.GELayer">
             <summary>
-            A collection the names of the internal hashs used by the plugin to control inbuilt plugin layers
+            A collection the names of the internal hashs used by the plugin to control built in plugin layers
             </summary>
         </member>
         <member name="F:FC.GEPluginCtrls.GELayer.Terrain">
@@ -3017,7 +3112,7 @@
         </member>
         <member name="T:FC.GEPluginCtrls.AltitudeMode">
             <summary>
-            Enumeration of the available imagery bases for the plug-in.
+            Enumeration of the available altitude modes for the plug-in.
             </summary>
         </member>
         <member name="F:FC.GEPluginCtrls.AltitudeMode.ClampToGround">
@@ -3062,7 +3157,7 @@
             <summary>
             A collection the names of objects in the Google Earth API.
             These constants are usefull when checking the type of any object 
-            that comes from outside managed 
+            that comes from outside managed code
             </summary>
             <remarks>This is a compleate list as of v1.007 of the API</remarks>
         </member>

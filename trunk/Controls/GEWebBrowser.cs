@@ -95,6 +95,17 @@ namespace FC.GEPluginCtrls
                     this.geplugin = e.ApiObject;
                     this.pluginIsReady = true;
                     this.OnPluginReady(this, e);
+
+                    Form parent = this.FindForm();
+
+                    if (parent != null)
+                    {
+                        parent.FormClosing += (f, x) =>
+                        {
+                            // prevents certain script errors on exit...
+                            this.DocumentText = string.Empty;
+                        };
+                    }
                 }
             };
 
@@ -305,11 +316,16 @@ namespace FC.GEPluginCtrls
         /// <param name="useCapture">Optionally use event capture</param>
         /// <example>GEWebBrowser.AddEventListener(object, "click", "someFunction");</example>
         /// <example>GEWebBrowser.AddEventListener(object, "click", "function(event){alert(event.getType);}");</example>
-        public void AddEventListener(dynamic feature, EventId action, string javascript = null, bool useCapture = false)
+        public void AddEventListener(object feature, EventId action, string javascript = null, bool useCapture = false)
         {
+            if (javascript != null)
+            {
+                javascript = "_x=" + javascript;
+            }
+
             this.InvokeJavascript(
                 JSFunction.AddEventListener,
-                new object[] { feature, action.ToString().ToLower(), javascript });
+                new object[] { feature, feature.GetHashCode(), action.ToString().ToLower(), javascript, useCapture });
         }
 
         /// <summary>
@@ -336,9 +352,14 @@ namespace FC.GEPluginCtrls
         /// the amount of overhead incurred during cross-process communication between the browser
         /// and Google Earth Plugin. 
         /// </summary>
-        public void ExecuteBatch()
+        /// <param name="method">The javascript method to execute</param>
+        /// <param name="context">An optional parmeter to pass to the method</param>
+        public void ExecuteBatch(string method, object context = null)
         {
-            throw new NotImplementedException("ExecuteBatch method is not yet implemented");
+            if (this.Document != null)
+            {
+                this.Document.InvokeScript(JSFunction.ExecuteBatch, new object[] { method, context });
+            }
         }
 
         /// <summary>
@@ -388,7 +409,7 @@ namespace FC.GEPluginCtrls
         /// <param name="timeout">time to wait for return in ms</param>
         /// <returns>The kml as a kmlObject</returns>
         /// <example>GEWebBrowser.FetchKmlSynchronous("http://www.site.com/file.kml");</example>
-        public object FetchKmlSynchronous(string url, int timeout = 1000)
+        public object FetchKmlSynchronous(string url, int timeout = 1200)
         {
             try
             {
@@ -627,18 +648,14 @@ namespace FC.GEPluginCtrls
         /// </summary>
         public void LoadEmbededPlugin()
         {
-            string html = string.Empty;
-
             try
             {
-                html = Properties.Resources.Plugin;
-
                 // Create a temp file and get the full path
                 string path = Path.GetTempFileName();
 
                 // Write the html to the temp file
                 TextWriter tw = new StreamWriter(path);
-                tw.Write(html);
+                tw.Write(Properties.Resources.Plugin);
 
                 // Close the temp file
                 tw.Close();
@@ -662,7 +679,9 @@ namespace FC.GEPluginCtrls
         /// <param name="useCapture">Optional, use event capture</param>
         public void RemoveEventListener(object feature, EventId action, bool useCapture = false)
         {
-            this.InvokeJavascript(JSFunction.RemoveEventListener, new object[] { feature, action.ToString().ToLower() });
+            this.InvokeJavascript(
+                JSFunction.RemoveEventListener,
+                new object[] { feature, feature.GetHashCode(), action.ToString().ToLower(), useCapture });
         }
 
         /// <summary>

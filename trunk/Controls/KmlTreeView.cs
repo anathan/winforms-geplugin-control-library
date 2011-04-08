@@ -19,6 +19,7 @@
 namespace FC.GEPluginCtrls
 {
     using System;
+    using System.Collections.Generic;
     using System.ComponentModel;
     using System.Diagnostics;
     using System.Drawing;
@@ -26,11 +27,20 @@ namespace FC.GEPluginCtrls
     using System.Reflection;
     using System.Runtime.InteropServices;
     using System.Windows.Forms;
+    using System.Windows.Forms.VisualStyles;
     using Microsoft.CSharp.RuntimeBinder;
 
     /// <summary>
-    /// The KmlTree view provides a quick way to display kml content
+    /// The KmlTreeView provides a quick way to display kml content.
     /// </summary>
+    /// <remarks>
+    /// It supports virtual loading of networklink content using the 
+    /// <see cref="KmlTreeViewNode"/> class. The KmlTreeView makes hevay use of stacks
+    /// and background workers to keep the control fast and responsive when dealing with
+    /// large numbers of nodes. The control supports many user control options including 
+    /// node specifc context menus, kml tool tips and 'computed views' for objects 
+    /// without abstract views defined. 
+    /// </remarks>
     public sealed partial class KmlTreeView : TreeView, IGEControls
     {
         #region Private fields
@@ -50,6 +60,21 @@ namespace FC.GEPluginCtrls
         /// </summary>
         private GEWebBrowser gewb = null;
 
+        /// <summary>
+        /// The custom image list for tri-state check-box support
+        /// </summary>
+        private ImageList triStateImageList;
+
+        /// <summary>
+        /// Vaule indicating whether check-boxes are visible.
+        /// </summary>
+        private bool checkBoxesVisible;
+
+        /// <summary>
+        /// Vaule indicating whether to prevent the check-boxes check event.
+        /// </summary>
+        private bool preventChecking;
+
         #endregion
 
         /// <summary>
@@ -58,6 +83,7 @@ namespace FC.GEPluginCtrls
         public KmlTreeView()
             : base()
         {
+            this.InitializeComponent();
             this.BalloonMinimumHeight = 10;
             this.BalloonMinimumWidth = 10;
             this.CheckAllChildren = true;
@@ -65,8 +91,34 @@ namespace FC.GEPluginCtrls
             this.FlyToOnDoubleClickNode = true;
             this.OpenBalloonsOnDoubleClick = true;
             this.UseUnsafeHtmlBalloons = false;
+            this.triStateImageList = new ImageList();
 
-            this.InitializeComponent();
+            CheckBoxState state = CheckBoxState.UncheckedNormal;
+
+            for (int i = 0; i < 3; i++)
+            {
+                Bitmap bitmap = new Bitmap(16, 16);
+                Graphics graphics = Graphics.FromImage(bitmap);
+
+                switch (i)
+                {
+                    case 0:
+                        state = CheckBoxState.UncheckedNormal;
+                        break;
+
+                    case 1:
+                        state = CheckBoxState.CheckedNormal;
+                        break;
+
+                    case 2:
+                        state = CheckBoxState.MixedNormal;
+                        break;
+                }
+
+                CheckBoxRenderer.DrawCheckBox(graphics, new Point(2, 2), state);
+                graphics.Save();
+                this.triStateImageList.Images.Add(bitmap);
+            }
         }
 
         /// <summary>
@@ -105,7 +157,8 @@ namespace FC.GEPluginCtrls
         #region Control Properties
 
         /// <summary>
-        /// Gets or sets the minimum height of any balloons triggered from the control
+        /// Gets or sets the minimum height of any balloons triggered from the control.
+        /// Default is 10
         /// </summary>
         [Category("Control Options"),
         Description("Gets or sets the minimum height of any balloons triggered from the control. Default 10"),
@@ -113,12 +166,35 @@ namespace FC.GEPluginCtrls
         public int BalloonMinimumHeight { get; set; }
 
         /// <summary>
-        /// Gets or sets the minimum width of any balloons triggered from the control
+        /// Gets or sets the minimum width of any balloons triggered from the control.
+        /// Default is 10
         /// </summary>
         [Category("Control Options"),
         Description("Gets or sets the minimum width of any balloons triggered from the control. Default 10"),
         DefaultValueAttribute(10)]
         public int BalloonMinimumWidth { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the treeview should display checkboxes or not.
+        /// Default True
+        /// </summary>
+        [Category("Appearance")]
+        [Description("Gets or sets a value indicating whether the treeview should display checkboxes or not. Default True")]
+        [DefaultValue(true)]
+        public new bool CheckBoxes
+        {
+            get 
+            {
+                return this.checkBoxesVisible; 
+            }
+
+            set
+            {
+                this.checkBoxesVisible = value;
+                base.CheckBoxes = this.checkBoxesVisible;
+                this.StateImageList = this.checkBoxesVisible ? this.triStateImageList : null;
+            }
+        }
 
         /// <summary>
         /// Gets or sets a value indicating whether the treeview should check all children when a parent is checked. Default True
@@ -233,18 +309,6 @@ namespace FC.GEPluginCtrls
         }
 
         /// <summary>
-        /// Gets or sets a value indicating whether check boxes are displayed next to
-        /// the tree nodes in the tree view control.
-        /// </summary>
-        /// <remarks>Checkboxes are used to control the visibility of the kml feature they represent</remarks>
-        [Browsable(false)]
-        public new bool CheckBoxes
-        {
-            get { return base.CheckBoxes; }
-            set { base.CheckBoxes = value; }
-        }
-
-        /// <summary>
         /// Gets or sets the context menu strip for the control
         /// </summary>
         /// <remarks>TODO: context menu for networklinks, etc</remarks>
@@ -343,11 +407,11 @@ namespace FC.GEPluginCtrls
         {
             BackgroundWorker worker = new BackgroundWorker();
 
-            worker.DoWork += (o, e) => 
+            worker.DoWork += (o, e) =>
             {
                 try
                 {
-                    e.Result = this.CreateKmlTreeNode(kmlObject);
+                    e.Result = this.CreateKmlTreeNode(e.Argument);
                 }
                 catch (COMException)
                 {
@@ -361,16 +425,16 @@ namespace FC.GEPluginCtrls
                 }
             };
 
-            worker.RunWorkerCompleted += (o, e) => 
+            worker.RunWorkerCompleted += (o, e) =>
             {
                 if (e.Result != null)
                 {
                     this.Nodes.Add(e.Result as KmlTreeViewNode);
-                    this.Update();
+                    this.Refresh();
                 }
             };
 
-            worker.RunWorkerAsync(new object[] { kmlObject });
+            worker.RunWorkerAsync(kmlObject);
         }
 
         /// <summary>
@@ -384,7 +448,44 @@ namespace FC.GEPluginCtrls
                 this.ParseKmlObject(kmlObject);
             }
         }
-        
+
+        /// <summary>
+        /// Refreshes and updates the layout of the control
+        /// </summary>
+        public override void Refresh()
+        {
+            base.Refresh();
+
+            if (!this.CheckBoxes)
+            {
+                return;
+            }
+
+            base.CheckBoxes = false;
+
+            Stack<TreeNode> stack = new Stack<TreeNode>(this.Nodes.Count);
+
+            foreach (TreeNode current in this.Nodes)
+            {
+                stack.Push(current);
+            }
+
+            while (stack.Count > 0)
+            {
+                TreeNode node = stack.Pop();
+
+                if (node.StateImageIndex == -1)
+                {
+                    node.StateImageIndex = node.Checked ? 1 : 0;
+                }
+
+                for (int i = 0; i < node.Nodes.Count; i++)
+                {
+                    stack.Push(node.Nodes[i]);
+                }
+            }
+        }
+
         /// <summary>
         /// Set the browser instance for the control to work with
         /// </summary>
@@ -403,7 +504,7 @@ namespace FC.GEPluginCtrls
             this.Nodes.Clear();
             this.Enabled = true;
 
-            this.gewb.PluginReady += (o, e) => 
+            this.gewb.PluginReady += (o, e) =>
             {
                 this.Enabled = true;
             };
@@ -438,6 +539,8 @@ namespace FC.GEPluginCtrls
         /// <param name="e">Event arguments</param>
         protected override void OnDoubleClick(EventArgs e)
         {
+            base.OnDoubleClick(e);
+
             KmlTreeViewNode node = this.SelectedNode as KmlTreeViewNode;
 
             if (node != null && !node.IsLoading)
@@ -447,7 +550,7 @@ namespace FC.GEPluginCtrls
 
                 this.OnAfterCheck(new TreeViewEventArgs(node, TreeViewAction.ByMouse));
 
-                switch (node.KmlType)
+                switch (node.ApiObjectType)
                 {
                     case ApiType.KmlPlacemark:
                     case ApiType.KmlFolder:
@@ -500,6 +603,8 @@ namespace FC.GEPluginCtrls
         /// <param name="e">Event Arugments</param>
         protected override void OnAfterCollapse(TreeViewEventArgs e)
         {
+            base.OnAfterCollapse(e);
+
             KmlTreeViewNode treeNode = e.Node as KmlTreeViewNode;
             treeNode.SetStyle();
         }
@@ -507,9 +612,19 @@ namespace FC.GEPluginCtrls
         /// <summary>
         /// Raised after a tree node has expanded
         /// </summary>
-        /// <param name="e">Event Arugments</param>
+        /// <param name="e">The TreeViewEventArgs arugments</param>
         protected override void OnAfterExpand(TreeViewEventArgs e)
         {
+            base.OnAfterExpand(e);
+
+            foreach (TreeNode child in e.Node.Nodes)
+            {
+                if (child.StateImageIndex == -1)
+                {
+                    child.StateImageIndex = child.Checked ? 1 : 0;
+                }
+            }
+
             KmlTreeViewNode node = e.Node as KmlTreeViewNode;
             node.SetStyle();
 
@@ -517,29 +632,33 @@ namespace FC.GEPluginCtrls
             if (e.Action != TreeViewAction.Unknown)
             {
                 // and it is an unopend network link
-                if (node.KmlType == ApiType.KmlNetworkLink && !node.Fetched)
+                if (node.ApiObjectType == ApiType.KmlNetworkLink && !node.Fetched)
                 {
                     // set-up a temp-node and background-worker for each link to be fetched
+                    // set the fetched flag to stop node reloading if it colapsed/expanded during loading.
                     KmlTreeViewNode tempNode = node.Nodes[0] as KmlTreeViewNode;
-                    BackgroundWorker worker = new BackgroundWorker();
                     tempNode.Animate();
-
-                    // stop open/close node forcing reload!
                     node.Fetched = true;
 
-                    // fetch the content in the background.
-                    worker.DoWork += (o, we) => { we.Result = this.CreateKmlTreeNode(tempNode.ApiObject); };
+                    BackgroundWorker worker = new BackgroundWorker();
 
-                    // when it is finished
-                    worker.RunWorkerCompleted += (o, wc) =>
+                    // fetch the content in the background.
+                    worker.DoWork += (o, dwea) =>
+                    {
+                        dwea.Result =
+                            this.CreateKmlTreeNode(((KmlTreeViewNode)dwea.Argument).ApiObject);
+                    };
+
+                    // when the worker is finished
+                    worker.RunWorkerCompleted += (o, rwcea) =>
                     {
                         // Get the result, add it to the temp-node parent and set the fetched flag. 
-                        KmlTreeViewNode newnode = wc.Result as KmlTreeViewNode;
+                        KmlTreeViewNode newnode = rwcea.Result as KmlTreeViewNode;
 
                         if (tempNode.Parent != null && newnode != null)
                         {
-                            tempNode.Parent.Nodes.Add(newnode);
                             ((KmlTreeViewNode)tempNode.Parent).Fetched = true;
+                            tempNode.Parent.Nodes.Add(newnode);
                             tempNode.Remove();
 
                             if (this.ExpandNetworkLinkContentOnLoad)
@@ -549,22 +668,33 @@ namespace FC.GEPluginCtrls
                         }
                         else
                         {
-                            // allow an to attempt reload...
+                            // set the fetched flag to allow an attempt to reload...
                             node.Fetched = false;
                         }
                     };
 
-                    worker.RunWorkerAsync(new object[] { tempNode });
+                    worker.RunWorkerAsync(tempNode);
                 }
             }
         }
 
         /// <summary>
-        /// Called when a tree node is checked
+        /// Raised when a tree node is checked
         /// </summary>
-        /// <param name="e">Event Arugments</param>
+        /// <param name="e">The TreeViewEventArgs arugments</param>
         protected override void OnAfterCheck(TreeViewEventArgs e)
         {
+            base.OnAfterCheck(e);
+
+            if (this.preventChecking)
+            {
+                return;
+            }
+
+            this.OnNodeMouseClick(
+                new TreeNodeMouseClickEventArgs(
+                    e.Node, MouseButtons.None, 0, 0, 0));
+
             KmlTreeViewNode node = e.Node as KmlTreeViewNode;
 
             if (node.ApiObject != null && !node.IsLoading)
@@ -575,11 +705,11 @@ namespace FC.GEPluginCtrls
                 {
                     if (e.Action != TreeViewAction.Unknown)
                     {
-                        if (node.KmlType == ApiType.KmlTour)
+                        if (node.ApiObjectType == ApiType.KmlTour)
                         {
                             this.geplugin.getTourPlayer().setTour(node.ApiObject);
                         }
-                        else if (node.KmlType == ApiType.KmlPhotoOverlay)
+                        else if (node.ApiObjectType == ApiType.KmlPhotoOverlay)
                         {
                             this.geplugin.getPhotoOverlayViewer().setPhotoOverlay(node.ApiObject);
                         }
@@ -594,11 +724,11 @@ namespace FC.GEPluginCtrls
                 }
                 else
                 {
-                    if (node.KmlType == ApiType.KmlTour)
+                    if (node.ApiObjectType == ApiType.KmlTour)
                     {
                         this.geplugin.getTourPlayer().setTour(null);
                     }
-                    else if (node.KmlType == ApiType.KmlPhotoOverlay)
+                    else if (node.ApiObjectType == ApiType.KmlPhotoOverlay)
                     {
                         this.geplugin.getPhotoOverlayViewer().setPhotoOverlay(null);
                     }
@@ -612,9 +742,9 @@ namespace FC.GEPluginCtrls
         }
 
         /// <summary>
-        /// Called when the user clicks on the control (TODO)
+        /// Raised when the user clicks on the control
         /// </summary>
-        /// <param name="e">The Event arguments</param>
+        /// <param name="e">The MouseEventArgs arguments</param>
         protected override void OnMouseUp(MouseEventArgs e)
         {
             // Show menu only if the right mouse button is clicked.
@@ -624,22 +754,102 @@ namespace FC.GEPluginCtrls
                 Point p = new Point(e.X, e.Y);
 
                 // Get the node that the user has clicked.
-                TreeNode node = this.GetNodeAt(p);
+                KmlTreeViewNode node = this.GetNodeAt(p) as KmlTreeViewNode;
 
                 if (node != null)
                 {
-                    // holder for the cuurent node
-                    ////currentNode = this.SelectedNode;
-
-                    // Select the node the user has clicked.
-                    // The node appears selected until the menu is displayed on the screen.
                     this.SelectedNode = node;
 
-                    // Highlight the selected node.
-                    ////this.SelectedNode = currentNode;
-                    ////currentNode = null;
+                    // Find the appropriate ContextMenu depending on the selected node type
+                    switch (node.ApiObjectType)
+                    {
+                        case ApiType.KmlNetworkLink:
+                            contextMenuStripNetworkLinks.Show(this, p);
+                            break;
+
+                        default:
+                            contextMenuStripNodes.Show(this, p);
+                            break;
+                    }
                 }
             }
+        }
+
+        /// <summary>
+        /// Raised when the user clicks on a node in the control
+        /// </summary>
+        /// <param name="e">The TreeNodeMouseClickEventArgs arguments</param>
+        protected override void OnNodeMouseClick(TreeNodeMouseClickEventArgs e)
+        {
+            base.OnNodeMouseClick(e);
+            this.preventChecking = true;
+
+            int space = this.ImageList == null ? 0 : 18;
+
+            if (e.X > e.Node.Bounds.Left - space ||
+                e.X < e.Node.Bounds.Left - (space + 16))
+            {
+                return;
+            }
+
+            KmlTreeViewNode node = e.Node as KmlTreeViewNode;
+            node.Checked = !node.Checked;
+            node.ApiObjectVisible = !node.Checked;
+
+            Stack<KmlTreeViewNode> stack =
+                new Stack<KmlTreeViewNode>(node.Nodes.Count);
+            stack.Push(node);
+
+            do
+            {
+                node = stack.Pop();
+                node.Checked = e.Node.Checked;
+                node.ApiObjectVisible = e.Node.Checked;
+
+                for (int i = 0; i < node.Nodes.Count; i++)
+                {
+                    stack.Push(node.Nodes[i] as KmlTreeViewNode);
+                }
+            }
+            while (stack.Count > 0);
+
+            bool mixed = false;
+            node = e.Node as KmlTreeViewNode;
+
+            while (node.Parent != null)
+            {
+                foreach (KmlTreeViewNode child in node.Parent.Nodes)
+                {
+                    mixed |= child.Checked != node.Checked;
+                    child.ApiObjectVisible = child.Checked;
+                }
+
+                int index = (int)Convert.ToUInt16(node.Checked);
+                node.Parent.Checked = mixed || (index > 0);
+
+                if (mixed)
+                {
+                    node.Parent.StateImageIndex = 2;
+                }
+                else
+                {
+                    node.Parent.StateImageIndex = index;
+                }
+
+                node = node.Parent as KmlTreeViewNode;
+            }
+
+            this.preventChecking = false;
+        }
+
+        /// <summary>
+        /// Raised when there is Layout event in the the control
+        /// </summary>
+        /// <param name="e">The LayoutEventArgs arguments</param>
+        protected override void OnLayout(LayoutEventArgs e)
+        {
+            base.OnLayout(e);
+            this.Refresh();
         }
 
         #endregion
@@ -655,9 +865,9 @@ namespace FC.GEPluginCtrls
         {
             KmlTreeViewNode treeNode = new KmlTreeViewNode(feature);
 
-            if (treeNode.KmlType != ApiType.KmlDocument &&
-                treeNode.KmlType != ApiType.KmlFolder &&
-                treeNode.KmlType != ApiType.KmlNetworkLink)
+            if (treeNode.ApiObjectType != ApiType.KmlDocument &&
+                treeNode.ApiObjectType != ApiType.KmlFolder &&
+                treeNode.ApiObjectType != ApiType.KmlNetworkLink)
             {
                 // basic node
                 return treeNode;
@@ -721,7 +931,7 @@ namespace FC.GEPluginCtrls
 
                 if (this.ExpandVisibleFeatures && Convert.ToBoolean(treeNode.ApiObject.getOpen()))
                 {
-                    if (treeNode.KmlType != ApiType.KmlNetworkLink)
+                    if (treeNode.ApiObjectType != ApiType.KmlNetworkLink)
                     {
                         treeNode.Expand();
                     }
@@ -739,6 +949,10 @@ namespace FC.GEPluginCtrls
                 /* a pointer to the COM object went away */
             }
             catch (COMException)
+            {
+                /* a pointer to the COM object went away */
+            }
+            catch (InvalidComObjectException)
             {
                 /* a pointer to the COM object went away */
             }
@@ -787,25 +1001,36 @@ namespace FC.GEPluginCtrls
         /// Default is true</param>
         private void CheckAllChildNodes(KmlTreeViewNode node, bool check = true)
         {
-            foreach (KmlTreeViewNode child in node.Nodes)
-            {
-                child.ApiObjectVisible = check;
-                child.Checked = check;
+            Stack<KmlTreeViewNode> stack =
+                new Stack<KmlTreeViewNode>(node.Nodes.Count);
+            stack.Push(node);
 
-                if (check)
+            do
+            {
+                node = stack.Pop();
+                node.Checked = check;
+                node.ApiObjectVisible = check;
+
+                for (int i = 0; i < node.Nodes.Count; i++)
                 {
-                    // checking - so only recurse if CheckOffOnly isn't set
-                    if (child.KmlListStyle != ListItemStyle.CheckOffOnly)
+                    if (check)
                     {
-                        this.CheckAllChildNodes(child, check);
+                        // checking - so only recurse if CheckOffOnly isn't set
+                        if (node.KmlListStyle != ListItemStyle.CheckOffOnly)
+                        {
+                            this.CheckAllChildNodes(node, check);
+                        }
                     }
-                }
-                else
-                {
-                    // unchecking so recurse whatever
-                    this.CheckAllChildNodes(child, check);     
+                    else
+                    {
+                        // unchecking so recurse whatever
+                        this.CheckAllChildNodes(node, check);
+                    }
+
+                    stack.Push(node.Nodes[i] as KmlTreeViewNode);
                 }
             }
+            while (stack.Count > 0);
         }
 
         /// <summary>

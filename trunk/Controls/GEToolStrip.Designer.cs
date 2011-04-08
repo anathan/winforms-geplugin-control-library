@@ -314,6 +314,7 @@ namespace FC.GEPluginCtrls
             // 
             this.navigationTextBox.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.SuggestAppend;
             this.navigationTextBox.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.CustomSource;
+            this.navigationTextBox.AutoCompleteCustomSource = this.navigationTextBoxStringCollection;
             this.navigationTextBox.AutoSize = false;
             this.navigationTextBox.Name = "navigationTextBox";
             this.navigationTextBox.Size = new System.Drawing.Size(100, 21);

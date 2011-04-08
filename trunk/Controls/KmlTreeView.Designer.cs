@@ -34,6 +34,31 @@ namespace FC.GEPluginCtrls
         private System.Windows.Forms.ImageList imageList1;
 
         /// <summary>
+        /// The contextMenuStripNetworkLinks item
+        /// </summary>
+        private System.Windows.Forms.ContextMenuStrip contextMenuStripNetworkLinks;
+
+        /// <summary>
+        ///  The toolStripMenuItemReloadLink item
+        /// </summary>
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItemReloadLink;
+
+        /// <summary>
+        /// The toolStripMenuItemRemoveLink item
+        /// </summary>
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItemRemoveLink;
+
+        /// <summary>
+        /// The contextMenuStripNodes item
+        /// </summary>
+        private System.Windows.Forms.ContextMenuStrip contextMenuStripNodes;
+
+        /// <summary>
+        /// The toolStripMenuItemRemoveNode item
+        /// </summary>
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItemRemoveNode;
+
+        /// <summary>
         /// Clean up any resources being used.
         /// </summary>
         /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
@@ -58,6 +83,13 @@ namespace FC.GEPluginCtrls
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(KmlTreeView));
             this.imageList1 = new System.Windows.Forms.ImageList(this.components);
+            this.contextMenuStripNetworkLinks = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.toolStripMenuItemReloadLink = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItemRemoveLink = new System.Windows.Forms.ToolStripMenuItem();
+            this.contextMenuStripNodes = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.toolStripMenuItemRemoveNode = new System.Windows.Forms.ToolStripMenuItem();
+            this.contextMenuStripNetworkLinks.SuspendLayout();
+            this.contextMenuStripNodes.SuspendLayout();
             this.SuspendLayout();
             // 
             // imageList1
@@ -78,6 +110,44 @@ namespace FC.GEPluginCtrls
             this.imageList1.Images.SetKeyName(11, "linkFolderClosed_1");
             this.imageList1.Images.SetKeyName(12, "linkFolderClosed_2");
             // 
+            // contextMenuStripNetworkLinks
+            // 
+            this.contextMenuStripNetworkLinks.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripMenuItemReloadLink,
+            this.toolStripMenuItemRemoveLink});
+            this.contextMenuStripNetworkLinks.Name = "contextMenuStripNetworkLinks";
+            this.contextMenuStripNetworkLinks.Size = new System.Drawing.Size(118, 48);
+            // 
+            // toolStripMenuItemReload
+            // 
+            this.toolStripMenuItemReloadLink.Name = "toolStripMenuItemReload";
+            this.toolStripMenuItemReloadLink.Size = new System.Drawing.Size(117, 22);
+            this.toolStripMenuItemReloadLink.Text = "Reload";
+            this.toolStripMenuItemReloadLink.ToolTipText = "Reloads the link content";
+            this.toolStripMenuItemReloadLink.Click += new System.EventHandler(this.ToolStripMenuItemReload_Click);
+            // 
+            // toolStripMenuItemRemove
+            // 
+            this.toolStripMenuItemRemoveLink.Name = "toolStripMenuItemRemove";
+            this.toolStripMenuItemRemoveLink.Size = new System.Drawing.Size(117, 22);
+            this.toolStripMenuItemRemoveLink.Text = "Remove";
+            this.toolStripMenuItemRemoveLink.ToolTipText = "Remove the item";
+            this.toolStripMenuItemRemoveLink.Click += new System.EventHandler(this.ToolStripMenuItemRemove_Click);
+            // 
+            // contextMenuStripNodes
+            // 
+            this.contextMenuStripNodes.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripMenuItemRemoveNode});
+            this.contextMenuStripNodes.Name = "contextMenuStripNodes";
+            this.contextMenuStripNodes.Size = new System.Drawing.Size(118, 26);
+            // 
+            // toolStripMenuItemRemoveNode
+            // 
+            this.toolStripMenuItemRemoveNode.Name = "toolStripMenuItemRemoveNode";
+            this.toolStripMenuItemRemoveNode.Size = new System.Drawing.Size(117, 22);
+            this.toolStripMenuItemRemoveNode.Text = "Remove";
+            this.toolStripMenuItemRemoveNode.Click += new System.EventHandler(ToolStripMenuItemRemove_Click);
+            // 
             // KmlTreeView
             // 
             this.CheckBoxes = true;
@@ -85,10 +155,47 @@ namespace FC.GEPluginCtrls
             this.ImageList = this.imageList1;
             this.LineColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(100)))), ((int)(((byte)(100)))));
             this.SelectedImageIndex = 0;
+            this.contextMenuStripNetworkLinks.ResumeLayout(false);
+            this.contextMenuStripNodes.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
 
         #endregion
+
+        /// <summary>
+        /// Called when a reload context menu item is clicked
+        /// </summary>
+        /// <param name="sender">the kml tree view</param>
+        /// <param name="e">The event arguments</param>
+        private void ToolStripMenuItemReload_Click(object sender, System.EventArgs e)
+        {
+            KmlTreeViewNode node = this.SelectedNode as KmlTreeViewNode;
+            node.Fetched = false;
+            node.Collapse();
+            node.Expand();
+        }
+
+        /// <summary>
+        /// Called when a remove context menu item is clicked
+        /// </summary>
+        /// <param name="sender">the kml tree view</param>
+        /// <param name="e">The event arguments</param>
+        private void ToolStripMenuItemRemove_Click(object sender, System.EventArgs e)
+        {
+            KmlTreeViewNode node = this.SelectedNode as KmlTreeViewNode;
+            dynamic parent = node.ApiObject.getParentNode();
+
+            if (parent != null)
+            {
+                parent.getFeatures().removeChild(node.ApiObject);
+            }
+            else
+            {
+                this.gewb.Plugin.getFeatures().removeChild(node.ApiObject);
+            }
+
+            this.Nodes.Remove(node);
+        }
     }
 }

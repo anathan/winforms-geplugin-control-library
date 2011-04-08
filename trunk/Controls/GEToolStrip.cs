@@ -189,7 +189,7 @@ namespace FC.GEPluginCtrls
         /// </summary>
         [Category("Control Options"),
         Description("Gets or sets the AutoCompleteMode of the navigation textbox. Default is AutoCompleteMode.Append"),
-        DefaultValueAttribute(AutoCompleteMode.Append)]
+        DefaultValueAttribute(AutoCompleteMode.SuggestAppend)]
         public AutoCompleteMode NavigationAutoCompleteMode
         {
             get { return this.navigationTextBox.AutoCompleteMode; }
@@ -301,13 +301,13 @@ namespace FC.GEPluginCtrls
 
                 // checked: t(1) + 1 = 2 = MapType.Sky
                 // unchecked: f(0) + 1 = 1 = MapType.Earth
-                this.geoptions.SetMapType(((MapType)Convert.ToInt16(this.skyMenuItem.Checked) + 1));
+                this.geoptions.SetMapType(((MapType)Convert.ToUInt16(this.skyMenuItem.Checked) + 1));
 
                 // sun
-                this.geplugin.getSun().setVisibility(Convert.ToInt16(this.sunMenuItem.Checked));
+                this.geplugin.getSun().setVisibility(Convert.ToUInt16(this.sunMenuItem.Checked));
 
                 // controls
-                this.geplugin.getNavigationControl().setVisibility(Convert.ToInt16(this.controlsMenuItem.Checked));
+                this.geplugin.getNavigationControl().setVisibility(Convert.ToUInt16(this.controlsMenuItem.Checked));
 
                 if (this.gewb.ImageyBase == ImageryBase.Earth)
                 {
@@ -389,11 +389,7 @@ namespace FC.GEPluginCtrls
 
                 if (System.IO.File.Exists(input))
                 {
-                    if (input.EndsWith("kml", true, System.Globalization.CultureInfo.CurrentCulture))
-                    {
-                        // input is a local kml file
-                        this.gewb.FetchKmlLocal(input);
-                    }
+                  this.gewb.FetchKmlLocal(input);
                 }
                 else if (input.StartsWith("http", true, System.Globalization.CultureInfo.CurrentCulture))
                 {
@@ -469,7 +465,7 @@ namespace FC.GEPluginCtrls
                             this.geoptions.AtmosphereVisibility = item.Checked;
                             break;
                         case "CONTROLS":
-                            this.control.Visiblity = (Visiblity)Convert.ToInt16(item.Checked);
+                            this.control.Visiblity = (Visiblity)Convert.ToUInt16(item.Checked);
                             break;
                         case "GRID":
                             this.geoptions.GridVisibility = item.Checked;
@@ -509,7 +505,7 @@ namespace FC.GEPluginCtrls
             if (this.gewb.PluginIsReady && (item != null))
             {
                 string type = item.Tag.ToString();
-                int value = Convert.ToInt16(item.Checked);
+                int value = Convert.ToUInt16(item.Checked);
 
                 try
                 {

@@ -23,6 +23,10 @@ namespace FC.GEPluginCtrls.Geo
     /// <summary>
     /// Coordinate class
     /// </summary>
+    /// <remarks>
+    /// This class is based on the point object in the geojs library
+    /// http://code.google.com/p/geojs/wiki/GeoMathReference
+    /// </remarks>
     public class Coordinate : IEquatable<Coordinate>
     {
         /// <summary>
@@ -51,7 +55,9 @@ namespace FC.GEPluginCtrls.Geo
         public Coordinate(dynamic apiObject)
             : this()
         {
-            string type = apiObject.getType();
+            string type = string.Empty;
+
+            type = apiObject.getType();
 
             // no need to normalise as the Coordinate is 
             // constructed from an existing api type (I think!)

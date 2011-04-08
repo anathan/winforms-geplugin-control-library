@@ -63,7 +63,7 @@ namespace FC.GEPluginCtrls
         public bool Visibility
         {
             get { return Convert.ToBoolean(this.window.getVisibility()); }
-            set { this.window.setVisibility(Convert.ToInt16(value)); }
+            set { this.window.setVisibility(Convert.ToUInt16(value)); }
         }
    
         #endregion

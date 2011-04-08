@@ -70,7 +70,7 @@ namespace FC.GEPluginCtrls
 
             set
             {
-                this.options.setAtmosphereVisibility(Convert.ToInt16(value));
+                this.options.setAtmosphereVisibility(Convert.ToUInt16(value));
             }
         }
 
@@ -89,7 +89,7 @@ namespace FC.GEPluginCtrls
 
             set
             {
-                this.options.setAutoGroundLevelViewEnabled(Convert.ToInt16(value));
+                this.options.setAutoGroundLevelViewEnabled(Convert.ToUInt16(value));
             }
         }
 
@@ -107,7 +107,7 @@ namespace FC.GEPluginCtrls
 
             set
             {
-                this.options.setBuildingHighlightingEnabled(Convert.ToInt16(value));
+                this.options.setBuildingHighlightingEnabled(Convert.ToUInt16(value));
             }
         }
 
@@ -124,7 +124,7 @@ namespace FC.GEPluginCtrls
 
             set
             {
-                this.options.setBuildingSelectionEnabled(Convert.ToInt16(value));
+                this.options.setBuildingSelectionEnabled(Convert.ToUInt16(value));
             }
         }
 
@@ -142,7 +142,7 @@ namespace FC.GEPluginCtrls
 
             set
             {
-                this.options.setFadeInOutEnabled(Convert.ToInt16(value));
+                this.options.setFadeInOutEnabled(Convert.ToUInt16(value));
             }
         }
 
@@ -175,7 +175,7 @@ namespace FC.GEPluginCtrls
 
             set
             {
-                this.options.setGridVisibility(Convert.ToInt16(value));
+                this.options.setGridVisibility(Convert.ToUInt16(value));
             }
         }
 
@@ -192,7 +192,7 @@ namespace FC.GEPluginCtrls
 
             set
             {
-                this.options.setMouseNavigationEnabled(Convert.ToInt16(value));
+                this.options.setMouseNavigationEnabled(Convert.ToUInt16(value));
             }
         }
 
@@ -208,7 +208,7 @@ namespace FC.GEPluginCtrls
 
             set
             {
-                this.options.setOverviewMapVisibility(Convert.ToInt16(value));
+                this.options.setOverviewMapVisibility(Convert.ToUInt16(value));
             }
         }
 
@@ -224,7 +224,7 @@ namespace FC.GEPluginCtrls
 
             set
             {
-                this.options.setScaleLegendVisibility(Convert.ToInt16(value));
+                this.options.setScaleLegendVisibility(Convert.ToUInt16(value));
             }
         }
 
@@ -257,7 +257,7 @@ namespace FC.GEPluginCtrls
 
             set
             {
-                this.options.setStatusBarVisibility(Convert.ToInt16(value));
+                this.options.setStatusBarVisibility(Convert.ToUInt16(value));
             }
         }
 
@@ -295,7 +295,7 @@ namespace FC.GEPluginCtrls
 
             set
             {
-                this.options.setUnitsFeetMiles(Convert.ToInt16(value));
+                this.options.setUnitsFeetMiles(Convert.ToUInt16(value));
             }
         }
 
