@@ -268,7 +268,7 @@ namespace FC.GEPluginCtrls
             {
                 dynamic placemark = CreatePlacemark(ge, addFeature: addFeature);
                 dynamic lineString = ge.createLineString(String.Empty);
-                lineString.setTessellate(Convert.ToInt16(tessellate));
+                lineString.setTessellate(Convert.ToUInt16(tessellate));
                 lineString.getCoordinates().pushLatLngAlt(start.getLatitude(), start.getLongitude(), start.getAltitude());
                 lineString.getCoordinates().pushLatLngAlt(end.getLatitude(), end.getLongitude(), end.getAltitude());
                 placemark.setGeometry(lineString);

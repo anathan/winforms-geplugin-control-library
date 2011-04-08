@@ -256,7 +256,8 @@ namespace FC.GEPluginCtrls
         {
             Bounds bounds = new Bounds();
              
-            KmlHelpers.WalkKmlDom(kmlFeature,
+            KmlHelpers.WalkKmlDom(
+                kmlFeature,
                 (Action<dynamic>)(feature =>
             {
                 string type = feature.getType();

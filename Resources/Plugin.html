@@ -142,29 +142,6 @@
     }
     
     /**
-    * Generate a hash based on a featue and an action
-    * @param feature {object} the event target.    
-    * @param action {string} the event action (mousedowm, click, etc).
-    */
-    var hash_ = function(feature, action)
-    {
-      var type = feature.getType();
-      
-      // unique items
-      if(type == "GEPlugin" ||
-        type == "GEView" ||
-        type == "GEWindow" ||
-        type == "GEGlobe")
-      {
-          return feature.getType()+action;
-      }
-      else
-      {
-          return feature.getName()+feature.getId()+feature.getType()+action;
-      }
-    }
-    
-    /**
     * Methods to be invoked from managed code.
     * jsPrefix
     */
@@ -199,17 +176,21 @@
     */
     var jsExecuteBatch = function(method, context)
     {
-      google.earth.executeBatch(ge, function() { method.call(context); });
+      var me = this;
+      google.earth.executeBatch(ge, function() {
+        method.call(me, context);
+      });
     }
     
     /**
     * google.earth.addEventListener wrapper.
     * Attaches a listener to a given object for a specific event; when the event occurs on the object, the given callback is invoked.
     * @param feature {object} The object on which to listen to the event.
+    * @param hash {int} A unique hash for the object supplied in the feature parameter.
     * @param action {string} The event string identifying the event to listen for.
     * @param callback {string} A function that will be called when the event occurs on the object.
     */
-    var jsAddEventListener = function(feature, action, callback, useCapture)
+    var jsAddEventListener = function(feature, hash, action, callback, useCapture)
     {     
       if(action == "viewchangebegin" || action == "viewchange" || action == "viewchangeend")
       {
@@ -229,10 +210,10 @@
         if(null == callback)
         {
           callback = function(event) { kmlEventListener_(event, action); };
-        }
+        } 
         
-        var id = hash_(feature, action);
-        google.earth.addEventListener(feature, action, eval(events_[id] = callback), useCapture);
+        events_[hash] = callback;
+        google.earth.addEventListener(feature, action, eval(events_[hash]), useCapture);
       }
     }
 
@@ -240,10 +221,11 @@
     * google.earth.removeEventListener wrapper.
     * Removes an event listener previously added using google.earth.addEventListener() from the event chain.
     * @param feature {object} The object on which to listen to the event.
+    * @param hash {int} A unique hash for the object supplied in the feature parameter.
     * @param action {string} The event string identifying the event to listen for.
     * @param callback {string} The function that was set as the callback.
     */
-    var jsRemoveEventListener = function(feature, action, callback, useCapture)
+    var jsRemoveEventListener = function(feature, hash, action, callback, useCapture)
     {      
       if(action == "viewchangebegin" || action == "viewchange" || action == "viewchangeend")
       {
@@ -260,9 +242,8 @@
       else
       {       
         // generic events
-        var id = hash_(feature, action);
-        google.earth.removeEventListener(feature, action, events_[id], useCapture);
-        events_[id] = null;
+        google.earth.removeEventListener(feature, action, events_[hash], useCapture);
+        events_[hash] = null;
       }
     }
     

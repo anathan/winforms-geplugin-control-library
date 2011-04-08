@@ -19,7 +19,7 @@
 namespace FC.GEPluginCtrls
 {
     /// <summary>
-    /// A collection the names of the internal hashs used by the plugin to control inbuilt plugin layers
+    /// A collection the names of the internal hashs used by the plugin to control built in plugin layers
     /// </summary>
     public struct GELayer
     {

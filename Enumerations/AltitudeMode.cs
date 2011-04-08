@@ -19,7 +19,7 @@
 namespace FC.GEPluginCtrls
 {
     /// <summary>
-    /// Enumeration of the available imagery bases for the plug-in.
+    /// Enumeration of the available altitude modes for the plug-in.
     /// </summary>
     public enum AltitudeMode
     {

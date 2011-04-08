@@ -21,7 +21,7 @@ namespace FC.GEPluginCtrls
     /// <summary>
     /// A collection the names of objects in the Google Earth API.
     /// These constants are usefull when checking the type of any object 
-    /// that comes from outside managed 
+    /// that comes from outside managed code
     /// </summary>
     /// <remarks>This is a compleate list as of v1.007 of the API</remarks>
     public struct ApiType
