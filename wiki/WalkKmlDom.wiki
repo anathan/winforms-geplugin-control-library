@@ -27,7 +27,11 @@ http://code.google.com/p/earth-api-samples/source/browse/trunk/lib/kmldomwalk.js
 /// <param name="walkGeometries">Optionally walk geometries, default is false</param>
 /// <remarks>This method is used by <see cref="KmlTreeView"/> to build the nodes</remarks>
 /// <example>KmlHelpers.WalkKmlDom(kml, (Action dynamic)(x => { /* each x in the dom */}));</example>
-public static void WalkKmlDom(dynamic kmlObject, Action<dynamic> callBack, bool walkFeatures = true, bool walkGeometries = false)
+public static void WalkKmlDom(
+   dynamic kmlObject,
+   Action<dynamic> callBack,
+   bool walkFeatures = true,
+   bool walkGeometries = false)
 }}}
 
 == Examples ==
