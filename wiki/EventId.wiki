@@ -30,7 +30,7 @@ DblClick
 /// <summary>
 /// The mouse over event id
 /// </summary>
-MouseOver = 2,
+MouseOver
 
 /// <summary>
 /// The mouse down event id
