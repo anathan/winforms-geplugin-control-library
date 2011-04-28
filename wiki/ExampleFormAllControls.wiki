@@ -10,7 +10,9 @@ Here the plugin behaves exactly as it would with the default set-up in a web pag
 
 Here the other controls ([GEStatusStrip], [GEToolStrip], [KmlTreeView]) and the other helper classes ([GEHelpers], [KmlHelpers], [GEOptions], etc) offer a clean, safe and managed, way to work with the Api.
 
-The dynamic type 'ge' returned by the PluginReady event also allows one to work seemlessly with the GEPlugin object, just as if you were programming in the native !javaScript API.
+The ApiObject member of the GEEventArgs in the PluginReady event is the 'ge' (GEPlugin) object, this allows one to work seemlessly with the api just as if you were programming in the native !JavaScript.
+
+The 'ge' object is also available outside the PluginReady event from the [http://code.google.com/p/winforms-geplugin-control-library/wiki/GEWebBrowser#Public_Properties GEWebBrowser's Plugin property].
 
 {{{
 
@@ -22,6 +24,8 @@ namespace SimpleControlsTest
 
     public partial class Form1 : Form
     {
+        // dynamic ge = null;
+
         public Form1()
         {
             InitializeComponent();
@@ -29,6 +33,8 @@ namespace SimpleControlsTest
             geWebBrowser1.LoadEmbededPlugin();
             geWebBrowser1.PluginReady += (o, e) =>
             {
+                //ge = e.ApiObject;
+
                 // Register the controls with the browser
                 kmlTreeView1.SetBrowserInstance(geWebBrowser1);
                 geStatusStrip1.SetBrowserInstance(geWebBrowser1);
