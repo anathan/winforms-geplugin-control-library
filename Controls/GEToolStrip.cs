@@ -26,12 +26,12 @@ namespace FC.GEPluginCtrls
     using System.Drawing.Imaging;
     using System.Runtime.InteropServices;
     using System.Windows.Forms;
-    using Microsoft.CSharp.RuntimeBinder;
+    using GEPlugin;
 
     /// <summary>
     /// The GEToolStrip provides a quick way to access and set the plugin options
     /// </summary>
-    public sealed partial class GEToolStrip : ToolStrip, IGEControls
+    public partial class GEToolStrip : ToolStrip, IGEControls
     {
         #region Private fields
 
@@ -39,7 +39,12 @@ namespace FC.GEPluginCtrls
         /// Use the IGEPlugin COM interface. 
         /// Equivalent to QueryInterface for COM objects
         /// </summary>
-        private dynamic geplugin = null;
+        private IGEPlugin geplugin = null;
+
+        /// <summary>
+        /// An instance of the current document
+        /// </summary>
+        private HtmlDocument htmlDocument = null;
 
         /// <summary>
         /// An instance of the current browser
@@ -47,19 +52,49 @@ namespace FC.GEPluginCtrls
         private GEWebBrowser gewb = null;
 
         /// <summary>
-        /// An instance of the options wrapper class
-        /// </summary>
-        private GEOptions geoptions = null;
-
-        /// <summary>
-        /// The plugin navigation cotrol 
-        /// </summary>
-        private GENavigationControl control = null;
-
-        /// <summary>
         /// Indicates whether the navigation items are visible
         /// </summary>
-        private bool navigationItemsVisible = true;
+        private bool navigationItemsVisibility = true;
+
+        /// <summary>
+        /// Indicates whether the layer items are visible
+        /// </summary>
+        private bool layerDropDownVisiblity = true;
+
+        /// <summary>
+        /// Indicates whether the options items are visible 
+        /// </summary>
+        private bool optionDropDownVisiblity = true;
+
+        /// <summary>
+        /// Indicates whether the view items are visible
+        /// </summary>
+        private bool viewDropDownVisiblity = true;
+
+        /// <summary>
+        /// Indicates whether the imagery items are visible
+        /// </summary>
+        private bool imageryDropDownVisiblity = true;
+
+        /// <summary>
+        /// Indicates whether the screen grab button is visible
+        /// </summary>
+        private bool screenGrabButtonVisiblity = true;
+
+        /// <summary>
+        /// Indicates whether the view in maps button is visible
+        /// </summary>
+        private bool viewInMapsButtonVisiblity = true;
+
+        /// <summary>
+        /// Indicates whether the language comobobox is visible
+        /// </summary>
+        private bool languageComboboxVisiblity = true;
+
+        /// <summary>
+        /// Indicates if auto compleate should be used in the navigaton text box
+        /// </summary>
+        private bool useAutoCompleteSugestions = true;
 
         #endregion
 
@@ -86,12 +121,12 @@ namespace FC.GEPluginCtrls
         {
             get
             {
-                return this.navigationItemsVisible;
+                return this.navigationItemsVisibility;
             }
 
             set
             {
-                this.navigationItemsVisible = value;
+                this.navigationItemsVisibility = value;
                 this.navigationTextBox.Visible = value;
                 this.submitButton.Visible = value;
                 this.refreshButton.Visible = value;
@@ -107,8 +142,16 @@ namespace FC.GEPluginCtrls
         DefaultValueAttribute(true)]
         public bool ShowLayersDropDown
         {
-            get { return this.layersDropDownButton.Visible; }
-            set { this.layersDropDownButton.Visible = value; }
+            get
+            {
+                return this.layerDropDownVisiblity;
+            }
+
+            set
+            {
+                this.layerDropDownVisiblity = value;
+                this.layersDropDownButton.Visible = value;
+            }
         }
 
         /// <summary>
@@ -119,8 +162,16 @@ namespace FC.GEPluginCtrls
         DefaultValueAttribute(true)]
         public bool ShowOptionsDropDown
         {
-            get { return this.optionsDropDownButton.Visible; }
-            set { this.optionsDropDownButton.Visible = value; }
+            get
+            {
+                return this.optionDropDownVisiblity;
+            }
+
+            set
+            {
+                this.optionDropDownVisiblity = value;
+                this.optionsDropDownButton.Visible = value;
+            }
         }
 
         /// <summary>
@@ -131,8 +182,16 @@ namespace FC.GEPluginCtrls
         DefaultValueAttribute(true)]
         public bool ShowViewDropDown
         {
-            get { return this.viewDropDownButton.Visible; }
-            set { this.viewDropDownButton.Visible = value; }
+            get
+            {
+                return this.viewDropDownVisiblity;
+            }
+
+            set
+            {
+                this.viewDropDownVisiblity = value;
+                this.viewDropDownButton.Visible = value;
+            }
         }
 
         /// <summary>
@@ -143,8 +202,16 @@ namespace FC.GEPluginCtrls
         DefaultValueAttribute(true)]
         public bool ShowImageryDropDown
         {
-            get { return this.imageryDropDownButton.Visible; }
-            set { this.imageryDropDownButton.Visible = value; }
+            get
+            {
+                return this.imageryDropDownVisiblity;
+            }
+
+            set
+            {
+                this.imageryDropDownVisiblity = value;
+                this.imageryDropDownButton.Visible = value;
+            }
         }
 
         /// <summary>
@@ -155,8 +222,16 @@ namespace FC.GEPluginCtrls
         DefaultValueAttribute(true)]
         public bool ShowScreenGrabButton
         {
-            get { return this.screenGrabButton.Visible; }
-            set { this.screenGrabButton.Visible = value; }
+            get
+            {
+                return this.screenGrabButtonVisiblity;
+            }
+
+            set
+            {
+                this.screenGrabButtonVisiblity = value;
+                this.imageryDropDownButton.Visible = value;
+            }
         }
 
         /// <summary>
@@ -167,8 +242,16 @@ namespace FC.GEPluginCtrls
         DefaultValueAttribute(true)]
         public bool ShowViewInMapsButton
         {
-            get { return this.viewInMapsButton.Visible; }
-            set { this.viewInMapsButton.Visible = value; }
+            get
+            {
+                return this.viewInMapsButtonVisiblity;
+            }
+
+            set
+            {
+                this.viewInMapsButtonVisiblity = value;
+                this.viewInMapsButton.Visible = value;
+            }
         }
 
         /// <summary>
@@ -179,21 +262,44 @@ namespace FC.GEPluginCtrls
         DefaultValueAttribute(true)]
         public bool ShowLanguageCombobox
         {
-            get { return this.languageComboBox.Visible; }
-            set { this.languageComboBox.Visible = value; }
+            get
+            {
+                return this.languageComboboxVisiblity;
+            }
+
+            set
+            {
+                this.languageComboboxVisiblity = value;
+                this.languageComboBox.Visible = value;
+            }
         }
 
         /// <summary>
-        /// Gets or sets the AutoCompleteMode of the navigation textbox
-        /// Default is AutoCompleteMode.Append
+        /// Gets or sets a value indicating whether the navigation textbox uses autocomplete suggestions
         /// </summary>
         [Category("Control Options"),
-        Description("Gets or sets the AutoCompleteMode of the navigation textbox. Default is AutoCompleteMode.Append"),
-        DefaultValueAttribute(AutoCompleteMode.SuggestAppend)]
-        public AutoCompleteMode NavigationAutoCompleteMode
+        Description("Specifies whether the navigation textbox uses autocomplete suggestions."),
+        DefaultValueAttribute(true)]
+        public bool UseAutoCompleteSugestions
         {
-            get { return this.navigationTextBox.AutoCompleteMode; }
-            set { this.navigationTextBox.AutoCompleteMode = value; }
+            get
+            {
+                return this.useAutoCompleteSugestions;
+            }
+
+            set
+            {
+                this.useAutoCompleteSugestions = value;
+
+                if (value)
+                {
+                    this.navigationTextBox.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
+                }
+                else
+                {
+                    this.navigationTextBox.AutoCompleteMode = AutoCompleteMode.None;
+                }
+            }
         }
 
         #endregion
@@ -237,21 +343,13 @@ namespace FC.GEPluginCtrls
         public void SetBrowserInstance(GEWebBrowser browser)
         {
             this.gewb = browser;
-            this.geplugin = browser.Plugin;
-
+            this.geplugin = browser.GetPlugin();
             if (this.gewb.PluginIsReady)
             {
-                this.geoptions = new GEOptions(this.geplugin);
-                this.control = new GENavigationControl(this.geplugin);
                 this.SynchronizeOptions();
+                this.htmlDocument = browser.Document;
                 this.Enabled = true;
-
-                // sycn the tool stip options whenever the Ready event is fired by the browser
-                this.gewb.PluginReady += (o, e) =>
-                {
-                    this.Enabled = true;
-                    this.SynchronizeOptions();
-                };
+                this.gewb.PluginReady += new GEWebBrowserEventHandler(this.Gewb_PluginReady);
             }
         }
 
@@ -288,35 +386,42 @@ namespace FC.GEPluginCtrls
         {
             if (this.gewb.PluginIsReady)
             {
-                this.geoptions.StatusBarVisibility = this.statusBarMenuItem.Checked;
-                this.geoptions.StatusBarVisibility = this.statusBarMenuItem.Checked;
-                this.geoptions.GridVisibility = this.gridMenuItem.Checked;
-                this.geoptions.OverviewMapVisibility = this.overviewMapMenuItem.Checked;
-                this.geoptions.ScaleLegendVisibility = this.scaleLegendMenuItem.Checked;
-                this.geoptions.AtmosphereVisibility = this.atmosphereMenuItem.Checked;
-                this.geoptions.MouseNavigationEnabled = this.mouseNavigationMenuItem.Checked;
-                this.geoptions.ScaleLegendVisibility = this.scaleLegendMenuItem.Checked;
-                this.geoptions.OverviewMapVisibility = this.overviewMapMenuItem.Checked;
-                this.geoptions.UnitsFeetMiles = this.imperialUnitsMenuItem.Checked;
-
-                // checked: t(1) + 1 = 2 = MapType.Sky
-                // unchecked: f(0) + 1 = 1 = MapType.Earth
-                this.geoptions.SetMapType(((MapType)Convert.ToUInt16(this.skyMenuItem.Checked) + 1));
+                // options
+                IGEOptions options = this.geplugin.getOptions();
+                options.setStatusBarVisibility(Convert.ToInt16(this.statusBarMenuItem.Checked));
+                options.setGridVisibility(Convert.ToInt16(this.gridMenuItem.Checked));
+                options.setOverviewMapVisibility(Convert.ToInt16(this.overviewMapMenuItem.Checked));
+                options.setScaleLegendVisibility(Convert.ToInt16(this.scaleLegendMenuItem.Checked));
+                options.setAtmosphereVisibility(Convert.ToInt16(this.atmosphereMenuItem.Checked));
+                options.setMouseNavigationEnabled(Convert.ToInt16(this.mouseNavigationMenuItem.Checked));
+                options.setScaleLegendVisibility(Convert.ToInt16(this.scaleLegendMenuItem.Checked));
+                options.setOverviewMapVisibility(Convert.ToInt16(this.overviewMapMenuItem.Checked));
+                options.setUnitsFeetMiles(Convert.ToInt16(this.imperialUnitsMenuItem.Checked));
+                options.setMapType(Convert.ToInt16(this.skyMenuItem.Checked) + 1);
 
                 // sun
-                this.geplugin.getSun().setVisibility(Convert.ToUInt16(this.sunMenuItem.Checked));
+                this.geplugin.getSun().setVisibility(Convert.ToInt16(this.sunMenuItem.Checked));
 
                 // controls
-                this.geplugin.getNavigationControl().setVisibility(Convert.ToUInt16(this.controlsMenuItem.Checked));
+                this.geplugin.getNavigationControl().setVisibility(Convert.ToInt16(this.controlsMenuItem.Checked));
 
                 if (this.gewb.ImageyBase == ImageryBase.Earth)
                 {
-                    GEHelpers.EnableLayerById(this.geplugin, GELayer.Borders, this.bordersMenuItem.Checked);
-                    GEHelpers.EnableLayerById(this.geplugin, GELayer.Buildings, this.buildingsMenuItem.Checked);
-                    GEHelpers.EnableLayerById(this.geplugin, GELayer.BuildingsLowRes, this.buildingsGreyMenuItem.Checked);
-                    GEHelpers.EnableLayerById(this.geplugin, GELayer.Roads, this.roadsMenuItem.Checked);
-                    GEHelpers.EnableLayerById(this.geplugin, GELayer.Terrain, this.terrainMenuItem.Checked);
-                    GEHelpers.EnableLayerById(this.geplugin, GELayer.Trees, this.treesMenuItem.Checked);
+                    // layers 
+                    try
+                    {
+                        IKmlLayerRoot root = this.geplugin.getLayerRoot();
+                        root.enableLayerById(this.geplugin.LAYER_BORDERS, Convert.ToInt16(this.bordersMenuItem.Checked));
+                        root.enableLayerById(this.geplugin.LAYER_BUILDINGS, Convert.ToInt16(this.buildingsMenuItem.Checked));
+                        root.enableLayerById(this.geplugin.LAYER_BUILDINGS_LOW_RESOLUTION, Convert.ToInt16(this.buildingsGreyMenuItem.Checked));
+                        root.enableLayerById(this.geplugin.LAYER_ROADS, Convert.ToInt16(this.roadsMenuItem.Checked));
+                        root.enableLayerById(this.geplugin.LAYER_TERRAIN, Convert.ToInt16(this.terrainMenuItem.Checked));
+                    }
+                    catch (COMException cex)
+                    {
+                        Debug.WriteLine(cex.ToString(), "ResetToolStripDefaults layers");
+                        ////throw;
+                    }
 
                     // imagery 
                     foreach (ToolStripMenuItem item in this.imageryDropDownButton.DropDownItems)
@@ -380,16 +485,17 @@ namespace FC.GEPluginCtrls
 
             if (input.Length > 1)
             {
-                if (this.NavigationAutoCompleteMode == AutoCompleteMode.Append ||
-                    this.NavigationAutoCompleteMode == AutoCompleteMode.SuggestAppend)
+                if (this.UseAutoCompleteSugestions)
                 {
                     // add the user input to the custom 'per-session' string collection
                     this.navigationTextBoxStringCollection.Add(input);
                 }
 
-                if (System.IO.File.Exists(input))
+                if (System.IO.File.Exists(input) &&
+                    input.EndsWith("kml", true, System.Globalization.CultureInfo.CurrentCulture))
                 {
-                  this.gewb.FetchKmlLocal(input);
+                    // input is a local kml file
+                    this.gewb.FetchKmlLocal(input);
                 }
                 else if (input.StartsWith("http", true, System.Globalization.CultureInfo.CurrentCulture))
                 {
@@ -434,7 +540,38 @@ namespace FC.GEPluginCtrls
 
             if (this.gewb.PluginIsReady && (item != null))
             {
-                GEHelpers.EnableLayerById(this.geplugin, (string)item.Tag, item.Checked);
+                string type = item.Tag.ToString();
+
+                int value = Convert.ToInt16(item.Checked);
+
+                try
+                {
+                    switch (type)
+                    {
+                        case "BORDERS":
+                            this.geplugin.getLayerRoot().enableLayerById(this.geplugin.LAYER_BORDERS, value);
+                            break;
+                        case "BUILDINGS":
+                            this.geplugin.getLayerRoot().enableLayerById(this.geplugin.LAYER_BUILDINGS, value);
+                            break;
+                        case "BUILDINGS_GREY_LOW_RES":
+                            this.geplugin.getLayerRoot().enableLayerById(this.geplugin.LAYER_BUILDINGS_LOW_RESOLUTION, value);
+                            break;
+                        case "ROADS":
+                            this.geplugin.getLayerRoot().enableLayerById(this.geplugin.LAYER_ROADS, value);
+                            break;
+                        case "TERRAIN":
+                            this.geplugin.getLayerRoot().enableLayerById(this.geplugin.LAYER_TERRAIN, value);
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                catch (COMException cex)
+                {
+                    Debug.WriteLine("LayersItem_Clicked: " + cex.ToString(), "ToolStrip");
+                    throw;
+                }
             }
         }
 
@@ -451,44 +588,47 @@ namespace FC.GEPluginCtrls
             {
                 string type = item.Tag.ToString();
 
+                int value = Convert.ToInt16(item.Checked);
+
                 try
                 {
                     switch (type)
                     {
                         case "FADEINOUT":
-                            this.geoptions.FadeInOutEnabled = item.Checked;
+                            this.geplugin.getOptions().setFadeInOutEnabled(value);
                             break;
                         case "IMPERIAL":
-                            this.geoptions.UnitsFeetMiles = item.Checked;
+                            this.geplugin.getOptions().setUnitsFeetMiles(value);
                             break;
                         case "ATMOSPHERE":
-                            this.geoptions.AtmosphereVisibility = item.Checked;
+                            this.geplugin.getOptions().setAtmosphereVisibility(value);
                             break;
                         case "CONTROLS":
-                            this.control.Visiblity = (Visiblity)Convert.ToUInt16(item.Checked);
+                            this.geplugin.getNavigationControl().setVisibility(value);
                             break;
                         case "GRID":
-                            this.geoptions.GridVisibility = item.Checked;
+                            this.geplugin.getOptions().setGridVisibility(value);
                             break;
                         case "MOUSE":
-                            this.geoptions.MouseNavigationEnabled = item.Checked;
+                            this.geplugin.getOptions().setMouseNavigationEnabled(value);
                             break;
                         case "OVERVIEW":
-                            this.geoptions.OverviewMapVisibility = item.Checked;
+                            this.geplugin.getOptions().setOverviewMapVisibility(value);
                             break;
                         case "SCALE":
-                            this.geoptions.ScaleLegendVisibility = item.Checked;
+                            this.geplugin.getOptions().setScaleLegendVisibility(value);
                             break;
                         case "STATUS":
-                            this.geoptions.StatusBarVisibility = item.Checked;
+                            this.geplugin.getOptions().setStatusBarVisibility(value);
                             break;
                         default:
                             break;
                     }
                 }
-                catch (RuntimeBinderException rbex)
+                catch (COMException cex)
                 {
-                    Debug.WriteLine("OptionsItem_Clicked: " + rbex.ToString(), "ToolStrip");
+                    Debug.WriteLine("OptionsItem_Clicked: " + cex.ToString(), "ToolStrip");
+                    throw;
                 }
             }
         }
@@ -505,37 +645,26 @@ namespace FC.GEPluginCtrls
             if (this.gewb.PluginIsReady && (item != null))
             {
                 string type = item.Tag.ToString();
-                int value = Convert.ToUInt16(item.Checked);
+                int value = Convert.ToInt16(item.Checked);
 
                 try
                 {
                     switch (type)
                     {
                         case "SKY":
-                            this.layersDropDownButton.Enabled = !item.Checked;
-                            if (item.Checked)
-                            {
-                                this.geoptions.SetMapType(MapType.Sky);
-                            }
-                            else
-                            {
-                                this.geoptions.SetMapType(MapType.Earth);
-                            }
-
+                            this.geplugin.getOptions().setMapType(value + 1);
                             break;
                         case "SUN":
                             this.geplugin.getSun().setVisibility(value);
-                            break;
-                        case "HISTORY":
-                            this.geplugin.getTime().setHistoricalImageryEnabled(value);
                             break;
                         default:
                             break;
                     }
                 }
-                catch (RuntimeBinderException rbex)
+                catch (COMException cex)
                 {
-                    Debug.WriteLine("ViewItem_Clicked: " + rbex.ToString(), "ToolStrip");
+                    Debug.WriteLine("ViewItem_Clicked: " + cex.ToString(), "ToolStrip");
+                    throw;
                 }
             }
         }
@@ -579,23 +708,20 @@ namespace FC.GEPluginCtrls
                         case ImageryBase.Moon:
                             this.layersDropDownButton.Enabled = false;
                             this.viewInMapsButton.Enabled = false;
-                            this.historyMenuItem.Enabled = false;
-                            this.Enabled = false;
                             this.gewb.CreateInstance(type);
                             break;
                         case ImageryBase.Earth:
                         default:
                             this.layersDropDownButton.Enabled = true;
                             this.viewInMapsButton.Enabled = true;
-                            this.historyMenuItem.Enabled = true;
                             this.gewb.CreateInstance(ImageryBase.Earth);
                             break;
                     }
                 }
-                catch (RuntimeBinderException rbex)
+                catch (COMException cex)
                 {
-                    Debug.WriteLine("ImageryItem_Clicked: " + rbex.ToString(), "ToolStrip");
-                    ////throw;
+                    Debug.WriteLine("ImageryItem_Clicked: " + cex.ToString(), "ToolStrip");
+                    throw;
                 }
 
                 // reset the default options to match the default view
@@ -613,12 +739,11 @@ namespace FC.GEPluginCtrls
             if (this.gewb.PluginIsReady)
             {
                 // Take a 'screen grab' of the plugin
-                Bitmap image = this.gewb.ScreenGrab();
+                System.Drawing.Bitmap image = this.gewb.ScreenGrab();
 
                 // Save the file with a dialog
                 SaveFileDialog dialog = new SaveFileDialog();
                 dialog.Filter = "JPEG files (*.jpg;*.jpeg)|*.jpg;*.jpeg|All files (*.*)|*.*";
-
                 if (dialog.ShowDialog() == DialogResult.OK)
                 {
                     image.Save(dialog.FileName, ImageFormat.Jpeg);
@@ -646,7 +771,17 @@ namespace FC.GEPluginCtrls
         /// <param name="e">LayoutEvent arguments</param>
         private void GEToolStrip_Layout(object sender, LayoutEventArgs e)
         {
-            this.navigationTextBox.Width = this.Width / 3;
+            this.navigationTextBox.Width = this.Width / 2;
+        }
+
+        /// <summary>
+        /// Called whenever the Ready event is raised by the assoicated GEWebBorwser
+        /// </summary>
+        /// <param name="sender">The GEWebBorwser instance</param>
+        /// <param name="e">The event arguments</param>
+        private void Gewb_PluginReady(object sender, GEEventArgs e)
+        {
+            this.SynchronizeOptions();
         }
 
         /// <summary>

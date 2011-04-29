@@ -23,14 +23,13 @@ namespace FC.GEPluginCtrls
     using System.Diagnostics;
     using System.Drawing;
     using System.Runtime.InteropServices;
-    using System.Threading.Tasks;
     using System.Windows.Forms;
-    using Microsoft.CSharp.RuntimeBinder;
+    using GEPlugin;
 
     /// <summary>
     /// The GEStatusStrip shows various information about the plug-in
     /// </summary>
-    public sealed partial class GEStatusStrip : StatusStrip, IGEControls
+    public partial class GEStatusStrip : StatusStrip, IGEControls
     {
         #region Private fields
 
@@ -38,7 +37,7 @@ namespace FC.GEPluginCtrls
         /// Use the IGEPlugin COM interface. 
         /// Equivalent to QueryInterface for COM objects
         /// </summary>
-        private dynamic geplugin = null;
+        private IGEPlugin geplugin = null;
 
         /// <summary>
         /// An instance of the current browser
@@ -248,12 +247,8 @@ namespace FC.GEPluginCtrls
         public void SetBrowserInstance(GEWebBrowser browser)
         {
             this.gewb = browser;
-            this.geplugin = browser.Plugin;
-
-            if (!GEHelpers.IsGe(this.geplugin))
-            {
-                throw new ArgumentException("ge is not of the type GEPlugin");
-            }
+            this.geplugin = browser.GetPlugin();
+            this.Enabled = true;
 
             if (this.gewb.PluginIsReady)
             {
@@ -261,7 +256,7 @@ namespace FC.GEPluginCtrls
                 this.timer = new Timer();
                 this.timer.Interval = this.interval;
                 this.timer.Start();
-                this.timer.Tick += (o, e) => this.Timer_Tick(o, e);
+                this.timer.Tick += new EventHandler(this.Timer_Tick);
 
                 try
                 {
@@ -269,14 +264,12 @@ namespace FC.GEPluginCtrls
                     this.apiVersionStatusLabel.Text = "api " + this.geplugin.getApiVersion();
                     this.pluginVersionStatusLabel.Text = "plugin " + this.geplugin.getPluginVersion();
                 }
-                catch (RuntimeBinderException rbex)
+                catch (COMException cex)
                 {
-                    Debug.WriteLine("SetBrowserInstance: " + rbex.ToString(), "StatusStrip");
-                    ////throw;
+                    Debug.WriteLine("SetBrowserInstance: " + cex.ToString(), "StatusStrip");
+                    throw;
                 }
             }
-
-            this.gewb.PluginReady += (o, e) => this.Enabled = true;
         }
 
         #endregion
@@ -292,35 +285,28 @@ namespace FC.GEPluginCtrls
         {
             if (this.gewb.PluginIsReady)
             {
-                float percent = 0;
+                int percent = 0;
 
                 try
                 {
-                    percent = this.geplugin.getStreamingPercent();
+                    percent = (int)this.geplugin.getStreamingPercent();
                 }
                 catch (COMException)
                 {
                     this.timer.Stop();
                 }
 
-                try
+                if (100 == percent || 0 == percent)
                 {
-                    if (100 == percent || 0 == percent)
-                    {
-                        this.streamingStatusLabel.ForeColor = Color.Gray;
-                        this.streamingStatusLabel.Text = "idle";
-                        this.streamingProgressBar.Value = 0;
-                    }
-                    else
-                    {
-                        this.streamingStatusLabel.ForeColor = Color.Black;
-                        this.streamingProgressBar.Value = (int)percent;
-                        this.streamingStatusLabel.Text = percent + "%";
-                    }
+                    this.streamingStatusLabel.ForeColor = Color.Gray;
+                    this.streamingStatusLabel.Text = "idle";
+                    this.streamingProgressBar.Value = 0;
                 }
-                catch (NullReferenceException)
+                else
                 {
-                    // TODO sometimes on application close...need to look into this...
+                    this.streamingStatusLabel.ForeColor = Color.Black;
+                    this.streamingProgressBar.Value = percent;
+                    this.streamingStatusLabel.Text = percent + "%";
                 }
             }
         }

@@ -23,11 +23,17 @@ namespace FC.GEPluginCtrls
     using System.Diagnostics;
     using System.Reflection;
     using System.Runtime.InteropServices;
-    using Microsoft.CSharp.RuntimeBinder;
+    using GEPlugin;
 
     /// <summary>
-    /// This COM Visible class contains all the public methods to be called from Javascript.
-    /// The various events are used by the <see cref="GEWebBrowser"/> when dealing with the plugin
+    /// Event handler for methods to be called from javascript
+    /// </summary>
+    /// <param name="sender">the sending object</param>
+    /// <param name="e">the event arguments</param>
+    public delegate void ExternalEventHandler(object sender, GEEventArgs e);
+
+    /// <summary>
+    /// This COM Visible class contains all the methods to be called from Javascript
     /// </summary>
     [ComVisibleAttribute(true)]
     public class External : IExternal
@@ -37,8 +43,8 @@ namespace FC.GEPluginCtrls
         /// <summary>
         /// Stores fetched Kml Objects
         /// </summary>
-        private static Dictionary<string, object> kmlObjectCache =
-            new Dictionary<string, object>();
+        private static Dictionary<string, IKmlObject> kmlObjectCache =
+            new Dictionary<string, IKmlObject>();
 
         #endregion
 
@@ -54,44 +60,46 @@ namespace FC.GEPluginCtrls
         /// <summary>
         /// Raised when the plugin is ready
         /// </summary>
-        public event EventHandler<GEEventArgs> PluginReady;
+        public event ExternalEventHandler PluginReady;
 
         /// <summary>
         /// Raised when there is a kml event
         /// </summary>
-        public event EventHandler<GEEventArgs> KmlEvent;
+        public event ExternalEventHandler KmlEvent;
 
         /// <summary>
         /// Raised when a kml/kmz file has loaded
         /// </summary>
-        public event EventHandler<GEEventArgs> KmlLoaded;
+        public event ExternalEventHandler KmlLoaded;
 
         /// <summary>
         /// Raised when there is a script error in the document 
         /// </summary>
-        public event EventHandler<GEEventArgs> ScriptError;
+        public event ExternalEventHandler ScriptError;
 
         /// <summary>
         /// Raised when there is a GEPlugin event (frameend, balloonclose) 
         /// </summary>
-        public event EventHandler<GEEventArgs> PluginEvent;
+        public event ExternalEventHandler PluginEvent;
 
         /// <summary>
         /// Rasied when there is a viewchangebegin, viewchange or viewchangeend event 
         /// </summary>
-        public event EventHandler<GEEventArgs> ViewEvent;
+        public event ExternalEventHandler ViewEvent;
 
         #endregion
 
-        #region Internal properites
+        #region Public properites
 
         /// <summary>
-        /// Gets the store of fetched IKmlObjects.
-        /// Used in the process of synchronously loading networklinks
+        /// Gets the store of fetched IKmlObjects
         /// </summary>
-        internal static Dictionary<string, object> KmlObjectCache
+        public static Dictionary<string, IKmlObject> KmlObjectCache
         {
-            get { return External.kmlObjectCache; }
+            get
+            {
+                return External.kmlObjectCache;
+            }
         }
 
         #endregion
@@ -99,41 +107,33 @@ namespace FC.GEPluginCtrls
         #region Public methods
 
         /// <summary>
-        /// Allow javascript to send debug messages
+        /// Can be called from javascript to invoke method
         /// </summary>
-        /// <param name="message">the debug message</param>
-        public void DebugMessage(string message)
-        {
-            System.Diagnostics.Debug.WriteLine(message, "JS> ");
-        }
-
-        /// <summary>
-        /// Can be called from javascript to invoke method in managed code.
-        /// </summary>
-        /// <param name="name">the name of the managed method to be called</param>
+        /// <param name="name">the name of method to be called</param>
         /// <param name="parameters">array of parameter objects</param>
-        public void InvokeCallBack(string name, dynamic parameters)
+        public void InvokeCallBack(string name, object parameters)
         {
             try
             {
-                object[] data;
+                object[] objArr;
 
                 if (parameters.GetType().Name == "__ComObject")
                 {
-                    data = new object[] { (dynamic)parameters.kmlObject, (string)parameters.url };
+                    objArr = DispatchHelpers.GetObjectArrayFrom__COMObjectArray(parameters);
                 }
                 else
                 {
-                    data = (object[])parameters;
+                    objArr = (object[])parameters;
                 }
 
-                GEEventArgs ea = new GEEventArgs(data);
+                GEEventArgs ea = new GEEventArgs(objArr);
                 MethodInfo info = this.GetType().GetMethod(name, BindingFlags.Instance | BindingFlags.NonPublic);
                 info.Invoke(this, new object[] { ea });
             }
-            catch (RuntimeBinderException rbex)
+            catch (COMException cex)
             {
-                Debug.WriteLine("InvokeCallBack: " + rbex.ToString(), "External");
+                Debug.WriteLine("InvokeCallBack: " + cex.ToString(), "External");
+                throw;
             }
         }
 
@@ -141,14 +141,19 @@ namespace FC.GEPluginCtrls
         /// Called from javascript when the plugin is ready
         /// </summary>
         /// <param name="ge">the plugin instance</param>
-        public void Ready(dynamic ge)
+        public void Ready(IGEPlugin ge)
         {
-            if (!GEHelpers.IsGe(ge))
+            try
             {
-                throw new ApplicationException("ge is not of the type GEPlugin");
+                this.OnPluginReady(
+                    ge,
+                    new GEEventArgs(ge.getApiVersion(), ge.getPluginVersion()));
             }
-
-            this.OnPluginReady(this, new GEEventArgs("Ready", ge.getPluginVersion(), ge));
+            catch (COMException cex)
+            {
+                Debug.WriteLine("Ready: " + cex.ToString(), "External");
+                throw;
+            }
         }
 
         /// <summary>
@@ -166,64 +171,41 @@ namespace FC.GEPluginCtrls
         /// <summary>
         /// Called from javascript when there is a kml event
         /// </summary>
-        /// <param name="sender">the kml event</param>
+        /// <param name="kmlEvent">the kml event</param>
         /// <param name="action">the event id</param>
-        public void KmlEventCallBack(object sender, string action)
+        public void KmlEventCallBack(IKmlEvent kmlEvent, string action)
         {
-            dynamic kmlEvent = sender;
-
             try
             {
                 this.OnKmlEvent(
-                    this,
-                    new GEEventArgs(kmlEvent.getType(), action, kmlEvent));
+                    kmlEvent,
+                    new GEEventArgs(kmlEvent.getType(), action, kmlEvent.getTarget()));
             }
-            catch (RuntimeBinderException rbex)
+            catch (COMException cex)
             {
-                Debug.WriteLine("KmlEventCallBack: " + rbex.ToString(), "External");
+                Debug.WriteLine("KmlEventCallBack: " + cex.ToString(), "External");
+                throw;
             }
         }
 
         /// <summary>
         /// Called from javascript when there is a GEPlugin event
         /// </summary>
-        /// <param name="sender">The plugin object</param>
+        /// <param name="plugin">The plugin object</param>
         /// <param name="action">The event action</param>
-        public void PluginEventCallBack(object sender, string action)
+        public void PluginEventCallBack(IGEPlugin plugin, string action)
         {
-            dynamic pluginEvent = sender;
-
-            try
-            {
-                this.OnPluginEvent(
-                    this,
-                    new GEEventArgs(pluginEvent.getType(), action, pluginEvent));
-            }
-            catch (RuntimeBinderException rbex)
-            {
-                Debug.WriteLine("PluginEventCallBack: " + rbex.ToString(), "External");
-            }
+            this.OnPluginEvent(plugin, new GEEventArgs(action));
         }
 
         /// <summary>
-        /// Called from javascript when there is a View event
+        /// Called from javascript when there is a viewchange event
         /// </summary>
-        /// <param name="sender">The plugin object</param>
-        /// <param name="action">The event action</param>
-        public void ViewEventCallBack(object sender, string action)
+        /// <param name="sender">The GEView object</param>
+        /// <param name="action">The event action (viewchangebegin, viewchange or viewchangeend)</param>
+        public void ViewEventCallBack(IGEView sender, string action)
         {
-            dynamic viewEvent = sender;
-
-            try
-            {
-                this.OnViewEvent(
-                    this,
-                    new GEEventArgs(viewEvent.getType(), action, viewEvent));
-            }
-            catch (RuntimeBinderException rbex)
-            {
-                Debug.WriteLine("ViewEventCallBack: " + rbex.ToString(), "External");
-            }
+            this.OnViewEvent(sender, new GEEventArgs(action));
         }
 
         #endregion
@@ -233,15 +215,13 @@ namespace FC.GEPluginCtrls
         /// <summary>
         /// Protected method for raising the PluginReady event
         /// </summary>
-        /// <param name="sender">The plugin object</param>
+        /// <param name="ge">The plugin object</param>
         /// <param name="e">The Event arguments</param>
-        protected virtual void OnPluginReady(object sender, GEEventArgs e)
+        protected virtual void OnPluginReady(IGEPlugin ge, GEEventArgs e)
         {
-            EventHandler<GEEventArgs> handler = this.PluginReady;
-
-            if (handler != null)
+            if (this.PluginReady != null)
             {
-                handler(this, e);
+                this.PluginReady(ge, e);
             }
         }
 
@@ -250,13 +230,11 @@ namespace FC.GEPluginCtrls
         /// </summary>
         /// <param name="kmlEvent">The kmlEvent object</param>
         /// <param name="e">The Event arguments</param>
-        protected virtual void OnKmlEvent(dynamic kmlEvent, GEEventArgs e)
+        protected virtual void OnKmlEvent(IKmlEvent kmlEvent, GEEventArgs e)
         {
-            EventHandler<GEEventArgs> handler = this.KmlEvent;
-
-            if (handler != null)
+            if (this.KmlEvent != null)
             {
-                handler(this, e);
+                this.KmlEvent(kmlEvent, e);
             }
         }
 
@@ -266,12 +244,11 @@ namespace FC.GEPluginCtrls
         /// <param name="e">The Event arguments</param>
         protected virtual void OnKmlLoaded(GEEventArgs e)
         {
-            EventHandler<GEEventArgs> handler = this.KmlLoaded;
-            dynamic kmlObject = ((object[])e.ApiObject)[0];
+            IKmlObject kmlObject = (IKmlObject)((object[])e.Tag)[0];
 
-            if (handler != null)
+            if (this.KmlLoaded != null)
             {
-                handler(this, new GEEventArgs(kmlObject));
+                this.KmlLoaded(kmlObject, e);
             }
         }
 
@@ -281,9 +258,8 @@ namespace FC.GEPluginCtrls
         /// <param name="e">The Event arguments</param>
         protected virtual void OnKmlFetched(GEEventArgs e)
         {
-            dynamic kmlObject = ((object[])e.ApiObject)[0];
-            string url = (string)((object[])e.ApiObject)[1];
-
+            IKmlObject kmlObject = (IKmlObject)((object[])e.Tag)[0];
+            string url = (string)((object[])e.Tag)[1];
             lock (KmlObjectCache)
             {
                 KmlObjectCache[url] = kmlObject;
@@ -300,7 +276,7 @@ namespace FC.GEPluginCtrls
         {
             if (this.ScriptError != null)
             {
-                this.ScriptError(this, e);
+                this.ScriptError(sender, e);
             }
         }
 
@@ -309,11 +285,11 @@ namespace FC.GEPluginCtrls
         /// </summary>
         /// <param name="sender">The sending object</param>
         /// <param name="e">Event arguments</param>
-        protected virtual void OnPluginEvent(object sender, GEEventArgs e)
+        protected virtual void OnPluginEvent(IGEPlugin sender, GEEventArgs e)
         {
             if (this.PluginEvent != null)
             {
-                this.PluginEvent(this, e);
+                this.PluginEvent(sender, e);
             }
         }
 
@@ -322,11 +298,11 @@ namespace FC.GEPluginCtrls
         /// </summary>
         /// <param name="sender">The sending object</param>
         /// <param name="e">Event arguments</param>
-        protected virtual void OnViewEvent(object sender, GEEventArgs e)
+        protected virtual void OnViewEvent(IGEView sender, GEEventArgs e)
         {
             if (this.ViewEvent != null)
             {
-                this.ViewEvent(this, e);
+                this.ViewEvent(sender, e);
             }
         }
 

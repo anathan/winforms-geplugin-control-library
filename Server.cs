@@ -18,7 +18,7 @@
 // </summary>
 namespace FC.GEPluginCtrls.HttpServer
 {
-    ////TODO - refactor most of StartListen into a 'ParseHeader' method...
+    ////TODO - refactor most of StartListen into a new ParseHeader method...
 
     using System;
     using System.Diagnostics;
@@ -26,12 +26,12 @@ namespace FC.GEPluginCtrls.HttpServer
     using System.Net;
     using System.Net.Sockets;
     using System.Text;
-    using System.Threading.Tasks;
+    using System.Threading;
 
     /// <summary>
     /// A simple HTTP server class to allow the use of local files
     /// </summary>
-    public sealed class Server
+    public class Server
     {
         #region Private fields
 
@@ -61,7 +61,7 @@ namespace FC.GEPluginCtrls.HttpServer
         private string rootDirectory = @"\";
 
         /// <summary>
-        /// Default file name to look for in the root directory
+        /// Default file name
         /// </summary>
         private string defaultFileName = "default.kml";
 
@@ -71,14 +71,9 @@ namespace FC.GEPluginCtrls.HttpServer
         private string httpVersion = "HTTP/1.1";
 
         /// <summary>
-        /// Keep listening switch
+        /// Keep listening
         /// </summary>
         private volatile bool keepListening = true;
-
-        /// <summary>
-        /// Task for listining to incomming connections
-        /// </summary>
-        private Task listenTask = null;
 
         #endregion
 
@@ -86,7 +81,7 @@ namespace FC.GEPluginCtrls.HttpServer
         /// Initializes a new instance of the Server class
         /// </summary>
         public Server() :
-            this("/")
+            this(Path.DirectorySeparatorChar.ToString())
         {
         }
 
@@ -105,8 +100,8 @@ namespace FC.GEPluginCtrls.HttpServer
         /// <param name="rootDirectory">The server root directory</param>
         /// <param name="defaultFileName">Default file name to use</param>
         public Server(string rootDirectory, string defaultFileName)
-            : this(rootDirectory)
         {
+            this.RootDirectory = rootDirectory;
             this.DefaultFileName = defaultFileName;
         }
 
@@ -166,12 +161,6 @@ namespace FC.GEPluginCtrls.HttpServer
             {
                 if (Directory.Exists(value))
                 {
-                    // Add the trailing slash if missing!
-                    if (!value.EndsWith("/"))
-                    {
-                        value = value + "/";
-                    }
-
                     this.rootDirectory = value;
                 }
                 else
@@ -219,11 +208,9 @@ namespace FC.GEPluginCtrls.HttpServer
             }
 
             // start the listen thread
-            this.listenTask = Task.Factory.StartNew(
-                () =>
-                this.StartListen(),
-                TaskCreationOptions.LongRunning);
-   
+            Thread listenThread = new Thread(new ThreadStart(this.StartListen));
+            listenThread.Start();
+
             this.keepListening = true;
             Debug.WriteLine("Start...", "Server-Info");
         }
@@ -379,6 +366,8 @@ namespace FC.GEPluginCtrls.HttpServer
             data.AppendLine("Accept-Ranges: bytes");
             data.AppendFormat("Content-Length: {0}{1}", bytes, Environment.NewLine);
             data.AppendFormat("Content-Type: {0}{1}", mime, Environment.NewLine);
+
+            // end
             data.AppendLine("Connection: close");
             data.AppendLine();
 
@@ -412,7 +401,7 @@ namespace FC.GEPluginCtrls.HttpServer
                 {
                     if ((numBytes = this.socket.Send(data, data.Length, SocketFlags.None)) == -1)
                     {
-                        Debug.WriteLine("Send Packet Error", "Server-Error");
+                        Debug.WriteLine("Send Packet Error", "Server");
                     }
                     else
                     {
@@ -421,12 +410,12 @@ namespace FC.GEPluginCtrls.HttpServer
                 }
                 else
                 {
-                    Debug.WriteLine("Connection Dropped...", "Server-Info");
+                    Debug.WriteLine("Connection Dropped", "Server");
                 }
             }
             catch (SocketException sex)
             {
-                Debug.WriteLine("sendToBrowser: " + sex.ToString(), "Server-Error");
+                Debug.WriteLine("sendToBrowser: " + sex.ToString(), "Server");
             }
         }
 
@@ -441,7 +430,7 @@ namespace FC.GEPluginCtrls.HttpServer
                 // this allows the listenThread to teminate cleanly
                 if (!this.tcpListener.Pending())
                 {
-                    this.listenTask.Wait(100);
+                    Thread.Sleep(100);
                     continue;
                 }
                 else
@@ -490,23 +479,23 @@ namespace FC.GEPluginCtrls.HttpServer
                     foreach (string line in headerLines)
                     {
                         // Get and head only...
-                        if (line.StartsWith("GET", StringComparison.InvariantCultureIgnoreCase))
+                        if (line.StartsWith("GET"))
                         {
                             Debug.WriteLine(line, "Server-Request");
                             requestHeader = line;
                             requestMethod = "GET";
                         }
-                        else if (line.StartsWith("HEAD", StringComparison.InvariantCultureIgnoreCase))
+                        else if (line.StartsWith("HEAD"))
                         {
                             Debug.WriteLine(line, "Server-Request");
                             requestHeader = line;
                             requestMethod = "HEAD";
                         }
-                        else if (line.StartsWith("User-Agent:", StringComparison.InvariantCultureIgnoreCase))
+                        else if (line.StartsWith("User-Agent:"))
                         {
                             userAgentHeader = line;
                         }
-                        else if (line.StartsWith("Host:", StringComparison.InvariantCultureIgnoreCase))
+                        else if (line.StartsWith("Host:"))
                         {
                             hostHeader = line;
                         }
@@ -517,10 +506,9 @@ namespace FC.GEPluginCtrls.HttpServer
                     // Method [SP] Request-URI [SP] HTTP-Version [CRLF]
                     // Tokenize the reqest, if there are missing parts then skip it...
                     string[] requestTokens = requestHeader.Split(' ');
-
                     if (requestTokens.Length != 3)
                     {
-                        Debug.WriteLine("400 Bad Request", "Server-Error");
+                        Debug.WriteLine("400 Bad Request");
                         this.SendError(HttpStatusCode.BadRequest);
                         continue;
                     }
@@ -531,7 +519,7 @@ namespace FC.GEPluginCtrls.HttpServer
                     // see http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.4
                     if (requestTokens[0] != "GET" && requestTokens[0] != "HEAD")
                     {
-                        Debug.WriteLine("501 Not Implemented", "Server-Error");
+                        Debug.WriteLine("501 Not Implemented", "Server-Send");
                         this.SendError(HttpStatusCode.NotImplemented);
                         continue;
                     }
@@ -540,7 +528,7 @@ namespace FC.GEPluginCtrls.HttpServer
                     // Handle version 1.1 otherwise send 505 HttpVersionNotSupported
                     if (requestTokens[2] != this.httpVersion)
                     {
-                        Debug.WriteLine("505 Http Version Not Supported", "Server-Error");
+                        Debug.WriteLine("505 Http Version Not Supported", "Server");
                         this.SendError(HttpStatusCode.HttpVersionNotSupported);
                         continue;
                     }
@@ -549,7 +537,7 @@ namespace FC.GEPluginCtrls.HttpServer
                     // Reject any requset that does not have a host header
                     if (hostHeader == string.Empty)
                     {
-                        Debug.WriteLine("400 Bad Request", "Server-Error");
+                        Debug.WriteLine("400 Bad Request", "Server");
                         this.SendError(HttpStatusCode.BadRequest);
                         continue;
                     }
@@ -558,7 +546,7 @@ namespace FC.GEPluginCtrls.HttpServer
                     // Handle GoogleEarth otherwise send 403 Forbidden
                     if (!userAgentHeader.StartsWith("User-Agent: GoogleEarth"))
                     {
-                        Debug.WriteLine("403 Forbidden", "Server-Error");
+                        Debug.WriteLine("403 Forbidden", "Server-Send");
                         this.SendError(HttpStatusCode.Forbidden);
                         continue;
                     }
@@ -571,7 +559,7 @@ namespace FC.GEPluginCtrls.HttpServer
                     // If no file exists then send 404 NotFound
                     if (localFile == string.Empty)
                     {
-                        Debug.WriteLine("404 Not Found (File)", "Server-Error");
+                        Debug.WriteLine("404 Not Found (File)", "Server-Send");
                         this.SendError(HttpStatusCode.NotFound);
                         continue;
                     }
@@ -582,7 +570,7 @@ namespace FC.GEPluginCtrls.HttpServer
                     // If no directory exists then send 404 NotFound
                     if (localDirectory == string.Empty)
                     {
-                        Debug.WriteLine("404 Not Found (Directory)", "Server-Error");
+                        Debug.WriteLine("404 Not Found (Directory)", "Server-Send");
                         this.SendError(HttpStatusCode.NotFound);
                         continue;
                     }
@@ -605,9 +593,9 @@ namespace FC.GEPluginCtrls.HttpServer
                     else
                     {
                         // Send a 404 NotFound
-                        Debug.WriteLine("404 NotFound", "Server-Error");
-                        Debug.WriteLine("Requested path: " + requestTokens[1], "Server-Info");
-                        Debug.WriteLine("Translated path: " + localPath, "Server-Info");
+                        Debug.WriteLine("404 NotFound", "Server");
+                        Debug.WriteLine("Requested: " + requestTokens[1], "Server");
+                        Debug.WriteLine("Translated: " + localPath, "Server");
                         this.SendError(HttpStatusCode.NotFound);
                         continue;
                     }

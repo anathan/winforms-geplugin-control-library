@@ -19,33 +19,33 @@
 namespace FC.GEPluginCtrls
 {
     using System;
-    using System.Collections.Generic;
-
+    using GEPlugin;
+    
     /// <summary>
     /// This interface should be implemented by any object
     /// that is designed to act as the interface between javascript and managed code
     /// </summary>
     public interface IExternal
     {
-       /// <summary>
+        /// <summary>
         /// Raised when the plugin is ready
         /// </summary>
-        event EventHandler<GEEventArgs> PluginReady;
+        event ExternalEventHandler PluginReady;
 
         /// <summary>
         /// Raised when there is a kml event
         /// </summary>
-        event EventHandler<GEEventArgs> KmlEvent;
+        event ExternalEventHandler KmlEvent;
 
         /// <summary>
         /// Raised when a kml/kmz file has loaded
         /// </summary>
-        event EventHandler<GEEventArgs> KmlLoaded;
+        event ExternalEventHandler KmlLoaded;
 
         /// <summary>
         /// Raised when there is a script error in the document 
         /// </summary>
-        event EventHandler<GEEventArgs> ScriptError;
+        event ExternalEventHandler ScriptError;
 
         /// <summary>
         /// Can be called from javascript to invoke method
@@ -58,7 +58,7 @@ namespace FC.GEPluginCtrls
         /// Should be called from javascript when the plugin is ready
         /// </summary>
         /// <param name="ge">the plugin instance</param>
-        void Ready(object ge);
+        void Ready(IGEPlugin ge);
 
         /// <summary>
         /// Should be called from javascript when there is an error
@@ -72,13 +72,6 @@ namespace FC.GEPluginCtrls
         /// </summary>
         /// <param name="kmlEvent">the kml event</param>
         /// <param name="action">the event id</param>
-        void KmlEventCallBack(object kmlEvent, string action);
-
-        /// <summary>
-        /// Should be called from javascript when there is a GEPlugin event
-        /// </summary>
-        /// <param name="sender">The plugin object</param>
-        /// <param name="action">The event action</param>
-        void PluginEventCallBack(object sender, string action);
+        void KmlEventCallBack(IKmlEvent kmlEvent, string action);
     }
 }
