@@ -57,7 +57,14 @@ namespace FC.GEPluginCtrls.Geo
         {
             string type = string.Empty;
 
-            type = apiObject.getType();
+            try
+            {
+                type = apiObject.getType();
+            }
+            catch (System.Runtime.InteropServices.COMException)
+            {
+                return;
+            }
 
             // no need to normalise as the Coordinate is 
             // constructed from an existing api type (I think!)

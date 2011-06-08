@@ -122,6 +122,7 @@ namespace FC.GEPluginCtrls
 
             if (objectContainer != null && Convert.ToBoolean(objectContainer.hasChildNodes()))
             {
+
                 dynamic childNodes = objectContainer.getChildNodes();
                 int count = childNodes.getLength();
                 for (int i = 0; i < count; i++)

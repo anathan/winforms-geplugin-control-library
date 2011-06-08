@@ -637,7 +637,7 @@
             <param name="kmlObject">A kml object to parse into the tree</param>
             <remarks>
             Equivalent to initializing, calling <see cref="M:FC.GEPluginCtrls.KmlTreeView.SetBrowserInstance(FC.GEPluginCtrls.GEWebBrowser)"/>
-            then calling ParseKmlObject 
+            then calling <see cref="M:FC.GEPluginCtrls.KmlTreeView.ParseKmlObject(System.Object)"/> 
             </remarks>
         </member>
         <member name="M:FC.GEPluginCtrls.KmlTreeView.ParseKmlObject(System.Object)">
@@ -671,7 +671,7 @@
             <param name="id">The object id</param>
             <returns>The treenode that represents the object</returns>
         </member>
-        <member name="M:FC.GEPluginCtrls.KmlTreeView.OnDoubleClick(System.EventArgs)">
+        <member name="M:FC.GEPluginCtrls.KmlTreeView.OnNodeMouseDoubleClick(System.Windows.Forms.TreeNodeMouseClickEventArgs)">
             <summary>
             Raised when a tree node is double clicked
             </summary>
@@ -700,6 +700,7 @@
             Raised when the user clicks on the control
             </summary>
             <param name="e">The MouseEventArgs arguments</param>
+            <remarks>handles the context menu system in the treeview</remarks>
         </member>
         <member name="M:FC.GEPluginCtrls.KmlTreeView.OnNodeMouseClick(System.Windows.Forms.TreeNodeMouseClickEventArgs)">
             <summary>
@@ -712,6 +713,17 @@
             Raised when there is Layout event in the the control
             </summary>
             <param name="e">The LayoutEventArgs arguments</param>
+        </member>
+        <member name="M:FC.GEPluginCtrls.KmlTreeView.BuildTriStateImageList">
+            <summary>
+            Builds the tri-state image list for use with the control
+            </summary>
+        </member>
+        <member name="M:FC.GEPluginCtrls.KmlTreeView.CheckParentNodes(FC.GEPluginCtrls.KmlTreeViewNode)">
+            <summary>
+            Sets the checkstate on a given nodes partents based on that node's checkstate
+            </summary>
+            <param name="node">the node to check from</param>
         </member>
         <member name="M:FC.GEPluginCtrls.KmlTreeView.CreateKmlTreeNode(System.Object)">
             <summary>
@@ -726,20 +738,6 @@
             </summary>
             <param name="networkLink">The networklink to parse</param>
             <returns>The network link node</returns>
-        </member>
-        <member name="M:FC.GEPluginCtrls.KmlTreeView.CheckAllChildNodes(FC.GEPluginCtrls.KmlTreeViewNode,System.Boolean)">
-            <summary>
-            Sets the checked state of any child nodes to the given checkState
-            </summary>
-            <param name="node">The starting node to check from</param>
-            <param name="check">The desired check state of the node, true is checked, false unchecked.
-            Default is true</param>
-        </member>
-        <member name="M:FC.GEPluginCtrls.KmlTreeView.CheckAllParentNodes(FC.GEPluginCtrls.KmlTreeViewNode)">
-            <summary>
-            Sets the checked state of any parent nodes to true
-            </summary>
-            <param name="node">The starting node to check from</param>
         </member>
         <member name="F:FC.GEPluginCtrls.KmlTreeView.components">
             <summary>
@@ -924,18 +922,11 @@
              Gets or sets the image list index value of the image that is displayed when
              a tree node is selected.
             </summary>
-            <remarks>TODO: tri-state nodes</remarks>
         </member>
         <member name="P:FC.GEPluginCtrls.KmlTreeView.StateImageList">
             <summary>
             Gets or sets the image list used for indicating the state of the TreeView
             and its nodes.
-            </summary>
-            <remarks>TODO: tri-state nodes</remarks>
-        </member>
-        <member name="P:FC.GEPluginCtrls.KmlTreeView.Nodes">
-            <summary>
-            Gets the collection of Nodes that are assigned to the control
             </summary>
         </member>
         <member name="T:FC.GEPluginCtrls.GEStatusStrip">
@@ -2321,6 +2312,22 @@
             <param name="id">The id of the layer to work with</param>
             <param name="value">True turns the layer on, false off</param>
         </member>
+        <member name="M:FC.GEPluginCtrls.GEHelpers.GetElementById(System.Object,System.String)">
+            <summary>
+            Get an element by ID - wrapper for ge.getElementById()
+            </summary>
+            <param name="ge">The plugin instance</param>
+            <param name="id">The id feature to find</param>
+            <returns>The feature specified by the ID parameter if it exists</returns>
+        </member>
+        <member name="M:FC.GEPluginCtrls.GEHelpers.GetLayerById(System.Object,System.String)">
+            <summary>
+            Get a plugin feature by its ID - wrapper for ge.getLayerRoot().getLayerById()
+            </summary>
+            <param name="ge">The plugin instance</param>
+            <param name="id">The id of the layer to work with</param>
+            <returns>The layer specified by the ID parameter</returns>
+        </member>
         <member name="M:FC.GEPluginCtrls.GEHelpers.FlyToObject(System.Object,System.Object,System.Boolean,System.Double,System.Double,System.Double)">
             <summary>
             Attempts to set the view of the plugin to the given api object 
@@ -2405,11 +2412,34 @@
             </summary>
             <param name="ge">The plugin instance</param>
         </member>
+        <member name="M:FC.GEPluginCtrls.GEHelpers.RemoveFeatureById(System.Object,System.String)">
+            <summary>
+            Remove a feature from the plug-in based on the feature ID
+            </summary>
+            <param name="ge">The plugin instance</param>
+            <param name="id">The id of the feature to remove</param>
+        </member>
+        <member name="M:FC.GEPluginCtrls.GEHelpers.RemoveFeatureById(System.Object,System.String[])">
+            <summary>
+            Remove a features from the plug-in based on the feature IDs
+            </summary>
+            <param name="ge">The plugin instance</param>
+            <param name="ids">The ids of the features to remove</param>
+        </member>
         <member name="M:FC.GEPluginCtrls.GEHelpers.ShowCurrentViewInMaps(System.Object)">
             <summary>
             Displays the current plugin view in Google Maps using the default system browser
             </summary>
             <param name="ge">The plugin instance</param>
+        </member>
+        <member name="M:FC.GEPluginCtrls.GEHelpers.ToggleMediaPlayer(System.Object,System.Object,System.Boolean)">
+            <summary>
+            Toggles any 'media player' associated with a particular Kml type represented by a treenode.
+            So far this includes KmlTours (GETourPlayer) and KmlPhotoOverlays (GEPhotoOverlayViewer)
+            </summary>
+            <param name="ge">The plugin instance</param>
+            <param name="node">The KmlTreeViewNode to check</param>
+            <param name="visible">Vaule indicating whether the player should be visible or not.</param>
         </member>
         <member name="T:FC.GEPluginCtrls.HttpServer.Server">
             <summary>
@@ -3155,8 +3185,8 @@
         </member>
         <member name="T:FC.GEPluginCtrls.ApiType">
             <summary>
-            A collection the names of objects in the Google Earth API.
-            These constants are usefull when checking the type of any object 
+            A collection of the names of all the objects in the Google Earth API.
+            The constants here are usefull when checking the type of any object 
             that comes from outside managed code
             </summary>
             <remarks>This is a compleate list as of v1.007 of the API</remarks>

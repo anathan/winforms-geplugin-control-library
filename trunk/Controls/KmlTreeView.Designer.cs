@@ -88,8 +88,13 @@ namespace FC.GEPluginCtrls
             this.toolStripMenuItemRemoveLink = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStripNodes = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.toolStripMenuItemRemoveNode = new System.Windows.Forms.ToolStripMenuItem();
+            this.contextMenuStripKmlTreeView = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.toolStripMenuItemExpandAll = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItemCollapseAll = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItemRemoveAll = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStripNetworkLinks.SuspendLayout();
             this.contextMenuStripNodes.SuspendLayout();
+            this.contextMenuStripKmlTreeView.SuspendLayout();
             this.SuspendLayout();
             // 
             // imageList1
@@ -118,17 +123,17 @@ namespace FC.GEPluginCtrls
             this.contextMenuStripNetworkLinks.Name = "contextMenuStripNetworkLinks";
             this.contextMenuStripNetworkLinks.Size = new System.Drawing.Size(118, 48);
             // 
-            // toolStripMenuItemReload
+            // toolStripMenuItemReloadLink
             // 
-            this.toolStripMenuItemReloadLink.Name = "toolStripMenuItemReload";
+            this.toolStripMenuItemReloadLink.Name = "toolStripMenuItemReloadLink";
             this.toolStripMenuItemReloadLink.Size = new System.Drawing.Size(117, 22);
             this.toolStripMenuItemReloadLink.Text = "Reload";
             this.toolStripMenuItemReloadLink.ToolTipText = "Reloads the link content";
             this.toolStripMenuItemReloadLink.Click += new System.EventHandler(this.ToolStripMenuItemReload_Click);
             // 
-            // toolStripMenuItemRemove
+            // toolStripMenuItemRemoveLink
             // 
-            this.toolStripMenuItemRemoveLink.Name = "toolStripMenuItemRemove";
+            this.toolStripMenuItemRemoveLink.Name = "toolStripMenuItemRemoveLink";
             this.toolStripMenuItemRemoveLink.Size = new System.Drawing.Size(117, 22);
             this.toolStripMenuItemRemoveLink.Text = "Remove";
             this.toolStripMenuItemRemoveLink.ToolTipText = "Remove the item";
@@ -146,7 +151,37 @@ namespace FC.GEPluginCtrls
             this.toolStripMenuItemRemoveNode.Name = "toolStripMenuItemRemoveNode";
             this.toolStripMenuItemRemoveNode.Size = new System.Drawing.Size(117, 22);
             this.toolStripMenuItemRemoveNode.Text = "Remove";
-            this.toolStripMenuItemRemoveNode.Click += new System.EventHandler(ToolStripMenuItemRemove_Click);
+            this.toolStripMenuItemRemoveNode.Click += new System.EventHandler(this.ToolStripMenuItemRemove_Click);
+            // 
+            // contextMenuStripKmlTreeView
+            // 
+            this.contextMenuStripKmlTreeView.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripMenuItemCollapseAll,
+            this.toolStripMenuItemExpandAll,
+            this.toolStripMenuItemRemoveAll});
+            this.contextMenuStripKmlTreeView.Name = "contextMenuStripKmlTreeView";
+            this.contextMenuStripKmlTreeView.Size = new System.Drawing.Size(135, 70);
+            // 
+            // toolStripMenuItemExpandAll
+            // 
+            this.toolStripMenuItemExpandAll.Name = "toolStripMenuItemExpandAll";
+            this.toolStripMenuItemExpandAll.Size = new System.Drawing.Size(134, 22);
+            this.toolStripMenuItemExpandAll.Text = "Expand All";
+            this.toolStripMenuItemExpandAll.Click += new System.EventHandler(ToolStripMenuItemExpandAll_Click);
+            // 
+            // toolStripMenuItemCollapseAll
+            // 
+            this.toolStripMenuItemCollapseAll.Name = "toolStripMenuItemCollapseAll";
+            this.toolStripMenuItemCollapseAll.Size = new System.Drawing.Size(134, 22);
+            this.toolStripMenuItemCollapseAll.Text = "Collapse all";
+            this.toolStripMenuItemCollapseAll.Click += new System.EventHandler(ToolStripMenuItemCollapseAll_Click);
+            // 
+            // toolStripMenuItemRemoveAll
+            // 
+            this.toolStripMenuItemRemoveAll.Name = "toolStripMenuItemRemoveAll";
+            this.toolStripMenuItemRemoveAll.Size = new System.Drawing.Size(134, 22);
+            this.toolStripMenuItemRemoveAll.Text = "Remove All";
+            this.toolStripMenuItemRemoveAll.Click += new System.EventHandler(ToolStripMenuItemRemoveAll_Click);
             // 
             // KmlTreeView
             // 
@@ -157,11 +192,31 @@ namespace FC.GEPluginCtrls
             this.SelectedImageIndex = 0;
             this.contextMenuStripNetworkLinks.ResumeLayout(false);
             this.contextMenuStripNodes.ResumeLayout(false);
+            this.contextMenuStripKmlTreeView.ResumeLayout(false);
             this.ResumeLayout(false);
-
         }
 
         #endregion
+
+        void ToolStripMenuItemCollapseAll_Click(object sender, System.EventArgs e)
+        {
+            this.CollapseAll();
+        }
+
+        void ToolStripMenuItemRemoveAll_Click(object sender, System.EventArgs e)
+        {
+            this.Nodes.Clear();
+
+            if (this.geplugin != null)
+            {
+                GEHelpers.RemoveAllFeatures(this.geplugin);
+            }
+        }
+
+        void ToolStripMenuItemExpandAll_Click(object sender, System.EventArgs e)
+        {
+            this.ExpandAll();
+        }
 
         /// <summary>
         /// Called when a reload context menu item is clicked
@@ -197,5 +252,10 @@ namespace FC.GEPluginCtrls
 
             this.Nodes.Remove(node);
         }
+
+        private System.Windows.Forms.ContextMenuStrip contextMenuStripKmlTreeView;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItemCollapseAll;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItemExpandAll;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItemRemoveAll;
     }
 }

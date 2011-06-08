@@ -156,6 +156,19 @@ namespace FC.GEPluginCtrls
         {
             switch (this.ApiObjectType)
             {
+                case GELayer.Borders:
+                case GELayer.Buildings:
+                case GELayer.BuildingsLowRes:
+                case GELayer.Roads:
+                case GELayer.Terrain:
+                case GELayer.Trees:
+                    {
+                        this.ImageKey = "overlay";
+                        this.SelectedImageKey = "overlay";
+                    }
+
+                    break;
+
                 case ApiType.KmlDocument:
                 case ApiType.KmlFolder:
                     {
@@ -215,6 +228,14 @@ namespace FC.GEPluginCtrls
                     break;
 
                 case ApiType.KmlTour:
+                    {
+                        this.ImageKey = "tour";
+                        this.SelectedImageKey = "tour";
+                    }
+
+                    break;
+
+                case ApiType.KmlLayer:
                     {
                         this.ImageKey = "tour";
                         this.SelectedImageKey = "tour";

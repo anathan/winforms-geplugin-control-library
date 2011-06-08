@@ -383,7 +383,7 @@ namespace FC.GEPluginCtrls
         /// <example>GEWebBrowser.FetchKml("http://www.site.com/file.kml");</example>
         public void FetchKml(Uri url)
         {
-            this.FetchKml(url.ToString(), "createCallback_('OnKmlLoaded')");
+            this.FetchKml(url.ToString());
         }
 
         /// <summary>
@@ -409,7 +409,7 @@ namespace FC.GEPluginCtrls
         /// <param name="timeout">time to wait for return in ms</param>
         /// <returns>The kml as a kmlObject</returns>
         /// <example>GEWebBrowser.FetchKmlSynchronous("http://www.site.com/file.kml");</example>
-        public object FetchKmlSynchronous(string url, int timeout = 1200)
+        public object FetchKmlSynchronous(string url, int timeout = 1000)
         {
             try
             {

@@ -595,7 +595,7 @@ namespace FC.GEPluginCtrls.HttpServer
                         // Send then file 200 OK
                         byte[] bytes = File.ReadAllBytes(localPath);
                         string response = Encoding.UTF8.GetString(bytes);
-                        string mimeType = this.GetMimeType(localFile);
+                        string mimeType = this.GetMimeType(localPath);
                         this.SendHeader(mimeType, bytes.Length, HttpStatusCode.OK);
                         if (requestMethod == "GET")
                         {

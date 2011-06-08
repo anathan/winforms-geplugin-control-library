@@ -342,12 +342,66 @@ namespace FC.GEPluginCtrls
 
             try
             {
-                ge.getLayerRoot().EnableLayerById(id.ToString(), value);
+                ge.getLayerRoot().EnableLayerById(id, value);
             }
             catch (RuntimeBinderException rbex)
             {
                 Debug.WriteLine("GetAllFeaturesKml: " + rbex.ToString(), "GEHelpers");
             }
+        }
+        
+        /// <summary>
+        /// Get an element by ID - wrapper for ge.getElementById()
+        /// </summary>
+        /// <param name="ge">The plugin instance</param>
+        /// <param name="id">The id feature to find</param>
+        /// <returns>The feature specified by the ID parameter if it exists</returns>
+        public static dynamic GetElementById(dynamic ge, string id)
+        {
+            dynamic feature = null;
+
+            if (!IsGe(ge))
+            {
+                throw new ArgumentException("ge is not of the type GEPlugin");
+            }
+
+            try
+            {
+                feature = ge.getElementById(id);
+            }
+            catch (RuntimeBinderException rbex)
+            {
+                Debug.WriteLine("GetElementById: " + rbex.ToString(), "GEHelpers");
+            }
+
+            return feature;
+        }
+
+        /// <summary>
+        /// Get a plugin feature by its ID - wrapper for ge.getLayerRoot().getLayerById()
+        /// </summary>
+        /// <param name="ge">The plugin instance</param>
+        /// <param name="id">The id of the layer to work with</param>
+        /// <returns>The layer specified by the ID parameter</returns>
+        public static dynamic GetLayerById(dynamic ge, string id)
+        {
+            dynamic layer = null;
+
+            if (!IsGe(ge))
+            {
+                throw new ArgumentException("ge is not of the type GEPlugin");
+            }
+
+            try
+            {
+                layer = ge.getLayerRoot().getLayerById(id);
+            }
+            catch (RuntimeBinderException rbex)
+            {
+                Debug.WriteLine("GetAllFeaturesKml: " + rbex.ToString(), "GEHelpers");
+            }
+
+            return layer;
         }
 
         /// <summary>
@@ -750,6 +804,41 @@ namespace FC.GEPluginCtrls
         }
 
         /// <summary>
+        /// Remove a feature from the plug-in based on the feature ID
+        /// </summary>
+        /// <param name="ge">The plugin instance</param>
+        /// <param name="id">The id of the feature to remove</param>
+        public static void RemoveFeatureById(dynamic ge, string id)
+        {
+            dynamic feature = GEHelpers.GetElementById(ge, id);
+            if (feature != null)
+            {
+                try
+                {
+                    ge.getFeatures().removeChild(feature);
+                }
+                catch (RuntimeBinderException rbex)
+                {
+                    Debug.WriteLine("RemoveFeatureById: " + rbex.ToString(), "GEHelpers");
+                }
+
+            }
+        }
+
+        /// <summary>
+        /// Remove a features from the plug-in based on the feature IDs
+        /// </summary>
+        /// <param name="ge">The plugin instance</param>
+        /// <param name="ids">The ids of the features to remove</param>
+        public static void RemoveFeatureById(dynamic ge, string[] ids)
+        {
+            foreach (string id in ids)
+            {
+                GEHelpers.RemoveFeatureById(ge, id);
+            }
+        }
+
+        /// <summary>
         /// Displays the current plugin view in Google Maps using the default system browser
         /// </summary>
         /// <param name="ge">The plugin instance</param>
@@ -794,6 +883,50 @@ namespace FC.GEPluginCtrls
 
             // launch the default browser with the url
             Process.Start(url);
+        }
+
+        /// <summary>
+        /// Toggles any 'media player' associated with a particular Kml type represented by a treenode.
+        /// So far this includes KmlTours (GETourPlayer) and KmlPhotoOverlays (GEPhotoOverlayViewer)
+        /// </summary>
+        /// <param name="ge">The plugin instance</param>
+        /// <param name="node">The KmlTreeViewNode to check</param>
+        /// <param name="visible">Vaule indicating whether the player should be visible or not.</param>
+        public static void ToggleMediaPlayer(dynamic ge, dynamic node, bool visible = true)
+        {
+            string type = string.Empty;
+
+            try
+            {
+                type = node.getType();
+            }
+            catch (COMException)
+            {
+                return;
+            }
+
+            if (visible)
+            {
+                if (type == ApiType.KmlTour)
+                {
+                    ge.getTourPlayer().setTour(node);
+                }
+                else if (type == ApiType.KmlPhotoOverlay)
+                {
+                    ge.getPhotoOverlayViewer().setPhotoOverlay(node);
+                }
+            }
+            else
+            {
+                if (type == ApiType.KmlTour)
+                {
+                    ge.getTourPlayer().setTour(null);
+                }
+                else if (type == ApiType.KmlPhotoOverlay)
+                {
+                    ge.getPhotoOverlayViewer().setPhotoOverlay(null);
+                }
+            }
         }
     }
 }
