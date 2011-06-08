@@ -26,11 +26,13 @@ namespace FC.GEPluginCtrls
     using System.Drawing.Imaging;
     using System.Runtime.InteropServices;
     using System.Windows.Forms;
+    using System.Windows.Forms.Design;
     using Microsoft.CSharp.RuntimeBinder;
 
     /// <summary>
     /// The GEToolStrip provides a quick way to access and set the plugin options
     /// </summary>
+    [Designer(typeof(System.Windows.Forms.Design.ControlDesigner))]
     public sealed partial class GEToolStrip : ToolStrip, IGEControls
     {
         #region Private fields

@@ -661,6 +661,7 @@ namespace FC.GEPluginCtrls
             this.viewInMapsButton,
             this.languageSeparator,
             this.languageComboBox});
+
             this.Layout += new System.Windows.Forms.LayoutEventHandler(this.GEToolStrip_Layout);
             this.ResumeLayout(false);
 

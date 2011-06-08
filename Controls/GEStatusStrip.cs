@@ -25,11 +25,13 @@ namespace FC.GEPluginCtrls
     using System.Runtime.InteropServices;
     using System.Threading.Tasks;
     using System.Windows.Forms;
+    using System.Windows.Forms.Design;
     using Microsoft.CSharp.RuntimeBinder;
 
     /// <summary>
     /// The GEStatusStrip shows various information about the plug-in
     /// </summary>
+    [Designer(typeof(ControlDesigner))]
     public sealed partial class GEStatusStrip : StatusStrip, IGEControls
     {
         #region Private fields
