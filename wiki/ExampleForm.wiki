@@ -8,9 +8,15 @@ This form shows the most basic set up of the GEWebBrowser, there are no other co
 
 Here the plugin behaves exactly as it would with the default set-up in a web page. You can use the mouse and keys to navigate when the control has focus.
 
-The dynamic type 'ge' returned by the PluginReady event allows one to work seemlessly with the GEPlugin object, just as if you were programming in the native !javaScript API.
+The dynamic type returned by the PluginReady event allows one to work seemlessly with the GEPlugin object, just as if you were programming in the native javaScript API.
+
+The GEPlugin object is also available outside the PluginReady event from the GEWebBrowser's Plugin property.
 
 However, it is worth noting that the other controls ([GEStatusStrip], [GEToolStrip], [KmlTreeView]) and the other helper classes ([GEHelpers], [KmlHelpers], [GEOptions], etc) in this library offer much cleaner, safer, managed, ways to work with the Api.
+
+= Example =
+
+This example presumes you have dragged a single instance a the GEWebBrowser control onto an empty form.
 
 {{{
 
