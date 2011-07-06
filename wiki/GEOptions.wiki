@@ -42,7 +42,7 @@ public GEOptions(dynamic gePlugin)
 
 {{{
 /// <summary>
-/// Gets or sets the map type to Earth or sky mode.
+/// Sets the map type (Earth or sky mode).
 /// </summary>
 /// <param name="type"></param>
 public void setMapType(MapType type)
