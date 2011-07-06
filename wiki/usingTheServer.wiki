@@ -6,7 +6,7 @@ You can use the inbuilt http server to work with local files such as kmz, kml, j
 
 = Details =
 
-This class provide a basic web server for the Plug-in to work with. A local server provides a way to circumvent all access issues between JavaScript and the local file system by serving the local files over a standard HTTP connection.
+This class provide a basic web server for the Plug-in to work with. A local server provides a way to circumvent all access issues between !JavaScript and the local file system by serving the local files over a standard HTTP connection.
 
 = Example =
 
