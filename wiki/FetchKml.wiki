@@ -5,21 +5,37 @@
 
 = Introduction =
 
-This is a wrapper for the google.earth.fetchKml method. 
+This is a wrapper for the google.earth.fetchKml method. It is used to load a kml/kmz file into the plug-in.
 
 = Details = 
 
-Because it is not possible to work directly with the members of the google.earth namespace in managed code a pair of wrapper functions are required; one in javascript and one in managed code.
+Because it is not possible to work directly with the members of the [http://code.google.com/apis/earth/documentation/reference/google_earth_namespace.html google.earth namespace] in managed code a pair of wrapper functions are required; one in javascript and one in managed code. The overloaded functions listed here are used to initiated the loading of kml data.
+
+A url, and optionally a callback function, are passed to the method. 
+The method invokes the plugin to begin to load the resource specified.
+Once the kml data has been loaded by the plugin, the callback function is called and with the deserialized kml object data being passed as a parameter.
+
+If no callback function has been specified then generic event handling is used.
 
 For more information on the google.earth.fetchKml method please see: http://code.google.com/apis/earth/documentation/reference/google_earth_namespace.html#afca518f43d5f863b254c5fa23a5967f2
 
-== Syntax ==
+== Overload List ==
 
 {{{
 public void FetchKml(
     string Uri
 )
+
+public void FetchKml(
+    Uri url
+)
+
+public void FetchKml(
+    string url,
+    string completionCallback
+)
 }}}
+
 
 == Examples ==
 
@@ -67,6 +83,5 @@ var loadKmlCallBack_ = function(kmlObject)
 Here, in turn, the Kml data is returned to managed code using the !LoadKmlCallBack method.
 
 So to add the actual data to GEPlugin or KmlTreeView you would use the [KmlLoaded] event in [GEWebBrowser].
-
 
 <wiki:gadget url="http://earthapi.googlepages.com/ad.xml" border="0" width="728" height="90" />
