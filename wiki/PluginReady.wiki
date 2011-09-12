@@ -18,7 +18,7 @@ This event is essentially just like the 'init callback' function one would use i
 == Syntax ==
 
 {{{
-public void SetBrowserInstance(GEWebBrowser)    
+public event EventHandler<GEEventArgs> PluginReady
 }}}
 
 == Examples ==
