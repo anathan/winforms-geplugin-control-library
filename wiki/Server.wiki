@@ -1,11 +1,11 @@
-#summary Overview of the Server class
+#summary Overview of the GEServer class
 #sidebar TableOfContents
 
 <wiki:toc max_depth="2" />
 
 = Introduction =
 
-The Server class can be used to serve files over a standard HTTP connection. 
+The GEServer class can be used to serve files over a standard HTTP connection. 
 
 = Details =
 
@@ -35,24 +35,24 @@ With the default settings the application start up folder is the virtual root di
 [usingTheServer Server]
 {{{
 /// <summary>
-/// Initializes a new instance of the Server class
+/// Initializes a new instance of the GEServer class
 /// </summary>
-public Server() 
+public GEServer() 
 }}}
 
 [usingTheServer Server]
 {{{
 /// <summary>
-/// Initializes a new instance of the Server class
+/// Initializes a new instance of the GEServer class
 /// </summary>
 /// <param name="rootDirectory">The server root directory</param>
-public Server(string rootDirectory)
+public GEServer(string rootDirectory)
 }}}
 
 [usingTheServer Server]
 {{{
 /// <summary>
-/// Initializes a new instance of the Server class
+/// Initializes a new instance of the GEServer class
 /// </summary>
 /// <param name="rootDirectory">The server root directory</param>
 /// <param name="defaultFileName">Default file name to use</param>
