@@ -46,7 +46,7 @@ namespace FC.GEPluginCtrls
         /// <param name="ge">the plugin object</param>
         public GEWindow(dynamic ge)
         {
-            if (!GEHelpers.IsGe(ge))
+            if (!GEHelpers.IsGE(ge))
             {
                 throw new ArgumentException("ge is not of the type GEPlugin");
             }

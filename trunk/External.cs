@@ -112,7 +112,7 @@ namespace FC.GEPluginCtrls
         /// </summary>
         /// <param name="name">the name of the managed method to be called</param>
         /// <param name="parameters">array of parameter objects</param>
-        public void InvokeCallBack(string name, dynamic parameters)
+        public void InvokeCallback(string name, dynamic parameters)
         {
             try
             {
@@ -143,9 +143,9 @@ namespace FC.GEPluginCtrls
         /// <param name="ge">the plugin instance</param>
         public void Ready(dynamic ge)
         {
-            if (!GEHelpers.IsGe(ge))
+            if (!GEHelpers.IsGE(ge))
             {
-                throw new ApplicationException("ge is not of the type GEPlugin");
+                throw new ArgumentException("ge is not of the type GEPlugin");
             }
 
             this.OnPluginReady(this, new GEEventArgs("Ready", ge.getPluginVersion(), ge));
@@ -154,29 +154,29 @@ namespace FC.GEPluginCtrls
         /// <summary>
         /// Called from javascript when there is an error
         /// </summary>
-        /// <param name="message">the error message</param>
-        /// <param name="type">the error type</param>
-        public void Error(string message, string type)
+        /// <param name="type">the error message</param>
+        /// <param name="message">the error type</param>
+        public void SendError(string type, string message)
         {
             this.OnScriptError(
                 this,
-                new GEEventArgs(message, type));
+                new GEEventArgs(type, message));
         }
 
         /// <summary>
         /// Called from javascript when there is a kml event
         /// </summary>
-        /// <param name="sender">the kml event</param>
+        /// <param name="kmlEvent">the kml event</param>
         /// <param name="action">the event id</param>
-        public void KmlEventCallBack(object sender, string action)
+        public void KmlEventCallback(object kmlEvent, string action)
         {
-            dynamic kmlEvent = sender;
+            dynamic eventObject = kmlEvent;
 
             try
             {
                 this.OnKmlEvent(
                     this,
-                    new GEEventArgs(kmlEvent.getType(), action, kmlEvent));
+                    new GEEventArgs(eventObject.getType(), action, eventObject));
             }
             catch (RuntimeBinderException rbex)
             {
@@ -189,7 +189,7 @@ namespace FC.GEPluginCtrls
         /// </summary>
         /// <param name="sender">The plugin object</param>
         /// <param name="action">The event action</param>
-        public void PluginEventCallBack(object sender, string action)
+        public void PluginEventCallback(object sender, string action)
         {
             dynamic pluginEvent = sender;
 
@@ -210,7 +210,7 @@ namespace FC.GEPluginCtrls
         /// </summary>
         /// <param name="sender">The plugin object</param>
         /// <param name="action">The event action</param>
-        public void ViewEventCallBack(object sender, string action)
+        public void ViewEventCallback(object sender, string action)
         {
             dynamic viewEvent = sender;
 

@@ -19,13 +19,14 @@
 namespace FC.GEPluginCtrls.Geo
 {
     using System;
+    ////using LatLng = System.Tuple<double, double>;
 
     /// <summary>
     /// Various Geodesic methods to work with the plugin api
     /// This class is based on the javascript library geojs by Roman Nurik
     /// See http://code.google.com/p/geojs/
     /// </summary>
-    public class Maths
+    public static class Maths
     {
         /// <summary>
         ///  Earth’s mean radius in Kilometres
@@ -51,29 +52,30 @@ namespace FC.GEPluginCtrls.Geo
         /// <summary>
         /// Get the final bearing from one Coordinate to another
         /// </summary>
-        /// <param name="start">the start Coordinate</param>
+        /// <param name="origin">the start Coordinate</param>
         /// <param name="destination">the destination Coordinate</param>
         /// <returns>The final bearing from start to destination</returns>
-        /// <remarks>http://williams.best.vwh.net/avform.htm</remarks>
-        public static double BearingFinal(Coordinate start, Coordinate destination)
+        /// <remarks>See: http://williams.best.vwh.net/avform.htm for the original function </remarks>
+        public static double BearingFinal(Coordinate origin, Coordinate destination)
         {
-            return (BearingInitial(destination, start) + 180) % 360;
+            return (BearingInitial(destination, origin) + 180) % 360;
         }
 
         /// <summary>
-        /// Get the inital bearing from one Coordinate to another
+        /// Get the inital bearing from one location to another
         /// </summary>
-        /// <param name="start">the starting Coordinate</param>
-        /// <param name="destination">the destination Coordinate</param>
-        /// <remarks>http://williams.best.vwh.net/avform.htm</remarks>
-        /// <returns>The inital bearing from start to destination</returns>
-        public static double BearingInitial(Coordinate start, Coordinate destination)
+        /// <param name="origin">the starting location</param>
+        /// <param name="destination">the destination location</param>>
+        /// <remarks>See: http://williams.best.vwh.net/avform.htm for the original function </remarks>
+        /// <returns>The inital bearing from origin to destination</returns>
+        public static double BearingInitial(Coordinate origin, Coordinate destination)
         {
-            double lat1 = ConvertDegreesToRadians(destination.Latitude);
-            double lat2 = ConvertDegreesToRadians(start.Latitude);
-            double dLon = ConvertDegreesToRadians(destination.Longitude - start.Longitude);
-            double y = Math.Sin(dLon) * Math.Cos(lat2);
-            double x = Math.Cos(lat1) * Math.Sin(lat2) - Math.Sin(lat1) * Math.Cos(lat2) * Math.Cos(dLon);
+            double phi1 = ConvertDegreesToRadians(origin.Latitude);
+            double phi2 = ConvertDegreesToRadians(destination.Latitude);
+            double deltaLambda = ConvertDegreesToRadians(destination.Longitude - origin.Longitude);
+            double y = Math.Sin(deltaLambda) * Math.Cos(phi2);
+            double x = (Math.Cos(phi1) * Math.Sin(phi2)) -
+                (Math.Sin(phi1) * Math.Cos(phi2) * Math.Cos(deltaLambda));
             double bearing = Math.Atan2(y, x);
 
             return (ConvertRadiansToDegrees(bearing) + 360) % 360;
@@ -92,11 +94,11 @@ namespace FC.GEPluginCtrls.Geo
         /// <summary>
         /// Converts radians to decimal degrees
         /// </summary>
-        /// <param name="radains">value in radians</param>
+        /// <param name="radians">value in radians</param>
         /// <returns>value in degrees</returns>
-        public static double ConvertRadiansToDegrees(double radains)
+        public static double ConvertRadiansToDegrees(double radians)
         {
-            return radains == 0 ? radains : (radains / Math.PI * 180.0);
+            return radians == 0 ? radians : (radians / Math.PI * 180.0);
         }
 
         /// <summary>
@@ -130,90 +132,113 @@ namespace FC.GEPluginCtrls.Geo
         }
 
         /// <summary>
-        /// Returns the distance in miles or kilometers of any two latitude / longitude points.
+        /// Destination point given distance and bearing from start point
+        /// </summary>
+        /// <param name="origin">the start point</param>
+        /// <param name="distance">the given distance in km or m</param>
+        /// <param name="bearing">the bearing in radians, clockwise from north</param>
+        /// <param name="units">The unit system to use, default is metric</param>
+        /// <returns>destination location as a Tuple(double lat, double lng)</returns>
+        public static Coordinate Destination(Coordinate origin, double distance, double bearing, UnitSystem units = UnitSystem.Metric)
+        {
+            double phi1 = Maths.ConvertDegreesToRadians(origin.Latitude);
+            double lambda1 = Maths.ConvertDegreesToRadians(origin.Longitude);
+
+            ////bearing = Maths.ConvertDegreesToRadians(bearing);
+            ////bearing = Maths.ConvertRadiansToDegrees(bearing); // ...err
+
+            double angularDistance = 0;
+
+            if (units == UnitSystem.Metric)
+            {
+                angularDistance = distance / Maths.EarthMeanRadiusKilometres;
+            }
+            else
+            {
+                distance = Maths.ConvertKilometresToMiles(distance);
+                angularDistance = distance / Maths.EarthMeanRadiusMiles;
+            }
+
+            double phi2 = Math.Asin((Math.Sin(phi1) * Math.Cos(angularDistance)) +
+                (Math.Cos(phi1) * Math.Sin(angularDistance) * Math.Cos(bearing)));
+
+            double lambda2 = lambda1 +
+                Math.Atan2(
+                Math.Sin(bearing) * Math.Sin(angularDistance) * Math.Cos(phi1),
+                Math.Cos(angularDistance) - (Math.Sin(phi1) * Math.Sin(phi2)));
+
+            return new Coordinate(Maths.ConvertRadiansToDegrees(phi2), Maths.ConvertRadiansToDegrees(lambda2));
+        }
+
+        /// <summary>
+        /// Returns the distance in miles or kilometres of any two latitude / longitude points.
         /// </summary>
         /// <param name="origin">The start api object </param>
         /// <param name="destination">The destination api object</param>
-        /// <returns>Distance in kilometers</returns>
-        public static double DistanceCosine(dynamic origin, dynamic destination)
+        /// <param name="units">The unit system to use, default is metric</param>
+        /// <returns>Distance in kilometres</returns>
+        public static double DistanceCosine(dynamic origin, dynamic destination, UnitSystem units = UnitSystem.Metric)
         {
-            return DistanceCosine(new Coordinate(origin), new Coordinate(destination));
+            return DistanceCosine(new Coordinate(origin), new Coordinate(destination), units);
         }
 
         /// <summary>
-        /// Returns the distance in miles or kilometers of any two latitude / longitude points.
+        /// Returns the distance in miles or kilometres of any two latitude / longitude points.
         /// </summary>
         /// <param name="origin">The start latitude and longitude </param>
         /// <param name="destination">The destination latitude and longitude </param>
-        /// <returns>Distance in kilometers</returns>
-        public static double DistanceCosine(double[] origin, double[] destination)
+        /// <param name="units">The unit system to use, default is metric</param>
+        /// <returns>Distance in kilometres</returns>
+        public static double DistanceCosine(Coordinate origin, Coordinate destination, UnitSystem units = UnitSystem.Metric)
         {
-            return DistanceCosine(new Coordinate(origin), new Coordinate(destination));
+            double phi1 = ConvertDegreesToRadians(origin.Latitude);
+            double phi2 = ConvertDegreesToRadians(destination.Latitude);
+            double deltaLamdba = ConvertDegreesToRadians(destination.Longitude - origin.Longitude);
+            double d = Math.Acos((Math.Sin(phi1) * Math.Sin(phi2)) + (Math.Cos(phi1) * Math.Cos(phi2) * Math.Cos(deltaLamdba)));
+
+            if (units == UnitSystem.Metric)
+            {
+                return d * EarthMeanRadiusKilometres;
+            }
+            else
+            {
+                return d * EarthMeanRadiusMiles;
+            }
         }
 
         /// <summary>
-        /// Returns the distance in miles or kilometers of any two latitude / longitude points.
-        /// </summary>
-        /// <param name="origin">The start Coordinate</param>
-        /// <param name="destination">The destination Coordinate</param>
-        /// <returns>Distance in kilometers</returns>
-        public static double DistanceCosine(Coordinate origin, Coordinate destination)
-        {
-            double lat1 = ConvertDegreesToRadians(destination.Latitude);
-            double lat2 = ConvertDegreesToRadians(origin.Latitude);
-            double dLon = ConvertDegreesToRadians(destination.Longitude - origin.Longitude);
-
-            return Math.Acos(Math.Sin(lat1) * Math.Sin(lat2) +
-                Math.Cos(lat1) * Math.Cos(lat2) *
-                Math.Cos(dLon)) * EarthMeanRadiusKilometres;
-        }
-
-        /// <summary>
-        /// Returns the distance in miles or kilometers of any two latitude / longitude points.
-        /// </summary>
-        /// <param name="origin">The start api object </param>
-        /// <param name="destination">The destination api object</param>
-        /// <returns>Distance in kilometers</returns>
-        public static double DistanceHaversine(dynamic origin, dynamic destination)
-        {
-            return DistanceHaversine(new Coordinate(origin), new Coordinate(destination));
-        }
-
-        /// <summary>
-        /// Returns the distance in miles or kilometers of any two latitude / longitude points.
+        /// Returns the distance in miles or kilometres of any two latitude / longitude points.
         /// </summary>
         /// <param name="origin">The start latitude and longitude </param>
         /// <param name="destination">The destination latitude and longitude </param>
-        /// <returns>Distance in kilometers</returns>
-        public static double DistanceHaversine(double[] origin, double[] destination)
+        /// <param name="units">The unit system to use, default is metric</param>
+        /// <returns>Distance in kilometres</returns>
+        public static double DistanceHaversine(Coordinate origin, Coordinate destination, UnitSystem units = UnitSystem.Metric)
         {
-            return DistanceHaversine(new Coordinate(origin), new Coordinate(destination));
+            double phi1 = ConvertDegreesToRadians(origin.Latitude);
+            double phi2 = ConvertDegreesToRadians(destination.Latitude);
+            double deltaPhi = ConvertDegreesToRadians(destination.Latitude - origin.Latitude); 
+            double deltaLambda = ConvertDegreesToRadians(destination.Longitude - origin.Longitude);
+            double h1 = (Math.Sin(deltaPhi / 2) * Math.Sin(deltaPhi / 2)) +
+                (Math.Sin(deltaLambda / 2) * Math.Sin(deltaLambda / 2) * Math.Cos(phi1) * Math.Cos(phi2));
+            double d = 2 * Math.Asin(Math.Min(1, Math.Sqrt(h1)));
+
+            if (units == UnitSystem.Metric)
+            {
+                return d * EarthMeanRadiusKilometres;
+            }
+            else
+            {
+                return d * EarthMeanRadiusMiles;
+            }
         }
 
-        /// <summary>
-        /// Returns the distance in miles or kilometers of any two latitude / longitude points.
-        /// </summary>
-        /// <param name="origin">The start Coordinate</param>
-        /// <param name="destination">The destination Coordinate</param>
-        /// <returns>Distance in kilometers</returns>
-        public static double DistanceHaversine(Coordinate origin, Coordinate destination)
-        {
-            var lat = ConvertDegreesToRadians(destination.Latitude - origin.Latitude);
-            var lng = ConvertDegreesToRadians(destination.Longitude - origin.Longitude);
-            var h1 = Math.Sin(lat / 2) * Math.Sin(lat / 2) +
-                          Math.Cos(ConvertDegreesToRadians(origin.Latitude)) * Math.Cos(ConvertDegreesToRadians(destination.Latitude)) *
-                          Math.Sin(lng / 2) * Math.Sin(lng / 2);
-            var h2 = 2 * Math.Asin(Math.Min(1, Math.Sqrt(h1)));
-
-            return EarthMeanRadiusKilometres * h2;
-        }
-        
         /// <summary>
         /// Keep a number in the [0,PI] range
         /// </summary>
         /// <param name="radians">value in radians</param>
         /// <returns>normalised angle in radians</returns>
-        public static double NormaliseAngle(double radians)
+        public static double NormalizeAngle(double radians)
         {
             radians = radians % (2 * Math.PI);
             return radians >= 0 ? radians : radians + (2 * Math.PI);
@@ -255,7 +280,7 @@ namespace FC.GEPluginCtrls.Geo
         /// <returns>The oposite angle</returns>
         public static double ReverseAngle(double radians)
         {
-            return NormaliseAngle(radians + Math.PI);
+            return NormalizeAngle(radians + Math.PI);
         }
 
         /// <summary>
@@ -279,6 +304,7 @@ namespace FC.GEPluginCtrls.Geo
             value -= min;
 
             value = value % (max - min);
+
             if (value < 0)
             {
                 value += max - min;

@@ -51,14 +51,9 @@ namespace FC.GEPluginCtrls
         ClampToSeaFloor = 4,
 
         /// <summary>
-        /// Specifies that altitudes are to be interpreted as meters above sea floor.
-        /// (i.e. the elevation of the sea floor at the location).
+        /// Specifies that altitudes are to be interpreted as meters above seafloor.
+        /// (i.e. the elevation of the seafloor at the location).
         /// </summary>
-        RelativeToSeaFloor = 5,
-
-        /// <summary>
-        /// Specifies that no altitude is to be interpreted
-        /// </summary>
-        None = 99
+        RelativeToSeafloor = 5
     }
 }

@@ -24,7 +24,8 @@ namespace FC.GEPluginCtrls
     /// <summary>
     /// Wrapper used to used to manipulate the navigation controls in Google Earth.
     /// </summary>
-    /// <remarks>http://code.google.com/apis/earth/documentation/reference/interface_g_e_navigation_control.html</remarks>
+    /// <remarks>See http://code.google.com/apis/earth/documentation/reference/interface_g_e_navigation_control.html
+    /// for the api notes on the GENavigationControl object</remarks>
     public sealed class GENavigationControl
     {
         #region Private fields
@@ -47,7 +48,7 @@ namespace FC.GEPluginCtrls
         /// <param name="ge">GEPlugin COM object</param>
         public GENavigationControl(dynamic ge)
         {
-            if (!GEHelpers.IsGe(ge))
+            if (!GEHelpers.IsGE(ge))
             {
                 throw new ArgumentException("ge is not of the type GEPlugin");
             }
@@ -61,15 +62,15 @@ namespace FC.GEPluginCtrls
         /// </summary>
         /// <param name="ge">GEPlugin COM object</param>
         /// <param name="controlType">The control type. Defualt is NavigationControl.Large</param>
-        /// <param name="visiblity">The visiblity of the control. Defualt is Visiblity.Show</param>
+        /// <param name="visibility">The visibility of the control. Defualt is Visibility.Show</param>
         /// <param name="streetViewEnabled">Optionally enables the streetview features. Default is true (on)</param>
         public GENavigationControl(
             dynamic ge,
             NavigationControl controlType = NavigationControl.Large,
-            Visiblity visiblity = Visiblity.Show,
+            Visibility visibility = Visibility.Show,
             bool streetViewEnabled = false)
         {
-            if (!GEHelpers.IsGe(ge))
+            if (!GEHelpers.IsGE(ge))
             {
                 throw new ArgumentException("ge is not of the type GEPlugin");
             }
@@ -77,9 +78,9 @@ namespace FC.GEPluginCtrls
             this.ge = ge;
             this.navigation = ge.getNavigationControl();
 
-            this.Type = controlType;
+            this.ControlType = controlType;
             this.StreetViewEnabled = streetViewEnabled;
-            this.Visiblity = visiblity;
+            this.Visibility = visibility;
         }
 
         #region Public properties
@@ -87,7 +88,7 @@ namespace FC.GEPluginCtrls
         /// <summary>
         /// Gets or sets the navigaton control type
         /// </summary>
-        public NavigationControl Type
+        public NavigationControl ControlType
         {
             get
             {
@@ -120,11 +121,11 @@ namespace FC.GEPluginCtrls
         /// Gets or sets a value indicating whether the control is:
         /// always visible, always hidden, or visible only when the user intends to use the control.
         /// </summary>
-        public Visiblity Visiblity
+        public Visibility Visibility
         {
             get
             {
-                return (Visiblity)this.navigation.getVisibility();
+                return (Visibility)this.navigation.getVisibility();
             }
 
             set

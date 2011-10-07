@@ -21,10 +21,6 @@ namespace FC.GEPluginCtrls
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
-    using System.IO;
-    using System.IO.Compression;
-    using System.Runtime.InteropServices;
-    using System.Threading.Tasks;
     using System.Xml;
     using FC.GEPluginCtrls.Geo;
     using Microsoft.CSharp.RuntimeBinder;
@@ -38,24 +34,24 @@ namespace FC.GEPluginCtrls
         /// Based on kmldomwalk.js 
         /// see: http://code.google.com/p/earth-api-samples/source/browse/trunk/lib/kmldomwalk.js
         /// </summary>
-        /// <param name="kmlObject">The kml object to parse</param>
-        /// <param name="callBack">A delegate action, each node visited will be passed to this as the single parameter</param>
+        /// <param name="feature">The kml object to parse</param>
+        /// <param name="callback">A delegate action, each node visited will be passed to this as the single parameter</param>
         /// <param name="walkFeatures">Optionally walk features, defualt is true</param>
         /// <param name="walkGeometries">Optionally walk geometries, default is false</param>
         /// <remarks>This method is used by <see cref="KmlTreeView"/> to build the nodes</remarks>
         /// <example>KmlHelpers.WalkKmlDom(kml, (Action dynamic)(x => { /* each x in the dom */}));</example>
         public static void WalkKmlDom(
-            dynamic kmlObject,
-            Action<dynamic> callBack,
+            dynamic feature,
+            Action<dynamic> callback,
             bool walkFeatures = true,
             bool walkGeometries = false)
         {
-            if (kmlObject == null)
+            if (feature == null)
             { 
                 return; 
             }
 
-            string type = kmlObject.getType();
+            string type = feature.getType();
             dynamic objectContainer = null; // GESchemaObjectContainer
 
             switch (type)
@@ -68,7 +64,7 @@ namespace FC.GEPluginCtrls
                     {
                         if (walkFeatures)
                         {
-                            objectContainer = kmlObject.getFeatures();
+                            objectContainer = feature.getFeatures();
                         }
                     }
 
@@ -82,7 +78,7 @@ namespace FC.GEPluginCtrls
                     {
                         if (walkGeometries)
                         {
-                            WalkKmlDom(kmlObject.getGeometry(), callBack);
+                            WalkKmlDom(feature.getGeometry(), callback, walkFeatures, walkGeometries);
                         }
                     }
 
@@ -93,8 +89,8 @@ namespace FC.GEPluginCtrls
                     {
                         if (walkGeometries)
                         {
-                            WalkKmlDom(kmlObject.getOuterBoundary(), callBack);
-                            objectContainer = kmlObject.getInnerBoundaries(); // GELinearRingContainer
+                            WalkKmlDom(feature.getOuterBoundary(), callback, walkFeatures, walkGeometries);
+                            objectContainer = feature.getInnerBoundaries(); // GELinearRingContainer
                         }
                     }
 
@@ -105,7 +101,7 @@ namespace FC.GEPluginCtrls
                     {
                         if (walkGeometries)
                         {
-                            objectContainer = kmlObject.getGeometries();
+                            objectContainer = feature.getGeometries();
                         }
                     }
                     
@@ -118,18 +114,17 @@ namespace FC.GEPluginCtrls
                     break;
             }
 
-            callBack(kmlObject);
+            callback(feature);
 
             if (objectContainer != null && Convert.ToBoolean(objectContainer.hasChildNodes()))
             {
-
                 dynamic childNodes = objectContainer.getChildNodes();
                 int count = childNodes.getLength();
                 for (int i = 0; i < count; i++)
                 {
                     dynamic node = childNodes.item(i);
-                    WalkKmlDom(node, callBack);
-                    callBack(node);
+                    WalkKmlDom(node, callback);
+                    callback(node);
                 }
                 ////Parallel.For(0, count, i => { });
             }
@@ -167,7 +162,7 @@ namespace FC.GEPluginCtrls
                 url = list[0].InnerText;
             }
 
-            if (url == string.Empty)
+            if (string.IsNullOrEmpty(url))
             {
                 try
                 {
@@ -177,7 +172,7 @@ namespace FC.GEPluginCtrls
                 {
                 }
 
-                if (url == string.Empty)
+                if (string.IsNullOrEmpty(url))
                 {
                     try
                     {
@@ -199,7 +194,7 @@ namespace FC.GEPluginCtrls
         /// <param name="kmlFeature">The feature to find the list item type of</param>
         /// <returns>The corresponding ListItem type <see cref="ListItemStyle"/></returns>
         /// <remarks>This method is used by <see cref="KmlTreeView"/> to build the nodes</remarks>
-        /// <example>KmlHelpers.GetListItemType(kmlFeature)</example>
+        /// <example>Example: KmlHelpers.GetListItemType(kmlFeature)</example>
         public static ListItemStyle GetListItemType(dynamic kmlFeature)
         {
             ListItemStyle listItem = ListItemStyle.Check;
@@ -222,21 +217,22 @@ namespace FC.GEPluginCtrls
         /// </summary>
         /// <param name="kmlFeature">feature to get data from</param>
         /// <returns>A list of key value pairs</returns>
-        public static List<KeyValuePair<string, string>> GetExtendedData(dynamic kmlFeature)
+        public static Dictionary<string, string> GetExtendedData(dynamic kmlFeature)
         {
-            List<KeyValuePair<string, string>> keyValues =
-                new List<KeyValuePair<string, string>>();
+            Dictionary<string, string> keyValues =
+                new Dictionary<string, string>();
 
             XmlDocument doc = new XmlDocument();
             doc.InnerXml = kmlFeature.getKml();
+
             XmlNodeList list = doc.GetElementsByTagName("Data");
             int c = list.Count;
 
             for (int i = 0; i < c; i++)
             {
-                keyValues.Add(new KeyValuePair<string, string>(
+                keyValues.Add(
                     list[i].Attributes["name"].InnerText,
-                    list[i].ChildNodes[0].InnerText));
+                    list[i].ChildNodes[0].InnerText);
             }
 
             return keyValues;
@@ -256,7 +252,7 @@ namespace FC.GEPluginCtrls
         public static Bounds ComputeBounds(dynamic kmlFeature)
         {
             Bounds bounds = new Bounds();
-             
+
             KmlHelpers.WalkKmlDom(
                 kmlFeature,
                 (Action<dynamic>)(feature =>
@@ -271,7 +267,7 @@ namespace FC.GEPluginCtrls
 
                             if (llb != null)
                             {
-                                var alt = feature.getAltitude();
+                                double alt = feature.getAltitude();
                                 bounds.Extend(new Coordinate(llb.getNorth(), llb.getEast(), alt));
                                 bounds.Extend(new Coordinate(llb.getNorth(), llb.getWest(), alt));
                                 bounds.Extend(new Coordinate(llb.getSouth(), llb.getEast(), alt));
@@ -294,11 +290,11 @@ namespace FC.GEPluginCtrls
                             {
                                 int count = coords.getLength();
 
+                                ////Parallel.For(0, count, i => { });
                                 for (int i = 0; i < count; i++)
                                 {
                                     bounds.Extend(new Coordinate(coords.get(i)));
                                 }
-                                ////Parallel.For(0, count, i => { });
                             }
                         }
 
@@ -356,14 +352,13 @@ namespace FC.GEPluginCtrls
                     Maths.ConvertDegreesToRadians(90),
                     (alpha + expandToDistance) / (2 * Maths.EarthMeanRadiusKilometres));
 
-                lookAtRange = scaleRange * Maths.EarthMeanRadiusKilometres *
-                    ((Math.Sin(beta) * Math.Sqrt(1 + 1 / Math.Pow(Math.Tan(alpha), 2))) - 1);
+                lookAtRange = scaleRange * Maths.EarthMeanRadiusKilometres * ((Math.Sin(beta) * Math.Sqrt(1 + (1 / Math.Pow(Math.Tan(alpha), 2)))) - 1);
             }
 
             try
             {
                 dynamic lookat = ge.createLookAt(string.Empty);
-                lookat.set(center.Latitude, center.Longitude, bounds.Top, bounds.NorthEast.AltitudeMode, 0, 0, lookAtRange);
+                lookat.set(center.Latitude, center.Longitude, bounds.Top, bounds.Northeast.AltitudeMode, 0, 0, lookAtRange);
                 return lookat;
             }
             catch (RuntimeBinderException rbex)

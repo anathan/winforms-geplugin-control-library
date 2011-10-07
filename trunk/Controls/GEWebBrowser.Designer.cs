@@ -51,15 +51,12 @@ namespace FC.GEPluginCtrls
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources =
-                new System.ComponentModel.ComponentResourceManager(typeof(GEWebBrowser));
             this.SuspendLayout();
             this.IsWebBrowserContextMenuEnabled = false;
             this.ScrollBarsEnabled = false;
             this.ScriptErrorsSuppressed = false;
             this.WebBrowserShortcutsEnabled = false;
             this.AllowNavigation = true;
-            this.RedirectLinksToSystemBrowser = true;
             this.ResumeLayout();
         }
 

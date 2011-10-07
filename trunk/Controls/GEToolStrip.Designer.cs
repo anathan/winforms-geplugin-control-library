@@ -1,6 +1,4 @@
-﻿
-
-// <copyright file="GEToolStrip.Designer.cs" company="FC">
+﻿// <copyright file="GEToolStrip.Designer.cs" company="FC">
 // Copyright (c) 2008 Fraser Chapman
 // </copyright>
 // <author>Fraser Chapman</author>
@@ -375,7 +373,7 @@ namespace FC.GEPluginCtrls
             this.sunMenuItem.Size = new System.Drawing.Size(170, 22);
             this.sunMenuItem.Tag = "SUN";
             this.sunMenuItem.Text = "Sun";
-            this.sunMenuItem.ToolTipText = "Toggle the sun visiblity";
+            this.sunMenuItem.ToolTipText = "Toggle the sun visibility";
             this.sunMenuItem.Click += new System.EventHandler(this.ViewItem_Clicked);
             // 
             // historyMenuItem
@@ -425,7 +423,7 @@ namespace FC.GEPluginCtrls
             this.controlsMenuItem.Size = new System.Drawing.Size(169, 22);
             this.controlsMenuItem.Tag = "CONTROLS";
             this.controlsMenuItem.Text = "Controls";
-            this.controlsMenuItem.ToolTipText = "Toggle the controls visiblity";
+            this.controlsMenuItem.ToolTipText = "Toggle the controls visibility";
             this.controlsMenuItem.Click += new System.EventHandler(this.OptionsItem_Clicked);
             // 
             // statusBarMenuItem
@@ -435,7 +433,7 @@ namespace FC.GEPluginCtrls
             this.statusBarMenuItem.Size = new System.Drawing.Size(169, 22);
             this.statusBarMenuItem.Tag = "STATUS";
             this.statusBarMenuItem.Text = "Status bar";
-            this.statusBarMenuItem.ToolTipText = "Toggle the Status bar visiblity";
+            this.statusBarMenuItem.ToolTipText = "Toggle the Status bar visibility";
             this.statusBarMenuItem.Click += new System.EventHandler(this.OptionsItem_Clicked);
             // 
             // gridMenuItem
@@ -445,7 +443,7 @@ namespace FC.GEPluginCtrls
             this.gridMenuItem.Size = new System.Drawing.Size(169, 22);
             this.gridMenuItem.Tag = "GRID";
             this.gridMenuItem.Text = "Grid";
-            this.gridMenuItem.ToolTipText = "Toggle the Grid visiblity";
+            this.gridMenuItem.ToolTipText = "Toggle the Grid visibility";
             this.gridMenuItem.Click += new System.EventHandler(this.OptionsItem_Clicked);
             // 
             // overviewMapMenuItem
@@ -455,7 +453,7 @@ namespace FC.GEPluginCtrls
             this.overviewMapMenuItem.Size = new System.Drawing.Size(169, 22);
             this.overviewMapMenuItem.Tag = "OVERVIEW";
             this.overviewMapMenuItem.Text = "Overview map";
-            this.overviewMapMenuItem.ToolTipText = "Toggle the Overview map visiblity";
+            this.overviewMapMenuItem.ToolTipText = "Toggle the Overview map visibility";
             this.overviewMapMenuItem.Click += new System.EventHandler(this.OptionsItem_Clicked);
             // 
             // scaleLegendMenuItem
@@ -465,7 +463,7 @@ namespace FC.GEPluginCtrls
             this.scaleLegendMenuItem.Size = new System.Drawing.Size(169, 22);
             this.scaleLegendMenuItem.Tag = "SCALE";
             this.scaleLegendMenuItem.Text = "Scale legend";
-            this.scaleLegendMenuItem.ToolTipText = "Toggle the Scale legend visiblity";
+            this.scaleLegendMenuItem.ToolTipText = "Toggle the Scale legend visibility";
             this.scaleLegendMenuItem.Click += new System.EventHandler(this.OptionsItem_Clicked);
             // 
             // atmosphereMenuItem
@@ -477,7 +475,7 @@ namespace FC.GEPluginCtrls
             this.atmosphereMenuItem.Size = new System.Drawing.Size(169, 22);
             this.atmosphereMenuItem.Tag = "ATMOSPHERE";
             this.atmosphereMenuItem.Text = "Atmosphere";
-            this.atmosphereMenuItem.ToolTipText = "Toggle the Atmosphere visiblity";
+            this.atmosphereMenuItem.ToolTipText = "Toggle the Atmosphere visibility";
             this.atmosphereMenuItem.Click += new System.EventHandler(this.OptionsItem_Clicked);
             // 
             // fadeInOutMenuItem
@@ -527,7 +525,7 @@ namespace FC.GEPluginCtrls
             this.bordersMenuItem.Name = "bordersMenuItem";
             this.bordersMenuItem.Size = new System.Drawing.Size(168, 22);
             this.bordersMenuItem.Text = "Borders";
-            this.bordersMenuItem.Tag = GELayer.Borders;
+            this.bordersMenuItem.Tag = Layer.Borders;
             this.bordersMenuItem.ToolTipText = "Toggle the Borders layer";
             this.bordersMenuItem.Click += new System.EventHandler(this.LayersItem_Clicked);
             // 
@@ -537,7 +535,7 @@ namespace FC.GEPluginCtrls
             this.buildingsMenuItem.Name = "buildingsMenuItem";
             this.buildingsMenuItem.Size = new System.Drawing.Size(168, 22);
             this.buildingsMenuItem.Text = "Buildings";
-            this.buildingsMenuItem.Tag = GELayer.Buildings;
+            this.buildingsMenuItem.Tag = Layer.Buildings;
             this.buildingsMenuItem.ToolTipText = "Toggle the Low Resolution Buildings layer";
             this.buildingsMenuItem.Click += new System.EventHandler(this.LayersItem_Clicked);
             // 
@@ -547,7 +545,7 @@ namespace FC.GEPluginCtrls
             this.buildingsGreyMenuItem.Name = "buildingsGreyMenuItem";
             this.buildingsGreyMenuItem.Size = new System.Drawing.Size(168, 22);
             this.buildingsGreyMenuItem.Text = "Buildings Low-res";
-            this.buildingsGreyMenuItem.Tag = GELayer.BuildingsLowRes;
+            this.buildingsGreyMenuItem.Tag = Layer.BuildingsLowRes;
             this.buildingsGreyMenuItem.Click += new System.EventHandler(this.LayersItem_Clicked);
             // 
             // roadsMenuItem
@@ -556,7 +554,7 @@ namespace FC.GEPluginCtrls
             this.roadsMenuItem.Name = "roadsMenuItem";
             this.roadsMenuItem.Size = new System.Drawing.Size(168, 22);
             this.roadsMenuItem.Text = "Roads";
-            this.roadsMenuItem.Tag = GELayer.Roads;
+            this.roadsMenuItem.Tag = Layer.Roads;
             this.roadsMenuItem.ToolTipText = "Toggle the Roads layer";
             this.roadsMenuItem.Click += new System.EventHandler(this.LayersItem_Clicked);
             // 
@@ -568,7 +566,7 @@ namespace FC.GEPluginCtrls
             this.terrainMenuItem.Name = "terrainMenuItem";
             this.terrainMenuItem.Size = new System.Drawing.Size(168, 22);
             this.terrainMenuItem.Text = "Terrain";
-            this.terrainMenuItem.Tag = GELayer.Terrain;
+            this.terrainMenuItem.Tag = Layer.Terrain;
             this.terrainMenuItem.ToolTipText = "Toggle the Terrain layer";
             this.terrainMenuItem.Click += new System.EventHandler(this.LayersItem_Clicked);
             // 
@@ -580,7 +578,7 @@ namespace FC.GEPluginCtrls
             this.treesMenuItem.Name = "treesMenuItem";
             this.treesMenuItem.Size = new System.Drawing.Size(168, 22);
             this.treesMenuItem.Text = "Trees";
-            this.treesMenuItem.Tag = GELayer.Trees;
+            this.treesMenuItem.Tag = Layer.Trees;
             this.treesMenuItem.ToolTipText = "Toggle the Trees layer";
             this.treesMenuItem.Click += new System.EventHandler(this.LayersItem_Clicked);
             // 

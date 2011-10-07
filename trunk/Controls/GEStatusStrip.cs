@@ -23,15 +23,12 @@ namespace FC.GEPluginCtrls
     using System.Diagnostics;
     using System.Drawing;
     using System.Runtime.InteropServices;
-    using System.Threading.Tasks;
     using System.Windows.Forms;
-    using System.Windows.Forms.Design;
     using Microsoft.CSharp.RuntimeBinder;
 
     /// <summary>
     /// The GEStatusStrip shows various information about the plug-in
     /// </summary>
-    [Designer(typeof(ControlDesigner))]
     public sealed partial class GEStatusStrip : StatusStrip, IGEControls
     {
         #region Private fields
@@ -144,7 +141,7 @@ namespace FC.GEPluginCtrls
         /// Gets or sets a value indicating whether the streaming label is visible
         /// </summary>
         [Category("Control Options"),
-        Description("Specifies the visiblity of the progress streaming label."),
+        Description("Specifies the visibility of the progress streaming label."),
         DefaultValueAttribute(true)]
         public bool ShowStreamingStatusLabel
         {
@@ -164,7 +161,7 @@ namespace FC.GEPluginCtrls
         /// Gets or sets a value indicating whether the browser version label is visible
         /// </summary>
         [Category("Control Options"),
-        Description("Specifies the visiblity of the browser version label."),
+        Description("Specifies the visibility of the browser version label."),
         DefaultValueAttribute(true)]
         public bool ShowBrowserVersionStatusLabel
         {
@@ -193,7 +190,7 @@ namespace FC.GEPluginCtrls
         /// Gets or sets a value indicating whether the api version label is visible
         /// </summary>
         [Category("Control Options"),
-        Description("Specifies the visiblity of the api version label."),
+        Description("Specifies the visibility of the api version label."),
         DefaultValueAttribute(true)]
         public bool ShowApiVersionStatusLabel
         {
@@ -222,7 +219,7 @@ namespace FC.GEPluginCtrls
         /// Gets or sets a value indicating whether the plug-in version label is visible
         /// </summary>
         [Category("Control Options"),
-        Description("Specifies the visiblity of the plugin version label."),
+        Description("Specifies the visibility of the plugin version label."),
         DefaultValueAttribute(true)]
         public bool ShowPluginVersionStatusLabel
         {
@@ -245,14 +242,14 @@ namespace FC.GEPluginCtrls
         /// <summary>
         /// Set the browser instance for the control to work with
         /// </summary>
-        /// <param name="browser">The GEWebBrowser instance</param>
-        /// <example>GEToolStrip.SetBrowserInstance(GEWebBrowser)</example>
-        public void SetBrowserInstance(GEWebBrowser browser)
+        /// <param name="instance">The GEWebBrowser instance</param>
+        /// <example>Example: GEToolStrip.SetBrowserInstance(GEWebBrowser)</example>
+        public void SetBrowserInstance(GEWebBrowser instance)
         {
-            this.gewb = browser;
-            this.geplugin = browser.Plugin;
+            this.gewb = instance;
+            this.geplugin = instance.Plugin;
 
-            if (!GEHelpers.IsGe(this.geplugin))
+            if (!GEHelpers.IsGE(this.geplugin))
             {
                 throw new ArgumentException("ge is not of the type GEPlugin");
             }

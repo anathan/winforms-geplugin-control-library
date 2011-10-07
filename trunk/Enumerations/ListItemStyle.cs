@@ -24,6 +24,11 @@ namespace FC.GEPluginCtrls
     public enum ListItemStyle
     {
         /// <summary>
+        /// No style (none)
+        /// </summary>
+        None = 0, 
+
+        /// <summary>
         /// The feature's visibility is tied to its list item's checkbox state.
         /// </summary>
         Check = 1,

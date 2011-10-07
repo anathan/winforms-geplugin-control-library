@@ -1,9 +1,9 @@
-﻿// <copyright file="Visiblity.cs" company="FC">
-// Copyright (c) 2008 Fraser Chapman
+﻿// <copyright file="StringValueAttribute.cs" company="FC">
+// Copyright (c) 2011 Fraser Chapman
 // </copyright>
 // <author>Fraser Chapman</author>
 // <email>fraser.chapman@gmail.com</email>
-// <date>2011-03-02</date>
+// <date>2011-08-11</date>
 // <summary>This file is part of FC.GEPluginCtrls
 // FC.GEPluginCtrls is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -15,27 +15,29 @@
 // GNU General Public License for more details.
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see http://www.gnu.org/licenses/.
-// </summary>namespace FC.GEPluginCtrls.Enumerations
+// </summary>
 namespace FC.GEPluginCtrls
 {
+    using System;
+
     /// <summary>
-    /// The available navigation control types in the plugin
+    /// Helper class for working with 'extended' enums using StringValueAttribute attributes.
     /// </summary>
-    public enum Visiblity
+    [AttributeUsage(AttributeTargets.Field, AllowMultiple = false, Inherited = true)]
+    public sealed class StringValueAttribute : Attribute
     {
         /// <summary>
-        /// Hide the UI element.
+        /// Initializes a new instance of the StringValueAttribute class.
         /// </summary>
-        Hide = 0,
+        /// <param name="value">the string value to set as the attribute</param>
+        public StringValueAttribute(string value) 
+        { 
+            this.Value = value; 
+        }
 
         /// <summary>
-        /// Show the UI element always.
+        /// Gets the Attribute value
         /// </summary>
-        Show = 1,
-
-        /// <summary>
-        /// Automatically show or hide the UI element depending on user interaction.
-        /// </summary>
-        Auto = 2
+        public string Value { get; private set; }
     }
 }

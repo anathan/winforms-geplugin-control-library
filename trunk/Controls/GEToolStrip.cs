@@ -24,15 +24,13 @@ namespace FC.GEPluginCtrls
     using System.Diagnostics;
     using System.Drawing;
     using System.Drawing.Imaging;
-    using System.Runtime.InteropServices;
+    using System.Globalization;
     using System.Windows.Forms;
-    using System.Windows.Forms.Design;
     using Microsoft.CSharp.RuntimeBinder;
 
     /// <summary>
     /// The GEToolStrip provides a quick way to access and set the plugin options
     /// </summary>
-    [Designer(typeof(System.Windows.Forms.Design.ControlDesigner))]
     public sealed partial class GEToolStrip : ToolStrip, IGEControls
     {
         #region Private fields
@@ -82,7 +80,7 @@ namespace FC.GEPluginCtrls
         /// Gets or sets a value indicating whether the navigation items are visible
         /// </summary>
         [Category("Control Options"),
-        Description("Specifies the visiblity of the Navigation items."),
+        Description("Specifies the visibility of the Navigation items."),
         DefaultValueAttribute(true)]
         public bool ShowNavigationItems
         {
@@ -105,7 +103,7 @@ namespace FC.GEPluginCtrls
         /// Gets or sets a value indicating whether the Layers drop down is visible
         /// </summary>
         [Category("Control Options"),
-        Description("Specifies the visiblity of the Layers drop down menu."),
+        Description("Specifies the visibility of the Layers drop down menu."),
         DefaultValueAttribute(true)]
         public bool ShowLayersDropDown
         {
@@ -117,7 +115,7 @@ namespace FC.GEPluginCtrls
         /// Gets or sets a value indicating whether the Options drop down is visible
         /// </summary>
         [Category("Control Options"),
-        Description("Specifies the visiblity of the Options drop down menu."),
+        Description("Specifies the visibility of the Options drop down menu."),
         DefaultValueAttribute(true)]
         public bool ShowOptionsDropDown
         {
@@ -129,7 +127,7 @@ namespace FC.GEPluginCtrls
         /// Gets or sets a value indicating whether the View drop down is visible
         /// </summary>
         [Category("Control Options"),
-        Description("Specifies the visiblity of the View drop down."),
+        Description("Specifies the visibility of the View drop down."),
         DefaultValueAttribute(true)]
         public bool ShowViewDropDown
         {
@@ -141,7 +139,7 @@ namespace FC.GEPluginCtrls
         /// Gets or sets a value indicating whether the Imagery drop down is visible
         /// </summary>
         [Category("Control Options"),
-        Description("Specifies the visiblity of the Imagery drop down."),
+        Description("Specifies the visibility of the Imagery drop down."),
         DefaultValueAttribute(true)]
         public bool ShowImageryDropDown
         {
@@ -153,7 +151,7 @@ namespace FC.GEPluginCtrls
         /// Gets or sets a value indicating whether the screen grab button is visible
         /// </summary>
         [Category("Control Options"),
-        Description("Specifies the visiblity of the screen grab button."),
+        Description("Specifies the visibility of the screen grab button."),
         DefaultValueAttribute(true)]
         public bool ShowScreenGrabButton
         {
@@ -165,7 +163,7 @@ namespace FC.GEPluginCtrls
         /// Gets or sets a value indicating whether the view in maps button is visible
         /// </summary>
         [Category("Control Options"),
-        Description("Specifies the visiblity of the show view in maps button."),
+        Description("Specifies the visibility of the show view in maps button."),
         DefaultValueAttribute(true)]
         public bool ShowViewInMapsButton
         {
@@ -177,9 +175,9 @@ namespace FC.GEPluginCtrls
         /// Gets or sets a value indicating whether the language combobox is visible
         /// </summary>
         [Category("Control Options"),
-        Description("Specifies the visiblity of the language combobox."),
+        Description("Specifies the visibility of the language combobox."),
         DefaultValueAttribute(true)]
-        public bool ShowLanguageCombobox
+        public bool ShowLanguageComboBox
         {
             get { return this.languageComboBox.Visible; }
             set { this.languageComboBox.Visible = value; }
@@ -206,7 +204,7 @@ namespace FC.GEPluginCtrls
         /// Adds multiple entries to the Auto Compleate suggestion list
         /// </summary>
         /// <param name="suggestions">The suggestions to be entered</param>
-        /// <example>GEToolStrip.AddAutoCompleteSuggestions(new string[] { "London", "Paris", "Rome" });</example>
+        /// <example>Example: GEToolStrip.AddAutoCompleteSuggestions(new string[] { "London", "Paris", "Rome" });</example>
         public void AddAutoCompleteSuggestions(string[] suggestions)
         {
             this.navigationTextBoxStringCollection.AddRange(suggestions);
@@ -216,7 +214,7 @@ namespace FC.GEPluginCtrls
         /// Adds an entry to the Auto Compleate suggestion list
         /// </summary>
         /// <param name="suggestion">The suggestion entry</param>
-        /// <example>GEToolStrip.AddAutoCompleteSuggestions("London");</example>
+        /// <example>Example: GEToolStrip.AddAutoCompleteSuggestions("London");</example>
         public void AddAutoCompleteSuggestions(string suggestion)
         {
             this.navigationTextBoxStringCollection.Add(suggestion);
@@ -225,7 +223,7 @@ namespace FC.GEPluginCtrls
         /// <summary>
         /// Removes all entries from the Auto Compleate suggestion list
         /// </summary>
-        /// <example>GEToolStrip.ClearAutoCompleteSuggestions()</example>
+        /// <example>Example: GEToolStrip.ClearAutoCompleteSuggestions()</example>
         public void ClearAutoCompleteSuggestions()
         {
             this.navigationTextBoxStringCollection.Clear();
@@ -234,12 +232,12 @@ namespace FC.GEPluginCtrls
         /// <summary>
         /// Set the browser instance for the control to work with
         /// </summary>
-        /// <param name="browser">The GEWebBrowser instance</param>
-        /// <example>GEToolStrip.SetBrowserInstance(GEWebBrowser)</example>
-        public void SetBrowserInstance(GEWebBrowser browser)
+        /// <param name="instance">The GEWebBrowser instance</param>
+        /// <example>Example: GEToolStrip.SetBrowserInstance(GEWebBrowser)</example>
+        public void SetBrowserInstance(GEWebBrowser instance)
         {
-            this.gewb = browser;
-            this.geplugin = browser.Plugin;
+            this.gewb = instance;
+            this.geplugin = instance.Plugin;
 
             if (this.gewb.PluginIsReady)
             {
@@ -311,14 +309,14 @@ namespace FC.GEPluginCtrls
                 // controls
                 this.geplugin.getNavigationControl().setVisibility(Convert.ToUInt16(this.controlsMenuItem.Checked));
 
-                if (this.gewb.ImageyBase == ImageryBase.Earth)
+                if (this.gewb.ImageryBase == ImageryBase.Earth)
                 {
-                    GEHelpers.EnableLayerById(this.geplugin, GELayer.Borders, this.bordersMenuItem.Checked);
-                    GEHelpers.EnableLayerById(this.geplugin, GELayer.Buildings, this.buildingsMenuItem.Checked);
-                    GEHelpers.EnableLayerById(this.geplugin, GELayer.BuildingsLowRes, this.buildingsGreyMenuItem.Checked);
-                    GEHelpers.EnableLayerById(this.geplugin, GELayer.Roads, this.roadsMenuItem.Checked);
-                    GEHelpers.EnableLayerById(this.geplugin, GELayer.Terrain, this.terrainMenuItem.Checked);
-                    GEHelpers.EnableLayerById(this.geplugin, GELayer.Trees, this.treesMenuItem.Checked);
+                    GEHelpers.EnableLayerById(this.geplugin, Layer.Borders, this.bordersMenuItem.Checked);
+                    GEHelpers.EnableLayerById(this.geplugin, Layer.Buildings, this.buildingsMenuItem.Checked);
+                    GEHelpers.EnableLayerById(this.geplugin, Layer.BuildingsLowRes, this.buildingsGreyMenuItem.Checked);
+                    GEHelpers.EnableLayerById(this.geplugin, Layer.Roads, this.roadsMenuItem.Checked);
+                    GEHelpers.EnableLayerById(this.geplugin, Layer.Terrain, this.terrainMenuItem.Checked);
+                    GEHelpers.EnableLayerById(this.geplugin, Layer.Trees, this.treesMenuItem.Checked);
 
                     // imagery 
                     foreach (ToolStripMenuItem item in this.imageryDropDownButton.DropDownItems)
@@ -340,8 +338,8 @@ namespace FC.GEPluginCtrls
         {
             this.languageComboBox.Items.Clear();
 
-            Dictionary<string, string> languages = Languages.GetList();
-            foreach (KeyValuePair<string, string> entry in languages)
+            Dictionary<string, string> languageList = Languages.Codes();
+            foreach (KeyValuePair<string, string> entry in languageList)
             {
                 ToolStripMenuItem item = new ToolStripMenuItem();
                 item.Text = entry.Value;
@@ -393,23 +391,32 @@ namespace FC.GEPluginCtrls
                 {
                   this.gewb.FetchKmlLocal(input);
                 }
-                else if (input.StartsWith("http", true, System.Globalization.CultureInfo.CurrentCulture))
+                else if (input.StartsWith("http", StringComparison.OrdinalIgnoreCase) ||
+                    input.StartsWith("www", StringComparison.OrdinalIgnoreCase))
                 {
-                    try
-                    {
-                        new Uri(input);
-                    }
-                    catch (UriFormatException)
-                    {
-                        return;
-                    }
-
-                    // input is a remote file
+                    // input is a remote file...
                     this.gewb.FetchKml(input);
+                }
+                else if(input.Contains(","))
+                {
+                    // input is possibly decimal coordinates
+                    string[] parts = input.Split(',');
+
+                    if (parts.Length == 2)
+                    {
+                        double latitude;
+                        double longitude;
+  
+                        if (double.TryParse(parts[0], out latitude) &&
+                            double.TryParse(parts[1], out longitude))
+                        {
+                            GEHelpers.CreateLookAt(this.geplugin, latitude, longitude);
+                        }
+                    }
                 }
                 else
                 {
-                    // attempt to gecode the input
+                    // finally attempt to geocode the input
                     this.gewb.InvokeDoGeocode(input);
                 }
             }
@@ -436,7 +443,7 @@ namespace FC.GEPluginCtrls
 
             if (this.gewb.PluginIsReady && (item != null))
             {
-                GEHelpers.EnableLayerById(this.geplugin, (string)item.Tag, item.Checked);
+                GEHelpers.EnableLayerById(this.geplugin, (Layer)item.Tag, item.Checked);
             }
         }
 
@@ -467,7 +474,7 @@ namespace FC.GEPluginCtrls
                             this.geoptions.AtmosphereVisibility = item.Checked;
                             break;
                         case "CONTROLS":
-                            this.control.Visiblity = (Visiblity)Convert.ToUInt16(item.Checked);
+                            this.control.Visibility = (Visibility)Convert.ToUInt16(item.Checked);
                             break;
                         case "GRID":
                             this.geoptions.GridVisibility = item.Checked;
