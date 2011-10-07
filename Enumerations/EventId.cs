@@ -23,42 +23,47 @@ namespace FC.GEPluginCtrls
     /// </summary>
     public enum EventId
     {
+        /// <summary>
+        /// No action (none)
+        /// </summary>
+        None = 0,
+
         #region mouse actions
 
         /// <summary>
         /// The click event id
         /// </summary>
-        Click = 0,
+        Click = 1,
 
         /// <summary>
         /// The double click event id
         /// </summary>
-        DblClick = 1,
+        DblClick = 2,
 
         /// <summary>
         /// The mouse over event id
         /// </summary>
-        MouseOver = 2,
+        MouseOver = 3,
 
         /// <summary>
         /// The mouse down event id
         /// </summary>
-        MouseDown = 3,
+        MouseDown = 4,
 
         /// <summary>
         /// The mouse up event id
         /// </summary>
-        MouseUp = 4,
+        MouseUp = 5,
 
         /// <summary>
         /// The mouse out event id
         /// </summary>
-        MouseOut = 5,
+        MouseOut = 6,
 
         /// <summary>
         /// The mouse move event id
         /// </summary>
-        MouseMove = 6,
+        MouseMove = 7,
 
         #endregion
 
@@ -67,17 +72,17 @@ namespace FC.GEPluginCtrls
         /// <summary>
         /// The frame end event id
         /// </summary>
-        FrameEnd = 10,
+        FrameEnd = 20,
 
         /// <summary>
         /// The balloon close event id
         /// </summary>
-        BalloonClose = 11,
+        BalloonClose = 21,
 
         /// <summary>
         /// The balloon opening event id
         /// </summary>
-        BalloonOpening = 12,
+        BalloonOpening = 22,
 
         #endregion
 
@@ -86,17 +91,17 @@ namespace FC.GEPluginCtrls
         /// <summary>
         /// The view change begin event id
         /// </summary>
-        ViewChangeBegin = 20,
+        ViewChangeBegin = 30,
 
         /// <summary>
         /// The view change event id
         /// </summary>
-        ViewChange = 21,
+        ViewChange = 31,
 
         /// <summary>
         /// The view change end event id
         /// </summary>
-        ViewChangeEnd = 22
+        ViewChangeEnd = 32
 
         #endregion
     }

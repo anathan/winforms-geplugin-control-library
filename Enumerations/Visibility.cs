@@ -1,9 +1,9 @@
-﻿// <copyright file="MapType.cs" company="FC">
+﻿// <copyright file="Visibility.cs" company="FC">
 // Copyright (c) 2008 Fraser Chapman
 // </copyright>
 // <author>Fraser Chapman</author>
 // <email>fraser.chapman@gmail.com</email>
-// <date>2011-03-01</date>
+// <date>2011-03-02</date>
 // <summary>This file is part of FC.GEPluginCtrls
 // FC.GEPluginCtrls is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -15,27 +15,27 @@
 // GNU General Public License for more details.
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see http://www.gnu.org/licenses/.
-// </summary>
+// </summary>namespace FC.GEPluginCtrls.Enumerations
 namespace FC.GEPluginCtrls
 {
     /// <summary>
-    /// Enumeration of the available map typs for the plug-in (earth/sky)
+    /// The available navigation control types in the plugin
     /// </summary>
-    public enum MapType
+    public enum Visibility
     {
         /// <summary>
-        /// No map type (none)
+        /// Hide the UI element.
         /// </summary>
-        None = 0,
+        Hide = 0,
 
         /// <summary>
-        /// The Earth map type, used with GEOptions setMapType
+        /// Show the UI element always.
         /// </summary>
-        Earth = 1,
+        Show = 1,
 
         /// <summary>
-        /// The Earth map type, used with GEOptions setMapType
+        /// Automatically show or hide the UI element depending on user interaction.
         /// </summary>
-        Sky = 2
+        Auto = 2
     }
 }

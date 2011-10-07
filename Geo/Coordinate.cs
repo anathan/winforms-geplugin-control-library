@@ -19,6 +19,8 @@
 namespace FC.GEPluginCtrls.Geo
 {
     using System;
+    using System.Globalization;
+    using System.Runtime.InteropServices;
 
     /// <summary>
     /// Coordinate class
@@ -51,45 +53,39 @@ namespace FC.GEPluginCtrls.Geo
         /// <summary>
         /// Initializes a new instance of the Coordinate class.
         /// </summary>
-        /// <param name="apiObject">the api object to base the coordinate from</param>
-        public Coordinate(dynamic apiObject)
+        /// <param name="feature">the api object to base the coordinate on.
+        /// This should be a KmlPoint, KmlCoord, KmlLocation, KmlLookAt or KmlCamera.</param>
+        public Coordinate(dynamic feature)
             : this()
         {
             string type = string.Empty;
 
             try
             {
-                type = apiObject.getType();
+                type = feature.getType();
             }
-            catch (System.Runtime.InteropServices.COMException)
+            catch (COMException)
             {
                 return;
             }
 
             // no need to normalise as the Coordinate is 
             // constructed from an existing api type (I think!)
-            if (type == ApiType.KmlPlacemark)
+            if (type == ApiType.KmlCoord || type == ApiType.KmlLocation)
             {
-                apiObject = apiObject.getGeometry();
-                this.Latitude = apiObject.getLatitude();
-                this.Longitude = apiObject.getLongitude();
-                this.Altitude = apiObject.getAltitude();
-                this.AltitudeMode = (AltitudeMode)apiObject.getAltitudeMode();
+                this.Latitude = feature.getLatitude();
+                this.Longitude = feature.getLongitude();
+                this.Altitude = feature.getAltitude();
                 return;
             }
-            else if (type == ApiType.KmlCoord || type == ApiType.KmlLocation)
+            else if (type == ApiType.KmlPoint ||
+                type == ApiType.KmlLookAt ||
+                type == ApiType.KmlCamera)
             {
-                this.Latitude = apiObject.getLatitude();
-                this.Longitude = apiObject.getLongitude();
-                this.Altitude = apiObject.getAltitude();
-                return;
-            }
-            else if (type == ApiType.KmlPoint || type == ApiType.KmlLookAt)
-            {
-                this.Latitude = apiObject.getLatitude();
-                this.Longitude = apiObject.getLongitude();
-                this.Altitude = apiObject.getAltitude();
-                this.AltitudeMode = (AltitudeMode)apiObject.getAltitudeMode();
+                this.Latitude = feature.getLatitude();
+                this.Longitude = feature.getLongitude();
+                this.Altitude = feature.getAltitude();
+                this.AltitudeMode = (AltitudeMode)feature.getAltitudeMode();
                 return;
             }
 
@@ -99,44 +95,67 @@ namespace FC.GEPluginCtrls.Geo
         /// <summary>
         /// Initializes a new instance of the Coordinate class.
         /// </summary>
-        /// <param name="coord">expects 2, 3 or 4 values
+        /// <param name="coordinate">expects 2, 3 or 4 values
         /// [lat, lng] or
         /// [lat, lng, alt] or 
         /// [lat, lng, alt, (int)altMode]</param>
-        public Coordinate(double[] coord)
+        public Coordinate(double[] coordinate)
             : this()
         {
-            if (coord == null) 
+            if (coordinate == null)
             {
-                return; 
+                return;
             }
 
-            switch (coord.Length)
+            switch (coordinate.Length)
             {
-                case 2:
-                    new Coordinate(Maths.FixLatitude(coord[0]), Maths.FixLongitude(coord[1]));
-                    break;
-                case 3:
-                    new Coordinate(Maths.FixLatitude(coord[0]), Maths.FixLongitude(coord[1]), coord[2]);
-                    break;
                 case 4:
-                    new Coordinate(Maths.FixLatitude(coord[0]), Maths.FixLongitude(coord[1]), coord[2], (AltitudeMode)coord[3]);
+                    {
+                        this.AltitudeMode = (AltitudeMode)coordinate[3];
+                        goto case 3; // really!?
+                    }
+
+                case 3:
+                    {
+                        this.Altitude = coordinate[2];
+                        goto case 2; // yes, to get statement fallthrough...
+                    }
+
+                case 2:
+                    {
+                        this.Latitude = Maths.FixLatitude(coordinate[0]);
+                        this.Longitude = Maths.FixLongitude(coordinate[1]);
+                    }
+
                     return;
+
                 default:
-                    throw new ArgumentException("Could not create a point from the parameter");
+                    throw
+                        new ArgumentException("Could not create coordinate. " +
+                        "The coordinate parameter array must have a length of 2, 3 or 4");
             }
         }
 
         /// <summary>
         /// Initializes a new instance of the Coordinate class.
         /// </summary>
-        /// <param name="coord">the Coordinate to clone</param>
-        public Coordinate(Coordinate coord)
-            : this(coord.Latitude, coord.Longitude, coord.Altitude, coord.AltitudeMode)
-        {
+        /// <param name="coordinate">the Coordinate to clone</param>
+        /// <remarks>clones a coordinate</remarks>
+        public Coordinate(Coordinate coordinate)
+            : this(coordinate.Latitude, coordinate.Longitude, coordinate.Altitude, coordinate.AltitudeMode)
+        { 
         }
 
-        #region Public properties 
+        /// <summary>
+        /// Initializes a new instance of the Coordinate class.
+        /// </summary>
+        /// <param name="coordinate">A Tuple to base the Coordinate on (lat, lng, alt, mode)</param>
+        public Coordinate(Tuple<double, double, double, int> coordinate)
+            : this(coordinate.Item1, coordinate.Item2, coordinate.Item3, (AltitudeMode)coordinate.Item4)
+        { 
+        }
+
+        #region Public properties
 
         /// <summary>
         /// Gets or sets the Coordinate Latitude
@@ -162,34 +181,34 @@ namespace FC.GEPluginCtrls.Geo
         /// Gets a value indicating whether the Coordinate is Three Dimensional
         /// </summary>
         public bool Is3D
-        {
-            get { return this.Altitude != 0; }
+        { 
+            get { return this.Altitude != 0; } 
         }
 
         #endregion
 
-        #region Operators 
+        #region Operators
 
         /// <summary>
         /// Coordinate equality operator 
         /// </summary>
-        /// <param name="coord1">The first Coordinate</param>
-        /// <param name="coord2">The Second Coordinate</param>
+        /// <param name="coordinate1">The first Coordinate</param>
+        /// <param name="coordinate2">The Second Coordinate</param>
         /// <returns>True if the two coordinates are equal</returns>
-        public static bool operator ==(Coordinate coord1, Coordinate coord2)
+        public static bool operator ==(Coordinate coordinate1, Coordinate coordinate2)
         {
-            return coord1.Equals(coord2);
+            return coordinate1.Equals(coordinate2);
         }
 
         /// <summary>
         /// Coordinate inequality operator 
         /// </summary>
-        /// <param name="coord1">The first Coordinate</param>
-        /// <param name="coord2">The Second Coordinate</param>
+        /// <param name="coordinate1">The first Coordinate</param>
+        /// <param name="coordinate2">The Second Coordinate</param>
         /// <returns>True if the two coordinates are unequal</returns>
-        public static bool operator !=(Coordinate coord1, Coordinate coord2)
+        public static bool operator !=(Coordinate coordinate1, Coordinate coordinate2)
         {
-            return !(coord1 == coord2);
+            return !(coordinate1 == coordinate2);
         }
 
         #endregion
@@ -197,21 +216,34 @@ namespace FC.GEPluginCtrls.Geo
         #region Public methods
 
         /// <summary>
+        /// Find the destination point given distance and bearing from start point
+        /// </summary>
+        /// <param name="distance">the given distance in km or m</param>
+        /// <param name="bearing">the bearing in radians, clockwise from north</param>
+        /// <param name="units">The unit system to use, default is metric</param>
+        /// <returns>The destination location as a Coordinate</returns>
+        public Coordinate Destination(double distance, double bearing, UnitSystem units = UnitSystem.Metric)
+        {
+            return new Coordinate(Maths.Destination(this, distance, bearing, units));
+        }
+
+        /// <summary>
         /// Gets the distance in km from one Coordinate to another
         /// </summary>
         /// <param name="destination">The end Coordinate</param>
         /// <param name="haversine">Optionally use the haversine formula, default is false</param>
+        /// <param name="units">The unit system to use, default is metric</param>
         /// <remarks>by defaut simple spherical trig (law of cosines) is used</remarks>
         /// <returns>The distance between the two Coordinates in km</returns>
-        public double Distance(Coordinate destination, bool haversine = false)
+        public double Distance(Coordinate destination, bool haversine = false, UnitSystem units = UnitSystem.Metric)
         {
             if (haversine)
             {
-                return Maths.DistanceHaversine(this, destination);
+                return Maths.DistanceHaversine(this, destination, units);
             }
             else
             {
-                return Maths.DistanceCosine(this, destination);
+                return Maths.DistanceCosine(this, destination, units);
             }
         }
 
@@ -222,9 +254,10 @@ namespace FC.GEPluginCtrls.Geo
         /// <returns>true if the objects are equal</returns>
         public override bool Equals(object obj)
         {
-            if (obj is Coordinate)
+            var other = obj as Coordinate;
+            if (other != null)
             {
-                return this.Equals((Coordinate)obj);
+                return this.Equals(other);
             }
 
             return false;
@@ -233,24 +266,24 @@ namespace FC.GEPluginCtrls.Geo
         /// <summary>
         /// Coordinate equality
         /// </summary>
-        /// <param name="coord">the Coordinate to check against</param>
+        /// <param name="other">the Coordinate to check against</param>
         /// <returns>true if the Coordinates are equal</returns>
-        public bool Equals(Coordinate coord)
+        public bool Equals(Coordinate other)
         {
-            return this.Latitude == coord.Latitude &&
-                this.Longitude == coord.Longitude &&
-                this.Altitude == coord.Altitude &&
-                this.AltitudeMode == coord.AltitudeMode;
+            return this.Latitude == other.Latitude &&
+                this.Longitude == other.Longitude &&
+                this.Altitude == other.Altitude &&
+                this.AltitudeMode == other.AltitudeMode;
         }
 
         /// <summary>
         /// Coordinate 2D equality
         /// </summary>
-        /// <param name="coord">the Coordinate to check latitude and longitude against</param>
+        /// <param name="coordinate">the Coordinate to check latitude and longitude against</param>
         /// <returns>True if the Coordinates are equal in latitude and longitude</returns>
-        public bool Equals2D(Coordinate coord)
+        public bool Equals2D(Coordinate coordinate)
         {
-            return this.Latitude == coord.Latitude && this.Longitude == coord.Longitude;
+            return this.Latitude == coordinate.Latitude && this.Longitude == coordinate.Longitude;
         }
 
         /// <summary>
@@ -288,7 +321,7 @@ namespace FC.GEPluginCtrls.Geo
         /// <returns>the hash code for this instance.</returns>
         public override int GetHashCode()
         {
-            int hash = 23; 
+            int hash = 23;
 
             hash = ((hash << 5) * 37) ^ this.Latitude.GetHashCode();
             hash = ((hash << 5) * 37) ^ this.Longitude.GetHashCode();
@@ -304,7 +337,12 @@ namespace FC.GEPluginCtrls.Geo
         /// <returns> (lat, lng, alt)</returns>
         public override string ToString()
         {
-            return string.Format("({0}, {1}, {2})", this.Latitude, this.Longitude, this.Altitude);
+            return string.Format(
+                CultureInfo.InvariantCulture,
+                "({0}, {1}, {2})",
+                this.Latitude,
+                this.Longitude,
+                this.Altitude);
         }
 
         #endregion

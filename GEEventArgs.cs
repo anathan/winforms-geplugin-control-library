@@ -36,11 +36,11 @@ namespace FC.GEPluginCtrls
         /// <summary>
         /// Initializes a new instance of the GEEventArgs class
         /// </summary>
-        /// <param name="apiObject">Plugin API object to initialise with.</param>
-        public GEEventArgs(object apiObject)
+        /// <param name="feature">Plugin API object to initialise with.</param>
+        public GEEventArgs(object feature)
             : base()
         {
-            this.ApiObject = apiObject;
+            this.ApiObject = feature;
         }
 
         /// <summary>
@@ -69,11 +69,11 @@ namespace FC.GEPluginCtrls
         /// </summary>
         /// <param name="message">Event message</param>
         /// <param name="data">Event data</param>
-        /// <param name="apiObject">Event data object</param>
-        public GEEventArgs(string message, string data, dynamic apiObject)
+        /// <param name="feature">Event data object</param>
+        public GEEventArgs(string message, string data, dynamic feature)
             : this(message, data)
         {
-            this.ApiObject = apiObject;
+            this.ApiObject = feature;
         }
 
         /// <summary>

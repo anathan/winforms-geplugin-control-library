@@ -20,11 +20,10 @@ namespace FC.GEPluginCtrls
 {
     using System;
     using System.Diagnostics;
-    using System.Linq;
+    using System.Globalization;
     using System.Reflection;
     using System.Runtime.InteropServices;
     using System.Text;
-    using System.Windows.Forms;
     using FC.GEPluginCtrls.Geo;
     using Microsoft.CSharp.RuntimeBinder;
 
@@ -43,7 +42,7 @@ namespace FC.GEPluginCtrls
         /// <exception cref="System.ArgumentException" >Throws an exception if ge is not an instance of GEPlugin.</exception>
         public static void AddFeaturesToPlugin(dynamic ge, dynamic kml)
         {
-            if (!IsGe(ge))
+            if (!IsGE(ge))
             {
                 throw new ArgumentException("ge is not of the type GEPlugin");
             }
@@ -66,57 +65,59 @@ namespace FC.GEPluginCtrls
         /// Creates a kml placemark
         /// </summary>
         /// <param name="ge">The plugin instance</param>
+        /// <param name="id">Optional placemark Id. Default is empty</param>
         /// <param name="latitude">The placemark latitude in decimal degrees</param>
         /// <param name="longitude">The placemark longitude in decimal degrees</param>
         /// <param name="altitude">Optional placemark altitude in metres. Default is 0</param>
         /// <param name="altitudeMode">Optional altitudeMode. Default is AltitudeMode.RelativeToGround</param>
-        /// <param name="id">Optional placemark Id. Default is empty</param>
         /// <param name="name">Optional name of the placemark. Default is empty</param>
         /// <param name="description">Optional placemark description text. Default is empty</param>
         /// <param name="addFeature">Optionally adds the placemark directly to the plugin. Default is true</param>
         /// <returns>A placemark (or an empty object)</returns>
         public static dynamic CreatePlacemark(
             dynamic ge,
+            string id = "",
             double latitude = 0,
             double longitude = 0,
             double altitude = 0,
             AltitudeMode altitudeMode = AltitudeMode.RelativeToGround,
-            string id = "",
             string name = "",
             string description = "",
             bool addFeature = true)
         {
-            if (!IsGe(ge))
+            if (!IsGE(ge))
             {
                 throw new ArgumentException("ge is not of the type GEPlugin");
             }
 
+            dynamic placemark = new object();
+
             try
             {
-                dynamic placemark = ge.createPlacemark(id);
+                dynamic point = CreatePoint(
+                    ge,
+                    string.Empty,
+                    Maths.FixLatitude(latitude), 
+                    Maths.FixLongitude(longitude), 
+                    altitude,
+                    altitudeMode);
+
+                placemark = ge.createPlacemark(id);
+                placemark.setGeometry(point);
                 placemark.setName(name);
                 placemark.setDescription(description);
-                placemark.setGeometry(
-                    CreatePoint(
-                    ge,
-                    Geo.Maths.FixLatitude(latitude),
-                    Geo.Maths.FixLongitude(longitude),
-                    altitude,
-                    altitudeMode));
 
                 if (addFeature)
                 {
                     GEHelpers.AddFeaturesToPlugin(ge, placemark);
                 }
-
-                return placemark;
             }
             catch (RuntimeBinderException rbex)
             {
                 Debug.WriteLine("CreatePlacemark: " + rbex.ToString(), "GEHelpers");
             }
 
-            return false;
+            return placemark;
         }
 
         /// <summary>
@@ -137,34 +138,30 @@ namespace FC.GEPluginCtrls
             string description = "",
             bool addFeature = true)
         {
-            if (!IsGe(ge))
+            dynamic placemark = new object();
+
+            if (kmlPoint.getType() != ApiType.KmlPoint)
             {
-                throw new ArgumentException("ge is not of the type GEPlugin");
-            }
-            else if (GetTypeFromRcw(kmlPoint) != ApiType.KmlPoint)
-            {
-                throw new ArgumentException("point is not of the type KmlPoint");
+                throw new ArgumentException("the kmlPoint parameter must be of the type KmlPoint");
             }
 
-            try
-            {
-                dynamic placemark = CreatePlacemark(ge, name: name, id: id, description: description, addFeature: addFeature);
-                placemark.setGeometry(kmlPoint);
-                return placemark;
-            }
-            catch (RuntimeBinderException rbex)
-            {
-                Debug.WriteLine("CreatePlacemark: " + rbex.ToString(), "GEHelpers");
-            }
+            placemark = CreatePlacemark(
+                ge,
+                name: name,
+                id: id, 
+                description: description,
+                addFeature: addFeature);
+            
+            placemark.setGeometry(kmlPoint);
 
-            return false;
+            return placemark;
         }
 
         /// <summary>
         /// Creates a kml placemark
         /// </summary>
         /// <param name="ge">The plugin instance</param>
-        /// <param name="coord">A Coordinate to use as the placemarks location</param>
+        /// <param name="coordinate">A Coordinate to use as the placemarks location</param>
         /// <param name="id">Optional placemark Id. Default is empty</param>
         /// <param name="name">Optional name of the placemark. Default is empty</param>
         /// <param name="description">Optional placemark description text. Default is empty</param>
@@ -172,63 +169,84 @@ namespace FC.GEPluginCtrls
         /// <returns>A placemark (or false)</returns>
         public static dynamic CreatePlacemark(
             dynamic ge,
-            Coordinate coord,
+            Coordinate coordinate,
             string id = "",
             string name = "",
             string description = "",
             bool addFeature = true)
         {
             return CreatePlacemark(
-                ge,
-                coord.Latitude,
-                coord.Longitude,
-                coord.Altitude,
-                coord.AltitudeMode,
-                name,
-                id,
-                description,
-                addFeature);
+            ge: ge,
+            latitude: coordinate.Latitude,
+            longitude: coordinate.Longitude,
+            altitude: coordinate.Altitude,
+            altitudeMode: coordinate.AltitudeMode,
+            name: name,
+            id: id,
+            description: description,
+            addFeature: addFeature);
         }
 
         /// <summary>
         /// Creates a kml point
         /// </summary>
         /// <param name="ge">The plugin instance</param>
+        /// <param name="id">Optional placemark Id. Default is empty</param>
         /// <param name="latitude">The placemark latitude in decimal degrees</param>
         /// <param name="longitude">The placemark longitude in decimal degrees</param>
         /// <param name="altitude">Optional placemark altitude in metres. Default is 0</param>
         /// <param name="altitudeMode">Optional altitudeMode. Default is AltitudeMode.RelativeToGround</param>
-        /// <param name="id">Optional placemark Id. Default is empty</param>
         /// <returns>A Kml point (or false)</returns>
         public static dynamic CreatePoint(
             dynamic ge,
+            string id = "",
             double latitude = 0,
             double longitude = 0,
             double altitude = 0,
-            AltitudeMode altitudeMode = AltitudeMode.RelativeToGround,
-            string id = "")
+            AltitudeMode altitudeMode = AltitudeMode.RelativeToGround)
         {
-            if (!IsGe(ge))
+            if (!IsGE(ge))
             {
                 throw new ArgumentException("ge is not of the type GEPlugin");
             }
 
+            dynamic point = new object();
+
             try
             {
-                dynamic point = ge.createPoint(id);
+                point = ge.createPoint(id);
                 point.setLatitude(latitude);
                 point.setLongitude(longitude);
                 point.setAltitude(altitude);
                 point.setAltitudeMode(altitudeMode);
-
-                return point;
             }
             catch (RuntimeBinderException rbex)
             {
                 Debug.WriteLine("CreatePoint: " + rbex.ToString(), "GEHelpers");
             }
 
-            return false;
+            return point;
+        }
+
+        /// <summary>
+        /// Creates a kml point from a Coordinate
+        /// </summary>
+        /// <param name="ge">The plugin instance</param>
+        /// <param name="coordinate">The Coordinate to base the point on</param>
+        /// <param name="id">Optional point Id. Default is empty</param>
+        /// <returns>a kml point</returns>
+        public static dynamic CreatePoint(
+            dynamic ge,
+            Coordinate coordinate,
+            string id = "")
+        {
+            return CreatePoint(
+            ge: ge,
+            id: id,
+            latitude: coordinate.Latitude,
+            longitude: coordinate.Longitude,
+            altitude: coordinate.Altitude,
+            altitudeMode: coordinate.AltitudeMode);
         }
 
         /// <summary>
@@ -249,7 +267,7 @@ namespace FC.GEPluginCtrls
             bool tessellate = true,
             bool addFeature = true)
         {
-            if (!IsGe(ge))
+            if (!IsGE(ge))
             {
                 throw new ArgumentException("ge is not of the type GEPlugin");
             }
@@ -267,11 +285,16 @@ namespace FC.GEPluginCtrls
             try
             {
                 dynamic placemark = CreatePlacemark(ge, addFeature: addFeature);
-                dynamic lineString = ge.createLineString(String.Empty);
+                dynamic lineString = ge.createLineString(id);
                 lineString.setTessellate(Convert.ToUInt16(tessellate));
                 lineString.getCoordinates().pushLatLngAlt(start.getLatitude(), start.getLongitude(), start.getAltitude());
                 lineString.getCoordinates().pushLatLngAlt(end.getLatitude(), end.getLongitude(), end.getAltitude());
                 placemark.setGeometry(lineString);
+
+                if (addFeature)
+                {
+                    GEHelpers.AddFeaturesToPlugin(ge, placemark);
+                }
 
                 return placemark;
             }
@@ -284,10 +307,61 @@ namespace FC.GEPluginCtrls
         }
 
         /// <summary>
+        /// Look at the given coordinates
+        /// </summary>
+        /// <param name="ge">the plugin</param>
+        /// <param name="latitude">latitude in decimal degrees</param>
+        /// <param name="longitude">longitude in decimal degrees</param>
+        /// <param name="id">Optional LookAt Id. Default is empty</param>
+        /// <param name="altitude">Optional altitude. Default is 0</param>
+        /// <param name="altitudeMode">Optional altitudeMode. Default is AltitudeMode.RelativeToGround</param>
+        /// <param name="heading">Optional heading in degrees. Default is 0 (north)</param>
+        /// <param name="tilt">Optional tilt in degrees. Default is 0</param>
+        /// <param name="range">Optional range in metres. Default is 1000</param>
+        /// <param name="setView">Optional set the current view to the lookAt</param>
+        /// <returns>true on success</returns>
+        public static dynamic CreateLookAt(
+            dynamic ge,
+            double latitude,
+            double longitude,
+            string id = "",
+            double altitude = 0,
+            AltitudeMode altitudeMode = AltitudeMode.RelativeToGround,
+            double heading = 0,
+            double tilt = 0,
+            double range = 1000,
+            bool setView = true)
+        {
+            if (!IsGE(ge))
+            {
+                throw new ArgumentException("ge is not of the type GEPlugin");
+            }
+
+            try
+            {
+                dynamic lookat = ge.createLookAt(id);
+                lookat.set(latitude, longitude, altitude, altitudeMode, heading, tilt, range);
+
+                if (setView)
+                {
+                    ge.getView().setAbstractView(lookat);
+                }
+
+                return lookat;
+            }
+            catch (RuntimeBinderException rbex)
+            {
+                Debug.WriteLine("CreateLookAt: " + rbex.ToString(), "GEHelpers");
+            }
+
+            return false;
+        }
+
+        /// <summary>
         /// Creates an Html String Balloon
         /// </summary>
         /// <param name="ge">The plugin instance</param>
-        /// <param name="htmlString">The balloon content html string</param>
+        /// <param name="html">The balloon content html string</param>
         /// <param name="minWidth">Optional minimum balloon width, default is 100</param>
         /// <param name="minHeight">Optional minimum balloon height, default is 100</param>
         /// <param name="maxWidth">Optional maximum balloon width, default is 800</param>
@@ -296,7 +370,7 @@ namespace FC.GEPluginCtrls
         /// <returns>The feature balloon (or false)</returns>
         public static dynamic CreateHtmlStringBalloon(
             dynamic ge,
-            string htmlString = "",
+            string html = "",
             int minWidth = 0,
             int minHeight = 0,
             int maxWidth = 800,
@@ -305,8 +379,8 @@ namespace FC.GEPluginCtrls
         {
             try
             {
-                dynamic balloon = ge.createHtmlStringBalloon(String.Empty);
-                balloon.setContentString(htmlString);
+                dynamic balloon = ge.createHtmlStringBalloon(string.Empty);
+                balloon.setContentString(html);
                 balloon.setMinHeight(minHeight);
                 balloon.setMaxHeight(maxHeight);
                 balloon.setMinWidth(minWidth);
@@ -333,16 +407,16 @@ namespace FC.GEPluginCtrls
         /// <param name="ge">The plugin instance</param>
         /// <param name="id">The id of the layer to work with</param>
         /// <param name="value">True turns the layer on, false off</param>
-        public static void EnableLayerById(dynamic ge, string id, bool value)
+        public static void EnableLayerById(dynamic ge, Layer id, bool value)
         {
-            if (!IsGe(ge))
+            if (!IsGE(ge))
             {
                 throw new ArgumentException("ge is not of the type GEPlugin");
             }
 
             try
             {
-                ge.getLayerRoot().EnableLayerById(id, value);
+                ge.getLayerRoot().EnableLayerById(StringEnum.GetStringValue(id), value);
             }
             catch (RuntimeBinderException rbex)
             {
@@ -360,7 +434,7 @@ namespace FC.GEPluginCtrls
         {
             dynamic feature = null;
 
-            if (!IsGe(ge))
+            if (!IsGE(ge))
             {
                 throw new ArgumentException("ge is not of the type GEPlugin");
             }
@@ -378,58 +452,31 @@ namespace FC.GEPluginCtrls
         }
 
         /// <summary>
-        /// Get a plugin feature by its ID - wrapper for ge.getLayerRoot().getLayerById()
-        /// </summary>
-        /// <param name="ge">The plugin instance</param>
-        /// <param name="id">The id of the layer to work with</param>
-        /// <returns>The layer specified by the ID parameter</returns>
-        public static dynamic GetLayerById(dynamic ge, string id)
-        {
-            dynamic layer = null;
-
-            if (!IsGe(ge))
-            {
-                throw new ArgumentException("ge is not of the type GEPlugin");
-            }
-
-            try
-            {
-                layer = ge.getLayerRoot().getLayerById(id);
-            }
-            catch (RuntimeBinderException rbex)
-            {
-                Debug.WriteLine("GetAllFeaturesKml: " + rbex.ToString(), "GEHelpers");
-            }
-
-            return layer;
-        }
-
-        /// <summary>
         /// Attempts to set the view of the plugin to the given api object 
         /// </summary>
         /// <param name="ge">the plugin</param>
-        /// <param name="obj">the api object</param>
+        /// <param name="feature">the api object</param>
         /// <param name="boundsFallback">Optionally set whether to fallback to the bounds method</param>
         /// <param name="aspectRatio">Optional aspect ratio</param>
         /// <param name="defaultRange">Optional default range</param>
         /// <param name="scaleRange">Optional scale range</param>
         public static void FlyToObject(
             dynamic ge,
-            dynamic obj,
+            dynamic feature,
             bool boundsFallback = true,
             double aspectRatio = 1.0,
             double defaultRange = 1000,
             double scaleRange = 1.5)
         {
-            if (obj.getAbstractView() != null)
+            if (feature.getAbstractView() != null)
             {
-                ge.getView().setAbstractView(obj.getAbstractView());
+                ge.getView().setAbstractView(feature.getAbstractView());
             }
             else if (boundsFallback)
             {
                 KmlHelpers.SetBoundsView(
                     ge,
-                    KmlHelpers.ComputeBounds(obj),
+                    KmlHelpers.ComputeBounds(feature),
                     aspectRatio,
                     defaultRange,
                     scaleRange);
@@ -443,7 +490,7 @@ namespace FC.GEPluginCtrls
         /// <returns>String of all the Kml from the plugin - or an empty string</returns>
         public static string GetAllFeaturesKml(dynamic ge)
         {
-            if (!IsGe(ge))
+            if (!IsGE(ge))
             {
                 throw new ArgumentException("ge is not of the type GEPlugin");
             }
@@ -478,7 +525,7 @@ namespace FC.GEPluginCtrls
         /// <returns>Point set to the current view (or false)</returns>
         public static dynamic GetCurrentViewAsPoint(dynamic ge)
         {
-            if (!IsGe(ge))
+            if (!IsGE(ge))
             {
                 throw new ArgumentException("ge is not of the type GEPlugin");
             }
@@ -486,7 +533,7 @@ namespace FC.GEPluginCtrls
             try
             {
                 dynamic lookat = ge.getView().copyAsLookAt(ge.ALTITUDE_RELATIVE_TO_GROUND);
-                dynamic point = ge.createPoint(String.Empty);
+                dynamic point = ge.createPoint(string.Empty);
 
                 // latitude, longitude, altitude, altitudeMode, extrude, tessellate
                 point.set(
@@ -522,10 +569,11 @@ namespace FC.GEPluginCtrls
             {
                 type = (string)wrapper.GetType().InvokeMember(
                    "getType",
-                   System.Reflection.BindingFlags.InvokeMethod,
+                   BindingFlags.InvokeMethod,
                    null,
                    wrapper,
-                   null);
+                   null, 
+                   CultureInfo.InvariantCulture);
             }
             catch (NullReferenceException)
             {
@@ -539,7 +587,7 @@ namespace FC.GEPluginCtrls
         /// </summary>
         /// <param name="wrapper">The object to check</param>
         /// <returns>true if the object is of the type GEPlugin </returns>
-        public static bool IsGe(dynamic wrapper)
+        public static bool IsGE(dynamic wrapper)
         {
             try
             {
@@ -551,161 +599,6 @@ namespace FC.GEPluginCtrls
             }
 
             return false;
-        }
-
-        /// <summary>
-        /// Look at the given coordinates
-        /// </summary>
-        /// <param name="ge">the plugin</param>
-        /// <param name="latitude">latitude in decimal degrees</param>
-        /// <param name="longitude">longitude in decimal degrees</param>
-        /// <param name="id">Optional LookAt Id. Default is empty</param>
-        /// <param name="altitude">Optional altitude. Default is 0</param>
-        /// <param name="altitudeMode">Optional altitudeMode. Default is AltitudeMode.RelativeToGround</param>
-        /// <param name="heading">Optional heading in degrees. Default is 0 (north)</param>
-        /// <param name="tilt">Optional tilt in degrees. Default is 0</param>
-        /// <param name="range">Optional range in metres. Default is 1000</param>
-        /// <returns>true on success</returns>
-        public static bool LookAt(
-            dynamic ge,
-            double latitude,
-            double longitude,
-            string id = "",
-            double altitude = 0,
-            AltitudeMode altitudeMode = AltitudeMode.RelativeToGround,
-            double heading = 0,
-            double tilt = 0,
-            double range = 1000)
-        {
-            if (!IsGe(ge))
-            {
-                throw new ArgumentException("ge is not of the type GEPlugin");
-            }
-
-            try
-            {
-                dynamic lookat = ge.createLookAt(id);
-                lookat.set(latitude, longitude, altitude, altitudeMode, heading, tilt, range);
-                ge.getView().setAbstractView(lookat);
-                return true;
-            }
-            catch (RuntimeBinderException rbex)
-            {
-                Debug.WriteLine("LookAt: " + rbex.ToString(), "GEHelpers");
-                return false;
-            }
-        }
-
-        /// <summary>
-        /// Look at the given geometry 
-        /// </summary>
-        /// <param name="feature">the geomerty to look at</param>
-        /// <param name="browser">A instance of the GEWebBrowser object</param>
-        /// <returns>true on success</returns>
-        public static bool LookAt(dynamic feature, GEWebBrowser browser)
-        {
-            dynamic ge = browser.Plugin;
-            dynamic abstractView = null;
-            string type = feature.getType();
-
-            switch (type)
-            {
-                case ApiType.KmlFolder:
-                case ApiType.KmlDocument:
-                    {
-                        if (feature.getAbstractView() != null)
-                        {
-                            abstractView = feature.getAbstractView();
-                        }
-                    }
-
-                    break;
-
-                case ApiType.KmlNetworkLink:
-                    {
-                        if (feature.getAbstractView() != null)
-                        {
-                            abstractView = feature.getAbstractView();
-                        }
-                        else
-                        {
-                            string linkUrl = KmlHelpers.GetUrl(feature);
-                            dynamic kmlObject = browser.FetchKmlSynchronous(linkUrl);
-
-                            if (kmlObject != null && kmlObject.getOwnerDocument() != null)
-                            {
-                                abstractView = kmlObject.getOwnerDocument().getAbstractView();
-                            }
-                        }
-                    }
-
-                    break;
-
-                case ApiType.KmlPoint:
-                    return LookAt(ge, feature.getLatitude(), feature.getLongitude());
-
-                case ApiType.KmlPolygon:
-                    {
-                        // TODO - make this work better...
-                        dynamic p = feature.getOuterBoundary().getCoordinates().get(0);
-                        return LookAt(ge, p.getLatitude(), p.getLongitude(), p.getAltitude());
-                    }
-
-                case ApiType.KmlPlacemark:
-                    {
-                        if (feature.getAbstractView() != null)
-                        {
-                            abstractView = feature.getAbstractView();
-                        }
-                        else
-                        {
-                            if (feature.getGeometry() != null)
-                            {
-                                return LookAt(feature.getGeometry(), browser);
-                            }
-                            else
-                            {
-                                // nothing to look at!
-                                return false;
-                            }
-                        }
-                    }
-
-                    break;
-
-                case ApiType.KmlLineString:
-                    {
-                        // TODO - make this work better...
-                        return LookAt(
-                            ge,
-                            feature.getCoordinates().get(0).getLatitude(),
-                            feature.getCoordinates().get(0).getLongitude());
-                    }
-
-                case ApiType.KmlMultiGeometry:
-                    {
-                        // TODO - again...
-                        return LookAt(feature.getGeometries().getFirstChild(), browser);
-                    }
-
-                case ApiType.KmlModel:
-                    {
-                        return LookAt(feature.getLocation(), browser);
-                    }
-
-                default:
-                    return false;
-            }
-
-            if (abstractView != null)
-            {
-                ge.getView().setAbstractView(abstractView);
-                return true;
-            }
-            else
-            {
-                return false;
-            }
         }
 
         /// <summary>
@@ -748,7 +641,7 @@ namespace FC.GEPluginCtrls
 
                 // Scrubbing string...
                 // see: http://code.google.com/apis/earth/documentation/balloons.html
-                if (content == string.Empty || content == "<!--\nContent-type: mhtml-die-die-die\n\n-->")
+                if (string.IsNullOrEmpty(content) || content == "<!--\nContent-type: mhtml-die-die-die\n\n-->")
                 {
                     // no content...
                     return false;
@@ -784,7 +677,7 @@ namespace FC.GEPluginCtrls
         /// <param name="ge">The plugin instance</param>
         public static void RemoveAllFeatures(dynamic ge)
         {
-            if (!IsGe(ge))
+            if (!IsGE(ge))
             {
                 throw new ArgumentException("ge is not of the type GEPlugin");
             }
@@ -821,7 +714,6 @@ namespace FC.GEPluginCtrls
                 {
                     Debug.WriteLine("RemoveFeatureById: " + rbex.ToString(), "GEHelpers");
                 }
-
             }
         }
 
@@ -844,7 +736,7 @@ namespace FC.GEPluginCtrls
         /// <param name="ge">The plugin instance</param>
         public static void ShowCurrentViewInMaps(dynamic ge)
         {
-            if (!IsGe(ge))
+            if (!IsGE(ge))
             {
                 throw new ArgumentException("ge is not of the type GEPlugin");
             }
@@ -874,6 +766,7 @@ namespace FC.GEPluginCtrls
                 sb.Append(lookat.getLongitude());
                 sb.Append("&z=");
                 sb.Append(zoom);
+
                 url = sb.ToString();
             }
             catch (RuntimeBinderException rbex)

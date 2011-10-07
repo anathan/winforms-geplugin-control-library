@@ -46,7 +46,7 @@ namespace FC.GEPluginCtrls
         /// <param name="ge">the plugin object</param>
         public GEOptions(dynamic ge)
         {
-            if (!GEHelpers.IsGe(ge))
+            if (!GEHelpers.IsGE(ge))
             {
                 throw new ArgumentException("ge is not of the type GEPlugin");
             }
@@ -281,7 +281,7 @@ namespace FC.GEPluginCtrls
 
         /// <summary>
         /// Gets or sets a value indicating whether to display units in imperial (feet and miles)
-        /// or metric (meters and kilometers). A value of true uses imperial, false metric.
+        /// or metric (meters and kilometres). A value of true uses imperial, false metric.
         /// This setting affects only the values displayed in the status bar and the scale bar.
         /// The values passed and returned with an object's properties are always metric.
         /// Default value is false (metric)

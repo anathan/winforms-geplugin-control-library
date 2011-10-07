@@ -29,7 +29,7 @@ namespace FC.GEPluginCtrls
         Imperial = 0,
 
         /// <summary>
-        ///  Metric system of units (kilometers, metres, centimeters)
+        ///  Metric system of units (kilometres, metres, centimeters)
         /// </summary>
         Metric = 1
     }

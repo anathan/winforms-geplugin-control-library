@@ -20,23 +20,20 @@ namespace FC.GEPluginCtrls
 {
     using System;
     using System.Diagnostics;
+    using System.Runtime.InteropServices;
+    using System.Runtime.Serialization;
     using System.Windows.Forms;
-    using Microsoft.CSharp.RuntimeBinder;
 
     /// <summary>
     /// Custom node class for the KmlTreeView <see cref="KmlTreeView"/>
     /// </summary>
+    [SerializableAttribute]
     public sealed class KmlTreeViewNode : TreeNode
     {
         /// <summary>
         /// Initializes a new instance of the KmlTreeViewNode class.
         /// </summary>
         /// <param name="kmlObject">A kml object to base the treenode on</param>
-        /// <remarks>
-        /// The parent tree is usually is available via 'this.TreeView' but for added functionality
-        /// we require access to some of the 'target' parent tree's properties in the constructor.
-        /// This is the reason for passing it in as a parameter.
-        /// </remarks>
         internal KmlTreeViewNode(dynamic kmlObject)
             : base()
         {
@@ -55,10 +52,20 @@ namespace FC.GEPluginCtrls
                 this.ApiObjectVisible = this.Checked;
                 this.SetStyle();
             }
-            catch (System.Runtime.InteropServices.COMException)
+            catch (COMException)
             {
                 return;
             }
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the KmlTreeViewNode class.
+        /// </summary>
+        /// <param name="info">Data to deserialize the class</param>
+        /// <param name="context">The source and destination of the serialized stream</param>
+        protected KmlTreeViewNode(SerializationInfo info, StreamingContext context)
+            : base(info, context)
+        {
         }
 
         /// <summary>
@@ -67,7 +74,7 @@ namespace FC.GEPluginCtrls
         public new string ToolTipText
         {
             get { return base.ToolTipText; }
-            set { base.ToolTipText = this.TidyToolTip(value); }
+            set { base.ToolTipText = TidyToolTip(value); }
         }
 
         #region Internal Properties
@@ -136,12 +143,27 @@ namespace FC.GEPluginCtrls
         {
             get
             {
-                return Convert.ToBoolean(this.ApiObject.getVisibility());
+                try
+                {
+                    return Convert.ToBoolean(this.ApiObject.getVisibility());
+                }
+                catch (COMException cex)
+                {
+                    Debug.WriteLine("ApiObjectVisible: " + cex.ToString(), "KmlTreeViewNode");
+                    return false;
+                }
             }
 
             set
             {
-                this.ApiObject.setVisibility(Convert.ToUInt16(value));
+                try
+                {
+                    this.ApiObject.setVisibility(Convert.ToUInt16(value));
+                }
+                catch (COMException cex)
+                {
+                    Debug.WriteLine("ApiObjectVisible: " + cex.ToString(), "KmlTreeViewNode");
+                }
             }
         }
 
@@ -156,19 +178,6 @@ namespace FC.GEPluginCtrls
         {
             switch (this.ApiObjectType)
             {
-                case GELayer.Borders:
-                case GELayer.Buildings:
-                case GELayer.BuildingsLowRes:
-                case GELayer.Roads:
-                case GELayer.Terrain:
-                case GELayer.Trees:
-                    {
-                        this.ImageKey = "overlay";
-                        this.SelectedImageKey = "overlay";
-                    }
-
-                    break;
-
                 case ApiType.KmlDocument:
                 case ApiType.KmlFolder:
                     {
@@ -256,7 +265,7 @@ namespace FC.GEPluginCtrls
             this.IsLoading = true;
             int i = 2;
             Timer t = new Timer();
-            t.Interval = 250;
+            t.Interval = 500;
             t.Enabled = true;
           
             t.Tick += (o, e) => 
@@ -286,7 +295,7 @@ namespace FC.GEPluginCtrls
         /// </summary>
         /// <param name="source">a html string</param>
         /// <returns>plain text with linebreaks</returns>
-        private string TidyToolTip(string source)
+        private static string TidyToolTip(string source)
         {
             char[] array = new char[source.Length];
             int arrayIndex = 0;

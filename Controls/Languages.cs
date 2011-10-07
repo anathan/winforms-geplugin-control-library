@@ -33,7 +33,7 @@ namespace FC.GEPluginCtrls
         /// Provides a Dictionary of language codes and native names 
         /// </summary>
         /// <returns>A Dictionary of language codes and native names</returns>
-        public static Dictionary<string, string> GetList()
+        public static Dictionary<string, string> Codes()
         {
             Dictionary<string, string> list = 
                 new Dictionary<string, string>();

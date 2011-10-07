@@ -19,6 +19,7 @@
 namespace FC.GEPluginCtrls.Geo
 {
     using System;
+    using System.Globalization;
 
     /// <summary>
     /// Bounds class
@@ -34,18 +35,18 @@ namespace FC.GEPluginCtrls.Geo
         /// </summary>
         public Bounds()
         {
-            this.NorthEast = new Coordinate();
-            this.SouthWest = new Coordinate();
+            this.Northeast = new Coordinate();
+            this.Southwest = new Coordinate();
         }
 
         /// <summary>
         /// Initializes a new instance of the Bounds class.
         /// Single Coordinate constructor
         /// </summary>
-        /// <param name="coord">the southwest/northEast Coordinate</param>
-        public Bounds(Coordinate coord) 
+        /// <param name="coordinate">the southwest/northEast Coordinate</param>
+        public Bounds(Coordinate coordinate)
         {
-            this.SouthWest = this.NorthEast = coord;
+            this.Southwest = this.Northeast = coordinate;
         }
 
         /// <summary>
@@ -53,18 +54,18 @@ namespace FC.GEPluginCtrls.Geo
         /// Dual Coordinate constructor
         /// </summary>
         /// <param name="southwest">The southwest Coordinate</param>
-        /// <param name="northEast">The northEast Coordinate</param>
-        public Bounds(Coordinate southwest, Coordinate northEast)
+        /// <param name="northeast">The northEast Coordinate</param>
+        public Bounds(Coordinate southwest, Coordinate northeast)
         {
-            this.NorthEast = northEast;
-            this.SouthWest = southwest;
+            this.Northeast = northeast;
+            this.Southwest = southwest;
 
-            if (this.SouthWest.Latitude > this.NorthEast.Latitude)
+            if (this.Southwest.Latitude > this.Northeast.Latitude)
             {
                 throw new ArgumentException("Bounds southwest coordinate cannot be north of the northeast coordinate");
             }
 
-            if (this.SouthWest.Altitude > this.NorthEast.Altitude)
+            if (this.Southwest.Altitude > this.Northeast.Altitude)
             {
                 throw new ArgumentException("Bounds southwest coordinate cannot be north of the northeast coordinate");
             }
@@ -77,18 +78,18 @@ namespace FC.GEPluginCtrls.Geo
         /// <param name="bounds">The bounds object to copy</param>
         public Bounds(Bounds bounds)
         {
-            this.NorthEast = bounds.NorthEast;
-            this.SouthWest = bounds.SouthWest;
+            this.Northeast = bounds.Northeast;
+            this.Southwest = bounds.Southwest;
         }
 
         /// <summary>
         /// Initializes a new instance of the Bounds class.
         /// </summary>
-        /// <param name="southWest">southeast coordinate [lat, lng]</param>
-        /// <param name="northEast">northwest coordinate [lat, lng]</param>
-        public Bounds(double[] southWest, double[] northEast) :
-            this(new Coordinate(southWest), new Coordinate(northEast))
-        {
+        /// <param name="southwest">southeast coordinate [lat, lng]</param>
+        /// <param name="northeast">northwest coordinate [lat, lng]</param>
+        public Bounds(double[] southwest, double[] northeast) :
+            this(new Coordinate(southwest), new Coordinate(northeast))
+        { 
         }
 
         #region Public Properties
@@ -98,7 +99,7 @@ namespace FC.GEPluginCtrls.Geo
         /// </summary>
         public double North
         {
-            get { return !this.IsEmpty ? this.NorthEast.Latitude : 0; }
+            get { return !this.IsEmpty ? this.Northeast.Latitude : 0; }
         }
 
         /// <summary>
@@ -106,7 +107,7 @@ namespace FC.GEPluginCtrls.Geo
         /// </summary>
         public double East
         {
-            get { return !this.IsEmpty ? this.NorthEast.Longitude : 0; }
+            get { return !this.IsEmpty ? this.Northeast.Longitude : 0; }
         }
 
         /// <summary>
@@ -114,7 +115,7 @@ namespace FC.GEPluginCtrls.Geo
         /// </summary>
         public double West
         {
-            get { return !this.IsEmpty ? this.SouthWest.Longitude : 0; }
+            get { return !this.IsEmpty ? this.Southwest.Longitude : 0; }
         }
 
         /// <summary>
@@ -122,7 +123,7 @@ namespace FC.GEPluginCtrls.Geo
         /// </summary>
         public double South
         {
-            get { return !this.IsEmpty ? this.SouthWest.Latitude : 0; }
+            get { return !this.IsEmpty ? this.Southwest.Latitude : 0; }
         }
 
         /// <summary>
@@ -130,7 +131,7 @@ namespace FC.GEPluginCtrls.Geo
         /// </summary>
         public double Top
         {
-            get { return !this.IsEmpty ? this.NorthEast.Altitude : 0; }
+            get { return !this.IsEmpty ? this.Northeast.Altitude : 0; }
         }
 
         /// <summary>
@@ -138,7 +139,7 @@ namespace FC.GEPluginCtrls.Geo
         /// </summary>
         public double Bottom
         {
-            get { return !this.IsEmpty ? this.SouthWest.Altitude : 0; }
+            get { return !this.IsEmpty ? this.Southwest.Altitude : 0; }
         }
 
         /// <summary>
@@ -148,7 +149,7 @@ namespace FC.GEPluginCtrls.Geo
         {
             get
             {
-                return !this.IsEmpty && (this.SouthWest.Is3D || this.NorthEast.Is3D);
+                return !this.IsEmpty && (this.Southwest.Is3D || this.Northeast.Is3D);
             }
         }
 
@@ -159,8 +160,8 @@ namespace FC.GEPluginCtrls.Geo
         {
             get
             {
-                return (this.SouthWest.Latitude == 0 && this.SouthWest.Longitude == 0) &&
-                    this.SouthWest.Equals(this.NorthEast);
+                return (this.Southwest.Latitude == 0 && this.Southwest.Longitude == 0) &&
+                    this.Southwest.Equals(this.Northeast);
             }
         }
 
@@ -183,23 +184,23 @@ namespace FC.GEPluginCtrls.Geo
         /// <summary>
         /// Gets a value indicating whether or not the bounds intersect the antimeridian.
         /// </summary>
-        public bool CrossesAntimeridian
+        public bool CrossesAntiMeridian
         {
             get
             {
-                return this.SouthWest.Longitude > this.NorthEast.Longitude;
+                return this.Southwest.Longitude > this.Northeast.Longitude;
             }
         }
 
         /// <summary>
         /// Gets or sets the Bounds NorthEast Coordinate
         /// </summary>
-        public Coordinate NorthEast { get; set; }
+        public Coordinate Northeast { get; set; }
 
         /// <summary>
         /// Gets or sets the Bounds SouthWest Coordinate
         /// </summary>
-        public Coordinate SouthWest { get; set; }
+        public Coordinate Southwest { get; set; }
 
         #endregion
 
@@ -234,25 +235,25 @@ namespace FC.GEPluginCtrls.Geo
         /// <summary>
         /// Returns whether or not the given Coordinate is inside the Bounds.
         /// </summary>
-        /// <param name="coord">The Coordinate to test</param>
+        /// <param name="coordinate">The Coordinate to test</param>
         /// <returns>True if the Coordinate is inside the Bounds</returns>
-        public bool ContainsCoordinate(Coordinate coord)
+        public bool ContainsCoordinate(Coordinate coordinate)
         {
             // check latitude
-            if (!(this.South <= coord.Latitude && coord.Latitude <= this.North))
+            if (!(this.South <= coordinate.Latitude && coordinate.Latitude <= this.North))
             {
                 return false;
             }
 
             // check altitude
             if (this.Is3D &&
-                !(this.Bottom <= coord.Altitude && coord.Altitude <= this.Top))
+                !(this.Bottom <= coordinate.Altitude && coordinate.Altitude <= this.Top))
             {
                 return false;
             }
 
             // check longitude
-            return this.ContainsLongitude(coord.Longitude);
+            return this.ContainsLongitude(coordinate.Longitude);
         }
 
         /// <summary>
@@ -266,11 +267,11 @@ namespace FC.GEPluginCtrls.Geo
                 return new Coordinate();
             }
 
-            double latitude = (this.SouthWest.Latitude + this.NorthEast.Latitude) / 2;
-            double longitude = this.CrossesAntimeridian ?
-                    Maths.FixLongitude((this.SouthWest.Longitude + this.LongitudinalSpan(this.SouthWest.Longitude, this.NorthEast.Longitude)) / 2)
-                        : (this.SouthWest.Longitude + this.NorthEast.Longitude) / 2;
-            double altitude = (this.SouthWest.Altitude + this.NorthEast.Altitude) / 2;
+            double latitude = (this.Southwest.Latitude + this.Northeast.Latitude) / 2;
+            double longitude = this.CrossesAntiMeridian ?
+                    Maths.FixLongitude((this.Southwest.Longitude + LongitudinalSpan(this.Southwest.Longitude, this.Northeast.Longitude)) / 2)
+                        : (this.Southwest.Longitude + this.Northeast.Longitude) / 2;
+            double altitude = (this.Southwest.Altitude + this.Northeast.Altitude) / 2;
 
             return new Coordinate(latitude, longitude, altitude);
         }
@@ -287,9 +288,9 @@ namespace FC.GEPluginCtrls.Geo
             }
 
             return new Coordinate(
-                latitude: this.NorthEast.Latitude - this.SouthWest.Latitude,
-                longitude: this.LongitudinalSpan(this.SouthWest.Longitude, this.NorthEast.Longitude),
-                altitude: this.Is3D ? this.NorthEast.Altitude - this.SouthWest.Altitude : 0);
+                latitude: this.Northeast.Latitude - this.Southwest.Latitude,
+                longitude: LongitudinalSpan(this.Southwest.Longitude, this.Northeast.Longitude),
+                altitude: this.Is3D ? this.Northeast.Altitude - this.Southwest.Altitude : 0);
         }
 
         /// <summary>
@@ -298,17 +299,17 @@ namespace FC.GEPluginCtrls.Geo
         /// Longitudinally, the bounds will be extended either east or west, 
         /// whichever results in a smaller longitudinal span.
         /// </summary>
-        /// <param name="coord">The Coordinate to extend the bounds by.</param>
-        public void Extend(Coordinate coord)
+        /// <param name="coordinate">The Coordinate to extend the bounds by.</param>
+        public void Extend(Coordinate coordinate)
         {
-            if (this.ContainsCoordinate(coord))
+            if (this.ContainsCoordinate(coordinate))
             {
                 return;
             }
 
             if (this.IsEmpty)
             {
-                this.SouthWest = this.NorthEast = coord;
+                this.Southwest = this.Northeast = coordinate;
                 return;
             }
 
@@ -318,37 +319,37 @@ namespace FC.GEPluginCtrls.Geo
 
             if (this.Is3D)
             {
-                newBottom = Math.Min(newBottom, coord.Altitude);
-                newTop = Math.Max(newTop, coord.Altitude);
+                newBottom = Math.Min(newBottom, coordinate.Altitude);
+                newTop = Math.Max(newTop, coordinate.Altitude);
             }
 
             // extend north or south
-            double newSouth = Math.Min(this.South, coord.Latitude);
-            double newNorth = Math.Max(this.North, coord.Latitude);
+            double newSouth = Math.Min(this.South, coordinate.Latitude);
+            double newNorth = Math.Max(this.North, coordinate.Latitude);
 
             double newWest = this.West;
             double newEast = this.East;
 
-            if (!this.ContainsLongitude(coord.Longitude))
+            if (!this.ContainsLongitude(coordinate.Longitude))
             {
                 // try extending east and try extending west, and use the one that
                 // has the smaller longitudinal span
-                double extendEastLngSpan = this.LongitudinalSpan(newWest, coord.Longitude);
-                double extendWestLngSpan = this.LongitudinalSpan(coord.Longitude, newEast);
+                double extendEastLngSpan = LongitudinalSpan(newWest, coordinate.Longitude);
+                double extendWestLngSpan = LongitudinalSpan(coordinate.Longitude, newEast);
 
                 if (extendEastLngSpan <= extendWestLngSpan)
                 {
-                    newEast = coord.Longitude;
+                    newEast = coordinate.Longitude;
                 }
                 else
                 {
-                    newWest = coord.Longitude;
+                    newWest = coordinate.Longitude;
                 }
             }
 
             // update the bounds' coordinates
-            this.SouthWest = new Coordinate(newSouth, newWest, newBottom);
-            this.NorthEast = new Coordinate(newNorth, newEast, newTop);
+            this.Southwest = new Coordinate(newSouth, newWest, newBottom);
+            this.Northeast = new Coordinate(newNorth, newEast, newTop);
         }
 
         /// <summary>
@@ -358,9 +359,10 @@ namespace FC.GEPluginCtrls.Geo
         /// <returns>true if the specified System.Object is equal to the current Bounds object</returns>
         public override bool Equals(object obj)
         {
-            if (obj is Bounds)
+            var other = obj as Bounds;
+            if (other != null)
             {
-                return this.Equals((Bounds)obj);
+                return this.Equals(obj);
             }
 
             return false;
@@ -369,11 +371,11 @@ namespace FC.GEPluginCtrls.Geo
         /// <summary>
         /// Determines whether the specified Bounds objects are equal.
         /// </summary>
-        /// <param name="bounds">The Bounds object to compare with the current Bounds object.</param>
+        /// <param name="other">The Bounds object to compare with the current Bounds object.</param>
         /// <returns>true if the specified Bounds object is equal to the current Bounds object</returns>
-        public bool Equals(Bounds bounds)
+        public bool Equals(Bounds other)
         {
-            return this.NorthEast == bounds.NorthEast && this.SouthWest == bounds.SouthWest;
+            return this.Northeast == other.Northeast && this.Southwest == other.Southwest;
         }
 
         /// <summary>
@@ -384,8 +386,8 @@ namespace FC.GEPluginCtrls.Geo
         {
             int hash = 23;
 
-            hash = ((hash << 5) * 37) ^ this.SouthWest.GetHashCode();
-            hash = ((hash << 5) * 37) ^ this.NorthEast.GetHashCode();
+            hash = ((hash << 5) * 37) ^ this.Southwest.GetHashCode();
+            hash = ((hash << 5) * 37) ^ this.Northeast.GetHashCode();
 
             return hash;
         }
@@ -396,12 +398,23 @@ namespace FC.GEPluginCtrls.Geo
         /// <returns>[(ne.lat, ne.lng, ne.alt), (sw.lat, sw.lng, sw.alt)]</returns>
         public override string ToString()
         {
-            return string.Format("[{0}, {1}]", this.NorthEast.ToString(), this.SouthWest.ToString());
+            return string.Format(CultureInfo.InvariantCulture, "[{0}, {1}]", this.Northeast.ToString(), this.Southwest.ToString());
         }
 
         #endregion
 
         #region Private Methods
+
+        /// <summary>
+        /// Gets the longitudinal span of the given west and east decimal coordinates.
+        /// </summary>
+        /// <param name="west">the west coordinate</param>
+        /// <param name="east">the east coordinate</param>
+        /// <returns>the longitudinal span of the given west and east coordinates</returns>
+        private static double LongitudinalSpan(double west, double east)
+        {
+            return (west > east) ? (east + 360 - west) : (east - west);
+        }
 
         /// <summary>
         /// Returns whether or not the given line of longitude is inside the Bounds.
@@ -410,7 +423,7 @@ namespace FC.GEPluginCtrls.Geo
         /// <returns>True if the longitude is within the bounds</returns>
         private bool ContainsLongitude(double longitude)
         {
-            if (this.CrossesAntimeridian)
+            if (this.CrossesAntiMeridian)
             {
                 return longitude <= this.East || longitude >= this.West;
             }
@@ -418,17 +431,6 @@ namespace FC.GEPluginCtrls.Geo
             {
                 return this.West <= longitude && longitude <= this.East;
             }
-        }
-
-        /// <summary>
-        /// Gets the longitudinal span of the given west and east decimal coordinates.
-        /// </summary>
-        /// <param name="west">the west coordinate</param>
-        /// <param name="east">the east coordinate</param>
-        /// <returns>the longitudinal span of the given west and east coordinates</returns>
-        private double LongitudinalSpan(double west, double east)
-        {
-            return (west > east) ? (east + 360 - west) : (east - west);
         }
 
         #endregion

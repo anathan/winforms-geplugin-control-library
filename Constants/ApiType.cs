@@ -24,7 +24,7 @@ namespace FC.GEPluginCtrls
     /// that comes from outside managed code
     /// </summary>
     /// <remarks>This is a compleate list as of v1.007 of the API</remarks>
-    public struct ApiType
+    public static class ApiType
     {
         #region GE
 
@@ -56,7 +56,7 @@ namespace FC.GEPluginCtrls
         /// <summary>
         /// GEometryContainer Api name
         /// </summary>
-        public const string GEGEometryContainer = "GEGeometryContainer";
+        public const string GEGeometryContainer = "GEGeometryContainer";
 
         /// <summary>
         /// GEGlobe Api name

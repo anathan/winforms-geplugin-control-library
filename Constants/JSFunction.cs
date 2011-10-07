@@ -26,7 +26,7 @@ namespace FC.GEPluginCtrls
     /// This collection can be thought of as a simple kind of an interface for javascipt methods in an active document.
     /// That is, any function name listed here should be present in a document that is designed to work with the controls.
     /// </remarks>
-    public struct JSFunction
+    public static class JSFunction
     {
         /// <summary>
         /// The javascript method name of the google.earth.addEventListener wrapper.

@@ -29,7 +29,7 @@ namespace FC.GEPluginCtrls
     [ComImport, Guid("3050F536-98B5-11CF-BB82-00AA00BDCE0B"),
     InterfaceType((short)2),
     TypeLibType((short)0x4112)]
-    public interface IHTMLScriptElement
+    public interface IHtmlScriptElement
     {
         /// <summary>
         /// Sets the text property

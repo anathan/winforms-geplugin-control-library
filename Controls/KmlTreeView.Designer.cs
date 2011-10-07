@@ -59,6 +59,26 @@ namespace FC.GEPluginCtrls
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItemRemoveNode;
 
         /// <summary>
+        /// The contextMenuStripKmlTreeView item
+        /// </summary>
+        private System.Windows.Forms.ContextMenuStrip contextMenuStripKmlTreeView;
+
+        /// <summary>
+        /// The toolStripMenuItemCollapseAll item
+        /// </summary>
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItemCollapseAll;
+
+        /// <summary>
+        /// The toolStripMenuItemExpandAll item
+        /// </summary>
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItemExpandAll;
+
+        /// <summary>
+        /// The toolStripMenuItemRemoveAll item
+        /// </summary>
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItemRemoveAll;
+
+        /// <summary>
         /// Clean up any resources being used.
         /// </summary>
         /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
@@ -198,12 +218,22 @@ namespace FC.GEPluginCtrls
 
         #endregion
 
-        void ToolStripMenuItemCollapseAll_Click(object sender, System.EventArgs e)
+        /// <summary>
+        /// Called when the ToolStripMenuItemCollapseAll item is clicked
+        /// </summary>
+        /// <param name="sender">the treeview item</param>
+        /// <param name="e">the event arguments</param>
+        private void ToolStripMenuItemCollapseAll_Click(object sender, System.EventArgs e)
         {
             this.CollapseAll();
         }
 
-        void ToolStripMenuItemRemoveAll_Click(object sender, System.EventArgs e)
+        /// <summary>
+        /// Called when the ToolStripMenuItemRemoveAll item is clicked
+        /// </summary>
+        /// <param name="sender">the treeview item</param>
+        /// <param name="e">the event arguments</param>
+        private void ToolStripMenuItemRemoveAll_Click(object sender, System.EventArgs e)
         {
             this.Nodes.Clear();
 
@@ -213,7 +243,12 @@ namespace FC.GEPluginCtrls
             }
         }
 
-        void ToolStripMenuItemExpandAll_Click(object sender, System.EventArgs e)
+        /// <summary>
+        /// Called when the ToolStripMenuItemExpandAll item is clicked
+        /// </summary>
+        /// <param name="sender">the treeview item</param>
+        /// <param name="e">the event arguments</param>
+        private void ToolStripMenuItemExpandAll_Click(object sender, System.EventArgs e)
         {
             this.ExpandAll();
         }
@@ -252,10 +287,5 @@ namespace FC.GEPluginCtrls
 
             this.Nodes.Remove(node);
         }
-
-        private System.Windows.Forms.ContextMenuStrip contextMenuStripKmlTreeView;
-        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItemCollapseAll;
-        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItemExpandAll;
-        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItemRemoveAll;
     }
 }

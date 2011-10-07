@@ -1,9 +1,9 @@
-﻿// <copyright file="GELayer.cs" company="FC">
+﻿// <copyright file="HttpRequest.cs" company="FC">
 // Copyright (c) 2011 Fraser Chapman
 // </copyright>
 // <author>Fraser Chapman</author>
 // <email>fraser.chapman@gmail.com</email>
-// <date>2011-03-06</date>
+// <date>2011-03-02</date>
 // <summary>This file is part of FC.GEPluginCtrls
 // FC.GEPluginCtrls is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -15,42 +15,37 @@
 // GNU General Public License for more details.
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see http://www.gnu.org/licenses/.
-// </summary>
-namespace FC.GEPluginCtrls
+// </summary>namespace FC.GEPluginCtrls.Enumerations
+namespace FC.GEPluginCtrls.HttpServer
 {
     /// <summary>
-    /// A collection the names of the internal hashs used by the plugin to control built in plugin layers
+    /// For http request header data in the <see cref="GEServer"/>
     /// </summary>
-    public struct GELayer
+    internal struct HttpRequest
     {
         /// <summary>
-        /// The Terrain layer
+        /// Gets or sets the ReqestTokens (Method, Request-URI, HTTP-Version)
         /// </summary>
-        public const string Terrain = "terrainUUID";
+        internal string[] ReqestTokens { get; set; }
 
         /// <summary>
-        /// The Buildings layer
+        /// Gets or sets the HTTP request method 
         /// </summary>
-        public const string Buildings = "2a412484-7181-11de-8092-17a790575c91";
+        internal string Method { get; set; }
 
         /// <summary>
-        /// The Low Resolution (grey) Buildings layer
+        /// Gets or sets the HTTP user agent 
         /// </summary>
-        public const string BuildingsLowRes = "3a5bb88e-7181-11de-88da-17a790575c91";
+        internal string UserAgent { get; set; }
 
         /// <summary>
-        /// The Borders layer
+        /// Gets or sets the HTTP host header
         /// </summary>
-        public const string Borders = "53004770-c7b3-11dc-92c2-dd553d8c9902";
+        internal string HostHeader { get; set; }
 
         /// <summary>
-        /// The Trees layer
+        /// Gets or sets the HTTP request Uri
         /// </summary>
-        public const string Trees = "8d540610-9429-11df-ad05-451522926098";
-
-        /// <summary>
-        /// The Roads layer
-        /// </summary>
-        public const string Roads = "4ddec456-c7b3-11dc-aaa5-dd553d8c9902";
+        internal string Uri { get; set; }
     }
 }

@@ -30,4 +30,3 @@ namespace FC.GEPluginCtrls
         void SetBrowserInstance(GEWebBrowser instance);
     }
 }
-

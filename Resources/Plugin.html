@@ -23,12 +23,12 @@
   <head>
     <meta http-equiv="content-type" content="text/html; charset=utf-8" />
     <meta name="Author" content="Fraser Chapman" />
-    <title>FC.GEPluginCtrls Embeded Html Test Page</title>
+    <title>FC.GEPluginCtrls Embedded Html Test Page</title>
     <!-- If you plan to use this file for anything other than testing purposes then
     you should place it on a publicly accessible server and generate a valid API key for it -->
     <script type="text/javascript" src="http://www.google.com/jsapi"></script>
     <script type="text/javascript">
-    /* <![CDATA[ */
+      /* <![CDATA[ */
 
     google.load("earth", "1", { 'language': 'en-GB' });
     google.load("maps", "2.xx");
@@ -36,10 +36,13 @@
     var ge = null; // GEPlugin
     var geocoder = null; // GClientGeocoder
     var application = null; // External
-
-    var events_ = []; // holder for generic events
-    var viewEvents_ = []; // holder for view events
-    var pluginEvents_ = []; // holder for plugin events
+    
+    var events_ =
+    {
+      generic : [],
+      view : [], 
+      plugin: []
+    };
     
     /**
     * Internal methods called from javascript
@@ -60,7 +63,7 @@
     */
     var failureCallback_ = function(error)
     {
-      application.Error("PluginLoadFailError", "Plugin failed to load: " + error);
+      application.SendError("PluginLoadFailError", "Plugin failed to load: " + error);
     }
 
     /**
@@ -71,8 +74,9 @@
     {
       ge = object;
       geocoder = new GClientGeocoder();
-      application = window.external;
       ge.getWindow().setVisibility(true);
+      
+      application = window.external;
       application.Ready(ge);
     }
 
@@ -98,7 +102,7 @@
         }
         else
         {
-          application.Error("CallbackError",
+          application.SendError("CallbackError",
             "Error in : " + data.method + "(" + parameters.join(', ') + ")");
         }
       }
@@ -192,17 +196,17 @@
     */
     var jsAddEventListener = function(feature, hash, action, callback, useCapture)
     {     
-      if(action == "viewchangebegin" || action == "viewchange" || action == "viewchangeend")
+      if(action == "VIEWCHANGEBEGIN" || action == "VIEWCHANGE" || action == "VIEWCHANGEEND")
       {
         // view events 
-        viewEvents_[action] = function() { viewEventListener_(action); };
-        google.earth.addEventListener(feature, action, viewEvents_[action], useCapture);
+        events_.view[action] = function() { viewEventListener_(action); };
+        google.earth.addEventListener(feature, action, events_.view[action], useCapture);
       }
-      else if(action == "frameend" || action == "balloonclose" || action == "balloonopening")
+      else if(action == "FRAMEEND" || action == "BALLOONCLOSE" || action == "BALLOONOPENING")
       {
         // plugin events
-        pluginEvents_[action] = function() { pluginEventListener_(action); };
-        google.earth.addEventListener(feature, action, pluginEvents_[action], useCapture);
+        events_.plugin[action] = function() { pluginEventListener_(action); };
+        google.earth.addEventListener(feature, action, events_.plugin[action], useCapture);
       }
       else
       {
@@ -212,8 +216,8 @@
           callback = function(event) { kmlEventListener_(event, action); };
         } 
         
-        events_[hash] = callback;
-        google.earth.addEventListener(feature, action, eval(events_[hash]), useCapture);
+        events_.generic[hash] = callback;
+        google.earth.addEventListener(feature, action, eval(events_.generic[hash]), useCapture);
       }
     }
 
@@ -227,23 +231,23 @@
     */
     var jsRemoveEventListener = function(feature, hash, action, callback, useCapture)
     {      
-      if(action == "viewchangebegin" || action == "viewchange" || action == "viewchangeend")
+      if(action == "VIEWCHANGEBEGIN" || action == "VIEWCHANGE" || action == "VIEWCHANGEEND")
       {
         // view events 
-        google.earth.removeEventListener(feature, action, viewEvents_[action], useCapture);
-        viewEvents_[action] = null;
+        google.earth.removeEventListener(feature, action, events_.view[action], useCapture);
+        events_.view[action] = null;
       }
-      else if(action == "frameend" || action == "balloonclose" || action == "balloonopening")
+      else if(action == "FRAMEEND" || action == "BALLOONCLOSE" || action == "BALLOONOPENING")
       {
         // plugin events
-        google.earth.removeEventListener(feature, action, pluginEvents_[action], useCapture);
-        pluginEvents_[action] = null;
+        google.earth.removeEventListener(feature, action, events_.plugin[action], useCapture);
+        events_.plugin[action] = null;
       }      
       else
       {       
         // generic events
-        google.earth.removeEventListener(feature, action, events_[hash], useCapture);
-        events_[hash] = null;
+        google.earth.removeEventListener(feature, action, events_.generic[hash], useCapture);
+        events_.generic[hash] = null;
       }
     }
     
@@ -263,7 +267,7 @@
     * @param {string} address The address to attempt geocode.
     * @return a GLatLng point on success, false on fail.
     */
-    var jsDoGeocode = function(address)
+    var jsDoGeocoding = function(address)
     {   
       geocoder.getLatLng(address, function(point)
       {

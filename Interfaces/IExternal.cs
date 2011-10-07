@@ -52,7 +52,7 @@ namespace FC.GEPluginCtrls
         /// </summary>
         /// <param name="name">the name of method to be called</param>
         /// <param name="parameters">array of parameter objects</param>
-        void InvokeCallBack(string name, object parameters);
+        void InvokeCallback(string name, object parameters);
 
         /// <summary>
         /// Should be called from javascript when the plugin is ready
@@ -65,20 +65,20 @@ namespace FC.GEPluginCtrls
         /// </summary>
         /// <param name="type">the error type</param>
         /// <param name="message">the error message</param>
-        void Error(string type, string message);
+        void SendError(string type, string message);
 
         /// <summary>
         /// Should be called from javascript when there is a kml event
         /// </summary>
         /// <param name="kmlEvent">the kml event</param>
         /// <param name="action">the event id</param>
-        void KmlEventCallBack(object kmlEvent, string action);
+        void KmlEventCallback(object kmlEvent, string action);
 
         /// <summary>
         /// Should be called from javascript when there is a GEPlugin event
         /// </summary>
         /// <param name="sender">The plugin object</param>
         /// <param name="action">The event action</param>
-        void PluginEventCallBack(object sender, string action);
+        void PluginEventCallback(object sender, string action);
     }
 }
