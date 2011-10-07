@@ -28,7 +28,7 @@
     * [InjectJavascript]
     * [InvokeJavascript]
   * Local server
-    * [Server]
+    * [GEServer]
     * [usingTheServer Basic local server example]
   * Examples
     * [ExampleForm Basic winform example]
