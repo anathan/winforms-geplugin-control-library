@@ -58,15 +58,7 @@ namespace FC.GEPluginCtrls
             }
         }
 
-        /// <summary>
-        /// Initializes a new instance of the KmlTreeViewNode class.
-        /// </summary>
-        /// <param name="info">Data to deserialize the class</param>
-        /// <param name="context">The source and destination of the serialized stream</param>
-        protected KmlTreeViewNode(SerializationInfo info, StreamingContext context)
-            : base(info, context)
-        {
-        }
+        #region Public Properties 
 
         /// <summary>
         /// Gets or sets the value of the node tool tip text.
@@ -76,6 +68,18 @@ namespace FC.GEPluginCtrls
             get { return base.ToolTipText; }
             set { base.ToolTipText = TidyToolTip(value); }
         }
+        
+        /// <summary>
+        /// Gets the underlying kml object that the node represents.
+        /// </summary>
+        public dynamic ApiObject { get; private set; }
+
+        /// <summary>
+        /// Gets a value indicating the interface name (i.e. 'KmlPlacemark') of the underlying kml object.
+        /// </summary>
+        public string ApiObjectType { get; private set; }
+
+        #endregion
 
         #region Internal Properties
 
@@ -125,16 +129,6 @@ namespace FC.GEPluginCtrls
                 }
             }
         }
-
-        /// <summary>
-        /// Gets the underlying kml object that the node represents.
-        /// </summary>
-        internal dynamic ApiObject { get; private set; }
-
-        /// <summary>
-        /// Gets a value indicating the interface name (i.e. 'KmlPlacemark') of the underlying kml object.
-        /// </summary>
-        internal string ApiObjectType { get; private set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the node is cheked and the kml object is visible
