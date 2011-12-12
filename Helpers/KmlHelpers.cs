@@ -21,6 +21,7 @@ namespace FC.GEPluginCtrls
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
+    using System.Runtime.InteropServices;
     using System.Xml;
     using FC.GEPluginCtrls.Geo;
     using Microsoft.CSharp.RuntimeBinder;
@@ -31,217 +32,8 @@ namespace FC.GEPluginCtrls
     public static class KmlHelpers
     {
         /// <summary>
-        /// Based on kmldomwalk.js 
-        /// see: http://code.google.com/p/earth-api-samples/source/browse/trunk/lib/kmldomwalk.js
-        /// </summary>
-        /// <param name="feature">The kml object to parse</param>
-        /// <param name="callback">A delegate action, each node visited will be passed to this as the single parameter</param>
-        /// <param name="walkFeatures">Optionally walk features, defualt is true</param>
-        /// <param name="walkGeometries">Optionally walk geometries, default is false</param>
-        /// <remarks>This method is used by <see cref="KmlTreeView"/> to build the nodes</remarks>
-        /// <example>KmlHelpers.WalkKmlDom(kml, (Action dynamic)(x => { /* each x in the dom */}));</example>
-        public static void WalkKmlDom(
-            dynamic feature,
-            Action<dynamic> callback,
-            bool walkFeatures = true,
-            bool walkGeometries = false)
-        {
-            if (feature == null)
-            { 
-                return; 
-            }
-
-            string type = feature.getType();
-            dynamic objectContainer = null; // GESchemaObjectContainer
-
-            switch (type)
-            {
-                // objects that support getFeatures (GEFeatureContainer)
-                case ApiType.KmlDocument:
-                case ApiType.KmlFolder:
-                case ApiType.KmlLayer:
-                case ApiType.KmlLayerRoot:
-                    {
-                        if (walkFeatures)
-                        {
-                            objectContainer = feature.getFeatures();
-                        }
-                    }
-
-                    break;
-
-                // objects that support getGeometry
-                case ApiType.KmlAltitudeGeometry:
-                case ApiType.KmlExtrudableGeometry:
-                case ApiType.KmlModel:
-                case ApiType.KmlPlacemark:
-                    {
-                        if (walkGeometries)
-                        {
-                            WalkKmlDom(feature.getGeometry(), callback, walkFeatures, walkGeometries);
-                        }
-                    }
-
-                    break;
-
-                // KmlPolygon (object supports getOuterBoundary)
-                case ApiType.KmlPolygon:
-                    {
-                        if (walkGeometries)
-                        {
-                            WalkKmlDom(feature.getOuterBoundary(), callback, walkFeatures, walkGeometries);
-                            objectContainer = feature.getInnerBoundaries(); // GELinearRingContainer
-                        }
-                    }
-
-                    break;
-
-                // KmlMultiGeometry (object supports getGeometries)
-                case ApiType.KmlMultiGeometry:
-                    {
-                        if (walkGeometries)
-                        {
-                            objectContainer = feature.getGeometries();
-                        }
-                    }
-                    
-                    break;
-
-                ////case ApiType.KmlLineString:
-                ////case ApiType.KmlLinearRing:
-
-                default:
-                    break;
-            }
-
-            callback(feature);
-
-            if (objectContainer != null && Convert.ToBoolean(objectContainer.hasChildNodes()))
-            {
-                dynamic childNodes = objectContainer.getChildNodes();
-                int count = childNodes.getLength();
-                for (int i = 0; i < count; i++)
-                {
-                    dynamic node = childNodes.item(i);
-                    WalkKmlDom(node, callback);
-                    callback(node);
-                }
-                ////Parallel.For(0, count, i => { });
-            }
-        }
-
-        /// <summary>
-        ///  Gives access to Url element in pre KML Release 2.1 documents
-        ///  This allows the controls to work with legacy Kml formats
-        /// </summary>
-        /// <param name="kmlFeature">The network link to look for a url in</param>
-        /// <returns>The url value or an empty string</returns>
-        /// <remarks>This method is used by <see cref="KmlTreeView"/> for legacy kml support</remarks>
-        /// <example>string url = KmlHelpers.GetUrl(kmlObject);</example>
-        public static string GetUrl(dynamic kmlFeature)
-        {
-            string kml = string.Empty;
-            string url = string.Empty;
-
-            try
-            {
-                kml = kmlFeature.getKml();
-            }
-            catch (RuntimeBinderException)
-            {
-                return string.Empty;
-            }
-
-            XmlDocument doc = new System.Xml.XmlDocument();
-            doc.InnerXml = kml;
-
-            XmlNodeList list = doc.GetElementsByTagName("href");
-
-            if (list.Count > 0)
-            {
-                url = list[0].InnerText;
-            }
-
-            if (string.IsNullOrEmpty(url))
-            {
-                try
-                {
-                    url = kmlFeature.getUrl();
-                }
-                catch (RuntimeBinderException)
-                {
-                }
-
-                if (string.IsNullOrEmpty(url))
-                {
-                    try
-                    {
-                        url = kmlFeature.getLink().getHref();
-                    }
-                    catch (RuntimeBinderException)
-                    {
-                    }
-                }
-            }
-
-            return url;
-        }
-
-        /// <summary>
-        /// Wrapper for getOwnerDocument().getComputedStyle().getListStyle().getListItemType()
-        /// See: 
-        /// </summary>
-        /// <param name="kmlFeature">The feature to find the list item type of</param>
-        /// <returns>The corresponding ListItem type <see cref="ListItemStyle"/></returns>
-        /// <remarks>This method is used by <see cref="KmlTreeView"/> to build the nodes</remarks>
-        /// <example>Example: KmlHelpers.GetListItemType(kmlFeature)</example>
-        public static ListItemStyle GetListItemType(dynamic kmlFeature)
-        {
-            ListItemStyle listItem = ListItemStyle.Check;
-
-            try
-            {
-                listItem = (ListItemStyle)kmlFeature.getComputedStyle().getListStyle().getListItemType();
-            }
-            catch (RuntimeBinderException rbex)
-            {
-                Debug.WriteLine("GetListItemType: " + rbex.ToString(), "KmlHelpers");
-            }
-
-            return listItem;
-        }
-
-        /// <summary>
-        /// Gives access to untyped data/value pairs using the basic Data element
-        /// See: http://code.google.com/apis/kml/documentation/kmlreference.html#extendeddata
-        /// </summary>
-        /// <param name="kmlFeature">feature to get data from</param>
-        /// <returns>A list of key value pairs</returns>
-        public static Dictionary<string, string> GetExtendedData(dynamic kmlFeature)
-        {
-            Dictionary<string, string> keyValues =
-                new Dictionary<string, string>();
-
-            XmlDocument doc = new XmlDocument();
-            doc.InnerXml = kmlFeature.getKml();
-
-            XmlNodeList list = doc.GetElementsByTagName("Data");
-            int c = list.Count;
-
-            for (int i = 0; i < c; i++)
-            {
-                keyValues.Add(
-                    list[i].Attributes["name"].InnerText,
-                    list[i].ChildNodes[0].InnerText);
-            }
-
-            return keyValues;
-        }
-
-        /// <summary>
         /// Computes the bounding box for the given object.
         /// Note that this method walks the object's DOM, so may have poor performance for large objects.
-        /// In that case the use parallel option can speed the operation on some machines. 
         /// </summary>
         /// <param name="kmlFeature">{KmlFeature|KmlGeometry} object The feature or geometry whose bounds should be computed</param>
         /// <returns>The bounds object for the feature</returns>
@@ -256,57 +48,66 @@ namespace FC.GEPluginCtrls
             KmlHelpers.WalkKmlDom(
                 kmlFeature,
                 (Action<dynamic>)(feature =>
-            {
-                string type = feature.getType();
-
-                switch (type)
                 {
-                    case ApiType.KmlGroundOverlay:
-                        {
-                            dynamic llb = feature.getLatLonBox();
+                    ApiType type = GEHelpers.GetApiType(feature);
 
-                            if (llb != null)
+                    switch (type)
+                    {
+                        case ApiType.KmlGroundOverlay:
                             {
-                                double alt = feature.getAltitude();
-                                bounds.Extend(new Coordinate(llb.getNorth(), llb.getEast(), alt));
-                                bounds.Extend(new Coordinate(llb.getNorth(), llb.getWest(), alt));
-                                bounds.Extend(new Coordinate(llb.getSouth(), llb.getEast(), alt));
-                                bounds.Extend(new Coordinate(llb.getSouth(), llb.getWest(), alt));
-                            }
-                        }
+                                dynamic llb = feature.getLatLonBox();
 
-                        break;
-
-                    case ApiType.KmlModel:
-                        bounds.Extend(new Coordinate(feature.getLocation()));
-                        break;
-
-                    case ApiType.KmlLinearRing:
-                    case ApiType.KmlLineString:
-                        {
-                            dynamic coords = feature.getCoordinates();
-
-                            if (coords != null)
-                            {
-                                int count = coords.getLength();
-
-                                ////Parallel.For(0, count, i => { });
-                                for (int i = 0; i < count; i++)
+                                if (llb != null)
                                 {
-                                    bounds.Extend(new Coordinate(coords.get(i)));
+                                    double alt = feature.getAltitude();
+                                    bounds.Extend(new Coordinate(llb.getNorth(), llb.getEast(), alt));
+                                    bounds.Extend(new Coordinate(llb.getNorth(), llb.getWest(), alt));
+                                    bounds.Extend(new Coordinate(llb.getSouth(), llb.getEast(), alt));
+                                    bounds.Extend(new Coordinate(llb.getSouth(), llb.getWest(), alt));
                                 }
                             }
-                        }
 
-                        break;
+                            break;
 
-                    case ApiType.KmlCoord: // coordinates
-                    case ApiType.KmlLocation: // models
-                    case ApiType.KmlPoint: // points
-                        bounds.Extend(new Coordinate(feature));
-                        break;
-                }
-            }),
+                        case ApiType.KmlModel:
+                            bounds.Extend(new Coordinate(feature.getLocation()));
+                            break;
+
+                        case ApiType.KmlLinearRing:
+                        case ApiType.KmlLineString:
+                            {
+                                dynamic coords = feature.getCoordinates();
+
+                                if (coords != null)
+                                {
+                                    int count = coords.getLength();
+                                    for (int i = 0; i < count; i++)
+                                    {
+                                        bounds.Extend(new Coordinate(coords.get(i)));
+                                    }
+                                }
+                            }
+
+                            break;
+
+                        case ApiType.KmlCoord:
+                        case ApiType.KmlLocation:
+                        case ApiType.KmlPoint:
+                            bounds.Extend(new Coordinate(feature));
+                            break;
+
+                        case ApiType.KmlPlacemark:
+                            {
+                                dynamic geometry = feature.getGeometry();
+                                if (GEHelpers.IsApiType(geometry, ApiType.KmlPoint))
+                                {
+                                    bounds.Extend(new Coordinate(geometry));
+                                }
+                            }
+
+                            break;
+                    }
+                }),
             walkFeatures: true,
             walkGeometries: true);
 
@@ -346,13 +147,14 @@ namespace FC.GEPluginCtrls
                 aspectRatio = Math.Min(Math.Max(aspectRatio, distEW / distNS), 1.0);
 
                 // Create a LookAt using the experimentally derived distance formula.
-                double alpha = Maths.ConvertDegreesToRadians((45.0 / (aspectRatio + 0.4)) - 2.0);
+                double alpha = Maths.ConvertDegreesToRadians((45.0 / (aspectRatio + 0.4) - 2.0));
                 double expandToDistance = Math.Max(distNS, distEW);
                 double beta = Math.Min(
                     Maths.ConvertDegreesToRadians(90),
-                    (alpha + expandToDistance) / (2 * Maths.EarthMeanRadiusKilometres));
+                    alpha + expandToDistance / (2 * Maths.EarthMeanRadiusKilometres));
 
-                lookAtRange = scaleRange * Maths.EarthMeanRadiusKilometres * ((Math.Sin(beta) * Math.Sqrt(1 + (1 / Math.Pow(Math.Tan(alpha), 2)))) - 1);
+                lookAtRange = scaleRange * Maths.EarthMeanRadiusKilometres *
+                    (Math.Sin(beta) * Math.Sqrt(1 + 1 / Math.Pow(Math.Tan(alpha), 2)) - 1);
             }
 
             try
@@ -363,7 +165,471 @@ namespace FC.GEPluginCtrls
             }
             catch (RuntimeBinderException rbex)
             {
-                Debug.WriteLine("CreateBoundsView: " + rbex.ToString(), "KmlHelpers");
+                Debug.WriteLine("CreateBoundsView: " + rbex.Message, "KmlHelpers");
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Creates a kml placemark
+        /// </summary>
+        /// <param name="ge">The plugin instance</param>
+        /// <param name="id">Optional placemark Id. Default is empty</param>
+        /// <param name="latitude">The placemark latitude in decimal degrees</param>
+        /// <param name="longitude">The placemark longitude in decimal degrees</param>
+        /// <param name="altitude">Optional placemark altitude in metres. Default is 0</param>
+        /// <param name="altitudeMode">Optional altitudeMode. Default is AltitudeMode.RelativeToGround</param>
+        /// <param name="name">Optional name of the placemark. Default is empty</param>
+        /// <param name="description">Optional placemark description text. Default is empty</param>
+        /// <param name="addFeature">Optionally adds the placemark directly to the plugin. Default is true</param>
+        /// <returns>A placemark (or an empty object)</returns>
+        public static dynamic CreatePlacemark(
+            dynamic ge,
+            string id = "",
+            double latitude = 0,
+            double longitude = 0,
+            double altitude = 0,
+            AltitudeMode altitudeMode = AltitudeMode.RelativeToGround,
+            string name = "",
+            string description = "",
+            bool addFeature = true)
+        {
+            if (!GEHelpers.IsGE(ge))
+            {
+                throw new ArgumentException("ge is not of the type GEPlugin");
+            }
+
+            dynamic placemark = new object();
+
+            try
+            {
+                dynamic point = CreatePoint(
+                    ge,
+                    string.Empty,
+                    Maths.FixLatitude(latitude),
+                    Maths.FixLongitude(longitude),
+                    altitude,
+                    altitudeMode);
+
+                placemark = ge.createPlacemark(id);
+                placemark.setGeometry(point);
+                placemark.setName(name);
+                placemark.setDescription(description);
+
+                if (addFeature)
+                {
+                    GEHelpers.AddFeaturesToPlugin(ge, placemark);
+                }
+            }
+            catch (RuntimeBinderException rbex)
+            {
+                Debug.WriteLine("CreatePlacemark: " + rbex.Message, "GEHelpers");
+            }
+            catch (COMException cex)
+            {
+                Debug.WriteLine("CreatePlacemark: " + cex.Message, "GEHelpers");
+            }
+
+            return placemark;
+        }
+
+        /// <summary>
+        /// Creates a kml placemark
+        /// </summary>
+        /// <param name="ge">The plugin instance</param>
+        /// <param name="coordinate">A Coordinate to use as the placemarks location</param>
+        /// <param name="id">Optional placemark Id. Default is empty</param>
+        /// <param name="name">Optional name of the placemark. Default is empty</param>
+        /// <param name="description">Optional placemark description text. Default is empty</param>
+        /// <param name="addFeature">Optionally adds the placemark directly to the plugin. Default is true</param>
+        /// <returns>A placemark (or false)</returns>
+        public static dynamic CreatePlacemark(
+            dynamic ge,
+            Coordinate coordinate,
+            string id = "",
+            string name = "",
+            string description = "",
+            bool addFeature = true)
+        {
+            return CreatePlacemark(
+            ge: ge,
+            latitude: coordinate.Latitude,
+            longitude: coordinate.Longitude,
+            altitude: coordinate.Altitude,
+            altitudeMode: coordinate.AltitudeMode,
+            name: name,
+            id: id,
+            description: description,
+            addFeature: addFeature);
+        }
+
+        /// <summary>
+        /// Creates a kml point
+        /// </summary>
+        /// <param name="ge">The plugin instance</param>
+        /// <param name="id">Optional placemark Id. Default is empty</param>
+        /// <param name="latitude">The placemark latitude in decimal degrees</param>
+        /// <param name="longitude">The placemark longitude in decimal degrees</param>
+        /// <param name="altitude">Optional placemark altitude in metres. Default is 0</param>
+        /// <param name="altitudeMode">Optional altitudeMode. Default is AltitudeMode.RelativeToGround</param>
+        /// <returns>A Kml point (or false)</returns>
+        public static dynamic CreatePoint(
+            dynamic ge,
+            string id = "",
+            double latitude = 0,
+            double longitude = 0,
+            double altitude = 0,
+            AltitudeMode altitudeMode = AltitudeMode.RelativeToGround)
+        {
+            if (!GEHelpers.IsGE(ge))
+            {
+                throw new ArgumentException("ge is not of the type GEPlugin");
+            }
+
+            dynamic point = new object();
+
+            try
+            {
+                point = ge.createPoint(id);
+                point.setLatitude(latitude);
+                point.setLongitude(longitude);
+                point.setAltitude(altitude);
+                point.setAltitudeMode(altitudeMode);
+            }
+            catch (RuntimeBinderException rbex)
+            {
+                Debug.WriteLine("CreatePoint: " + rbex.Message, "GEHelpers");
+            }
+
+            return point;
+        }
+
+        /// <summary>
+        /// Creates a kml point from a Coordinate
+        /// </summary>
+        /// <param name="ge">The plugin instance</param>
+        /// <param name="coordinate">The Coordinate to base the point on</param>
+        /// <param name="id">Optional point Id. Default is empty</param>
+        /// <returns>a kml point</returns>
+        public static dynamic CreatePoint(
+            dynamic ge,
+            Coordinate coordinate,
+            string id = "")
+        {
+            return CreatePoint(
+            ge: ge,
+            id: id,
+            latitude: coordinate.Latitude,
+            longitude: coordinate.Longitude,
+            altitude: coordinate.Altitude,
+            altitudeMode: coordinate.AltitudeMode);
+        }
+
+        /// <summary>
+        /// Draws a line string between the given placemarks or points
+        /// </summary>
+        /// <param name="ge">The plugin instance</param>
+        /// <param name="start">The first placemark or point</param>
+        /// <param name="end">The second placemark or point</param>
+        /// <param name="id">Optional ID of the linestring placemark. Default is empty</param>
+        /// <param name="tessellate">Optionally sets tessellation for the linestring. Default is true</param>
+        /// <param name="addFeature">Optionally adds the linestring directly to the plugin. Default is true</param>
+        /// <returns>A linestring placemark (or false)</returns>
+        public static object CreateLineString(
+            dynamic ge,
+            dynamic start,
+            dynamic end,
+            string id = "",
+            bool tessellate = true,
+            bool addFeature = true)
+        {
+            if (!GEHelpers.IsGE(ge))
+            {
+                throw new ArgumentException("ge is not of the type GEPlugin");
+            }
+
+            if (GEHelpers.IsApiType(start, ApiType.KmlPlacemark))
+            {
+                start = start.getGeometry();
+            }
+
+            if (GEHelpers.IsApiType(end, ApiType.KmlPlacemark))
+            {
+                end = end.getGeometry();
+            }
+
+            try
+            {
+                dynamic placemark = CreatePlacemark(ge, addFeature: addFeature);
+                dynamic lineString = ge.createLineString(id);
+                lineString.setTessellate(Convert.ToUInt16(tessellate));
+                lineString.getCoordinates().pushLatLngAlt(start.getLatitude(), start.getLongitude(), start.getAltitude());
+                lineString.getCoordinates().pushLatLngAlt(end.getLatitude(), end.getLongitude(), end.getAltitude());
+                placemark.setGeometry(lineString);
+
+                if (addFeature)
+                {
+                    GEHelpers.AddFeaturesToPlugin(ge, placemark);
+                }
+
+                return placemark;
+            }
+            catch (RuntimeBinderException rbex)
+            {
+                Debug.WriteLine("CreateLineString: " + rbex.Message, "GEHelpers");
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Look at the given coordinates
+        /// </summary>
+        /// <param name="ge">the plugin</param>
+        /// <param name="latitude">latitude in decimal degrees</param>
+        /// <param name="longitude">longitude in decimal degrees</param>
+        /// <param name="id">Optional LookAt Id. Default is empty</param>
+        /// <param name="altitude">Optional altitude. Default is 0</param>
+        /// <param name="altitudeMode">Optional altitudeMode. Default is AltitudeMode.RelativeToGround</param>
+        /// <param name="heading">Optional heading in degrees. Default is 0 (north)</param>
+        /// <param name="tilt">Optional tilt in degrees. Default is 0</param>
+        /// <param name="range">Optional range in metres. Default is 1000</param>
+        /// <param name="setView">Optional set the current view to the lookAt</param>
+        /// <returns>true on success</returns>
+        public static dynamic CreateLookAt(
+            dynamic ge,
+            double latitude,
+            double longitude,
+            string id = "",
+            double altitude = 0,
+            AltitudeMode altitudeMode = AltitudeMode.RelativeToGround,
+            double heading = 0,
+            double tilt = 0,
+            double range = 1000,
+            bool setView = true)
+        {
+            if (!GEHelpers.IsGE(ge))
+            {
+                throw new ArgumentException("ge is not of the type GEPlugin");
+            }
+
+            try
+            {
+                dynamic lookat = ge.createLookAt(id);
+                lookat.set(latitude, longitude, altitude, altitudeMode, heading, tilt, range);
+
+                if (setView)
+                {
+                    ge.getView().setAbstractView(lookat);
+                }
+
+                return lookat;
+            }
+            catch (RuntimeBinderException rbex)
+            {
+                Debug.WriteLine("CreateLookAt: " + rbex.Message, "GEHelpers");
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Gives access to untyped data/value pairs using the basic Data element
+        /// See: http://code.google.com/apis/kml/documentation/kmlreference.html#extendeddata
+        /// </summary>
+        /// <param name="kmlFeature">feature to get data from</param>
+        /// <returns>A list of key value pairs</returns>
+        public static Dictionary<string, string> GetExtendedData(dynamic kmlFeature)
+        {
+            Dictionary<string, string> keyValues =
+                new Dictionary<string, string>();
+
+            XmlNodeList list = GetElementsByTagName(kmlFeature, "Data");
+            int c = list.Count;
+
+            for (int i = 0; i < c; i++)
+            {
+                keyValues.Add(
+                    list[i].Attributes["name"].InnerText,
+                    list[i].ChildNodes[0].InnerText);
+            }
+
+            return keyValues;
+        }
+
+        /// <summary>
+        /// Returns an System.Xml.XmlNodeList containing a list of all descendant elements
+        /// that match the specified <paramref name="tagName"/>.
+        /// </summary>
+        /// <param name="kmlFeature">
+        /// The Kml feature on which to check for nodes matching the <paramref name="tagName"/>
+        /// </param>
+        /// <param name="tagName">
+        /// The qualified name to match.
+        /// It is matched against the Name property of the matching node.
+        /// The special value "*" matches all tags
+        /// </param>
+        /// <returns>
+        /// An System.Xml.XmlNodeList containing a list of all matching nodes.
+        /// If no nodes match name, the returned collection will be empty.
+        /// </returns>
+        public static XmlNodeList GetElementsByTagName(dynamic kmlFeature, string tagName)
+        {
+            XmlDocument doc = new XmlDocument();
+            string kml = string.Empty;
+
+            try
+            {
+                kml = kmlFeature.getKml();
+            }
+            catch (RuntimeBinderException)
+            {
+                return doc.ChildNodes;
+            }
+            catch (COMException)
+            {
+                return doc.ChildNodes;
+            }
+
+            doc.InnerXml = kml;
+            return doc.GetElementsByTagName(tagName);
+        }
+
+        /// <summary>
+        ///  Gives access to Url element in pre KML Release 2.1 documents
+        ///  This allows the controls to work with legacy Kml formats
+        /// </summary>
+        /// <param name="kmlFeature">The network link to look for a url in</param>
+        /// <returns>The url value or an empty string</returns>
+        /// <remarks>This method is used by <see cref="KmlTreeView"/> for legacy kml support</remarks>
+        /// <example>string url = KmlHelpers.GetUrl(kmlObject);</example>
+        public static string GetUrl(dynamic kmlFeature)
+        {
+            string url = string.Empty;
+            XmlNodeList list = GetElementsByTagName(kmlFeature, "href");
+
+            if (list.Count > 0)
+            {
+                url = list[0].InnerText;
+            }
+
+            if (string.IsNullOrEmpty(url))
+            {
+                try
+                {
+                    url = kmlFeature.getUrl();
+                }
+                catch (COMException)
+                {
+                }
+
+                if (string.IsNullOrEmpty(url))
+                {
+                    try
+                    {
+                        url = kmlFeature.getLink().getHref();
+                    }
+                    catch (COMException)
+                    {
+                    }
+                }
+            }
+
+            return url;
+        }
+
+        /// <summary>
+        /// Wrapper for getOwnerDocument().getComputedStyle().getListStyle().getListItemType()
+        /// See: 
+        /// </summary>
+        /// <param name="kmlFeature">The feature to find the list item type of</param>
+        /// <returns>The corresponding ListItem type <see cref="ListItemStyle"/></returns>
+        /// <remarks>This method is used by <see cref="KmlTreeView"/> to build the nodes</remarks>
+        /// <example>Example: KmlHelpers.GetListItemType(kmlFeature)</example>
+        public static ListItemStyle GetListItemType(dynamic kmlFeature)
+        {
+            ListItemStyle listItem = ListItemStyle.Check;
+
+            try
+            {
+                listItem = (ListItemStyle)kmlFeature.getComputedStyle().getListStyle().getListItemType();
+            }
+            catch (RuntimeBinderException rbex)
+            {
+                Debug.WriteLine("GetListItemType: " + rbex.Message, "KmlHelpers");
+            }
+
+            return listItem;
+        }
+
+        /// <summary>
+        /// Gets the child nodes from a kml feature. 
+        /// Basically a wrapper for feature.getFeatures().getChildNodes();
+        /// </summary>
+        /// <param name="feature">The feature to get the children from</param>
+        /// <returns>A kml object contatining the child nodes</returns>
+        public static dynamic GetChildNodes(dynamic feature)
+        {
+            try
+            {
+                return feature.getFeatures().getChildNodes();
+            }
+            catch (RuntimeBinderException) 
+            {
+            }
+            catch (COMException) 
+            { 
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Tests if a given kml feature has child nodes
+        /// </summary>
+        /// <param name="feature">The feature to check</param>
+        /// <returns>True if the feature has children</returns>
+        public static bool HasChildNodes(dynamic feature)
+        {
+            try
+            {
+                return Convert.ToBoolean(feature.getFeatures().hasChildNodes());
+            }
+            catch (RuntimeBinderException) 
+            {
+            }
+            catch (COMException)
+            {
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Tests if a given kml feature is a Kml container
+        /// </summary>
+        /// <param name="feature">The feature to check</param>
+        /// <returns>True if the feature is a Kml container</returns>
+        public static bool IsKmlContainer(dynamic feature)
+        {
+            try
+            {
+                ApiType type = GEHelpers.GetApiType(feature);
+
+                switch (type)
+                {
+                    case ApiType.KmlDocument:
+                    case ApiType.KmlFolder:
+                    case ApiType.KmlLayer:
+                    case ApiType.KmlLayerRoot:
+                        return true;
+                    default:
+                        return false;
+                }
+            }
+            catch (RuntimeBinderException)
+            {
             }
 
             return false;
@@ -396,7 +662,100 @@ namespace FC.GEPluginCtrls
             }
             catch (RuntimeBinderException rbex)
             {
-                Debug.WriteLine("SetBoundsView: " + rbex.ToString(), "KmlHelpers");
+                Debug.WriteLine("SetBoundsView: " + rbex.Message, "KmlHelpers");
+            }
+        }
+
+        /// <summary>
+        /// Based on kmldomwalk.js 
+        /// see: http://code.google.com/p/earth-api-samples/source/browse/trunk/lib/kmldomwalk.js
+        /// </summary>
+        /// <param name="feature">The kml object to parse</param>
+        /// <param name="callback">A delegate action, each node visited will be passed to this as the single parameter</param>
+        /// <param name="walkFeatures">Optionally walk features, defualt is true</param>
+        /// <param name="walkGeometries">Optionally walk geometries, default is false</param>
+        /// <remarks>This method is used by <see cref="KmlTreeView"/> to build the nodes</remarks>
+        /// <example>KmlHelpers.WalkKmlDom(kml, (Action dynamic)(x => { /* each x in the dom */}));</example>
+        public static void WalkKmlDom(
+            dynamic feature,
+            Action<dynamic> callback,
+            bool walkFeatures = true,
+            bool walkGeometries = false)
+        {
+            if (feature == null)
+            {
+                return;
+            }
+                        
+            dynamic objectContainer = null;
+            ApiType type = GEHelpers.GetApiType(feature);
+
+            switch (type)
+            {
+                // objects that support getFeatures
+                case ApiType.KmlDocument:
+                case ApiType.KmlFolder:
+                case ApiType.KmlLayer:
+                case ApiType.KmlLayerRoot:
+                    {
+                        if (walkFeatures)
+                        {
+                            objectContainer = feature.getFeatures();  // GESchemaObjectContainer
+                        }
+                    }
+
+                    break;
+
+                // objects that support getGeometry
+                case ApiType.KmlPlacemark:
+                    {
+                        if (walkGeometries)
+                        {
+                            WalkKmlDom(feature.getGeometry(), callback, walkFeatures, walkGeometries);
+                        }
+                    }
+
+                    break;
+
+                // object that support getInnerBoundaries
+                case ApiType.KmlPolygon:
+                    {
+                        if (walkGeometries)
+                        {
+                            objectContainer = feature.getOuterBoundary(); // GELinearRingContainer
+                            WalkKmlDom(objectContainer, callback, walkFeatures, walkGeometries);
+                        }
+                    }
+
+                    break;
+
+                // objects that supports getGeometries
+                case ApiType.KmlMultiGeometry:
+                    {
+                        if (walkGeometries)
+                        {
+                            objectContainer = feature.getGeometries();
+                        }
+                    }
+
+                    break;
+
+                default:
+                    break;
+            }
+
+            callback(feature);
+
+            if (objectContainer != null && HasChildNodes(objectContainer))
+            {
+                dynamic childNodes = objectContainer.getChildNodes();
+                int count = childNodes.getLength();
+                for (int i = 0; i < count; i++)
+                {
+                    dynamic node = childNodes.item(i);
+                    WalkKmlDom(node, callback);
+                    callback(node);
+                }
             }
         }
     }

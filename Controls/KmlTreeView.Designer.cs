@@ -1,9 +1,9 @@
 ﻿// <copyright file="KMLTreeView.Designer.cs" company="FC">
-// Copyright (c) 2008 Fraser Chapman
+// Copyright (c) 2011 Fraser Chapman
 // </copyright>
 // <author>Fraser Chapman</author>
 // <email>fraser.chapman@gmail.com</email>
-// <date>2008-12-22</date>
+// <date>2011-12-08</date>
 // <summary>This file is part of FC.GEPluginCtrls
 // FC.GEPluginCtrls is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -21,64 +21,19 @@ namespace FC.GEPluginCtrls
     /// <summary>
     /// Designer file
     /// </summary>
-    public partial class KmlTreeView
+    public sealed partial class KmlTreeView
     {
-        /// <summary>
+        /// <summary> 
         /// Required designer variable.
         /// </summary>
         private System.ComponentModel.IContainer components = null;
 
         /// <summary>
-        /// The image list for the tree nodes
+        /// The treeview image list for kml features
         /// </summary>
         private System.Windows.Forms.ImageList imageList1;
 
-        /// <summary>
-        /// The contextMenuStripNetworkLinks item
-        /// </summary>
-        private System.Windows.Forms.ContextMenuStrip contextMenuStripNetworkLinks;
-
-        /// <summary>
-        ///  The toolStripMenuItemReloadLink item
-        /// </summary>
-        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItemReloadLink;
-
-        /// <summary>
-        /// The toolStripMenuItemRemoveLink item
-        /// </summary>
-        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItemRemoveLink;
-
-        /// <summary>
-        /// The contextMenuStripNodes item
-        /// </summary>
-        private System.Windows.Forms.ContextMenuStrip contextMenuStripNodes;
-
-        /// <summary>
-        /// The toolStripMenuItemRemoveNode item
-        /// </summary>
-        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItemRemoveNode;
-
-        /// <summary>
-        /// The contextMenuStripKmlTreeView item
-        /// </summary>
-        private System.Windows.Forms.ContextMenuStrip contextMenuStripKmlTreeView;
-
-        /// <summary>
-        /// The toolStripMenuItemCollapseAll item
-        /// </summary>
-        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItemCollapseAll;
-
-        /// <summary>
-        /// The toolStripMenuItemExpandAll item
-        /// </summary>
-        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItemExpandAll;
-
-        /// <summary>
-        /// The toolStripMenuItemRemoveAll item
-        /// </summary>
-        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItemRemoveAll;
-
-        /// <summary>
+        /// <summary> 
         /// Clean up any resources being used.
         /// </summary>
         /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
@@ -92,10 +47,10 @@ namespace FC.GEPluginCtrls
             base.Dispose(disposing);
         }
 
-        #region Windows Form Designer generated code
+        #region Component Designer generated code
 
-        /// <summary>
-        /// Required method for Designer support - do not modify
+        /// <summary> 
+        /// Required method for Designer support - do not modify 
         /// the contents of this method with the code editor.
         /// </summary>
         private void InitializeComponent()
@@ -103,18 +58,6 @@ namespace FC.GEPluginCtrls
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(KmlTreeView));
             this.imageList1 = new System.Windows.Forms.ImageList(this.components);
-            this.contextMenuStripNetworkLinks = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.toolStripMenuItemReloadLink = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripMenuItemRemoveLink = new System.Windows.Forms.ToolStripMenuItem();
-            this.contextMenuStripNodes = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.toolStripMenuItemRemoveNode = new System.Windows.Forms.ToolStripMenuItem();
-            this.contextMenuStripKmlTreeView = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.toolStripMenuItemExpandAll = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripMenuItemCollapseAll = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripMenuItemRemoveAll = new System.Windows.Forms.ToolStripMenuItem();
-            this.contextMenuStripNetworkLinks.SuspendLayout();
-            this.contextMenuStripNodes.SuspendLayout();
-            this.contextMenuStripKmlTreeView.SuspendLayout();
             this.SuspendLayout();
             // 
             // imageList1
@@ -134,158 +77,17 @@ namespace FC.GEPluginCtrls
             this.imageList1.Images.SetKeyName(10, "linkFolderClosed_0");
             this.imageList1.Images.SetKeyName(11, "linkFolderClosed_1");
             this.imageList1.Images.SetKeyName(12, "linkFolderClosed_2");
-            // 
-            // contextMenuStripNetworkLinks
-            // 
-            this.contextMenuStripNetworkLinks.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripMenuItemReloadLink,
-            this.toolStripMenuItemRemoveLink});
-            this.contextMenuStripNetworkLinks.Name = "contextMenuStripNetworkLinks";
-            this.contextMenuStripNetworkLinks.Size = new System.Drawing.Size(118, 48);
-            // 
-            // toolStripMenuItemReloadLink
-            // 
-            this.toolStripMenuItemReloadLink.Name = "toolStripMenuItemReloadLink";
-            this.toolStripMenuItemReloadLink.Size = new System.Drawing.Size(117, 22);
-            this.toolStripMenuItemReloadLink.Text = "Reload";
-            this.toolStripMenuItemReloadLink.ToolTipText = "Reloads the link content";
-            this.toolStripMenuItemReloadLink.Click += new System.EventHandler(this.ToolStripMenuItemReload_Click);
-            // 
-            // toolStripMenuItemRemoveLink
-            // 
-            this.toolStripMenuItemRemoveLink.Name = "toolStripMenuItemRemoveLink";
-            this.toolStripMenuItemRemoveLink.Size = new System.Drawing.Size(117, 22);
-            this.toolStripMenuItemRemoveLink.Text = "Remove";
-            this.toolStripMenuItemRemoveLink.ToolTipText = "Remove the item";
-            this.toolStripMenuItemRemoveLink.Click += new System.EventHandler(this.ToolStripMenuItemRemove_Click);
-            // 
-            // contextMenuStripNodes
-            // 
-            this.contextMenuStripNodes.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripMenuItemRemoveNode});
-            this.contextMenuStripNodes.Name = "contextMenuStripNodes";
-            this.contextMenuStripNodes.Size = new System.Drawing.Size(118, 26);
-            // 
-            // toolStripMenuItemRemoveNode
-            // 
-            this.toolStripMenuItemRemoveNode.Name = "toolStripMenuItemRemoveNode";
-            this.toolStripMenuItemRemoveNode.Size = new System.Drawing.Size(117, 22);
-            this.toolStripMenuItemRemoveNode.Text = "Remove";
-            this.toolStripMenuItemRemoveNode.Click += new System.EventHandler(this.ToolStripMenuItemRemove_Click);
-            // 
-            // contextMenuStripKmlTreeView
-            // 
-            this.contextMenuStripKmlTreeView.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripMenuItemCollapseAll,
-            this.toolStripMenuItemExpandAll,
-            this.toolStripMenuItemRemoveAll});
-            this.contextMenuStripKmlTreeView.Name = "contextMenuStripKmlTreeView";
-            this.contextMenuStripKmlTreeView.Size = new System.Drawing.Size(135, 70);
-            // 
-            // toolStripMenuItemExpandAll
-            // 
-            this.toolStripMenuItemExpandAll.Name = "toolStripMenuItemExpandAll";
-            this.toolStripMenuItemExpandAll.Size = new System.Drawing.Size(134, 22);
-            this.toolStripMenuItemExpandAll.Text = "Expand All";
-            this.toolStripMenuItemExpandAll.Click += new System.EventHandler(ToolStripMenuItemExpandAll_Click);
-            // 
-            // toolStripMenuItemCollapseAll
-            // 
-            this.toolStripMenuItemCollapseAll.Name = "toolStripMenuItemCollapseAll";
-            this.toolStripMenuItemCollapseAll.Size = new System.Drawing.Size(134, 22);
-            this.toolStripMenuItemCollapseAll.Text = "Collapse all";
-            this.toolStripMenuItemCollapseAll.Click += new System.EventHandler(ToolStripMenuItemCollapseAll_Click);
-            // 
-            // toolStripMenuItemRemoveAll
-            // 
-            this.toolStripMenuItemRemoveAll.Name = "toolStripMenuItemRemoveAll";
-            this.toolStripMenuItemRemoveAll.Size = new System.Drawing.Size(134, 22);
-            this.toolStripMenuItemRemoveAll.Text = "Remove All";
-            this.toolStripMenuItemRemoveAll.Click += new System.EventHandler(ToolStripMenuItemRemoveAll_Click);
+            this.imageList1.Images.SetKeyName(13, "linkFolderClosedDisconected");
             // 
             // KmlTreeView
             // 
-            this.CheckBoxes = true;
             this.ImageKey = "ge";
             this.ImageList = this.imageList1;
-            this.LineColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(100)))), ((int)(((byte)(100)))));
             this.SelectedImageIndex = 0;
-            this.contextMenuStripNetworkLinks.ResumeLayout(false);
-            this.contextMenuStripNodes.ResumeLayout(false);
-            this.contextMenuStripKmlTreeView.ResumeLayout(false);
             this.ResumeLayout(false);
+
         }
 
         #endregion
-
-        /// <summary>
-        /// Called when the ToolStripMenuItemCollapseAll item is clicked
-        /// </summary>
-        /// <param name="sender">the treeview item</param>
-        /// <param name="e">the event arguments</param>
-        private void ToolStripMenuItemCollapseAll_Click(object sender, System.EventArgs e)
-        {
-            this.CollapseAll();
-        }
-
-        /// <summary>
-        /// Called when the ToolStripMenuItemRemoveAll item is clicked
-        /// </summary>
-        /// <param name="sender">the treeview item</param>
-        /// <param name="e">the event arguments</param>
-        private void ToolStripMenuItemRemoveAll_Click(object sender, System.EventArgs e)
-        {
-            this.Nodes.Clear();
-
-            if (this.geplugin != null)
-            {
-                GEHelpers.RemoveAllFeatures(this.geplugin);
-            }
-        }
-
-        /// <summary>
-        /// Called when the ToolStripMenuItemExpandAll item is clicked
-        /// </summary>
-        /// <param name="sender">the treeview item</param>
-        /// <param name="e">the event arguments</param>
-        private void ToolStripMenuItemExpandAll_Click(object sender, System.EventArgs e)
-        {
-            this.ExpandAll();
-        }
-
-        /// <summary>
-        /// Called when a reload context menu item is clicked
-        /// </summary>
-        /// <param name="sender">the kml tree view</param>
-        /// <param name="e">The event arguments</param>
-        private void ToolStripMenuItemReload_Click(object sender, System.EventArgs e)
-        {
-            KmlTreeViewNode node = this.SelectedNode as KmlTreeViewNode;
-            node.Fetched = false;
-            node.Collapse();
-            node.Expand();
-        }
-
-        /// <summary>
-        /// Called when a remove context menu item is clicked
-        /// </summary>
-        /// <param name="sender">the kml tree view</param>
-        /// <param name="e">The event arguments</param>
-        private void ToolStripMenuItemRemove_Click(object sender, System.EventArgs e)
-        {
-            KmlTreeViewNode node = this.SelectedNode as KmlTreeViewNode;
-            dynamic parent = node.ApiObject.getParentNode();
-
-            if (parent != null)
-            {
-                parent.getFeatures().removeChild(node.ApiObject);
-            }
-            else
-            {
-                this.gewb.Plugin.getFeatures().removeChild(node.ApiObject);
-            }
-
-            this.Nodes.Remove(node);
-        }
     }
 }

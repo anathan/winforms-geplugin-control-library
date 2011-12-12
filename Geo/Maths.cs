@@ -234,6 +234,18 @@ namespace FC.GEPluginCtrls.Geo
         }
 
         /// <summary>
+        /// Returns the distance in miles or kilometres of any two latitude / longitude points.
+        /// </summary>
+        /// <param name="origin">The start latitude and longitude </param>
+        /// <param name="destination">The destination latitude and longitude </param>
+        /// <param name="units">The unit system to use, default is metric</param>
+        /// <returns>Distance in kilometres</returns>
+        public static double DistanceHaversine(dynamic origin, dynamic destination, UnitSystem units = UnitSystem.Metric)
+        {
+            return DistanceHaversine(new Coordinate(origin), new Coordinate(destination), units);
+        }
+
+        /// <summary>
         /// Keep a number in the [0,PI] range
         /// </summary>
         /// <param name="radians">value in radians</param>

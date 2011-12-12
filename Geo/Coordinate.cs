@@ -54,42 +54,46 @@ namespace FC.GEPluginCtrls.Geo
         /// Initializes a new instance of the Coordinate class.
         /// </summary>
         /// <param name="feature">the api object to base the coordinate on.
-        /// This should be a KmlPoint, KmlCoord, KmlLocation, KmlLookAt or KmlCamera.</param>
+        /// This should be a KmlPoint, KmlCoord, KmlLocation, KmlLookAt or KmlCamera (...or a simple placemark containing a point)</param>
         public Coordinate(dynamic feature)
             : this()
         {
-            string type = string.Empty;
+            switch ((ApiType)GEHelpers.GetApiType(feature))
+            {
+                case ApiType.KmlPlacemark:
+                    {
+                        dynamic geometry = feature.getGeometry();
 
-            try
-            {
-                type = feature.getType();
-            }
-            catch (COMException)
-            {
-                return;
-            }
+                        if (GEHelpers.IsApiType(geometry, ApiType.KmlPoint))
+                        {
+                            feature = geometry;
+                            goto case ApiType.KmlPoint;
+                        }
+                    }
 
-            // no need to normalise as the Coordinate is 
-            // constructed from an existing api type (I think!)
-            if (type == ApiType.KmlCoord || type == ApiType.KmlLocation)
-            {
-                this.Latitude = feature.getLatitude();
-                this.Longitude = feature.getLongitude();
-                this.Altitude = feature.getAltitude();
-                return;
-            }
-            else if (type == ApiType.KmlPoint ||
-                type == ApiType.KmlLookAt ||
-                type == ApiType.KmlCamera)
-            {
-                this.Latitude = feature.getLatitude();
-                this.Longitude = feature.getLongitude();
-                this.Altitude = feature.getAltitude();
-                this.AltitudeMode = (AltitudeMode)feature.getAltitudeMode();
-                return;
-            }
+                    return;
 
-            throw new ArgumentException("Could not create a point from the given api object: " + type);
+                case ApiType.KmlCoord:
+                case ApiType.KmlLocation:
+                    {
+                        this.Latitude = feature.getLatitude();
+                        this.Longitude = feature.getLongitude();
+                        this.Altitude = feature.getAltitude();
+                    }
+
+                    return;
+                case ApiType.KmlPoint:
+                case ApiType.KmlLookAt:
+                case ApiType.KmlCamera:
+                    {
+                        this.Latitude = feature.getLatitude();
+                        this.Longitude = feature.getLongitude();
+                        this.Altitude = feature.getAltitude();
+                        this.AltitudeMode = (AltitudeMode)feature.getAltitudeMode();
+                    }
+
+                    return;
+            }
         }
 
         /// <summary>
@@ -254,7 +258,8 @@ namespace FC.GEPluginCtrls.Geo
         /// <returns>true if the objects are equal</returns>
         public override bool Equals(object obj)
         {
-            var other = obj as Coordinate;
+            Coordinate other = obj as Coordinate;
+
             if (other != null)
             {
                 return this.Equals(other);

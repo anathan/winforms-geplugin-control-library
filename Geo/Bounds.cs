@@ -290,7 +290,7 @@ namespace FC.GEPluginCtrls.Geo
             return new Coordinate(
                 latitude: this.Northeast.Latitude - this.Southwest.Latitude,
                 longitude: LongitudinalSpan(this.Southwest.Longitude, this.Northeast.Longitude),
-                altitude: this.Is3D ? this.Northeast.Altitude - this.Southwest.Altitude : 0);
+                altitude: this.Is3D ? (this.Northeast.Altitude - this.Southwest.Altitude) : 0);
         }
 
         /// <summary>

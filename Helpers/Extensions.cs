@@ -1,9 +1,9 @@
-﻿// <copyright file="StringValueAttribute.cs" company="FC">
+﻿// <copyright file="Extensions.cs" company="FC">
 // Copyright (c) 2011 Fraser Chapman
 // </copyright>
 // <author>Fraser Chapman</author>
 // <email>fraser.chapman@gmail.com</email>
-// <date>2011-08-11</date>
+// <date>2011-03-06</date>
 // <summary>This file is part of FC.GEPluginCtrls
 // FC.GEPluginCtrls is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -15,29 +15,34 @@
 // GNU General Public License for more details.
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see http://www.gnu.org/licenses/.
-// </summary>
+// </summary>namespace FC.GEPluginCtrls.Enumerations
 namespace FC.GEPluginCtrls
 {
-    using System;
+    using System.ComponentModel;
+    using System.Reflection;
 
     /// <summary>
-    /// Helper class for working with 'extended' enums using StringValueAttribute attributes.
+    /// Extension helper methods for the control libray
     /// </summary>
-    [AttributeUsage(AttributeTargets.Field, AllowMultiple = false, Inherited = true)]
-    public sealed class StringValueAttribute : Attribute
+    internal static class Extensions
     {
         /// <summary>
-        /// Initializes a new instance of the StringValueAttribute class.
+        /// Gets the internal ID for a Layer
         /// </summary>
-        /// <param name="value">the string value to set as the attribute</param>
-        public StringValueAttribute(string value) 
-        { 
-            this.Value = value; 
-        }
+        /// <param name="input">Layer type</param>
+        /// <returns>The layer ID</returns>
+        internal static string GetId(this Layer input)
+        {
+            FieldInfo fi = input.GetType().GetField(input.ToString());
+            DescriptionAttribute[] attributes =
+                (DescriptionAttribute[])fi.GetCustomAttributes(typeof(DescriptionAttribute), false);
 
-        /// <summary>
-        /// Gets the Attribute value
-        /// </summary>
-        public string Value { get; private set; }
+            if (attributes != null && attributes.Length > 0)
+            {
+                return attributes[0].Description;
+            }
+
+            return string.Empty;
+        }
     }
 }

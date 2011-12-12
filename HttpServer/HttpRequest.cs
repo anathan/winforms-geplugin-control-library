@@ -18,34 +18,77 @@
 // </summary>namespace FC.GEPluginCtrls.Enumerations
 namespace FC.GEPluginCtrls.HttpServer
 {
+    using System;
+
     /// <summary>
     /// For http request header data in the <see cref="GEServer"/>
     /// </summary>
     internal struct HttpRequest
     {
         /// <summary>
-        /// Gets or sets the ReqestTokens (Method, Request-URI, HTTP-Version)
+        /// Initializes a new instance of the HttpRequest struct.
         /// </summary>
-        internal string[] ReqestTokens { get; set; }
+        /// <param name="data">the raw data to base the HttpRequest on</param>
+        internal HttpRequest(string data) : 
+            this()
+        {
+            // split the request by CRLF into lines
+            string[] headerLines = data.Split(
+                new string[] { Environment.NewLine },
+                StringSplitOptions.RemoveEmptyEntries);
+            string[] tokens = new string[] { };
+
+            // Find the headers we are interested in from the request
+            foreach (string line in headerLines)
+            {
+                // Get and head only...
+                if (line.StartsWith("GET", StringComparison.OrdinalIgnoreCase) ||
+                    line.StartsWith("HEAD", StringComparison.OrdinalIgnoreCase))
+                {
+                    tokens = line.Split(' ');
+                }
+                else if (line.StartsWith("User-Agent:", StringComparison.OrdinalIgnoreCase))
+                {
+                    this.UserAgent = line;
+                }
+                else if (line.StartsWith("Host:", StringComparison.OrdinalIgnoreCase))
+                {
+                    this.HostHeader = line;
+                }
+            }
+
+            // tokens: Method, Request-URI and HTTP-Version
+            if (tokens.Length == 3)
+            {
+                this.Method = tokens[0];
+                this.Uri = tokens[1];
+                this.HttpVersion = tokens[2];
+            }
+        }
 
         /// <summary>
-        /// Gets or sets the HTTP request method 
+        /// Gets the HTTP request method (GET, HEAD)
         /// </summary>
-        internal string Method { get; set; }
+        internal string Method { get; private set; }
 
         /// <summary>
-        /// Gets or sets the HTTP user agent 
+        /// Gets the HTTP user agent (GoogleEarth)
         /// </summary>
-        internal string UserAgent { get; set; }
+        internal string UserAgent { get; private set; }
 
         /// <summary>
-        /// Gets or sets the HTTP host header
+        /// Gets the HTTP host header
         /// </summary>
-        internal string HostHeader { get; set; }
+        internal string HostHeader { get; private set; }
 
         /// <summary>
-        /// Gets or sets the HTTP request Uri
+        /// Gets the HTTP request Uri
         /// </summary>
-        internal string Uri { get; set; }
+        internal string Uri { get; private set; }
+
+        /// <summary>
+        /// Gets the HTTP version (HTTP/1.1)
+        /// </summary>
+        internal string HttpVersion { get; private set; }
     }
 }

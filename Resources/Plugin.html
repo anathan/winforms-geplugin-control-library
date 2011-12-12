@@ -26,16 +26,18 @@
     <title>FC.GEPluginCtrls Embedded Html Test Page</title>
     <!-- If you plan to use this file for anything other than testing purposes then
     you should place it on a publicly accessible server and generate a valid API key for it -->
+    <!-- google.earth.api -->
     <script type="text/javascript" src="http://www.google.com/jsapi"></script>
     <script type="text/javascript">
       /* <![CDATA[ */
 
-    google.load("earth", "1", { 'language': 'en-GB' });
-    google.load("maps", "2.xx");
-        
+    google.load('earth', '1', { 'language': 'en-GB' });
+    google.load('maps','3.6', { other_params: 'sensor=false' });
+    
     var ge = null; // GEPlugin
     var geocoder = null; // GClientGeocoder
     var application = null; // External
+    
     
     var events_ =
     {
@@ -73,7 +75,8 @@
     var initCallback_ = function(object)
     {
       ge = object;
-      geocoder = new GClientGeocoder();
+
+      geocoder = new google.maps.Geocoder(); //v3
       ge.getWindow().setVisibility(true);
       
       application = window.external;
@@ -92,7 +95,7 @@
         method: arguments[0],
         url: arguments[1]
       };
-      
+      var me  = this;
       return function(kmlObject)
       {
         if (kmlObject)
@@ -102,12 +105,11 @@
         }
         else
         {
-          application.SendError("CallbackError",
-            "Error in : " + data.method + "(" + parameters.join(', ') + ")");
+          application.SendError(data.method, "kmlObject is null");
         }
       }
     }
-
+     
     /**
     * KmlEvent event listner callback function
     * @param kmlEvent {kmlMouseEvent} the mouse event object
@@ -196,13 +198,14 @@
     */
     var jsAddEventListener = function(feature, hash, action, callback, useCapture)
     {     
-      if(action == "VIEWCHANGEBEGIN" || action == "VIEWCHANGE" || action == "VIEWCHANGEEND")
+      action = action.toLowerCase();
+      if(action == "viewchangebegin" || action == "viewchange" || action == "viewchangeend")
       {
         // view events 
         events_.view[action] = function() { viewEventListener_(action); };
         google.earth.addEventListener(feature, action, events_.view[action], useCapture);
       }
-      else if(action == "FRAMEEND" || action == "BALLOONCLOSE" || action == "BALLOONOPENING")
+      else if(action == "frameend" || action == "balloonclose" || action == "balloonopening")
       {
         // plugin events
         events_.plugin[action] = function() { pluginEventListener_(action); };
@@ -231,13 +234,14 @@
     */
     var jsRemoveEventListener = function(feature, hash, action, callback, useCapture)
     {      
-      if(action == "VIEWCHANGEBEGIN" || action == "VIEWCHANGE" || action == "VIEWCHANGEEND")
+      action = action.toLowerCase();
+      if(action == "viewchangebegin" || action == "viewchange" || action == "viewchangeend")
       {
         // view events 
         google.earth.removeEventListener(feature, action, events_.view[action], useCapture);
         events_.view[action] = null;
       }
-      else if(action == "FRAMEEND" || action == "BALLOONCLOSE" || action == "BALLOONOPENING")
+      else if(action == "frameend" || action == "balloonclose" || action == "balloonopening")
       {
         // plugin events
         google.earth.removeEventListener(feature, action, events_.plugin[action], useCapture);
@@ -267,24 +271,25 @@
     * @param {string} address The address to attempt geocode.
     * @return a GLatLng point on success, false on fail.
     */
-    var jsDoGeocoding = function(address)
+    var jsDoGeocode = function(address)
     {   
-      geocoder.getLatLng(address, function(point)
+      geocoder.geocode( { 'address': address}, function(results, status)
       {
-        if (point)
+        if (status == google.maps.GeocoderStatus.OK) 
         {
+          var point = results[0].geometry.location;
           var lookat = ge.createLookAt('');
-          lookat.set(point.y, point.x, 100, ge.ALTITUDE_RELATIVE_TO_GROUND, 0, 0, 1000);
+          lookat.set(point.lat(), point.lng(), 100, ge.ALTITUDE_RELATIVE_TO_GROUND, 0, 0, 1000);
           ge.getView().setAbstractView(lookat);
           return point;
-        }
+        } 
         else 
         {
-          return false;
+          application.SendError("GeocodeError",  "Geocode was not successful for the following reason: " + status);
         }
-      });
+      } );
     } 
-    
+
     /**
     * google.earth.createInstance wrapper.
     * Attempts to create an instance of the plugin.

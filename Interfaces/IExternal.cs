@@ -27,7 +27,7 @@ namespace FC.GEPluginCtrls
     /// </summary>
     public interface IExternal
     {
-       /// <summary>
+        /// <summary>
         /// Raised when the plugin is ready
         /// </summary>
         event EventHandler<GEEventArgs> PluginReady;
@@ -48,7 +48,7 @@ namespace FC.GEPluginCtrls
         event EventHandler<GEEventArgs> ScriptError;
 
         /// <summary>
-        /// Can be called from javascript to invoke method
+        /// Should be called from javascript to invoke a method in managed code
         /// </summary>
         /// <param name="name">the name of method to be called</param>
         /// <param name="parameters">array of parameter objects</param>

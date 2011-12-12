@@ -133,7 +133,7 @@ namespace FC.GEPluginCtrls
             }
             catch (RuntimeBinderException rbex)
             {
-                Debug.WriteLine("InvokeCallBack: " + rbex.ToString(), "External");
+                Debug.WriteLine("InvokeCallBack: " + rbex.Message, "External");
             }
         }
 
@@ -180,7 +180,7 @@ namespace FC.GEPluginCtrls
             }
             catch (RuntimeBinderException rbex)
             {
-                Debug.WriteLine("KmlEventCallBack: " + rbex.ToString(), "External");
+                Debug.WriteLine("KmlEventCallBack: " + rbex.Message, "External");
             }
         }
 
@@ -201,7 +201,7 @@ namespace FC.GEPluginCtrls
             }
             catch (RuntimeBinderException rbex)
             {
-                Debug.WriteLine("PluginEventCallBack: " + rbex.ToString(), "External");
+                Debug.WriteLine("PluginEventCallBack: " + rbex.Message, "External");
             }
         }
 
@@ -222,7 +222,7 @@ namespace FC.GEPluginCtrls
             }
             catch (RuntimeBinderException rbex)
             {
-                Debug.WriteLine("ViewEventCallBack: " + rbex.ToString(), "External");
+                Debug.WriteLine("ViewEventCallBack: " + rbex.Message, "External");
             }
         }
 
@@ -233,8 +233,8 @@ namespace FC.GEPluginCtrls
         /// <summary>
         /// Protected method for raising the PluginReady event
         /// </summary>
-        /// <param name="sender">The plugin object</param>
-        /// <param name="e">The Event arguments</param>
+        /// <param name="sender">The object that raised the event.</param>
+        /// <param name="e">Event arguments.</param>
         protected virtual void OnPluginReady(object sender, GEEventArgs e)
         {
             EventHandler<GEEventArgs> handler = this.PluginReady;
@@ -281,21 +281,24 @@ namespace FC.GEPluginCtrls
         /// <param name="e">The Event arguments</param>
         protected virtual void OnKmlFetched(GEEventArgs e)
         {
-            dynamic kmlObject = ((object[])e.ApiObject)[0];
-            string url = (string)((object[])e.ApiObject)[1];
-
-            lock (KmlObjectCache)
+            object[] result = e.ApiObject;
+            if (result.Length == 2)
             {
-                KmlObjectCache[url] = kmlObject;
-                GEWebBrowser.KmlObjectCacheSyncEvents[url].Set();
+                dynamic kmlObject = result[0];
+                string url = (string)result[1];
+                lock (KmlObjectCache)
+                {
+                    KmlObjectCache[url] = kmlObject;
+                    GEWebBrowser.KmlObjectCacheSyncEvents[url].Set();
+                }
             }
         }
 
         /// <summary>
         /// Protected method for raising the ScriptError event
         /// </summary>
-        /// <param name="sender">The sending object</param>
-        /// <param name="e">Event arguments</param>
+        /// <param name="sender">The object that raised the event.</param>
+        /// <param name="e">Event arguments.</param>
         protected virtual void OnScriptError(object sender, GEEventArgs e)
         {
             if (this.ScriptError != null)
@@ -307,8 +310,8 @@ namespace FC.GEPluginCtrls
         /// <summary>
         /// Protected method for raising the PluginEvent event
         /// </summary>
-        /// <param name="sender">The sending object</param>
-        /// <param name="e">Event arguments</param>
+        /// <param name="sender">The object that raised the event.</param>
+        /// <param name="e">Event arguments.</param>
         protected virtual void OnPluginEvent(object sender, GEEventArgs e)
         {
             if (this.PluginEvent != null)
@@ -320,8 +323,8 @@ namespace FC.GEPluginCtrls
         /// <summary>
         /// Protected method for raising the ViewEvent event
         /// </summary>
-        /// <param name="sender">The sending object</param>
-        /// <param name="e">Event arguments</param>
+        /// <param name="sender">The object that raised the event.</param>
+        /// <param name="e">Event arguments.</param>
         protected virtual void OnViewEvent(object sender, GEEventArgs e)
         {
             if (this.ViewEvent != null)

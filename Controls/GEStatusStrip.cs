@@ -42,7 +42,7 @@ namespace FC.GEPluginCtrls
         /// <summary>
         /// An instance of the current browser
         /// </summary>
-        private GEWebBrowser gewb = null;
+        private GEWebBrowser browser = null;
 
         /// <summary>
         /// Timer interval in miliseconds
@@ -246,7 +246,7 @@ namespace FC.GEPluginCtrls
         /// <example>Example: GEToolStrip.SetBrowserInstance(GEWebBrowser)</example>
         public void SetBrowserInstance(GEWebBrowser instance)
         {
-            this.gewb = instance;
+            this.browser = instance;
             this.geplugin = instance.Plugin;
 
             if (!GEHelpers.IsGE(this.geplugin))
@@ -254,7 +254,7 @@ namespace FC.GEPluginCtrls
                 throw new ArgumentException("ge is not of the type GEPlugin");
             }
 
-            if (this.gewb.PluginIsReady)
+            if (this.browser.PluginIsReady)
             {
                 this.Enabled = true;
                 this.timer = new Timer();
@@ -264,18 +264,18 @@ namespace FC.GEPluginCtrls
 
                 try
                 {
-                    this.browserVersionStatusLabel.Text = "ie " + this.gewb.Version.ToString();
+                    this.browserVersionStatusLabel.Text = "ie " + this.browser.Version.ToString();
                     this.apiVersionStatusLabel.Text = "api " + this.geplugin.getApiVersion();
                     this.pluginVersionStatusLabel.Text = "plugin " + this.geplugin.getPluginVersion();
                 }
                 catch (RuntimeBinderException rbex)
                 {
-                    Debug.WriteLine("SetBrowserInstance: " + rbex.ToString(), "StatusStrip");
+                    Debug.WriteLine("SetBrowserInstance: " + rbex.Message, "StatusStrip");
                     ////throw;
                 }
             }
 
-            this.gewb.PluginReady += (o, e) => this.Enabled = true;
+            this.browser.PluginReady += (o, e) => this.Enabled = true;
         }
 
         #endregion
@@ -285,11 +285,11 @@ namespace FC.GEPluginCtrls
         /// <summary>
         /// Timer tick callback function
         /// </summary>
-        /// <param name="sender">The sender</param>
-        /// <param name="e">Event arguments</param>
+        /// <param name="sender">The object that raised the event.</param>
+        /// <param name="e">Event arguments.</param>
         private void Timer_Tick(object sender, EventArgs e)
         {
-            if (this.gewb.PluginIsReady)
+            if (this.browser.PluginIsReady)
             {
                 float percent = 0;
 
@@ -300,6 +300,7 @@ namespace FC.GEPluginCtrls
                 catch (COMException)
                 {
                     this.timer.Stop();
+                    return;
                 }
 
                 try
@@ -321,6 +322,10 @@ namespace FC.GEPluginCtrls
                 {
                     // TODO sometimes on application close...need to look into this...
                 }
+            }
+            else
+            {
+                this.timer.Stop();
             }
         }
 

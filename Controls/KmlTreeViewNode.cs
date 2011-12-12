@@ -19,17 +19,30 @@
 namespace FC.GEPluginCtrls
 {
     using System;
-    using System.Diagnostics;
     using System.Runtime.InteropServices;
-    using System.Runtime.Serialization;
     using System.Windows.Forms;
+    using Microsoft.CSharp.RuntimeBinder;
 
     /// <summary>
-    /// Custom node class for the KmlTreeView <see cref="KmlTreeView"/>
+    /// Custom node class for the <see cref="KmlTreeView"/>
     /// </summary>
     [SerializableAttribute]
     public sealed class KmlTreeViewNode : TreeNode
     {
+        /// <summary>
+        /// Initializes a new instance of the KmlTreeViewNode class.
+        /// </summary>
+        internal KmlTreeViewNode()
+            : base()
+        {
+            this.ApiObject = null;
+            this.ApiType = ApiType.None;
+            this.ImageKey = this.SelectedImageKey = "linkFolderClosed_0";
+            this.Name = ApiType.None.ToString();
+            this.StateImageIndex = 0;
+            this.Text = "Loading...";
+        }
+
         /// <summary>
         /// Initializes a new instance of the KmlTreeViewNode class.
         /// </summary>
@@ -38,24 +51,24 @@ namespace FC.GEPluginCtrls
             : base()
         {
             this.ApiObject = kmlObject;
-
             try
             {
-                // The Name of a TreeNode is also the node's key
-                // If the node does not have a name, Name returns an empty string
-                // It makes sense then to bind the Name to the id of the underlying kml object.
-                // This means that the 'keys' should be unique within the tree.
+                // The 'Name' of a TreeNode is also the 'Key'
+                // If the node does not have a name, 'Name' and 'Key' return an empty string
+                // It makes sense to bind the 'Name' to the 'id' of the underlying kml object.
+                // Api 'id's' are unique and this means that the 'Keys' should be unique within the tree.
                 this.Name = kmlObject.getId();
-                this.ApiObjectType = kmlObject.getType();
+                this.ApiType = GEHelpers.GetApiType(kmlObject);
                 this.Text = kmlObject.getName();
-                this.Checked = Convert.ToBoolean(kmlObject.getVisibility());
-                this.ApiObjectVisible = this.Checked;
-                this.SetStyle();
+                this.ApiObjectVisible = Convert.ToBoolean(kmlObject.getVisibility());
+                this.StateImageIndex = this.ApiObjectVisible ? 1 : 0;
+                this.Checked = this.ApiObjectVisible;
             }
-            catch (COMException)
+            catch (RuntimeBinderException)
             {
-                return;
             }
+
+            this.SetStyle();
         }
 
         #region Public Properties 
@@ -75,9 +88,10 @@ namespace FC.GEPluginCtrls
         public dynamic ApiObject { get; private set; }
 
         /// <summary>
-        /// Gets a value indicating the interface name (i.e. 'KmlPlacemark') of the underlying kml object.
+        /// Gets a value indicating the api type (e.g. KmlPlacemark, KmlDocument)
+        /// of the underlying <see cref="ApiObject">feature</see> the node represents.
         /// </summary>
-        public string ApiObjectType { get; private set; }
+        public ApiType ApiType { get; private set; }
 
         #endregion
 
@@ -95,8 +109,10 @@ namespace FC.GEPluginCtrls
 
         /// <summary>
         /// Gets the url of the underlying kml object.
-        /// <remarks>The url is obtained via kmlHelpers to support for legacy kml spcifications</remarks>
         /// </summary>
+        /// <remarks>
+        /// The url is obtained via kmlHelpers which adds support for legacy kml spcifications.
+        /// </remarks>
         internal string KmlUrl
         {
             get
@@ -141,9 +157,9 @@ namespace FC.GEPluginCtrls
                 {
                     return Convert.ToBoolean(this.ApiObject.getVisibility());
                 }
-                catch (COMException cex)
+                catch (COMException)
                 {
-                    Debug.WriteLine("ApiObjectVisible: " + cex.ToString(), "KmlTreeViewNode");
+                    ////Debug.WriteLine("ApiObjectVisible: " + cex.Message, "KmlTreeViewNode");
                     return false;
                 }
             }
@@ -154,9 +170,8 @@ namespace FC.GEPluginCtrls
                 {
                     this.ApiObject.setVisibility(Convert.ToUInt16(value));
                 }
-                catch (COMException cex)
+                catch (COMException)
                 {
-                    Debug.WriteLine("ApiObjectVisible: " + cex.ToString(), "KmlTreeViewNode");
                 }
             }
         }
@@ -170,7 +185,7 @@ namespace FC.GEPluginCtrls
         /// </summary>
         internal void SetStyle()
         {
-            switch (this.ApiObjectType)
+            switch (this.ApiType)
             {
                 case ApiType.KmlDocument:
                 case ApiType.KmlFolder:
@@ -257,12 +272,13 @@ namespace FC.GEPluginCtrls
         internal void Animate()
         {
             this.IsLoading = true;
-            int i = 2;
+
             Timer t = new Timer();
             t.Interval = 500;
             t.Enabled = true;
-          
-            t.Tick += (o, e) => 
+            int i = 2;
+
+            t.Tick += (o, e) =>
             {
                 if (i >= 0)
                 {
