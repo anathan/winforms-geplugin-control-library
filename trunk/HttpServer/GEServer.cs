@@ -42,17 +42,12 @@ namespace FC.GEPluginCtrls.HttpServer
         /// <summary>
         /// Server tcp listner
         /// </summary>
-        private TcpListener tcpListener;
+        private TcpListener tcpListener = null;
 
         /// <summary>
         /// Server socket 
         /// </summary>
         private Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-
-        /// <summary>
-        /// Default file name to look for in a directory
-        /// </summary>
-        private string defaultFileName = "default.kml";
 
         /// <summary>
         /// Keep listening switch
@@ -73,7 +68,7 @@ namespace FC.GEPluginCtrls.HttpServer
         {
             this.Port = 8080;
             this.RootDirectory = @"\";
-            this.defaultFileName = "default.kml";
+            this.DefaultFileName = "default.kml";
             this.IPAddress = IPAddress.Loopback;
         }
 
@@ -92,15 +87,7 @@ namespace FC.GEPluginCtrls.HttpServer
         {
             this.Port = port;
             this.RootDirectory = rootDirectory;
-            this.defaultFileName = defaultFileName;
-
-            // setting a tcp port of zero (0) will find
-            // first available port and pass it back as the assigned port.
-            // see: http://code.google.com/p/winforms-geplugin-control-library/issues/detail?id=27
-            if (this.Port == 0)
-            {
-                this.Port = ((IPEndPoint)this.tcpListener.LocalEndpoint).Port;
-            }
+            this.DefaultFileName = defaultFileName;
 
             if (ip == null)
             {
@@ -134,23 +121,7 @@ namespace FC.GEPluginCtrls.HttpServer
         /// Gets or sets the default file name 
         /// The default value is "default.kml"
         /// </summary>
-        public string DefaultFileName
-        {
-            get
-            {
-                return this.defaultFileName;
-            }
-
-            set
-            {
-                if (value.IndexOfAny(Path.GetInvalidFileNameChars()) != -1)
-                {
-                    throw new ArgumentException("Invalid Characters in default filename");
-                }
-
-                this.DefaultFileName = value;
-            }
-        }
+        public string DefaultFileName { get; set; }
 
         /// <summary>
         /// Gets or sets the IP Address for the server to use 
@@ -172,7 +143,7 @@ namespace FC.GEPluginCtrls.HttpServer
         #endregion
 
         #region Public methods
-        
+
         /// <summary>
         /// Dispose of managed resources 
         /// </summary>
@@ -190,6 +161,14 @@ namespace FC.GEPluginCtrls.HttpServer
             this.tcpListener = new TcpListener(this.IPAddress, this.Port);
             this.tcpListener.Start();
 
+            // setting a tcp port of zero (0) will find
+            // first available port and pass it back as the assigned port.
+            // see: http://code.google.com/p/winforms-geplugin-control-library/issues/detail?id=27
+            if (this.Port == 0)
+            {
+                this.Port = ((IPEndPoint)this.tcpListener.LocalEndpoint).Port;
+            }
+
             // start the listen thread
             this.listenTask = Task.Factory.StartNew(
                 () =>
@@ -197,6 +176,7 @@ namespace FC.GEPluginCtrls.HttpServer
                 TaskCreationOptions.LongRunning);
 
             this.keepListening = true;
+
             Debug.WriteLine("Start...", "Server-Info");
         }
 
@@ -266,7 +246,7 @@ namespace FC.GEPluginCtrls.HttpServer
             if (string.IsNullOrEmpty(fileName))
             {
                 // try the default filename
-                fileName = this.defaultFileName;
+                fileName = this.DefaultFileName;
             }
 
             return fileName;
@@ -322,51 +302,15 @@ namespace FC.GEPluginCtrls.HttpServer
         /// </summary>
         /// <param name="data">a raw http header string</param>
         /// <returns>a <see cref="HttpRequest"/> object based on the raw data</returns>
-        private HttpRequest PraseRawRequest(string data)
+        private HttpRequest GetRequest(string data)
         {
-            // split the request by CRLF into lines
-            string[] headerLines = data.Split(
-                new string[] { Environment.NewLine },
-                StringSplitOptions.RemoveEmptyEntries);
+            HttpRequest request = new HttpRequest(data);
 
-            HttpRequest request = new HttpRequest();
-
-            // Find the headers we are interested in from the request
-            foreach (string line in headerLines)
+            if (string.IsNullOrEmpty(request.Method) ||
+               string.IsNullOrEmpty(request.HttpVersion))
             {
-                // Get and head only...
-                if (line.StartsWith("GET", StringComparison.OrdinalIgnoreCase))
-                {
-                    Debug.WriteLine(line, "Server-Request");
-                    request.ReqestTokens = line.Split(' ');
-                    request.Method = "GET";
-                }
-                else if (line.StartsWith("HEAD", StringComparison.OrdinalIgnoreCase))
-                {
-                    Debug.WriteLine(line, "Server-Request");
-                    request.ReqestTokens = line.Split(' ');
-                    request.Method = "HEAD";
-                }
-                else if (line.StartsWith("User-Agent:", StringComparison.OrdinalIgnoreCase))
-                {
-                    request.UserAgent = line;
-                }
-                else if (line.StartsWith("Host:", StringComparison.OrdinalIgnoreCase))
-                {
-                    request.HostHeader = line;
-                }
-            }
-
-            // There must be three tokens: Method, Request-URI and HTTP-Version
-            if (request.ReqestTokens.Length != 3)
-            {
-                Debug.WriteLine("400 Bad Request", "Server-Error");
                 this.SendError(HttpStatusCode.BadRequest);
-            }
-            else
-            {
-                // we use the request uri to translate the local file path later...
-                request.Uri = request.ReqestTokens[1];
+                return request;
             }
 
             // Handle GET and HEAD requests otherwise send 501 NotImplemented
@@ -374,32 +318,34 @@ namespace FC.GEPluginCtrls.HttpServer
             // see http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.4
             if (request.Method != "GET" && request.Method != "HEAD")
             {
-                Debug.WriteLine("501 Not Implemented", "Server-Error");
                 this.SendError(HttpStatusCode.NotImplemented);
+                return request;
             }
 
             // HTTP-Version 
             // Handle version 1.1 otherwise send 505 HttpVersionNotSupported
-            if (request.ReqestTokens[2] != this.httpVersion)
+            if (request.HttpVersion != this.httpVersion)
             {
-                Debug.WriteLine("505 Http Version Not Supported", "Server-Error");
                 this.SendError(HttpStatusCode.HttpVersionNotSupported);
+                return request;
             }
 
             // Host
             // Reject any requset that does not have a host header
             if (string.IsNullOrEmpty(request.HostHeader))
             {
-                Debug.WriteLine("400 Bad Request", "Server-Error");
                 this.SendError(HttpStatusCode.BadRequest);
+                return request;
             }
 
             // User-Agent
             // Handle GoogleEarth otherwise send 403 Forbidden
-            if (!request.UserAgent.StartsWith("User-Agent: GoogleEarth", StringComparison.OrdinalIgnoreCase))
+            if (!request.UserAgent.StartsWith(
+                "User-Agent: GoogleEarth", 
+                StringComparison.OrdinalIgnoreCase))
             {
-                Debug.WriteLine("403 Forbidden", "Server-Error");
                 this.SendError(HttpStatusCode.Forbidden);
+                return request;
             }
 
             return request;
@@ -409,7 +355,7 @@ namespace FC.GEPluginCtrls.HttpServer
         /// Receive raw data from the socket until encountering CRLF CRLF
         /// </summary>
         /// <returns>The raw http reqest header as a string</returns>
-        private string ReceiveHeader()
+        private string ReceiveRawHeader()
         {
             byte[] buffer = new byte[1024]; // 1KB
             string data = string.Empty;
@@ -429,7 +375,7 @@ namespace FC.GEPluginCtrls.HttpServer
             }
             catch (SocketException sex)
             {
-                Debug.WriteLine("StartListen" + sex.ToString(), "Server-Error");
+                Debug.WriteLine("ReceiveHeader" + sex.ToString(), "Server-Error");
                 this.SendError(HttpStatusCode.InternalServerError);
             }
 
@@ -458,6 +404,7 @@ namespace FC.GEPluginCtrls.HttpServer
         private void SendHeader(string mime, int bytes, HttpStatusCode code)
         {
             string httpDate = DateTime.Now.ToUniversalTime().ToString("r", CultureInfo.InvariantCulture);
+            string status = string.Format(CultureInfo.InvariantCulture, "{0} {1}", (int)code, code.ToString());
             StringBuilder data = new StringBuilder();
 
             // Status-Line
@@ -465,20 +412,18 @@ namespace FC.GEPluginCtrls.HttpServer
             // See http://www.w3.org/Protocols/rfc2616/rfc2616-sec6.html#sec6.1
             data.AppendFormat(
                 CultureInfo.InvariantCulture,
-                "{0} {1} {2}{3}",
+                "{0} {1}{2}",
                 this.httpVersion,
-                (int)code,
-                code.ToString(),
+                status,
                 Environment.NewLine);
-            
             data.AppendFormat("Date: {0}{1}", httpDate, Environment.NewLine);
             data.AppendLine("Accept-Ranges: bytes");
             data.AppendFormat("Content-Length: {0}{1}", bytes, Environment.NewLine);
             data.AppendFormat("Content-Type: {0}{1}", mime, Environment.NewLine);
-            data.AppendLine("Connection: close");
             data.AppendLine();
 
             this.SendToClient(data.ToString());
+            Debug.WriteLine(status, "Server-Response");
         }
 
         /// <summary>
@@ -529,33 +474,23 @@ namespace FC.GEPluginCtrls.HttpServer
             string localDirectory = this.GetLocalDirectory(requestUri);
             string localPath = localDirectory + localFile;
 
-            // If no file or directory exists then send 404 NotFound
             if (string.IsNullOrEmpty(localDirectory))
             {
-                Debug.WriteLine("404 Not Found (File/Directory missing)", "Server-Error");
-                Debug.WriteLine("Translated path: " + localDirectory + localFile, "Server-Info");
                 this.SendError(HttpStatusCode.NotFound);
             }
-
-            if (File.Exists(localPath))
+            else if (File.Exists(localPath))
             {
-                // Send then file 200 OK
                 byte[] bytes = File.ReadAllBytes(localPath);
                 string response = Encoding.UTF8.GetString(bytes);
                 string mimeType = this.GetMimeType(localPath);
-
-                Debug.WriteLine("200 OK", "Server-Response");
-
                 this.SendHeader(mimeType, bytes.Length, HttpStatusCode.OK);
                 this.SendToClient(bytes);
             }
             else
             {
-                // Send a 404 NotFound
-                Debug.WriteLine("404 Not Found", "Server-Error");
+                this.SendError(HttpStatusCode.NotFound);
                 Debug.WriteLine("Requested path: " + requestUri, "Server-Info");
                 Debug.WriteLine("Translated path: " + localPath, "Server-Info");
-                this.SendError(HttpStatusCode.NotFound);
             }
         }
 
@@ -574,8 +509,8 @@ namespace FC.GEPluginCtrls.HttpServer
                     {
                         this.listenTask.Wait(100);
                     }
-                    catch (NullReferenceException)
-                    {
+                    catch (NullReferenceException) 
+                    { 
                     }
                 }
                 else
@@ -587,8 +522,11 @@ namespace FC.GEPluginCtrls.HttpServer
                 if (this.socket.Connected)
                 {
                     Debug.WriteLine("Connected: " + this.socket.RemoteEndPoint, "Server-Info");
-                    HttpRequest request = this.PraseRawRequest(this.ReceiveHeader());
-                    this.ServeFile(request.Uri);
+                    string header = this.ReceiveRawHeader();
+                    if (!string.IsNullOrEmpty(header))
+                    {
+                        this.ServeFile(this.GetRequest(header).Uri);
+                    }
                 }
             }
         }

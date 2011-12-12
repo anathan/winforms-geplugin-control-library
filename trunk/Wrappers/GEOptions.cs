@@ -309,7 +309,13 @@ namespace FC.GEPluginCtrls
         /// <param name="mapType">The maptype to use in the plugin</param>
         public void SetMapType(MapType mapType)
         {
-            this.options.setMapType(mapType);
+            try
+            {
+                this.options.setMapType(mapType);
+            }
+            catch (System.Runtime.InteropServices.COMException)
+            {
+            }
         }
 
         #endregion

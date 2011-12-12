@@ -39,17 +39,17 @@ namespace FC.GEPluginCtrls
         /// Use the IGEPlugin COM interface. 
         /// Equivalent to QueryInterface for COM objects
         /// </summary>
-        private dynamic geplugin = null;
+        private dynamic plugin = null;
 
         /// <summary>
         /// An instance of the current browser
         /// </summary>
-        private GEWebBrowser gewb = null;
+        private GEWebBrowser browser = null;
 
         /// <summary>
         /// An instance of the options wrapper class
         /// </summary>
-        private GEOptions geoptions = null;
+        private GEOptions options = null;
 
         /// <summary>
         /// The plugin navigation cotrol 
@@ -236,22 +236,15 @@ namespace FC.GEPluginCtrls
         /// <example>Example: GEToolStrip.SetBrowserInstance(GEWebBrowser)</example>
         public void SetBrowserInstance(GEWebBrowser instance)
         {
-            this.gewb = instance;
-            this.geplugin = instance.Plugin;
+            this.browser = instance;
+            this.plugin = instance.Plugin;
 
-            if (this.gewb.PluginIsReady)
+            if (this.browser.PluginIsReady)
             {
-                this.geoptions = new GEOptions(this.geplugin);
-                this.control = new GENavigationControl(this.geplugin);
+                this.options = new GEOptions(this.plugin);
+                this.control = new GENavigationControl(this.plugin);
                 this.SynchronizeOptions();
                 this.Enabled = true;
-
-                // sycn the tool stip options whenever the Ready event is fired by the browser
-                this.gewb.PluginReady += (o, e) =>
-                {
-                    this.Enabled = true;
-                    this.SynchronizeOptions();
-                };
             }
         }
 
@@ -286,45 +279,43 @@ namespace FC.GEPluginCtrls
         /// </summary>
         private void SynchronizeOptions()
         {
-            if (this.gewb.PluginIsReady)
+            if (this.browser.PluginIsReady)
             {
-                this.geoptions.StatusBarVisibility = this.statusBarMenuItem.Checked;
-                this.geoptions.StatusBarVisibility = this.statusBarMenuItem.Checked;
-                this.geoptions.GridVisibility = this.gridMenuItem.Checked;
-                this.geoptions.OverviewMapVisibility = this.overviewMapMenuItem.Checked;
-                this.geoptions.ScaleLegendVisibility = this.scaleLegendMenuItem.Checked;
-                this.geoptions.AtmosphereVisibility = this.atmosphereMenuItem.Checked;
-                this.geoptions.MouseNavigationEnabled = this.mouseNavigationMenuItem.Checked;
-                this.geoptions.ScaleLegendVisibility = this.scaleLegendMenuItem.Checked;
-                this.geoptions.OverviewMapVisibility = this.overviewMapMenuItem.Checked;
-                this.geoptions.UnitsFeetMiles = this.imperialUnitsMenuItem.Checked;
+                // checked: t(1)+1=2 = MapType.Sky - unchecked: f(0)+1=1 = MapType.Earth
+                this.options.SetMapType(((MapType)Convert.ToUInt16(this.skyMenuItem.Checked) + 1));
 
-                // checked: t(1) + 1 = 2 = MapType.Sky
-                // unchecked: f(0) + 1 = 1 = MapType.Earth
-                this.geoptions.SetMapType(((MapType)Convert.ToUInt16(this.skyMenuItem.Checked) + 1));
+                this.options.StatusBarVisibility = this.statusBarMenuItem.Checked;
+                this.options.StatusBarVisibility = this.statusBarMenuItem.Checked;
+                this.options.GridVisibility = this.gridMenuItem.Checked;
+                this.options.OverviewMapVisibility = this.overviewMapMenuItem.Checked;
+                this.options.ScaleLegendVisibility = this.scaleLegendMenuItem.Checked;
+                this.options.AtmosphereVisibility = this.atmosphereMenuItem.Checked;
+                this.options.MouseNavigationEnabled = this.mouseNavigationMenuItem.Checked;
+                this.options.ScaleLegendVisibility = this.scaleLegendMenuItem.Checked;
+                this.options.OverviewMapVisibility = this.overviewMapMenuItem.Checked;
+                this.options.UnitsFeetMiles = this.imperialUnitsMenuItem.Checked;
+                this.control.Visibility = (Visibility)Convert.ToUInt16(this.controlsMenuItem.Checked);
 
-                // sun
-                this.geplugin.getSun().setVisibility(Convert.ToUInt16(this.sunMenuItem.Checked));
+                // no wrapper for the sun - so make a direct api call to GEPlugin.getSun().setVisibility()
+                this.plugin.getSun().setVisibility(Convert.ToUInt16(this.sunMenuItem.Checked));
 
-                // controls
-                this.geplugin.getNavigationControl().setVisibility(Convert.ToUInt16(this.controlsMenuItem.Checked));
-
-                if (this.gewb.ImageryBase == ImageryBase.Earth)
+                if (this.browser.ImageryBase == ImageryBase.Earth)
                 {
-                    GEHelpers.EnableLayerById(this.geplugin, Layer.Borders, this.bordersMenuItem.Checked);
-                    GEHelpers.EnableLayerById(this.geplugin, Layer.Buildings, this.buildingsMenuItem.Checked);
-                    GEHelpers.EnableLayerById(this.geplugin, Layer.BuildingsLowRes, this.buildingsGreyMenuItem.Checked);
-                    GEHelpers.EnableLayerById(this.geplugin, Layer.Roads, this.roadsMenuItem.Checked);
-                    GEHelpers.EnableLayerById(this.geplugin, Layer.Terrain, this.terrainMenuItem.Checked);
-                    GEHelpers.EnableLayerById(this.geplugin, Layer.Trees, this.treesMenuItem.Checked);
+                    GEHelpers.EnableLayer(this.plugin, Layer.Borders, this.bordersMenuItem.Checked);
+                    GEHelpers.EnableLayer(this.plugin, Layer.Buildings, this.buildingsMenuItem.Checked);
+                    GEHelpers.EnableLayer(this.plugin, Layer.BuildingsLowRes, this.buildingsGreyMenuItem.Checked);
+                    GEHelpers.EnableLayer(this.plugin, Layer.Roads, this.roadsMenuItem.Checked);
+                    GEHelpers.EnableLayer(this.plugin, Layer.Terrain, this.terrainMenuItem.Checked);
+                    GEHelpers.EnableLayer(this.plugin, Layer.Trees, this.treesMenuItem.Checked);
 
-                    // imagery 
                     foreach (ToolStripMenuItem item in this.imageryDropDownButton.DropDownItems)
                     {
+                        // every imagery item is enabled and unchecked
                         item.Enabled = true;
                         item.Checked = false;
                     }
 
+                    // the Earth item is checked and disabled
                     this.earthMenuItem.Checked = true;
                     this.earthMenuItem.Enabled = false;
                 }
@@ -355,8 +346,8 @@ namespace FC.GEPluginCtrls
         /// <summary>
         /// Called when the KeyUp event is rasied in the navigation text box
         /// </summary>
-        /// <param name="sender">The text box</param>
-        /// <param name="e">KeyEvent arguments</param>
+        /// <param name="sender">The object that raised the event.</param>
+        /// <param name="e">Event arguments.</param>
         private void NavigationTextBox_KeyUp(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Enter)
@@ -372,8 +363,8 @@ namespace FC.GEPluginCtrls
         /// <summary>
         /// Called when the 'go' navigation button is clicked
         /// </summary>
-        /// <param name="sender">The 'go' button</param>
-        /// <param name="e">Event arguments</param>
+        /// <param name="sender">The object that raised the event.</param>
+        /// <param name="e">Event arguments.</param>
         private void NavigationButton_Click(object sender, EventArgs e)
         {
             string input = this.navigationTextBox.Text;
@@ -389,15 +380,15 @@ namespace FC.GEPluginCtrls
 
                 if (System.IO.File.Exists(input))
                 {
-                  this.gewb.FetchKmlLocal(input);
+                    this.browser.FetchKmlLocal(input);
                 }
                 else if (input.StartsWith("http", StringComparison.OrdinalIgnoreCase) ||
                     input.StartsWith("www", StringComparison.OrdinalIgnoreCase))
                 {
                     // input is a remote file...
-                    this.gewb.FetchKml(input);
+                    this.browser.FetchKml(input);
                 }
-                else if(input.Contains(","))
+                else if (input.Contains(","))
                 {
                     // input is possibly decimal coordinates
                     string[] parts = input.Split(',');
@@ -406,18 +397,19 @@ namespace FC.GEPluginCtrls
                     {
                         double latitude;
                         double longitude;
-  
+
                         if (double.TryParse(parts[0], out latitude) &&
                             double.TryParse(parts[1], out longitude))
                         {
-                            GEHelpers.CreateLookAt(this.geplugin, latitude, longitude);
+                            KmlHelpers.CreateLookAt(this.plugin, latitude, longitude);
                         }
                     }
                 }
                 else
                 {
                     // finally attempt to geocode the input
-                    this.gewb.InvokeDoGeocode(input);
+                    // fly to the point here or in javascript? 
+                    dynamic point = this.browser.InvokeDoGeocode(input);
                 }
             }
         }
@@ -425,38 +417,38 @@ namespace FC.GEPluginCtrls
         /// <summary>
         /// Called when the refresh button is clicked
         /// </summary>
-        /// <param name="sender">The sending object</param>
-        /// <param name="e">The Event arguments</param>
+        /// <param name="sender">The object that raised the event.</param>
+        /// <param name="e">Event arguments.</param>
         private void RefreshButton_Click(object sender, EventArgs e)
         {
-            this.gewb.Refresh();
+            this.browser.Refresh();
         }
 
         /// <summary>
         /// Called when an item in the layers menu is clicked 
         /// </summary>
-        /// <param name="sender">layers menu</param>
-        /// <param name="e">Event arguments</param>
+        /// <param name="sender">The object that raised the event.</param>
+        /// <param name="e">Event arguments.</param>
         private void LayersItem_Clicked(object sender, EventArgs e)
         {
             ToolStripMenuItem item = sender as ToolStripMenuItem;
 
-            if (this.gewb.PluginIsReady && (item != null))
+            if (this.browser.PluginIsReady && (item != null))
             {
-                GEHelpers.EnableLayerById(this.geplugin, (Layer)item.Tag, item.Checked);
+                GEHelpers.EnableLayer(this.plugin, (Layer)item.Tag, item.Checked);
             }
         }
 
         /// <summary>
         /// Called when an item in the options menu is clicked 
         /// </summary>
-        /// <param name="sender">options menu</param>
-        /// <param name="e">Event arguments</param>
+        /// <param name="sender">The object that raised the event.</param>
+        /// <param name="e">Event arguments.</param>
         private void OptionsItem_Clicked(object sender, EventArgs e)
         {
             ToolStripMenuItem item = sender as ToolStripMenuItem;
 
-            if (this.gewb.PluginIsReady && (item != null))
+            if (this.browser.PluginIsReady && (item != null))
             {
                 string type = item.Tag.ToString();
 
@@ -465,31 +457,31 @@ namespace FC.GEPluginCtrls
                     switch (type)
                     {
                         case "FADEINOUT":
-                            this.geoptions.FadeInOutEnabled = item.Checked;
+                            this.options.FadeInOutEnabled = item.Checked;
                             break;
                         case "IMPERIAL":
-                            this.geoptions.UnitsFeetMiles = item.Checked;
+                            this.options.UnitsFeetMiles = item.Checked;
                             break;
                         case "ATMOSPHERE":
-                            this.geoptions.AtmosphereVisibility = item.Checked;
+                            this.options.AtmosphereVisibility = item.Checked;
                             break;
                         case "CONTROLS":
                             this.control.Visibility = (Visibility)Convert.ToUInt16(item.Checked);
                             break;
                         case "GRID":
-                            this.geoptions.GridVisibility = item.Checked;
+                            this.options.GridVisibility = item.Checked;
                             break;
                         case "MOUSE":
-                            this.geoptions.MouseNavigationEnabled = item.Checked;
+                            this.options.MouseNavigationEnabled = item.Checked;
                             break;
                         case "OVERVIEW":
-                            this.geoptions.OverviewMapVisibility = item.Checked;
+                            this.options.OverviewMapVisibility = item.Checked;
                             break;
                         case "SCALE":
-                            this.geoptions.ScaleLegendVisibility = item.Checked;
+                            this.options.ScaleLegendVisibility = item.Checked;
                             break;
                         case "STATUS":
-                            this.geoptions.StatusBarVisibility = item.Checked;
+                            this.options.StatusBarVisibility = item.Checked;
                             break;
                         default:
                             break;
@@ -497,7 +489,7 @@ namespace FC.GEPluginCtrls
                 }
                 catch (RuntimeBinderException rbex)
                 {
-                    Debug.WriteLine("OptionsItem_Clicked: " + rbex.ToString(), "ToolStrip");
+                    Debug.WriteLine("OptionsItem_Clicked: " + rbex.Message, "ToolStrip");
                 }
             }
         }
@@ -505,13 +497,13 @@ namespace FC.GEPluginCtrls
         /// <summary>
         /// Called when an item in the view menu is clicked 
         /// </summary>
-        /// <param name="sender">view  menu</param>
-        /// <param name="e">Event arguments</param>
+        /// <param name="sender">The object that raised the event.</param>
+        /// <param name="e">Event arguments.</param>
         private void ViewItem_Clicked(object sender, EventArgs e)
         {
             ToolStripMenuItem item = (ToolStripMenuItem)sender;
 
-            if (this.gewb.PluginIsReady && (item != null))
+            if (this.browser.PluginIsReady && (item != null))
             {
                 string type = item.Tag.ToString();
                 int value = Convert.ToUInt16(item.Checked);
@@ -524,19 +516,19 @@ namespace FC.GEPluginCtrls
                             this.layersDropDownButton.Enabled = !item.Checked;
                             if (item.Checked)
                             {
-                                this.geoptions.SetMapType(MapType.Sky);
+                                this.options.SetMapType(MapType.Sky);
                             }
                             else
                             {
-                                this.geoptions.SetMapType(MapType.Earth);
+                                this.options.SetMapType(MapType.Earth);
                             }
 
                             break;
                         case "SUN":
-                            this.geplugin.getSun().setVisibility(value);
+                            this.plugin.getSun().setVisibility(value);
                             break;
                         case "HISTORY":
-                            this.geplugin.getTime().setHistoricalImageryEnabled(value);
+                            this.plugin.getTime().setHistoricalImageryEnabled(value);
                             break;
                         default:
                             break;
@@ -544,7 +536,7 @@ namespace FC.GEPluginCtrls
                 }
                 catch (RuntimeBinderException rbex)
                 {
-                    Debug.WriteLine("ViewItem_Clicked: " + rbex.ToString(), "ToolStrip");
+                    Debug.WriteLine("ViewItem_Clicked: " + rbex.Message, "ToolStrip");
                 }
             }
         }
@@ -552,13 +544,13 @@ namespace FC.GEPluginCtrls
         /// <summary>
         /// Called when an item in the imagery menu is clicked 
         /// </summary>
-        /// <param name="sender">imagery menu</param>
-        /// <param name="e">Event arguments</param>
+        /// <param name="sender">The object that raised the event.</param>
+        /// <param name="e">Event arguments.</param>
         private void ImageryItem_Clicked(object sender, EventArgs e)
         {
             ToolStripMenuItem selectedItem = sender as ToolStripMenuItem;
 
-            if (this.gewb.PluginIsReady && (selectedItem != null))
+            if (this.browser.PluginIsReady && (selectedItem != null))
             {
                 ImageryBase type = (ImageryBase)selectedItem.Tag;
 
@@ -590,20 +582,20 @@ namespace FC.GEPluginCtrls
                             this.viewInMapsButton.Enabled = false;
                             this.historyMenuItem.Enabled = false;
                             this.Enabled = false;
-                            this.gewb.CreateInstance(type);
+                            this.browser.CreateInstance(type);
                             break;
                         case ImageryBase.Earth:
                         default:
                             this.layersDropDownButton.Enabled = true;
                             this.viewInMapsButton.Enabled = true;
                             this.historyMenuItem.Enabled = true;
-                            this.gewb.CreateInstance(ImageryBase.Earth);
+                            this.browser.CreateInstance(ImageryBase.Earth);
                             break;
                     }
                 }
                 catch (RuntimeBinderException rbex)
                 {
-                    Debug.WriteLine("ImageryItem_Clicked: " + rbex.ToString(), "ToolStrip");
+                    Debug.WriteLine("ImageryItem_Clicked: " + rbex.Message, "ToolStrip");
                     ////throw;
                 }
 
@@ -615,14 +607,14 @@ namespace FC.GEPluginCtrls
         /// <summary>
         /// Called when the Screen grab button is clicked 
         /// </summary>
-        /// <param name="sender">Screen grab button</param>
-        /// <param name="e">Event arguments</param>
+        /// <param name="sender">The object that raised the event.</param>
+        /// <param name="e">Event arguments.</param>
         private void ScreenGrabButton_Click(object sender, EventArgs e)
         {
-            if (this.gewb.PluginIsReady)
+            if (this.browser.PluginIsReady)
             {
                 // Take a 'screen grab' of the plugin
-                Bitmap image = this.gewb.ScreenGrab();
+                Bitmap image = this.browser.ScreenGrab();
 
                 // Save the file with a dialog
                 SaveFileDialog dialog = new SaveFileDialog();
@@ -638,21 +630,21 @@ namespace FC.GEPluginCtrls
         /// <summary>
         /// Called when the view in maps button is clicked
         /// </summary>
-        /// <param name="sender">View in maps button</param>
-        /// <param name="e">Event arguments</param>
+        /// <param name="sender">The object that raised the event.</param>
+        /// <param name="e">Event arguments.</param>
         private void ViewInMapsButton_Click(object sender, EventArgs e)
         {
-            if (this.gewb.PluginIsReady)
+            if (this.browser.PluginIsReady)
             {
-                GEHelpers.ShowCurrentViewInMaps(this.geplugin);
+                GEHelpers.ShowCurrentViewInMaps(this.plugin);
             }
         }
 
         /// <summary>
         /// Called when the tool strip layout changes
         /// </summary>
-        /// <param name="sender">The ToolStrip</param>
-        /// <param name="e">LayoutEvent arguments</param>
+        /// <param name="sender">The object that raised the event.</param>
+        /// <param name="e">Event arguments.</param>
         private void GEToolStrip_Layout(object sender, LayoutEventArgs e)
         {
             this.navigationTextBox.Width = this.Width / 3;
@@ -661,12 +653,12 @@ namespace FC.GEPluginCtrls
         /// <summary>
         /// Called whenever the language combobox selected index is changed
         /// </summary>
-        /// <param name="sender">The language combobox</param>
-        /// <param name="e">The event arguments</param>
+        /// <param name="sender">The object that raised the event.</param>
+        /// <param name="e">Event arguments.</param>
         private void LanguageComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             ToolStripMenuItem item = this.languageComboBox.SelectedItem as ToolStripMenuItem;
-            this.gewb.SetLanguage(item.Tag.ToString());
+            this.browser.SetLanguage(item.Tag.ToString());
         }
 
         #endregion

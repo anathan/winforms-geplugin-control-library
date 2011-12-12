@@ -18,6 +18,8 @@
 // </summary>
 namespace FC.GEPluginCtrls
 {
+    using System.ComponentModel;
+
     /// <summary>
     /// Enumeration of the available layers for the plug-in.
     /// </summary>
@@ -26,43 +28,43 @@ namespace FC.GEPluginCtrls
         /// <summary>
         /// No layer (none)
         /// </summary>
-        [StringValueAttribute("")]
+        [Description("")]
         None = 0,
 
         /// <summary>
         /// The Terrain layer
         /// </summary>
-        [StringValueAttribute("terrainUUID")]
+        [Description("terrainUUID")]
         Terrain = 1,
 
         /// <summary>
         /// The Buildings layer
         /// </summary>
-        [StringValueAttribute("2a412484-7181-11de-8092-17a790575c91")]
+        [Description("2a412484-7181-11de-8092-17a790575c91")]
         Buildings = 2,
 
         /// <summary>
         /// The Low Resolution (grey) Buildings layer
         /// </summary>
-        [StringValueAttribute("3a5bb88e-7181-11de-88da-17a790575c91")]
+        [Description("3a5bb88e-7181-11de-88da-17a790575c91")]
         BuildingsLowRes = 3,
 
         /// <summary>
         /// The Borders layer
         /// </summary>
-        [StringValueAttribute("53004770-c7b3-11dc-92c2-dd553d8c9902")]
+        [Description("53004770-c7b3-11dc-92c2-dd553d8c9902")]
         Borders = 4,
 
         /// <summary>
         /// The Roads layer
         /// </summary>
-        [StringValueAttribute("4ddec456-c7b3-11dc-aaa5-dd553d8c9902")]
+        [Description("4ddec456-c7b3-11dc-aaa5-dd553d8c9902")]
         Roads = 5,
 
         /// <summary>
         /// The Tree layer
         /// </summary>
-        [StringValueAttribute("8d540610-9429-11df-ad05-451522926098")]
+        [Description("8d540610-9429-11df-ad05-451522926098")]
         Trees = 6
     }
 }

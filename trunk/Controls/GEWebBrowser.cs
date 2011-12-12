@@ -58,7 +58,7 @@ namespace FC.GEPluginCtrls
         /// Use the IGEPlugin COM interface. 
         /// Equivalent to QueryInterface for COM objects
         /// </summary>
-        private dynamic geplugin = null;
+        private dynamic plugin = null;
 
         /// <summary>
         /// Current plug-in Imagery database
@@ -68,7 +68,7 @@ namespace FC.GEPluginCtrls
         /// <summary>
         /// Indicates whether the plug-in is ready to use.
         /// </summary>
-        private volatile bool pluginIsReady = false;
+        private bool pluginIsReady = false;
 
         #endregion
 
@@ -90,9 +90,9 @@ namespace FC.GEPluginCtrls
             {
                 if (null != e.ApiObject)
                 {
-                    this.geplugin = e.ApiObject;
+                    this.plugin = e.ApiObject;
                     this.pluginIsReady = true;
-                    this.OnPluginReady(this, e);
+                    this.PluginReady(this, e);
 
                     Form parent = this.FindForm();
 
@@ -108,11 +108,11 @@ namespace FC.GEPluginCtrls
             };
 
             // wireup the other external events to their handlers
-            this.external.KmlLoaded += this.OnKmlLoaded;
-            this.external.ScriptError += this.OnScriptError;
-            this.external.KmlEvent += this.OnKmlEvent;
-            this.external.PluginEvent += this.OnPluginEvent;
-            this.external.ViewEvent += this.OnViewEvent;
+            this.external.KmlLoaded += (o, e) => this.KmlLoaded(this, e);
+            this.external.ScriptError += (o, e) => this.ScriptError(this, e);
+            this.external.KmlEvent += (o, e) => this.KmlEvent(this, e);
+            this.external.PluginEvent += (o, e) => this.PluginEvent(this, e);
+            this.external.ViewEvent += (o, e) => this.ViewEvent(this, e);
 
             // when a document has finished loading
             // listen for any errors in the window
@@ -122,7 +122,7 @@ namespace FC.GEPluginCtrls
                 this.Document.Window.Error += (w, we) =>
                 {
                     we.Handled = true;
-                    this.OnScriptError(this, new GEEventArgs("line:" + we.LineNumber, "Description: " + we.Description));
+                    this.ScriptError(this, new GEEventArgs("line:" + we.LineNumber, "Description: " + we.Description));
                 };
 
                 this.Navigating += (b, ne) =>
@@ -151,32 +151,32 @@ namespace FC.GEPluginCtrls
         /// <summary>
         /// Raised when the plugin is ready
         /// </summary>
-        public event EventHandler<GEEventArgs> PluginReady;
+        public event EventHandler<GEEventArgs> PluginReady = delegate { };
 
         /// <summary>
         /// Raised when there is a kmlEvent
         /// </summary>
-        public event EventHandler<GEEventArgs> KmlEvent;
+        public event EventHandler<GEEventArgs> KmlEvent = delegate { };
 
         /// <summary>
         /// Raised when a kml/kmz file has loaded
         /// </summary>
-        public event EventHandler<GEEventArgs> KmlLoaded;
+        public event EventHandler<GEEventArgs> KmlLoaded = delegate { };
 
         /// <summary>
         /// Raised when there is a script error in the document 
         /// </summary>
-        public event EventHandler<GEEventArgs> ScriptError;
+        public event EventHandler<GEEventArgs> ScriptError = delegate { };
 
         /// <summary>
         /// Rasied when there is a GEPlugin event
         /// </summary>
-        public event EventHandler<GEEventArgs> PluginEvent;
+        public event EventHandler<GEEventArgs> PluginEvent = delegate { };
 
         /// <summary>
         /// Rasied when there is a viewchangebegin, viewchange or viewchangeend event 
         /// </summary>
-        public event EventHandler<GEEventArgs> ViewEvent;
+        public event EventHandler<GEEventArgs> ViewEvent = delegate { };
 
         #endregion
 
@@ -187,7 +187,7 @@ namespace FC.GEPluginCtrls
         /// </summary>
         public dynamic Plugin
         {
-            get { return this.geplugin; }
+            get { return this.plugin; }
         }
 
         #region Control Properties
@@ -342,15 +342,15 @@ namespace FC.GEPluginCtrls
         /// </summary>
         /// <param name="feature">The target feature</param>
         /// <param name="action">The event Id</param>
-        /// <param name="javaScript">The name of javascript callback function to use, or an anonymous function</param>
+        /// <param name="callBack">The name of javascript callback function to use, or an anonymous function</param>
         /// <param name="useCapture">Optionally use event capture</param>
         /// <example>GEWebBrowser.AddEventListener(object, "click", "someFunction");</example>
         /// <example>GEWebBrowser.AddEventListener(object, "click", "function(event){alert(event.getType);}");</example>
-        public void AddEventListener(object feature, EventId action, string javaScript = null, bool useCapture = false)
+        public void AddEventListener(object feature, EventId action, string callBack = null, bool useCapture = false)
         {
-            if (javaScript != null)
+            if (!string.IsNullOrEmpty(callBack))
             {
-                javaScript = "_x=" + javaScript;
+                callBack = "_x=" + callBack;
             }
 
             object[] args = new object[]
@@ -358,7 +358,7 @@ namespace FC.GEPluginCtrls
                 feature, 
                 feature.GetHashCode(), 
                 action.ToString().ToUpperInvariant(), 
-                javaScript,
+                callBack,
                 useCapture 
             };
 
@@ -455,13 +455,13 @@ namespace FC.GEPluginCtrls
         }
 
         /// <summary>
-        /// Same as FetchKml but returns the IKmlObject
+        /// Same as FetchKml but returns the IKmlObject 
         /// </summary>
-        /// <param name="url">path to a kml/kmz file</param>
+        /// <param name="url">string path to a kml/kmz file</param>
         /// <param name="timeout">time to wait for return in ms</param>
-        /// <returns>The kml as a kmlObject</returns>
+        /// <returns>The kml as a kmlObject or null.</returns>
         /// <example>Example: GEWebBrowser.FetchKmlSynchronous("http://www.site.com/file.kml");</example>
-        public object FetchKmlSynchronous(string url, int timeout = 1000)
+        public object FetchKmlSynchronous(string url, int timeout = 5000)
         {
             try
             {
@@ -498,17 +498,17 @@ namespace FC.GEPluginCtrls
                 /* in mscorlib.dll if method exited whilst InvokeScript */
             }
 
-            return new object();
+            return null;
         }
 
         /// <summary>
         /// Same as FetchKml but returns the IKmlObject
         /// </summary>
-        /// <param name="url">path to a kml/kmz file</param>
+        /// <param name="url">Uri of a kml/kmz file</param>
         /// <param name="timeout">time to wait for return in ms</param>
         /// <returns>The kml as a kmlObject</returns>
         /// <example>Example: GEWebBrowser.FetchKmlSynchronous("http://www.site.com/file.kml");</example>
-        public object FetchKmlSynchronous(Uri url, int timeout = 1000)
+        public object FetchKmlSynchronous(Uri url, int timeout = 5000)
         {
             return this.FetchKmlSynchronous(url.ToString(), timeout);
         }
@@ -529,7 +529,7 @@ namespace FC.GEPluginCtrls
                 {
                     stream = File.Open(path, FileMode.Open, FileAccess.Read);
                     reader = new StreamReader(stream);
-                    dynamic kml = this.geplugin.parseKml(reader.ReadToEnd());
+                    dynamic kml = this.plugin.parseKml(reader.ReadToEnd());
 
                     this.external.InvokeCallback(
                         "OnKmlLoaded",
@@ -545,7 +545,7 @@ namespace FC.GEPluginCtrls
                 }
                 catch (RuntimeBinderException rbex)
                 {
-                    Debug.WriteLine("FetchKmlLocal: ", rbex.ToString(), "GEWebBrowser");
+                    Debug.WriteLine("FetchKmlLocal: ", rbex.Message, "GEWebBrowser");
                 }
                 finally
                 {
@@ -564,22 +564,22 @@ namespace FC.GEPluginCtrls
 
         /// <summary>
         /// GEPlugin.parseKml() wrapper
-        /// Parses a kml string and loads it into the plugin
+        /// Parse a string of KML and return a handle to the root of the KML object structure that was created
         /// </summary>
-        /// <param name="kml">kml string to process</param>
-        public void ParseKml(string kml)
+        /// <param name="kml">a string of KML to process</param>
+        /// <returns>The KML object structure that was created</returns>
+        public dynamic ParseKml(string kml)
         {
-            dynamic kmlObj = null;
+            dynamic kmlObject = null;
 
             try
             {
-                kmlObj = this.geplugin.parseKml(kml);
+                kmlObject = this.plugin.parseKml(kml);
 
-                if (null != kmlObj)
+                if (null != kmlObject)
                 {
-                    this.external.InvokeCallback(
-                        "OnKmlLoaded",
-                        new object[] { kmlObj });
+                    ////this.external.InvokeCallback("OnKmlLoaded", new object[] { kmlObject });
+                    return kmlObject;
                 }
             }
             catch (RuntimeBinderException rbex)
@@ -590,29 +590,43 @@ namespace FC.GEPluginCtrls
             {
                 Debug.WriteLine("ParseKml: " + cex.Message, "GEHelpers");
             }
+
+            return new object();
         }
 
         /// <summary>
-        /// Parses a KmlObject  and loads it into the plugin.
+        /// Parses a KmlObject and loads it into the plugin.
         /// </summary>
-        /// <param name="kml">kml object to process</param>
+        /// <param name="kml">kml object to parse</param>
         public void ParseKmlObject(dynamic kml)
         {
-            GEHelpers.AddFeaturesToPlugin(this.geplugin, kml);
+            GEHelpers.AddFeaturesToPlugin(this.plugin, kml);
         }
 
         /// <summary>
-        /// Invokes the javascript function 'doGeocode'
-        /// Automatically flys to the location if one is found
+        /// Recursively parses a collection of KmlObjects into the plugin.
+        /// </summary>
+        /// <param name="features">The kml objects to parse</param>
+        public void ParseKmlObject(dynamic[] features)
+        {
+            foreach (dynamic feature in features)
+            {
+                this.ParseKmlObject(feature);
+            }
+        }
+
+        /// <summary>
+        /// Invokes the javascript function 'jsDoGeocode'
+        /// Automatically flys to the location if one is found for the input
         /// </summary>
         /// <param name="input">the location to geocode</param>
-        /// <returns>the point object (if any)</returns>
+        /// <returns>the KmlPoint object for the geocode, or an empty object</returns>
         /// <example>Example: GEWebBrowser.InvokeDoGeocode("London");</example>
-        public object InvokeDoGeocode(string input)
+        public dynamic InvokeDoGeocode(string input)
         {
             if (null != this.Document)
             {
-                return (dynamic)this.InvokeJavaScript(JSFunction.DoGeocode, new object[] { input });
+                return this.InvokeJavaScript(JSFunction.DoGeocode, new object[] { input });
             }
             else
             {
@@ -699,7 +713,7 @@ namespace FC.GEPluginCtrls
 
                 // Navigate to the temp file
                 // Windows deletes the temp file automatially when the current session quits.
-                this.Navigate(new Uri(path));
+                this.Navigate(new Uri(path), "_self", null, "User-Agent: GEWebBrowser");
             }
             catch (IOException ioex)
             {
@@ -779,100 +793,6 @@ namespace FC.GEPluginCtrls
         {
             this.pluginIsReady = false;
             base.Refresh();
-        }
-
-        #endregion
-
-        #region Private methods
-
-        /// <summary>
-        /// Method for raising the PluginReady event
-        /// </summary>
-        /// <param name="sender">The browser instance holding the plugin</param>
-        /// <param name="e">Event arguments</param>
-        private void OnPluginReady(object sender, GEEventArgs e)
-        {
-            EventHandler<GEEventArgs> handlers = this.PluginReady;
-
-            if (handlers != null)
-            {
-                handlers(this, e);
-            }
-        }
-
-        /// <summary>
-        /// Method for raising the KmlEvent event
-        /// </summary>
-        /// <param name="sender">the kml event</param>
-        /// <param name="e">The eventid</param>
-        private void OnKmlEvent(object sender, GEEventArgs e)
-        {
-            EventHandler<GEEventArgs> handlers = this.KmlEvent;
-
-            if (handlers != null)
-            {
-                handlers(this, e);
-            }
-        }
-
-        /// <summary>
-        /// Method for raising the KmlLoaded event
-        /// </summary>
-        /// <param name="sender">The kmlObject object</param>
-        /// <param name="e">Event arguments</param>
-        private void OnKmlLoaded(object sender, GEEventArgs e)
-        {
-            EventHandler<GEEventArgs> handlers = this.KmlLoaded;
-
-            if (handlers != null)
-            {
-                handlers(this, e);
-            }
-        }
-
-        /// <summary>
-        /// Method for raising the ScriptError event
-        /// </summary>
-        /// <param name="sender">The sending object</param>
-        /// <param name="e">Event arguments</param>
-        private void OnScriptError(object sender, GEEventArgs e)
-        {
-            EventHandler<GEEventArgs> handlers = this.ScriptError;
-
-            if (handlers != null)
-            {
-                handlers(this, e);
-            }
-        }
-
-        /// <summary>
-        /// Method for raising the PluginEvent event
-        /// </summary>
-        /// <param name="sender">The sending object</param>
-        /// <param name="e">Event arguments</param>
-        private void OnPluginEvent(object sender, GEEventArgs e)
-        {
-            EventHandler<GEEventArgs> handlers = this.PluginEvent;
-
-            if (handlers != null)
-            {
-                handlers(this, e);
-            }
-        }
-
-        /// <summary>
-        /// Method for raising the viewchange events
-        /// </summary>
-        /// <param name="sender">The GEView object</param>
-        /// <param name="e">Event arguments</param>
-        private void OnViewEvent(object sender, GEEventArgs e)
-        {
-            EventHandler<GEEventArgs> handlers = this.ViewEvent;
-
-            if (handlers != null)
-            {
-                handlers(this, e);
-            }
         }
 
         #endregion
