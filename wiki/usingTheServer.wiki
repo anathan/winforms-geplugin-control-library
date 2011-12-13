@@ -61,7 +61,3 @@ namespace ServerTest
 }
 
 }}}
-
-The following image shows how the folder structure should look in Visual Studio.
-
-https://sites.google.com/site/earthapi/serverHelp.jpg
