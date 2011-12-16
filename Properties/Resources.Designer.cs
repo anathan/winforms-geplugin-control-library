@@ -81,27 +81,5 @@ namespace FC.GEPluginCtrls.Properties {
                 return ResourceManager.GetString("Plugin", resourceCulture);
             }
         }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to &lt;!DOCTYPE html 
-        ///  PUBLIC &quot;-//W3C//DTD XHTML 1.0 Strict//EN&quot;
-        ///  &quot;http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd&quot;&gt;
-        ///&lt;html xmlns=&quot;http://www.w3.org/1999/xhtml&quot;&gt;
-        ///  &lt;!--
-        ///  Copyright (c) 2008 Fraser Chapman
-        ///  Author: Fraser Chapman
-        ///  Email: fraser.chapman@gmail.com
-        ///  Date: 2009-01-25
-        ///  Summary:
-        ///  Plugin.html is part of FC.GEPluginCtrls
-        ///  FC.GEPluginCtrls is free software: you can redistribute it and/or modify
-        ///  it under the terms of the GNU General Public License as published by
-        ///  the Free Software  [rest of string was truncated]&quot;;.
-        /// </summary>
-        internal static string Plugin_maps {
-            get {
-                return ResourceManager.GetString("Plugin_maps", resourceCulture);
-            }
-        }
     }
 }
