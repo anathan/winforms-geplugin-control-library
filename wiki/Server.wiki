@@ -20,6 +20,7 @@ The server itself supports a limited number of file / Content-types (MIME types)
   *.jpg image/jpeg
   *.png image/png
   *.gif image/gif
+  *.dae model/vnd.collada+xml
  
 The server uses version 1.1 of HTTP.
 
