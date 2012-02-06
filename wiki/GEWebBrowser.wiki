@@ -4,7 +4,7 @@
 
 <wiki:toc max_depth="2" />
 
-http://earthapi.googlepages.com/GEWebBrowser.jpg
+http://earthapi.googlepages.com/GEWebBrowser.JPG
 
 = Introduction =
 
