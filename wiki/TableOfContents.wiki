@@ -4,6 +4,7 @@
         * [AddEventListener]
         * [CreateInstance]
         * [FetchKml]
+        * [RemoveEventListener]
         * [ScreenGrab]
       * Events
         * [PluginReady]
