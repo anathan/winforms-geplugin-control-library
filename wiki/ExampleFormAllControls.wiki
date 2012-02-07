@@ -1,4 +1,5 @@
 #summary A simple winform example
+#labels Featured
 
 = Introduction =
 
@@ -24,7 +25,7 @@ namespace SimpleControlsTest
 
     public partial class Form1 : Form
     {
-        // dynamic ge = null;
+        ////dynamic ge = null;
 
         public Form1()
         {
@@ -33,7 +34,7 @@ namespace SimpleControlsTest
             geWebBrowser1.LoadEmbededPlugin();
             geWebBrowser1.PluginReady += (o, e) =>
             {
-                //ge = e.ApiObject;
+                ////ge = e.ApiObject;
 
                 // Register the controls with the browser
                 kmlTreeView1.SetBrowserInstance(geWebBrowser1);
