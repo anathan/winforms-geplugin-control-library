@@ -33,7 +33,7 @@ The GEWebBrowser control cannot be used by partially trusted code. For more info
 /// Raised when the plugin is ready
 /// </summary>
 public event EventHandler<GEEventArgs> PluginReady;
-}}
+}}}
 
 {{{
 /// <summary>
