@@ -26,33 +26,44 @@ The GEWebBrowser control cannot be used by partially trusted code. For more info
 
 == Public Events ==
 
-{{{
+[ExampleForm PluginReady]
 
+{{{
 /// <summary>
 /// Raised when the plugin is ready
 /// </summary>
 public event EventHandler<GEEventArgs> PluginReady;
+}}
 
+{{{
 /// <summary>
 /// Raised when there is a kmlEvent
 /// </summary>
 public event EventHandler<GEEventArgs> KmlEvent;
+}}}
 
+{{{
 /// <summary>
 /// Raised when a kml/kmz file has loaded
 /// </summary>
 public event EventHandler<GEEventArgs> KmlLoaded;
+}}}
 
+{{{
 /// <summary>
 /// Raised when there is a script error in the document 
 /// </summary>
 public event EventHandler<GEEventArgs> ScriptError;
+}}}
 
+{{{
 /// <summary>
 /// Rasied when there is a GEPlugin event
 /// </summary>
 public event EventHandler<GEEventArgs> PluginEvent;
+}}}
 
+{{{
 /// <summary>
 /// Rasied when there is a viewchangebegin, viewchange or viewchangeend event 
 /// </summary>
@@ -66,7 +77,9 @@ public event EventHandler<GEEventArgs> ViewEvent;
 /// Gets the plugin instance associated with the control
 /// </summary>
 public dynamic Plugin
+}}}
 
+{{{
 /// <summary>
 /// Gets or sets the current imagery base for the plug-in
 /// </summary>
