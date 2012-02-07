@@ -1,4 +1,5 @@
 #summary A simple winform example
+#labels Featured
 
 = Introduction =
 
@@ -37,11 +38,12 @@ namespace ExampleFormTest
             geWebBrowser1.LoadEmbededPlugin();
             geWebBrowser1.PluginReady += (o, e) =>
             {
-                // Here you can now use 'ge' exactly as you would
-                // in the native javascript api. It is worth noting 
-                // that any direct calls to Api members should be
-                // wrapped in a try/catch blocks for RuntimeBinder exceptions
                 ge = e.ApiObject;
+
+                // Here you can now use 'ge' exactly as you would
+                // in the native javascript api...
+
+                string type = ge.getType(); // GEPlugin
             };
         }
     }
