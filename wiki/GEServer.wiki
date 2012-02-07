@@ -63,7 +63,7 @@ public Server(string rootDirectory, string defaultFileName)
 
 == Public Properties ==
 
-[usingTheServer IPAddress]
+[usingTheServer DefaultFileName]
 {{{
 /// <summary>
 /// Gets or sets the default file name 
