@@ -32,14 +32,14 @@ namespace ServerTest
         {
             InitializeComponent();
 
-            // start the server
-            server.Start();
-
             // the server is fully configurable...
-            // server.DefaultFileName = "index.kml"
-            // server.RootDirectory = "/";
+            // server.RootDirectory = "/foo/bar/";
+            // server.DefaultFileName = "bat.kml"
             // server.IPAddress = System.Net.IPAddress.Any;
             // server.Port = 80;
+
+            // start the server
+            server.Start();
 
             // load the plugin
             geWebBrowser1.LoadEmbededPlugin();
