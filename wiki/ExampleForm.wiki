@@ -42,13 +42,20 @@ namespace ExampleFormTest
 
                 // Here you can now use 'ge' exactly as you would
                 // in the native javascript api...
+                var type = ge.getType();
+                var version = ge.getPluginVersion(); ;
 
-                string type = ge.getType(); // GEPlugin
+                MessageBox.Show(type, version);
             };
         }
     }
 }
 
 }}}
+
+When the following code is run the earth loads and is then the information is displayed, for example.
+
+https://sites.google.com/site/earthapi2/simpleform.jpg
+
 
 <wiki:gadget url="http://earthapi.googlepages.com/ad.xml" border="0" width="728" height="90" />
