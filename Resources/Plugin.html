@@ -1,27 +1,27 @@
-﻿<!DOCTYPE html 
-  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+﻿<!DOCTYPE html>
+<html lang="en">
   <!--
-  Copyright (c) 2008 Fraser Chapman
-  Author: Fraser Chapman
-  Email: fraser.chapman@gmail.com
-  Date: 2009-01-25
-  Summary:
-  Plugin.html is part of FC.GEPluginCtrls
-  FC.GEPluginCtrls is free software: you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation, either version 3 of the License, or
-  (at your option) any later version.
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
-  You should have received a copy of the GNU General Public License
-  along with this program.  If not, see http://www.gnu.org/licenses/
-  -->
+  |
+  | Copyright (c) 2008 Fraser Chapman
+  | Author: Fraser Chapman
+  | Email: fraser.chapman@gmail.com
+  | Date: 2009-01-25
+  | Summary:
+  | Plugin.html is part of FC.GEPluginCtrls
+  | FC.GEPluginCtrls is free software: you can redistribute it and/or modify
+  | it under the terms of the GNU General Public License as published by
+  | the Free Software Foundation, either version 3 of the License, or
+  | (at your option) any later version.
+  | This program is distributed in the hope that it will be useful,
+  | but WITHOUT ANY WARRANTY; without even the implied warranty of
+  | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  | GNU General Public License for more details.
+  | You should have received a copy of the GNU General Public License
+  | along with this program.  If not, see http://www.gnu.org/licenses/
+  |
+  +-->
   <head>
-    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
     <meta name="Author" content="Fraser Chapman" />
     <title>FC.GEPluginCtrls Embedded Html Test Page</title>
     <!-- If you plan to use this file for anything other than testing purposes then
@@ -30,6 +30,7 @@
     <script type="text/javascript" src="http://www.google.com/jsapi"></script>
     <script type="text/javascript">
       /* <![CDATA[ */
+
 
     google.load('earth', '1', { 'language': 'en-GB' });
     google.load('maps','3.6', { other_params: 'sensor=false' });
@@ -95,7 +96,7 @@
         method: arguments[0],
         url: arguments[1]
       };
-      var me  = this;
+
       return function(kmlObject)
       {
         if (kmlObject)
@@ -280,12 +281,12 @@
           var point = results[0].geometry.location;
           var lookat = ge.createLookAt('');
           lookat.set(point.lat(), point.lng(), 100, ge.ALTITUDE_RELATIVE_TO_GROUND, 0, 0, 1000);
-          ge.getView().setAbstractView(lookat);
+          ge.getView().setAbstractView(lookat);         
           return point;
         } 
         else 
         {
-          application.SendError("GeocodeError",  "Geocode was not successful for the following reason: " + status);
+          application.SendError("Geocode", address + ": " + status);
         }
       } );
     } 
@@ -353,13 +354,9 @@
     /* ]]> */
     </script>
     <style type="text/css">
-      html, body {
-      margin:0;
-      height:100%;
-      }
-      #map3d {
-      height: 100%;
-      }
+      html { height: 100% }
+      body { height: 100%; margin: 0; padding: 0 }
+      #map3d { height: 100% }
     </style>
   </head>
   <body>

@@ -572,9 +572,7 @@ namespace FC.GEPluginCtrls
             // 
             // treesMenuItem
             // 
-            this.treesMenuItem.Checked = true;
             this.treesMenuItem.CheckOnClick = true;
-            this.treesMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.treesMenuItem.Name = "treesMenuItem";
             this.treesMenuItem.Size = new System.Drawing.Size(168, 22);
             this.treesMenuItem.Text = "Trees";

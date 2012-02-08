@@ -1,9 +1,9 @@
-﻿// <copyright file="Extensions.cs" company="FC">
+﻿// <copyright file="ViewRefreshMode.cs" company="FC">
 // Copyright (c) 2011 Fraser Chapman
 // </copyright>
 // <author>Fraser Chapman</author>
 // <email>fraser.chapman@gmail.com</email>
-// <date>2011-03-06</date>
+// <date>2011-12-13</date>
 // <summary>This file is part of FC.GEPluginCtrls
 // FC.GEPluginCtrls is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -18,31 +18,30 @@
 // </summary>
 namespace FC.GEPluginCtrls
 {
-    using System.ComponentModel;
-    using System.Reflection;
-
     /// <summary>
-    /// Extension helper methods for the control libray
+    /// Enumeration of the available view-based refresh modes for the plug-in.
     /// </summary>
-    internal static class Extensions
+    public enum ViewRefreshMode
     {
         /// <summary>
-        /// Gets the internal ID for a Layer
+        /// Ignore changes in the view. Also ignore viewFormat parameters, if any.
+        /// This view refresh mode is the default.
         /// </summary>
-        /// <param name="input">Layer type</param>
-        /// <returns>The layer ID or an empty string</returns>
-        internal static string GetId(this Layer input)
-        {
-            FieldInfo fi = input.GetType().GetField(input.ToString());
-            DescriptionAttribute[] attributes =
-                (DescriptionAttribute[])fi.GetCustomAttributes(typeof(DescriptionAttribute), false);
+        Never = 0,
 
-            if (attributes != null && attributes.Length > 0)
-            {
-                return attributes[0].Description;
-            }
+        /// <summary>
+        /// Refresh the file only when the user explicitly requests it.
+        /// </summary>
+        Request = 1,
 
-            return string.Empty;
-        }
+        /// <summary>
+        /// Refresh n seconds after movement stops, where n is specified in viewRefreshTime.
+        /// </summary>
+        Stop = 2,
+
+        /// <summary>
+        /// Refresh only when the feature's Region becomes active.
+        /// </summary>
+        Region = 3
     }
 }

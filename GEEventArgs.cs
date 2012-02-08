@@ -61,6 +61,12 @@ namespace FC.GEPluginCtrls
         public GEEventArgs(string message, string data)
             : this(message)
         {
+            EventId id = EventId.None;
+            if (Enum.TryParse<EventId>(data, out id))
+            {
+                this.EventId = id;
+            }
+
             this.Data = data;
         }
 
@@ -77,18 +83,23 @@ namespace FC.GEPluginCtrls
         }
 
         /// <summary>
-        /// Gets or sets the event message
+        /// Gets the event message
         /// </summary>
-        public string Message { get; set; }
+        public string Message { get; internal set; }
 
         /// <summary>
-        /// Gets or sets the event data
+        /// Gets the data string
         /// </summary>
-        public string Data { get; set; }
+        public string Data { get; internal set; }
 
         /// <summary>
-        /// Gets or sets the event data ApiObject 
+        /// Gets the event id
         /// </summary>
-        public dynamic ApiObject { get; set; }
+        public EventId EventId { get; internal set; }
+
+        /// <summary>
+        /// Gets the  Api Object 
+        /// </summary>
+        public dynamic ApiObject { get; internal set; }
     }
 }

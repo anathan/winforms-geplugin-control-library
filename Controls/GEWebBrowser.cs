@@ -26,10 +26,13 @@ namespace FC.GEPluginCtrls
     using System.Drawing.Imaging;
     using System.Globalization;
     using System.IO;
+    using System.Net;
     using System.Runtime.InteropServices;
     using System.Security.Permissions;
+    using System.Text;
     using System.Threading;
     using System.Windows.Forms;
+    using System.Xml;
     using Microsoft.CSharp.RuntimeBinder;
 
     /// <summary>
@@ -100,7 +103,8 @@ namespace FC.GEPluginCtrls
                     {
                         parent.FormClosing += (f, x) =>
                         {
-                            // prevents certain script errors on exit...
+                            // prevents script errors on exit...
+                            this.KillPlugin();
                             this.DocumentText = string.Empty;
                         };
                     }
@@ -134,8 +138,6 @@ namespace FC.GEPluginCtrls
                         
                         if (ne.Url.Host.Length > 0)
                         {
-                            this.pluginIsReady = false;
-
                             // then open the URL in the system browser
                             Process process = new Process();
                             process.StartInfo.FileName = ne.Url.ToString();
@@ -309,31 +311,24 @@ namespace FC.GEPluginCtrls
         /// <summary>
         /// Kills all running geplugin processes on the system
         /// </summary>
-        public static void KillAllPluginProcesses()
+        public void KillPlugin()
         {
-            try
-            {
-                // find all the running 'geplugin' processes 
-                Process[] gep = Process.GetProcessesByName("geplugin");
+            this.pluginIsReady = false;
 
-                // whilst there are matching processes
-                while (gep.Length > 0)
-                {
-                    try
-                    {
-                        // terminate them
-                        gep[gep.Length - 1].Kill();
-                    }
-                    catch (InvalidOperationException ioex)
-                    {
-                        Debug.WriteLine("KillAllPluginProcesses: ", ioex.ToString(), "GEWebBrowser");
-                    }
-                }
-            }
-            catch (InvalidOperationException ioex)
+            if (this.plugin != null)
             {
-                Debug.WriteLine("KillAllPluginProcesses: ", ioex.ToString(), "GEWebBrowser");
-                ////throw;
+                try
+                {
+                    this.plugin.Kill_();
+                }
+                catch (RuntimeBinderException rbex)
+                {
+                    Debug.WriteLine("Refresh: " + rbex.Message, "GEWebBrowser");
+                }
+                catch (COMException cex)
+                {
+                    Debug.WriteLine("Refresh: " + cex.Message, "GEWebBrowser");
+                }
             }
         }
 
@@ -342,15 +337,15 @@ namespace FC.GEPluginCtrls
         /// </summary>
         /// <param name="feature">The target feature</param>
         /// <param name="action">The event Id</param>
-        /// <param name="callBack">The name of javascript callback function to use, or an anonymous function</param>
+        /// <param name="callback">The name of javascript callback function to use, or an anonymous function</param>
         /// <param name="useCapture">Optionally use event capture</param>
         /// <example>GEWebBrowser.AddEventListener(object, "click", "someFunction");</example>
         /// <example>GEWebBrowser.AddEventListener(object, "click", "function(event){alert(event.getType);}");</example>
-        public void AddEventListener(object feature, EventId action, string callBack = null, bool useCapture = false)
+        public void AddEventListener(object feature, EventId action, string callback = null, bool useCapture = false)
         {
-            if (!string.IsNullOrEmpty(callBack))
+            if (!string.IsNullOrEmpty(callback))
             {
-                callBack = "_x=" + callBack;
+                callback = "_x=" + callback;
             }
 
             object[] args = new object[]
@@ -358,7 +353,7 @@ namespace FC.GEPluginCtrls
                 feature, 
                 feature.GetHashCode(), 
                 action.ToString().ToUpperInvariant(), 
-                callBack,
+                callback,
                 useCapture 
             };
 
@@ -424,9 +419,8 @@ namespace FC.GEPluginCtrls
         }
 
         /// <summary>
-        /// Load a remote kml/kmz file 
-        /// This function requires a 'twin' LoadKml function in javascript
-        /// this twin function will call "google.earth.fetchKml"
+        /// Asynchronously load a remote kml/kmz file 
+        /// This function invokes "google.earth.fetchKml"
         /// </summary>
         /// <param name="url">path to a kml/kmz file</param>
         /// <param name="completionCallback">name of javascript callback function to call after fetching completes</param>
@@ -437,9 +431,9 @@ namespace FC.GEPluginCtrls
         }
 
         /// <summary>
-        /// Load a remote kml/kmz file 
-        /// This function requires a 'twin' LoadKml function in javascript
-        /// this twin function will call "google.earth.fetchKml"
+        /// Synchronously load a remote kml/kmz file.
+        /// The result of the synchronous request is parsed by the plugin and the resultant object is returned. 
+        /// This function invokes "google.earth.fetchKml"
         /// </summary>
         /// <param name="url">path to a kml/kmz file</param>
         /// <param name="completionCallback">name of javascript callback function to call after fetching completes</param>
@@ -455,13 +449,27 @@ namespace FC.GEPluginCtrls
         }
 
         /// <summary>
-        /// Same as FetchKml but returns the IKmlObject 
+        /// Synchronously load a remote kml/kmz file.
+        /// The result of the synchronous request is parsed by the plugin and the resultant object is returned. 
         /// </summary>
-        /// <param name="url">string path to a kml/kmz file</param>
+        /// <param name="url">path to a kml/kmz file</param>
         /// <param name="timeout">time to wait for return in ms</param>
-        /// <returns>The kml as a kmlObject or null.</returns>
+        /// <returns>A KmlObject or null.</returns>
         /// <example>Example: GEWebBrowser.FetchKmlSynchronous("http://www.site.com/file.kml");</example>
         public object FetchKmlSynchronous(string url, int timeout = 5000)
+        {
+            return this.FetchKmlSynchronous(new Uri(url), timeout);
+        }
+
+        /// <summary>
+        /// Synchronously load a remote kml/kmz file.
+        /// The result of the synchronous request is parsed by the plugin and the resultant object is returned. 
+        /// </summary>
+        /// <param name="url">Uri of a kml/kmz file</param>
+        /// <param name="timeout">time to wait for return in ms</param>
+        /// <returns>The kml as a kmlObject</returns>
+        /// <example>Example: GEWebBrowser.FetchKmlSynchronous("http://www.site.com/file.kml");</example>
+        public object FetchKmlSynchronous(Uri url, int timeout = 5000)
         {
             try
             {
@@ -470,9 +478,9 @@ namespace FC.GEPluginCtrls
                     "createCallback_('OnKmlFetched', '{0}')",
                     url);
 
-                string[] paramters = new string[] { url, completionCallback };
+                string[] paramters = new string[] { url.ToString(), completionCallback };
 
-                KmlObjectCacheSyncEvents[url] = new AutoResetEvent(false);
+                KmlObjectCacheSyncEvents[url.ToString()] = new AutoResetEvent(false);
 
                 if (this.InvokeRequired)
                 {
@@ -486,11 +494,11 @@ namespace FC.GEPluginCtrls
                     this.InvokeJavaScript(JSFunction.FetchKml, paramters);
                 }
 
-                WaitHandle.WaitAll(new WaitHandle[] { KmlObjectCacheSyncEvents[url] }, timeout);
+                WaitHandle.WaitAll(new WaitHandle[] { KmlObjectCacheSyncEvents[url.ToString()] }, timeout);
 
-                if (External.KmlObjectCache.ContainsKey(url))
+                if (External.KmlObjectCache.ContainsKey(url.ToString()))
                 {
-                    return External.KmlObjectCache[url];
+                    return External.KmlObjectCache[url.ToString()];
                 }
             }
             catch (NullReferenceException)
@@ -502,25 +510,74 @@ namespace FC.GEPluginCtrls
         }
 
         /// <summary>
-        /// Same as FetchKml but returns the IKmlObject
+        /// As FetchKmlSynchronous - but uses a native HttpWebRequest rather than google.earth.fetchKml.
+        /// The result of the synchronous request is parsed by the plugin and the resultant object is returned.    
         /// </summary>
-        /// <param name="url">Uri of a kml/kmz file</param>
+        /// <param name="url">path to a kml file</param>
         /// <param name="timeout">time to wait for return in ms</param>
-        /// <returns>The kml as a kmlObject</returns>
-        /// <example>Example: GEWebBrowser.FetchKmlSynchronous("http://www.site.com/file.kml");</example>
-        public object FetchKmlSynchronous(Uri url, int timeout = 5000)
+        /// <returns>A KmlObject or null</returns>
+        public object FetchAndParse(string url, int timeout = 5000)
         {
-            return this.FetchKmlSynchronous(url.ToString(), timeout);
+            return this.FetchAndParse(new Uri(url), timeout);
         }
 
         /// <summary>
-        /// Loads a local kml file 
+        /// Same as FetchKmlSynchronous but uses a native HttpWebRequest rather than google.earth.fetchKml.
+        /// The result of the synchronous request is parsed by the plugin and the resultant object is returned.    
         /// </summary>
-        /// <param name="path">path to a local kml file</param>
-        /// <example>Example: GWEebBrower.FetchKml("C:\file.kml");</example>
-        public void FetchKmlLocal(string path)
+        /// <param name="url">Uri of a kml file</param>
+        /// <param name="timeout">time to wait for return in ms</param>
+        /// <returns>A KmlObject or null</returns>
+        public object FetchAndParse(Uri url, int timeout = 5000)
         {
-            if (File.Exists(path) && path.EndsWith("kml", StringComparison.OrdinalIgnoreCase))
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
+            request.Proxy = null;
+            request.Timeout = timeout;
+
+            WebResponse response = null;
+            Stream responseStream = null;
+            XmlDocument kml = new XmlDocument();
+            string name = string.Empty;
+
+            try
+            {
+                response = request.GetResponse();
+                responseStream = response.GetResponseStream();
+                kml.Load(response.GetResponseStream());
+                return this.ParseKml(kml.InnerXml);
+            }
+            catch (WebException wex)
+            {
+                Debug.WriteLine(
+                    string.Format(CultureInfo.InvariantCulture, "{0} {1}", wex.Status, url),
+                    "GEWebBrowser");
+            }
+            finally
+            {
+                if (response != null)
+                {
+                    response.Close();
+                    responseStream.Close();
+                }
+
+                Debug.WriteLine("FetchAndParse: " + url, "GEWebBrowser");
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Loads kml file from the local file system and attempts to parse the data into the plugin.
+        /// </summary>
+        /// <param name="path">path to a kml file</param>
+        /// <returns>A KmlObject or null</returns>
+        /// <example>Example: GWEebBrower.FetchKml("C:\file.kml");</example>
+        public object FetchKmlLocal(string path)
+        {
+            dynamic result = null;
+
+            if (File.Exists(path) && 
+                path.EndsWith("kml", StringComparison.OrdinalIgnoreCase))
             {
                 FileStream stream = null;
                 StreamReader reader = null;
@@ -529,15 +586,8 @@ namespace FC.GEPluginCtrls
                 {
                     stream = File.Open(path, FileMode.Open, FileAccess.Read);
                     reader = new StreamReader(stream);
-                    dynamic kml = this.plugin.parseKml(reader.ReadToEnd());
-
-                    this.external.InvokeCallback(
-                        "OnKmlLoaded",
-                        new object[] { kml });
-                }
-                catch (FileNotFoundException fnfex)
-                {
-                    Debug.WriteLine("FetchKmlLocal: ", fnfex.ToString(), "GEWebBrowser");
+                    result = this.ParseKml(reader.ReadToEnd());
+                    ////this.external.InvokeCallback("OnKmlLoaded", new object[] { kml });
                 }
                 catch (UnauthorizedAccessException uaex)
                 {
@@ -559,7 +609,9 @@ namespace FC.GEPluginCtrls
                         reader.Close();
                     }
                 }
-            }
+            } 
+
+            return result;
         }
 
         /// <summary>
@@ -568,30 +620,24 @@ namespace FC.GEPluginCtrls
         /// </summary>
         /// <param name="kml">a string of KML to process</param>
         /// <returns>The KML object structure that was created</returns>
-        public dynamic ParseKml(string kml)
+        public object ParseKml(string kml)
         {
-            dynamic kmlObject = null;
+            dynamic result = null;
 
             try
             {
-                kmlObject = this.plugin.parseKml(kml);
-
-                if (null != kmlObject)
-                {
-                    ////this.external.InvokeCallback("OnKmlLoaded", new object[] { kmlObject });
-                    return kmlObject;
-                }
+                result = this.plugin.parseKml(kml);
             }
             catch (RuntimeBinderException rbex)
             {
-                Debug.WriteLine("ParseKml: " + rbex.Message, "GEHelpers");
+                Debug.WriteLine("ParseKml: " + rbex.Message, "GEWebBrowser");
             }
             catch (COMException cex)
             {
-                Debug.WriteLine("ParseKml: " + cex.Message, "GEHelpers");
+                Debug.WriteLine("ParseKml: " + cex.Message, "GEWebBrowser");
             }
 
-            return new object();
+            return result;
         }
 
         /// <summary>
@@ -604,34 +650,20 @@ namespace FC.GEPluginCtrls
         }
 
         /// <summary>
-        /// Recursively parses a collection of KmlObjects into the plugin.
-        /// </summary>
-        /// <param name="features">The kml objects to parse</param>
-        public void ParseKmlObject(dynamic[] features)
-        {
-            foreach (dynamic feature in features)
-            {
-                this.ParseKmlObject(feature);
-            }
-        }
-
-        /// <summary>
         /// Invokes the javascript function 'jsDoGeocode'
         /// Automatically flys to the location if one is found for the input
         /// </summary>
         /// <param name="input">the location to geocode</param>
         /// <returns>the KmlPoint object for the geocode, or an empty object</returns>
         /// <example>Example: GEWebBrowser.InvokeDoGeocode("London");</example>
-        public dynamic InvokeDoGeocode(string input)
+        public object InvokeDoGeocode(string input)
         {
             if (null != this.Document)
             {
                 return this.InvokeJavaScript(JSFunction.DoGeocode, new object[] { input });
             }
-            else
-            {
-                return new object();
-            }
+
+            return null;
         }
 
         /// <summary>
@@ -683,15 +715,19 @@ namespace FC.GEPluginCtrls
         {
             if (null != this.Document)
             {
-                Debug.WriteLine(string.Format(CultureInfo.InvariantCulture, "> InvokeJavascript: {0}({1})", function, string.Join(", ", args)));
+                Debug.WriteLine(
+                    string.Format(
+                    CultureInfo.InvariantCulture, 
+                    "InvokeJavascript: {0}( {1} )",
+                    function,
+                    string.Join(", ", args)),
+                    "GEWebBrowser");
 
                 // see http://msdn.microsoft.com/en-us/library/4b1a88bz.aspx
                 return this.Document.InvokeScript(function, args);
             }
-            else
-            {
-                return new object();
-            }
+
+            return null;
         }
 
         /// <summary>
@@ -699,31 +735,13 @@ namespace FC.GEPluginCtrls
         /// </summary>
         public void LoadEmbeddedPlugin()
         {
-            try
-            {
-                // Create a temp file and get the full path
-                string path = Path.GetTempFileName();
-
-                // Write the html to the temp file
-                TextWriter tw = new StreamWriter(path);
-                tw.Write(Properties.Resources.Plugin);
-
-                // Close the temp file
-                tw.Close();
-
-                // Navigate to the temp file
-                // Windows deletes the temp file automatially when the current session quits.
-                this.Navigate(new Uri(path), "_self", null, "User-Agent: GEWebBrowser");
-            }
-            catch (IOException ioex)
-            {
-                Debug.WriteLine("LoadEmbeddedPlugin: ", ioex.ToString(), "GEWebBrowser");
-                throw;
-            }
+            this.DocumentStream = 
+                new MemoryStream(new UTF8Encoding(false).GetBytes(Properties.Resources.Plugin));
         }
 
         /// <summary>
         /// Wrapper for the the google.earth.removeEventListener method
+        /// See: https://developers.google.com/earth/documentation/reference/google_earth_namespace#a4367d554eb492adcafa52925ddbf0c71
         /// </summary>
         /// <param name="feature">The target feature</param>
         /// <param name="action">The event Id</param>
@@ -791,7 +809,7 @@ namespace FC.GEPluginCtrls
         /// </summary>
         public override void Refresh()
         {
-            this.pluginIsReady = false;
+            this.KillPlugin();
             base.Refresh();
         }
 

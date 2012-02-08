@@ -25,81 +25,51 @@ namespace FC.GEPluginCtrls.HttpServer
     using System.Net;
     using System.Net.Sockets;
     using System.Text;
+    using System.Threading;
     using System.Threading.Tasks;
 
     /// <summary>
     /// A simple HTTP server class to allow the use of local files in the Google Earth Plugin
     /// </summary>
-    public sealed class GEServer : IDisposable
+    public class GEServer
     {
-        #region Private fields
+        #region Private fields 
 
         /// <summary>
-        /// The Server HTTP version
+        /// Thread signal
         /// </summary>
-        private readonly string httpVersion = "HTTP/1.1";
-
-        /// <summary>
-        /// Server tcp listner
-        /// </summary>
-        private TcpListener tcpListener = null;
-
-        /// <summary>
-        /// Server socket 
-        /// </summary>
-        private Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-
-        /// <summary>
-        /// Keep listening switch
-        /// </summary>
-        private volatile bool keepListening = true;
-
-        /// <summary>
-        /// Task for listining to incomming connections
-        /// </summary>
-        private Task listenTask = null;
+        private static ManualResetEvent resetEvent = new ManualResetEvent(false);
 
         #endregion
-
+        
         /// <summary>
         /// Initializes a new instance of the GEServer class.
         /// </summary>
-        public GEServer()
+        public GEServer() :
+            this(IPAddress.Loopback, 8080, Path.DirectorySeparatorChar.ToString())
         {
-            this.Port = 8080;
-            this.RootDirectory = @"\";
-            this.DefaultFileName = "default.kml";
-            this.IPAddress = IPAddress.Loopback;
         }
 
         /// <summary>
         /// Initializes a new instance of the GEServer class.
         /// </summary>
-        /// <param name="rootDirectory">Server root directory</param>
-        /// <param name="defaultFileName">Default file name to look for in a directory</param>
-        /// <param name="ip">Server ip address</param>
-        /// <param name="port">Server port number</param>
-        public GEServer(
-            string rootDirectory = @"\",
-            string defaultFileName = "default.kml",
-            IPAddress ip = null,
-            int port = 8080)
+        /// <param name="ip">the server ip address</param>
+        /// <param name="port">the server port</param>
+        /// <param name="rootDirectory">the server root directory</param>
+        public GEServer(IPAddress ip, int port, string rootDirectory)
         {
+            this.IPAddress = ip;
             this.Port = port;
-            this.RootDirectory = rootDirectory;
-            this.DefaultFileName = defaultFileName;
-
-            if (ip == null)
-            {
-                this.IPAddress = IPAddress.Loopback;
-            }
-            else
-            {
-                this.IPAddress = ip;
-            }
+            RootDirectory = rootDirectory;
         }
 
         #region Public properites
+
+        /// <summary>
+        /// Gets or sets the root server directory (webroot) 
+        /// http://localhost:port/ will point to this directory
+        /// </summary>
+        public static string RootDirectory { get; set; }
 
         /// <summary>
         /// Gets the current base url (protocol, ip, port) of the server, e.g. "http://127.0.0.1:8080/"
@@ -119,7 +89,7 @@ namespace FC.GEPluginCtrls.HttpServer
 
         /// <summary>
         /// Gets or sets the default file name 
-        /// The default value is "default.kml"
+        /// The default value is "default. "
         /// </summary>
         public string DefaultFileName { get; set; }
 
@@ -130,63 +100,38 @@ namespace FC.GEPluginCtrls.HttpServer
         public IPAddress IPAddress { get; set; }
 
         /// <summary>
-        /// Gets or sets the root server directory (webroot) 
-        /// http://localhost:port/ will point to this directory
-        /// </summary>
-        public string RootDirectory { get; set; }
-
-        /// <summary>
         /// Gets or sets a value indicating the port for the server to use
         /// </summary>
         public int Port { get; set; }
 
         #endregion
 
-        #region Public methods
+        #region Private properites
 
         /// <summary>
-        /// Dispose of managed resources 
+        /// Gets or sets a value indicating whether the server should accept new clients
         /// </summary>
-        public void Dispose()
-        {
-            this.socket.Dispose();
-        }
+        private bool AcceptClients { get; set; }
+
+        #endregion 
+
+        #region Public methods
 
         /// <summary>
         /// Starts the server
         /// </summary>
         public void Start()
         {
-            // start listing on the given ip address and port
-            this.tcpListener = new TcpListener(this.IPAddress, this.Port);
-            this.tcpListener.Start();
-
-            // setting a tcp port of zero (0) will find
-            // first available port and pass it back as the assigned port.
-            // see: http://code.google.com/p/winforms-geplugin-control-library/issues/detail?id=27
-            if (this.Port == 0)
-            {
-                this.Port = ((IPEndPoint)this.tcpListener.LocalEndpoint).Port;
-            }
-
-            // start the listen thread
-            this.listenTask = Task.Factory.StartNew(
-                () =>
-                this.Listen(),
-                TaskCreationOptions.LongRunning);
-
-            this.keepListening = true;
-
-            Debug.WriteLine("Start...", "Server-Info");
+            this.AcceptClients = true;
+            Task.Factory.StartNew(() => this.Accept());
         }
-
+        
         /// <summary>
         /// Stops the server
         /// </summary>
         public void Stop()
         {
-            Debug.WriteLine("Stop...", "Server-Info");
-            this.keepListening = false;
+            this.AcceptClients = false;
         }
 
         #endregion
@@ -194,62 +139,238 @@ namespace FC.GEPluginCtrls.HttpServer
         #region Private methods
 
         /// <summary>
-        /// Get the local directory from a request uri
+        /// Asynchronously accepts an incoming connection attempt and on a socket.
+        /// Begins to asynchronously receive data from a connected socket.
         /// </summary>
-        /// <param name="requestUri">header Request-Uri</param>
-        /// <returns>The local/root directory path</returns>
-        private string GetLocalDirectory(string requestUri)
+        /// <param name="result">Represents the status of an asynchronous operation..</param>
+        private static void AcceptCallback(IAsyncResult result)
         {
-            string directory = Path.GetDirectoryName(requestUri.Replace("/", Path.DirectorySeparatorChar.ToString()));
+            // Signal the main thread to continue.
+            resetEvent.Set();
 
-            if (null != directory)
-            {
-                // remove any leading slash from the path
-                if (directory.StartsWith(
-                    Path.DirectorySeparatorChar.ToString(),
-                    StringComparison.OrdinalIgnoreCase))
-                {
-                    directory = directory.TrimStart(Path.DirectorySeparatorChar);
-                }
+            // Get the socket that handles the client request.
+            Socket listener = (Socket)result.AsyncState;
+            Socket handler = listener.EndAccept(result);
 
-                // add a trailing slash to the path if required
-                if (!directory.EndsWith(
-                    Path.DirectorySeparatorChar.ToString(),
-                    StringComparison.OrdinalIgnoreCase))
-                {
-                    directory += Path.DirectorySeparatorChar;
-                }
-            }
-
-            if (directory == Path.DirectorySeparatorChar.ToString())
-            {
-                directory = this.RootDirectory + Path.DirectorySeparatorChar.ToString();
-            }
-            else
-            {
-                directory = this.RootDirectory + Path.DirectorySeparatorChar.ToString() + directory;
-            }
-
-            return directory;
+            // Create the state object.
+            StateObject state = new StateObject();
+            state.Socket = handler;
+            handler.BeginReceive(
+                state.Buffer,
+                0, 
+                StateObject.BufferSize, 
+                0, 
+                new AsyncCallback(ReadCallback), 
+                state);
         }
 
         /// <summary>
-        /// Attempt to get the file name from a request uri
+        /// Builds the HTTP response headers
         /// </summary>
-        /// <param name="requestUri">header Request-Uri</param>
-        /// <returns>the filename, the default filename or and empty string</returns>
-        private string GetLocalFile(string requestUri)
+        /// <param name="mime">mime type for the response</param>
+        /// <param name="bytes">size of the response in bytes</param>
+        /// <param name="code">the status code for the response (100, 200, 404, etc)</param>
+        /// <returns>A formated HTTP response header</returns>
+        private static string BuildResponseHeader(string mime, int bytes, HttpStatusCode code)
         {
-            string fileName = Path.GetFileName(requestUri);
+            StringBuilder data = new StringBuilder();
 
-            // If a file is not specified 
-            if (string.IsNullOrEmpty(fileName))
+            string httpDate = DateTime.Now.ToUniversalTime().ToString("r", CultureInfo.InvariantCulture);
+            string status = string.Format(
+                CultureInfo.InvariantCulture,
+                "{0} {1}", 
+                (int)code, 
+                code.ToString());
+
+            // Status-Line
+            // HTTP-Version SP Status-Code SP Reason-Phrase CRLF
+            // See http://www.w3.org/Protocols/rfc2616/rfc2616-sec6.html#sec6.1
+            data.AppendFormat(
+                CultureInfo.InvariantCulture,
+                "{0} {1}{2}",
+                "HTTP/1.1",
+                status,
+                Environment.NewLine);
+            data.AppendFormat("Date: {0}{1}", httpDate, Environment.NewLine);
+            data.AppendLine("Accept-Ranges: bytes");
+            data.AppendLine("Connection: Keep-Alive");
+            data.AppendLine("Expires: Thu, 01 Jan 1970 00:00:00 GMT");
+            data.AppendLine("Cache-Control: no-cache");
+            data.AppendLine("Pragma: no-cache");
+            data.AppendFormat("Content-Length: {0}{1}", bytes, Environment.NewLine);
+            data.AppendFormat("Content-Type: {0}{1}", mime, Environment.NewLine);
+            ////data.AppendFormat("Host: {0}{1}", BaseUrl , Environment.NewLine);
+            data.AppendLine();
+            return data.ToString();
+        }
+
+        /// <summary>
+        /// Ends a pending asynchronous read and checks for a HTTP request header.
+        /// If it is a file request the file (if any) is served.
+        /// </summary>
+        /// <param name="result">Represents the status of an asynchronous operation.</param>
+        private static void ReadCallback(IAsyncResult result)
+        {
+            string rawData = string.Empty;
+
+            // Retrieve the state object and the handler socket
+            // from the asynchronous state object.
+            StateObject state = (StateObject)result.AsyncState;
+            Socket handler = state.Socket;
+
+            // Read data from the client socket. 
+            int bytesRead = handler.EndReceive(result);
+
+            if (bytesRead > 0)
             {
-                // try the default filename
-                fileName = this.DefaultFileName;
-            }
+                // There might be more data, so store the data received so far.
+                state.Data.Append(new UTF8Encoding(false).GetString(state.Buffer, 0, bytesRead));
+                rawData = state.Data.ToString();
 
-            return fileName;
+                // check for end-of-header (CRLFCRLF)
+                if (rawData.EndsWith(
+                    string.Format(CultureInfo.CurrentCulture, "{0}{0}", Environment.NewLine),
+                    StringComparison.OrdinalIgnoreCase))
+                {
+                    HttpRequest request = new HttpRequest(rawData); // TODO: handle errors here
+                    string filePath = TranslatePath(request.Uri);
+                    SendFile(filePath, handler);
+                }
+                else
+                {
+                    // Send interim 100 Continue
+                    Send(
+                        handler,
+                        BuildResponseHeader("text/plain; charset=UTF-8", 0, HttpStatusCode.Continue));
+
+                    // carry on reading...
+                    handler.BeginReceive(
+                        state.Buffer,
+                        0,
+                        StateObject.BufferSize, 
+                        0,
+                        new AsyncCallback(ReadCallback),
+                        state);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Encodes the specified string data in to bytes and sends it asynchronously to the specified socket.
+        /// </summary>
+        /// <param name="handler">the specified socket</param>
+        /// <param name="data">string data to send</param>
+        private static void Send(Socket handler, string data)
+        {
+            Send(handler, Encoding.ASCII.GetBytes(data));
+        }
+
+        /// <summary>
+        /// Sends the specified byte data asynchronously to the specified socket.
+        /// </summary>
+        /// <param name="handler">the specified socket</param>
+        /// <param name="data">byte data to send</param>
+        private static void Send(Socket handler, byte[] data)
+        {
+            handler.BeginSend(data, 0, data.Length, 0, new AsyncCallback(SendCallback), handler);
+        }
+
+        /// <summary>
+        /// Ends a pending asynchronous data send.
+        /// </summary>
+        /// <param name="result">The status of the operarion</param>
+        private static void SendCallback(IAsyncResult result)
+        {
+            // Retrieve the socket from the state object.
+            Socket handler = (Socket)result.AsyncState;
+
+            try
+            {
+                // Complete sending the data to the remote device.
+                int bytesSent = handler.EndSend(result);
+                ////Debug.WriteLine("Sent {0} bytes to client.", bytesSent); 
+            }
+            catch (SocketException sex)
+            {
+                Debug.WriteLine("SendCallback: " + sex.ToString(), "Server-Error");
+                handler.Shutdown(SocketShutdown.Both);
+                handler.Close();
+            }
+        }
+
+        /// <summary>
+        /// Encodes an HTTP Error and sends the data asynchronously to the specified socket.
+        /// The plain-text error is also sent, e.g: 404 NotFound
+        /// </summary>
+        /// <param name="handler">The specified socket</param>
+        /// <param name="status">The Http Error Code</param>
+        private static void SendError(Socket handler, HttpStatusCode status)
+        {
+            string code = string.Format(CultureInfo.InvariantCulture, "{0} {1}", (int)status, status);
+            Send(handler, BuildResponseHeader("text/plain; charset=UTF-8", code.Length, status));
+            Send(handler, code);
+        }
+
+        /// <summary>
+        /// Attempts to asynchronously serve a file on the specified socket.
+        /// Sends a HTTP 404 error on the socket if the file is not found.
+        /// </summary>
+        /// <param name="filePath">The local path of a file</param>
+        /// <param name="handler">The socket to send the file data on</param>
+        private static void SendFile(string filePath, Socket handler)
+        {
+            if (File.Exists(filePath))
+            {
+                byte[] data = File.ReadAllBytes(filePath);
+
+                // 200 OK
+                string header = BuildResponseHeader(GetMimeType(filePath), data.Length, HttpStatusCode.OK);
+                Send(handler, header);
+
+                StateObject state = new StateObject();
+                state.Socket = handler;
+                state.Data.Append(filePath);
+                handler.BeginSendFile(filePath, new AsyncCallback(SendFileCallback), state);
+            }
+            else
+            {
+                // 404 NotFound
+                string code = (int)HttpStatusCode.NotFound + " " + HttpStatusCode.NotFound;
+                Send(handler, BuildResponseHeader("text/plain; charset=UTF-8", code.Length, HttpStatusCode.NotFound));
+                Send(handler, code);
+            }
+        }
+
+        /// <summary>
+        /// Ends a pending asynchronous file send.
+        /// </summary>
+        /// <param name="result">The status of the operarion</param>
+        private static void SendFileCallback(IAsyncResult result)
+        {
+            // Retrieve the socket from the state object.
+            StateObject state = (StateObject)result.AsyncState;
+            Socket handler = state.Socket;
+
+            try
+            {
+                // Complete sending the file to the socket.
+                handler.EndSendFile(result);
+                resetEvent.Set();
+
+                Debug.WriteLine(
+                    string.Format(
+                    CultureInfo.InvariantCulture,
+                    "Sent {0} to {1}",
+                    state.Data.ToString(),
+                    handler.RemoteEndPoint.ToString()),
+                    "GEServer");
+            }
+            catch (SocketException)
+            {
+                ////Debug.WriteLine("SendFileCallback: Forcibly closed...", "Server-Error");
+                handler.Shutdown(SocketShutdown.Both);
+                handler.Close();
+            }
         }
 
         /// <summary>
@@ -257,7 +378,7 @@ namespace FC.GEPluginCtrls.HttpServer
         /// </summary>
         /// <param name="path">path to the file</param>
         /// <returns>the mime type of the file or "application/unknown"</returns>
-        private string GetMimeType(string path)
+        private static string GetMimeType(string path)
         {
             string extension = string.Empty;
 
@@ -268,8 +389,6 @@ namespace FC.GEPluginCtrls.HttpServer
             catch (ArgumentException aex)
             {
                 Debug.WriteLine("GetMimeType: " + aex.ToString(), "Server-Error");
-                this.SendError(HttpStatusCode.InternalServerError);
-                return string.Empty;
             }
 
             switch (extension)
@@ -283,251 +402,107 @@ namespace FC.GEPluginCtrls.HttpServer
                 case ".jpeg":
                     return "image/jpeg";
                 case ".kml":
+                    // see http://www.iana.org/assignments/media-types/application/vnd.google-earth.kml+xml
                     return "application/vnd.google-earth.kml+xml";
                 case ".kmz":
+                    // see http://www.iana.org/assignments/media-types/application/vnd.google-earth.kmz
                     return "application/vnd.google-earth.kmz";
                 case ".png":
                     return "image/png";
                 case ".txt":
                     return "text/plain";
+                case ".dae":
+                    // see http://www.iana.org/assignments/media-types/model/vnd.collada+xml
+                    return "model/vnd.collada+xml";
                 default:
-                    this.SendError(HttpStatusCode.UnsupportedMediaType);
                     return string.Empty;
             }
         }
 
         /// <summary>
-        /// Checks the raw http reqest header and converts it to 
-        /// a <see cref="HttpRequest"/> object. 
+        /// Translates a virtual path (uri) into a local file path
         /// </summary>
-        /// <param name="data">a raw http header string</param>
-        /// <returns>a <see cref="HttpRequest"/> object based on the raw data</returns>
-        private HttpRequest GetRequest(string data)
+        /// <param name="requestUri">the uri for the file</param>
+        /// <returns>the local file path for the uri</returns>
+        private static string TranslatePath(string requestUri)
         {
-            HttpRequest request = new HttpRequest(data);
+            string directory = Path.GetDirectoryName(requestUri.Replace("/", Path.DirectorySeparatorChar.ToString()));
+            string fileName = Path.GetFileName(requestUri);
 
-            if (string.IsNullOrEmpty(request.Method) ||
-               string.IsNullOrEmpty(request.HttpVersion))
+            if (!string.IsNullOrEmpty(directory))
             {
-                this.SendError(HttpStatusCode.BadRequest);
-                return request;
-            }
-
-            // Handle GET and HEAD requests otherwise send 501 NotImplemented
-            // see http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.3
-            // see http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.4
-            if (request.Method != "GET" && request.Method != "HEAD")
-            {
-                this.SendError(HttpStatusCode.NotImplemented);
-                return request;
-            }
-
-            // HTTP-Version 
-            // Handle version 1.1 otherwise send 505 HttpVersionNotSupported
-            if (request.HttpVersion != this.httpVersion)
-            {
-                this.SendError(HttpStatusCode.HttpVersionNotSupported);
-                return request;
-            }
-
-            // Host
-            // Reject any requset that does not have a host header
-            if (string.IsNullOrEmpty(request.HostHeader))
-            {
-                this.SendError(HttpStatusCode.BadRequest);
-                return request;
-            }
-
-            // User-Agent
-            // Handle GoogleEarth otherwise send 403 Forbidden
-            if (!request.UserAgent.StartsWith(
-                "User-Agent: GoogleEarth", 
-                StringComparison.OrdinalIgnoreCase))
-            {
-                this.SendError(HttpStatusCode.Forbidden);
-                return request;
-            }
-
-            return request;
-        }
-
-        /// <summary>
-        /// Receive raw data from the socket until encountering CRLF CRLF
-        /// </summary>
-        /// <returns>The raw http reqest header as a string</returns>
-        private string ReceiveRawHeader()
-        {
-            byte[] buffer = new byte[1024]; // 1KB
-            string data = string.Empty;
-
-            // See http://www.w3.org/Protocols/rfc2616/rfc2616-sec5.html
-            // wait for the end of the header: CRLF CRLF 
-            try
-            {
-                do
+                // remove any leading slash from the path
+                if (directory.StartsWith(Path.DirectorySeparatorChar.ToString(), StringComparison.OrdinalIgnoreCase))
                 {
-                    int read = this.socket.Receive(buffer, this.socket.Available, SocketFlags.None);
-                    data += Encoding.UTF8.GetString(buffer, 0, read);
+                    directory = directory.TrimStart(Path.DirectorySeparatorChar);
                 }
-                while (!data.EndsWith(
-                    Environment.NewLine + Environment.NewLine,
-                    StringComparison.OrdinalIgnoreCase));
+
+                // add a trailing slash to the path if required
+                if (!directory.EndsWith(Path.DirectorySeparatorChar.ToString(), StringComparison.OrdinalIgnoreCase))
+                {
+                    directory += Path.DirectorySeparatorChar.ToString();
+                }
             }
-            catch (SocketException sex)
+
+            if (string.IsNullOrEmpty(fileName))
             {
-                Debug.WriteLine("ReceiveHeader" + sex.ToString(), "Server-Error");
-                this.SendError(HttpStatusCode.InternalServerError);
+                fileName = "default.kml";
             }
 
-            return data;
-        }
-
-        /// <summary>
-        /// Sends an Error Header to the client
-        /// </summary>
-        /// <param name="status">The Http Error Code</param>
-        private void SendError(HttpStatusCode status)
-        {
-            string code = string.Format(CultureInfo.InvariantCulture, "{0} {1}", (int)status, status);
-            this.SendHeader("text/plain; charset=UTF-8", code.Length, status);
-            this.SendToClient(code);
-            this.socket.Disconnect(true);
-        }
-
-        /// <summary>
-        /// Sends Header Information to the client (GoogleEarth)
-        /// See http://www.w3.org/Protocols/rfc2616/rfc2616-sec6.html
-        /// </summary>
-        /// <param name="mime">MMIE (type) for the responce</param>
-        /// <param name="bytes">Total Bytes to be sent in the body</param>
-        /// <param name="code">The HTTP status code</param>
-        private void SendHeader(string mime, int bytes, HttpStatusCode code)
-        {
-            string httpDate = DateTime.Now.ToUniversalTime().ToString("r", CultureInfo.InvariantCulture);
-            string status = string.Format(CultureInfo.InvariantCulture, "{0} {1}", (int)code, code.ToString());
-            StringBuilder data = new StringBuilder();
-
-            // Status-Line
-            // HTTP-Version SP Status-Code SP Reason-Phrase CRLF
-            // See http://www.w3.org/Protocols/rfc2616/rfc2616-sec6.html#sec6.1
-            data.AppendFormat(
+            // builds the local file path and removes any double slashes e.g. 
+            // \root\dir\file.kml
+            string path = string.Format(
                 CultureInfo.InvariantCulture,
-                "{0} {1}{2}",
-                this.httpVersion,
-                status,
-                Environment.NewLine);
-            data.AppendFormat("Date: {0}{1}", httpDate, Environment.NewLine);
-            data.AppendLine("Accept-Ranges: bytes");
-            data.AppendFormat("Content-Length: {0}{1}", bytes, Environment.NewLine);
-            data.AppendFormat("Content-Type: {0}{1}", mime, Environment.NewLine);
-            data.AppendLine();
+                "{0}{1}{2}{3}",
+                RootDirectory, 
+                Path.DirectorySeparatorChar.ToString(),
+                directory,
+                fileName).Replace(
+                Path.DirectorySeparatorChar.ToString() +
+                Path.DirectorySeparatorChar.ToString(),
+                Path.DirectorySeparatorChar.ToString());
 
-            this.SendToClient(data.ToString());
-            Debug.WriteLine(status, "Server-Response");
+            return path;
         }
 
         /// <summary>
-        /// Sends body data to the client (GoogleEarth)
+        /// Sets up a socket bound to the IPAddress and Port then places it in the listening state. 
+        /// Finally it begins an asynchronous operation to accept an incoming connection attempt on the socket.
         /// </summary>
-        /// <param name="data">The data to be sent to google earth (client)</param>
-        private void SendToClient(string data)
+        private void Accept()
         {
-            this.SendToClient(Encoding.UTF8.GetBytes(data));
-        }
+            // Data buffer for incoming data.
+            byte[] bytes = new byte[StateObject.BufferSize];
 
-        /// <summary>
-        /// Sends data to the client (Browser/GoogleEarth)
-        /// </summary>
-        /// <param name="data">The data to be sent to google earth (client)</param>
-        private void SendToClient(byte[] data)
-        {
-            int numBytes = 0;
+            // Establish the local endpoint for the socket.
+            IPEndPoint localEndPoint = new IPEndPoint(this.IPAddress, this.Port);
 
+            // Create a TCP/IP socket.
+            Socket listener = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+
+            // Bind the socket to the local endpoint and listen for incoming connections.
             try
             {
-                if (this.socket.Connected)
+                listener.Bind(localEndPoint);
+                listener.Listen(100);
+
+                while (this.AcceptClients)
                 {
-                    // send the data
-                    if ((numBytes = this.socket.Send(data, data.Length, SocketFlags.None)) == -1)
-                    {
-                        Debug.WriteLine("Send Packet Error", "Server-Error");
-                    }
-                }
-                else
-                {
-                    Debug.WriteLine("Connection Dropped...", "Server-Info");
+                    // Set the event to nonsignaled state.
+                    resetEvent.Reset();
+
+                    // Start an asynchronous socket to listen for connections.
+                    listener.BeginAccept(
+                        new AsyncCallback(AcceptCallback),
+                        listener);
+
+                    // Wait until a connection is made before continuing.
+                    resetEvent.WaitOne();
                 }
             }
             catch (SocketException sex)
             {
-                Debug.WriteLine("sendToBrowser: " + sex.ToString(), "Server-Error");
-            }
-        }
-
-        /// <summary>
-        /// Serves a file based on the given requset uri string
-        /// </summary>
-        /// <param name="requestUri">the file Uri as a string</param>
-        private void ServeFile(string requestUri)
-        {
-            string localFile = this.GetLocalFile(requestUri);
-            string localDirectory = this.GetLocalDirectory(requestUri);
-            string localPath = localDirectory + localFile;
-
-            if (string.IsNullOrEmpty(localDirectory))
-            {
-                this.SendError(HttpStatusCode.NotFound);
-            }
-            else if (File.Exists(localPath))
-            {
-                byte[] bytes = File.ReadAllBytes(localPath);
-                string response = Encoding.UTF8.GetString(bytes);
-                string mimeType = this.GetMimeType(localPath);
-                this.SendHeader(mimeType, bytes.Length, HttpStatusCode.OK);
-                this.SendToClient(bytes);
-            }
-            else
-            {
-                this.SendError(HttpStatusCode.NotFound);
-                Debug.WriteLine("Requested path: " + requestUri, "Server-Info");
-                Debug.WriteLine("Translated path: " + localPath, "Server-Info");
-            }
-        }
-
-        /// <summary>
-        /// Listen for incoming connections
-        /// </summary>
-        private void Listen()
-        {
-            while (this.keepListening)
-            {
-                // Stops the call to AcceptSocket from blocking
-                // this allows the listenThread to teminate cleanly
-                if (!this.tcpListener.Pending())
-                {
-                    try
-                    {
-                        this.listenTask.Wait(100);
-                    }
-                    catch (NullReferenceException) 
-                    { 
-                    }
-                }
-                else
-                {
-                    this.socket = this.tcpListener.AcceptSocket();
-                }
-
-                // Handle the incoming connection
-                if (this.socket.Connected)
-                {
-                    Debug.WriteLine("Connected: " + this.socket.RemoteEndPoint, "Server-Info");
-                    string header = this.ReceiveRawHeader();
-                    if (!string.IsNullOrEmpty(header))
-                    {
-                        this.ServeFile(this.GetRequest(header).Uri);
-                    }
-                }
+                Debug.WriteLine("Accept: " + sex.ToString(), "GEServer");
             }
         }
 

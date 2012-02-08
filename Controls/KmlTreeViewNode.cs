@@ -19,6 +19,7 @@
 namespace FC.GEPluginCtrls
 {
     using System;
+    using System.Diagnostics;
     using System.Runtime.InteropServices;
     using System.Windows.Forms;
     using Microsoft.CSharp.RuntimeBinder;
@@ -41,34 +42,23 @@ namespace FC.GEPluginCtrls
             this.Name = ApiType.None.ToString();
             this.StateImageIndex = 0;
             this.Text = "Loading...";
+            this.IsLoading = false;
         }
 
         /// <summary>
         /// Initializes a new instance of the KmlTreeViewNode class.
         /// </summary>
-        /// <param name="kmlObject">A kml object to base the treenode on</param>
-        internal KmlTreeViewNode(dynamic kmlObject)
-            : base()
+        /// <param name="kmlFeature">A <paramref name="kmlFeature">kml feature</paramref> to base the treenode on</param>
+        internal KmlTreeViewNode(dynamic kmlFeature)
+            : this()
         {
-            this.ApiObject = kmlObject;
-            try
+            if (kmlFeature == null)
             {
-                // The 'Name' of a TreeNode is also the 'Key'
-                // If the node does not have a name, 'Name' and 'Key' return an empty string
-                // It makes sense to bind the 'Name' to the 'id' of the underlying kml object.
-                // Api 'id's' are unique and this means that the 'Keys' should be unique within the tree.
-                this.Name = kmlObject.getId();
-                this.ApiType = GEHelpers.GetApiType(kmlObject);
-                this.Text = kmlObject.getName();
-                this.ApiObjectVisible = Convert.ToBoolean(kmlObject.getVisibility());
-                this.StateImageIndex = this.ApiObjectVisible ? 1 : 0;
-                this.Checked = this.ApiObjectVisible;
-            }
-            catch (RuntimeBinderException)
-            {
+                return;
             }
 
-            this.SetStyle();
+            this.ApiObject = kmlFeature;
+            this.Refresh();
         }
 
         #region Public Properties 
@@ -98,14 +88,14 @@ namespace FC.GEPluginCtrls
         #region Internal Properties
 
         /// <summary>
-        /// Gets or sets a value indicating whether networklink content has been fetched.
+        /// Gets or sets a value indicating the url, if any, of the data the node is based on
         /// </summary>
-        internal bool Fetched { get; set; }
+        internal string BaseUrl { get; set; }
 
         /// <summary>
-        /// Gets a value indicating whether networklink content is loading.
+        /// Gets or sets a value indicating whether the node is loading data
         /// </summary>
-        internal bool IsLoading { get; private set; }
+        internal bool IsLoading { get; set; }
 
         /// <summary>
         /// Gets the url of the underlying kml object.
@@ -119,7 +109,7 @@ namespace FC.GEPluginCtrls
             {
                 if (this.ApiObject != null)
                 {
-                    return KmlHelpers.GetUrl(this.ApiObject);
+                    return KmlHelpers.GetUrl(this.ApiObject).ToString();
                 }
                 else
                 {
@@ -153,25 +143,31 @@ namespace FC.GEPluginCtrls
         {
             get
             {
-                try
+                if (this.ApiObject != null)
                 {
-                    return Convert.ToBoolean(this.ApiObject.getVisibility());
+                    try
+                    {
+                        return Convert.ToBoolean(this.ApiObject.getVisibility());
+                    }
+                    catch (COMException)
+                    {
+                    }
                 }
-                catch (COMException)
-                {
-                    ////Debug.WriteLine("ApiObjectVisible: " + cex.Message, "KmlTreeViewNode");
-                    return false;
-                }
+
+                return false;
             }
 
             set
             {
-                try
+                if (this.ApiObject != null)
                 {
-                    this.ApiObject.setVisibility(Convert.ToUInt16(value));
-                }
-                catch (COMException)
-                {
+                    try
+                    {
+                        this.ApiObject.setVisibility(Convert.ToUInt16(value));
+                    }
+                    catch (COMException)
+                    {
+                    }
                 }
             }
         }
@@ -202,7 +198,7 @@ namespace FC.GEPluginCtrls
                         }
                     }
 
-                    break;
+                    return;
 
                 case ApiType.KmlNetworkLink:
                     {
@@ -218,7 +214,7 @@ namespace FC.GEPluginCtrls
                         }
                     }
 
-                    break;
+                    return;
 
                 case ApiType.KmlPlacemark:
                     {
@@ -226,7 +222,7 @@ namespace FC.GEPluginCtrls
                         this.SelectedImageKey = "flag";
                     }
 
-                    break;
+                    return;
 
                 case ApiType.KmlGroundOverlay:
                 case ApiType.KmlScreenOverlay:
@@ -235,7 +231,7 @@ namespace FC.GEPluginCtrls
                         this.SelectedImageKey = "overlay";
                     }
 
-                    break;
+                    return;
 
                 case ApiType.KmlPhotoOverlay:
                     {
@@ -243,7 +239,7 @@ namespace FC.GEPluginCtrls
                         this.SelectedImageKey = "photo";
                     }
 
-                    break;
+                    return;
 
                 case ApiType.KmlTour:
                     {
@@ -251,7 +247,7 @@ namespace FC.GEPluginCtrls
                         this.SelectedImageKey = "tour";
                     }
 
-                    break;
+                    return;
 
                 case ApiType.KmlLayer:
                     {
@@ -259,10 +255,10 @@ namespace FC.GEPluginCtrls
                         this.SelectedImageKey = "tour";
                     }
 
-                    break;
+                    return;
 
                 default:
-                    break;
+                    return;
             }
         }
 
@@ -293,6 +289,33 @@ namespace FC.GEPluginCtrls
                     this.SelectedImageKey = "linkFolderClosed_" + i;
                 }
             };
+        }
+
+        /// <summary>
+        /// see http://code.google.com/p/winforms-geplugin-control-library/issues/detail?id=66
+        /// </summary>
+        internal void Refresh()
+        {
+            if (this.ApiObject == null)
+            {
+                return;
+            }
+
+            try
+            {
+                this.Name = this.ApiObject.getId();
+                this.ApiType = GEHelpers.GetApiType(this.ApiObject);
+                this.Text = this.ApiObject.getName();
+                this.ApiObjectVisible = Convert.ToBoolean(this.ApiObject.getVisibility());
+                this.StateImageIndex = this.ApiObjectVisible ? 1 : 0;
+                this.Checked = this.ApiObjectVisible;
+                this.SetStyle();
+            }
+            catch (COMException cex)
+            {
+                string.Format("{0}", cex.ToString());
+                return;
+            }
         }
 
         #endregion

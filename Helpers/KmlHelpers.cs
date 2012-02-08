@@ -23,6 +23,7 @@ namespace FC.GEPluginCtrls
     using System.Diagnostics;
     using System.Runtime.InteropServices;
     using System.Xml;
+    using System.Xml.Linq;
     using FC.GEPluginCtrls.Geo;
     using Microsoft.CSharp.RuntimeBinder;
 
@@ -36,7 +37,7 @@ namespace FC.GEPluginCtrls
         /// Note that this method walks the object's DOM, so may have poor performance for large objects.
         /// </summary>
         /// <param name="kmlFeature">{KmlFeature|KmlGeometry} object The feature or geometry whose bounds should be computed</param>
-        /// <returns>The bounds object for the feature</returns>
+        /// <returns>A bounds object based on the <paramref name="kmlFeature"/> (or an empty bounds object)</returns>
         /// <remarks>
         /// Based on the methods at:
         /// http://code.google.com/p/earth-api-utility-library/source/browse/trunk/extensions/src/dom/utils.js
@@ -122,7 +123,7 @@ namespace FC.GEPluginCtrls
         /// <param name="aspectRatio">Optional aspect ratio</param>
         /// <param name="defaultRange">Optional default range</param>
         /// <param name="scaleRange">Optional scale range</param>
-        /// <returns>The KmlLookAt for the bounds (or false)</returns>
+        /// <returns>A KmlLookAt based on the <paramref name="bounds"/> (or null)</returns>
         public static dynamic CreateBoundsView(
             dynamic ge,
             Bounds bounds,
@@ -132,8 +133,8 @@ namespace FC.GEPluginCtrls
         {
             Coordinate center = bounds.Center();
             Coordinate boundsSpan = bounds.Span();
-
             double lookAtRange = defaultRange;
+            dynamic lookat = null;
 
             if (Convert.ToBoolean(boundsSpan.Latitude) || Convert.ToBoolean(boundsSpan.Longitude))
             {
@@ -159,16 +160,15 @@ namespace FC.GEPluginCtrls
 
             try
             {
-                dynamic lookat = ge.createLookAt(string.Empty);
+                lookat = ge.createLookAt(string.Empty);
                 lookat.set(center.Latitude, center.Longitude, bounds.Top, bounds.Northeast.AltitudeMode, 0, 0, lookAtRange);
-                return lookat;
             }
             catch (RuntimeBinderException rbex)
             {
                 Debug.WriteLine("CreateBoundsView: " + rbex.Message, "KmlHelpers");
             }
 
-            return false;
+            return lookat;
         }
 
         /// <summary>
@@ -183,7 +183,7 @@ namespace FC.GEPluginCtrls
         /// <param name="name">Optional name of the placemark. Default is empty</param>
         /// <param name="description">Optional placemark description text. Default is empty</param>
         /// <param name="addFeature">Optionally adds the placemark directly to the plugin. Default is true</param>
-        /// <returns>A placemark (or an empty object)</returns>
+        /// <returns>A placemark (or null)</returns>
         public static dynamic CreatePlacemark(
             dynamic ge,
             string id = "",
@@ -200,7 +200,7 @@ namespace FC.GEPluginCtrls
                 throw new ArgumentException("ge is not of the type GEPlugin");
             }
 
-            dynamic placemark = new object();
+            dynamic placemark = null;
 
             try
             {
@@ -243,7 +243,7 @@ namespace FC.GEPluginCtrls
         /// <param name="name">Optional name of the placemark. Default is empty</param>
         /// <param name="description">Optional placemark description text. Default is empty</param>
         /// <param name="addFeature">Optionally adds the placemark directly to the plugin. Default is true</param>
-        /// <returns>A placemark (or false)</returns>
+        /// <returns>A placemark (or null)</returns>
         public static dynamic CreatePlacemark(
             dynamic ge,
             Coordinate coordinate,
@@ -253,15 +253,15 @@ namespace FC.GEPluginCtrls
             bool addFeature = true)
         {
             return CreatePlacemark(
-            ge: ge,
-            latitude: coordinate.Latitude,
-            longitude: coordinate.Longitude,
-            altitude: coordinate.Altitude,
-            altitudeMode: coordinate.AltitudeMode,
-            name: name,
-            id: id,
-            description: description,
-            addFeature: addFeature);
+                ge: ge,
+                latitude: coordinate.Latitude,
+                longitude: coordinate.Longitude,
+                altitude: coordinate.Altitude,
+                altitudeMode: coordinate.AltitudeMode,
+                name: name,
+                id: id,
+                description: description,
+                addFeature: addFeature);
         }
 
         /// <summary>
@@ -273,7 +273,7 @@ namespace FC.GEPluginCtrls
         /// <param name="longitude">The placemark longitude in decimal degrees</param>
         /// <param name="altitude">Optional placemark altitude in metres. Default is 0</param>
         /// <param name="altitudeMode">Optional altitudeMode. Default is AltitudeMode.RelativeToGround</param>
-        /// <returns>A Kml point (or false)</returns>
+        /// <returns>A Kml point (or null)</returns>
         public static dynamic CreatePoint(
             dynamic ge,
             string id = "",
@@ -287,7 +287,7 @@ namespace FC.GEPluginCtrls
                 throw new ArgumentException("ge is not of the type GEPlugin");
             }
 
-            dynamic point = new object();
+            dynamic point = null;
 
             try
             {
@@ -311,7 +311,7 @@ namespace FC.GEPluginCtrls
         /// <param name="ge">The plugin instance</param>
         /// <param name="coordinate">The Coordinate to base the point on</param>
         /// <param name="id">Optional point Id. Default is empty</param>
-        /// <returns>a kml point</returns>
+        /// <returns>A kml point (or null)</returns>
         public static dynamic CreatePoint(
             dynamic ge,
             Coordinate coordinate,
@@ -325,6 +325,50 @@ namespace FC.GEPluginCtrls
             altitude: coordinate.Altitude,
             altitudeMode: coordinate.AltitudeMode);
         }
+        
+        /// <summary>
+        /// Creates an Html String Balloon
+        /// </summary>
+        /// <param name="ge">The plugin instance</param>
+        /// <param name="html">The balloon content html string</param>
+        /// <param name="minWidth">Optional minimum balloon width, default is 100</param>
+        /// <param name="minHeight">Optional minimum balloon height, default is 100</param>
+        /// <param name="maxWidth">Optional maximum balloon width, default is 800</param>
+        /// <param name="maxHeight">Optional maximum balloon height, default is 600</param>
+        /// <param name="setBalloon">Optionally set the balloon to be the current in the plugin</param>
+        /// <returns>A HtmlStringBalloon object (or null)</returns>
+        public static dynamic CreateHtmlStringBalloon(
+            dynamic ge,
+            string html = "",
+            int minWidth = 0,
+            int minHeight = 0,
+            int maxWidth = 800,
+            int maxHeight = 600,
+            bool setBalloon = true)
+        {
+            dynamic balloon = null;
+
+            try
+            {
+                balloon = ge.createHtmlStringBalloon(string.Empty);
+                balloon.setContentString(html);
+                balloon.setMinHeight(minHeight);
+                balloon.setMaxHeight(maxHeight);
+                balloon.setMinWidth(minWidth);
+                balloon.setMaxWidth(maxWidth);
+
+                if (setBalloon)
+                {
+                    ge.setBalloon(balloon);
+                }
+            }
+            catch (RuntimeBinderException rbex)
+            {
+                Debug.WriteLine("OpenFeatureBalloon: " + rbex.Message, "GEHelpers");
+            }
+
+            return balloon;
+        }
 
         /// <summary>
         /// Draws a line string between the given placemarks or points
@@ -335,8 +379,8 @@ namespace FC.GEPluginCtrls
         /// <param name="id">Optional ID of the linestring placemark. Default is empty</param>
         /// <param name="tessellate">Optionally sets tessellation for the linestring. Default is true</param>
         /// <param name="addFeature">Optionally adds the linestring directly to the plugin. Default is true</param>
-        /// <returns>A linestring placemark (or false)</returns>
-        public static object CreateLineString(
+        /// <returns>A linestring placemark (or null)</returns>
+        public static dynamic CreateLineString(
             dynamic ge,
             dynamic start,
             dynamic end,
@@ -359,9 +403,11 @@ namespace FC.GEPluginCtrls
                 end = end.getGeometry();
             }
 
+            dynamic placemark = null;
+
             try
             {
-                dynamic placemark = CreatePlacemark(ge, addFeature: addFeature);
+                placemark = CreatePlacemark(ge, addFeature: addFeature);
                 dynamic lineString = ge.createLineString(id);
                 lineString.setTessellate(Convert.ToUInt16(tessellate));
                 lineString.getCoordinates().pushLatLngAlt(start.getLatitude(), start.getLongitude(), start.getAltitude());
@@ -372,15 +418,57 @@ namespace FC.GEPluginCtrls
                 {
                     GEHelpers.AddFeaturesToPlugin(ge, placemark);
                 }
-
-                return placemark;
             }
             catch (RuntimeBinderException rbex)
             {
                 Debug.WriteLine("CreateLineString: " + rbex.Message, "GEHelpers");
             }
 
-            return false;
+            return placemark;
+        }
+
+        /// <summary>
+        /// Draws a line string between the given coordinates
+        /// </summary>
+        /// <param name="ge">The plugin instance</param>
+        /// <param name="coordinates">List of points</param>
+        /// <param name="id">Optional ID of the linestring placemark. Default is empty</param>
+        /// <param name="tessellate">Optionally sets tessellation for the linestring. Default is true</param>
+        /// <param name="addFeature">Optionally adds the linestring directly to the plugin. Default is true</param>
+        /// <returns>A linestring placemark (or null)</returns>
+        public static dynamic CreateLineString(
+            dynamic ge,
+            IList<Coordinate> coordinates,
+            string id = "",
+            bool tessellate = true,
+            bool addFeature = true)
+        {
+            if (!GEHelpers.IsGE(ge))
+            {
+                throw new ArgumentException("ge is not of the type GEPlugin");
+            }
+
+            dynamic placemark = null;
+
+            try
+            {
+                placemark = CreatePlacemark(ge, addFeature: addFeature);
+                dynamic lineString = ge.createLineString(string.Empty);
+                lineString.setTessellate(Convert.ToUInt16(tessellate));
+
+                foreach (Coordinate c in coordinates)
+                {
+                    lineString.getCoordinates().pushLatLngAlt(c.Latitude, c.Longitude, c.Altitude);
+                }
+
+                placemark.setGeometry(lineString);
+            }
+            catch (RuntimeBinderException rbex)
+            {
+                Debug.WriteLine("CreateLineString: " + rbex.ToString(), "GEHelpers");
+            }
+
+            return placemark;
         }
 
         /// <summary>
@@ -396,7 +484,7 @@ namespace FC.GEPluginCtrls
         /// <param name="tilt">Optional tilt in degrees. Default is 0</param>
         /// <param name="range">Optional range in metres. Default is 1000</param>
         /// <param name="setView">Optional set the current view to the lookAt</param>
-        /// <returns>true on success</returns>
+        /// <returns>a lookat object (or null)</returns>
         public static dynamic CreateLookAt(
             dynamic ge,
             double latitude,
@@ -414,24 +502,24 @@ namespace FC.GEPluginCtrls
                 throw new ArgumentException("ge is not of the type GEPlugin");
             }
 
+            dynamic lookat = null;
+
             try
             {
-                dynamic lookat = ge.createLookAt(id);
+                lookat = ge.createLookAt(id);
                 lookat.set(latitude, longitude, altitude, altitudeMode, heading, tilt, range);
 
                 if (setView)
                 {
                     ge.getView().setAbstractView(lookat);
                 }
-
-                return lookat;
             }
             catch (RuntimeBinderException rbex)
             {
                 Debug.WriteLine("CreateLookAt: " + rbex.Message, "GEHelpers");
             }
 
-            return false;
+            return lookat;
         }
 
         /// <summary>
@@ -483,8 +571,9 @@ namespace FC.GEPluginCtrls
             {
                 kml = kmlFeature.getKml();
             }
-            catch (RuntimeBinderException)
+            catch (RuntimeBinderException rbex)
             {
+                Debug.WriteLine("GetElementsByTagName: " + rbex.Message, "KmlHelplers");
                 return doc.ChildNodes;
             }
             catch (COMException)
@@ -493,42 +582,45 @@ namespace FC.GEPluginCtrls
             }
 
             doc.InnerXml = kml;
+
             return doc.GetElementsByTagName(tagName);
         }
 
         /// <summary>
-        ///  Gives access to Url element in pre KML Release 2.1 documents
+        ///  Gives access to the url element in pre KML Release 2.1 documents
         ///  This allows the controls to work with legacy Kml formats
         /// </summary>
         /// <param name="kmlFeature">The network link to look for a url in</param>
-        /// <returns>The url value or an empty string</returns>
+        /// <returns>A url from the feature or null</returns>
         /// <remarks>This method is used by <see cref="KmlTreeView"/> for legacy kml support</remarks>
         /// <example>string url = KmlHelpers.GetUrl(kmlObject);</example>
-        public static string GetUrl(dynamic kmlFeature)
+        public static Uri GetUrl(dynamic kmlFeature)
         {
-            string url = string.Empty;
+            Uri uri = null;
+            string link = string.Empty;
+
             XmlNodeList list = GetElementsByTagName(kmlFeature, "href");
 
             if (list.Count > 0)
             {
-                url = list[0].InnerText;
+                link = list[0].InnerText;
             }
 
-            if (string.IsNullOrEmpty(url))
+            if (string.IsNullOrEmpty(link))
             {
                 try
                 {
-                    url = kmlFeature.getUrl();
+                    link = kmlFeature.getUrl();
                 }
                 catch (COMException)
                 {
                 }
 
-                if (string.IsNullOrEmpty(url))
+                if (string.IsNullOrEmpty(link))
                 {
                     try
                     {
-                        url = kmlFeature.getLink().getHref();
+                        link = kmlFeature.getLink().getHref();
                     }
                     catch (COMException)
                     {
@@ -536,7 +628,9 @@ namespace FC.GEPluginCtrls
                 }
             }
 
-            return url;
+            Uri.TryCreate(link, UriKind.RelativeOrAbsolute, out uri);
+
+            return uri;
         }
 
         /// <summary>
@@ -575,8 +669,9 @@ namespace FC.GEPluginCtrls
             {
                 return feature.getFeatures().getChildNodes();
             }
-            catch (RuntimeBinderException) 
+            catch (RuntimeBinderException rbex) 
             {
+                Debug.WriteLine("GetChildNodes: " + rbex.Message, "KmlHelplers");
             }
             catch (COMException) 
             { 
@@ -596,8 +691,9 @@ namespace FC.GEPluginCtrls
             {
                 return Convert.ToBoolean(feature.getFeatures().hasChildNodes());
             }
-            catch (RuntimeBinderException) 
+            catch (RuntimeBinderException rbex) 
             {
+                Debug.WriteLine("HasChildNodes: " + rbex.Message, "KmlHelplers");
             }
             catch (COMException)
             {
@@ -613,26 +709,18 @@ namespace FC.GEPluginCtrls
         /// <returns>True if the feature is a Kml container</returns>
         public static bool IsKmlContainer(dynamic feature)
         {
-            try
-            {
-                ApiType type = GEHelpers.GetApiType(feature);
+            ApiType type = GEHelpers.GetApiType(feature);
 
-                switch (type)
-                {
-                    case ApiType.KmlDocument:
-                    case ApiType.KmlFolder:
-                    case ApiType.KmlLayer:
-                    case ApiType.KmlLayerRoot:
-                        return true;
-                    default:
-                        return false;
-                }
-            }
-            catch (RuntimeBinderException)
+            switch (type)
             {
+                case ApiType.KmlDocument:
+                case ApiType.KmlFolder:
+                case ApiType.KmlLayer:
+                case ApiType.KmlLayerRoot:
+                    return true;
+                default:
+                    return false;
             }
-
-            return false;
         }
 
         /// <summary>
@@ -722,8 +810,7 @@ namespace FC.GEPluginCtrls
                     {
                         if (walkGeometries)
                         {
-                            objectContainer = feature.getOuterBoundary(); // GELinearRingContainer
-                            WalkKmlDom(objectContainer, callback, walkFeatures, walkGeometries);
+                            WalkKmlDom(feature.getOuterBoundary(), callback, walkFeatures, walkGeometries);
                         }
                     }
 
@@ -734,7 +821,7 @@ namespace FC.GEPluginCtrls
                     {
                         if (walkGeometries)
                         {
-                            objectContainer = feature.getGeometries();
+                            WalkKmlDom(feature.getOuterBoundary(), callback, walkFeatures, walkGeometries);
                         }
                     }
 
@@ -748,12 +835,12 @@ namespace FC.GEPluginCtrls
 
             if (objectContainer != null && HasChildNodes(objectContainer))
             {
-                dynamic childNodes = objectContainer.getChildNodes();
+                dynamic childNodes = KmlHelpers.GetChildNodes(objectContainer);
                 int count = childNodes.getLength();
                 for (int i = 0; i < count; i++)
                 {
                     dynamic node = childNodes.item(i);
-                    WalkKmlDom(node, callback);
+                    WalkKmlDom(node, callback, walkFeatures, walkGeometries);
                     callback(node);
                 }
             }

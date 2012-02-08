@@ -47,13 +47,13 @@ namespace FC.GEPluginCtrls.HttpServer
                 {
                     tokens = line.Split(' ');
                 }
-                else if (line.StartsWith("User-Agent:", StringComparison.OrdinalIgnoreCase))
+                else if (line.StartsWith("User-Agent: ", StringComparison.OrdinalIgnoreCase))
                 {
-                    this.UserAgent = line;
+                    this.UserAgent = line.Remove(0, "User-Agent: ".Length);
                 }
-                else if (line.StartsWith("Host:", StringComparison.OrdinalIgnoreCase))
+                else if (line.StartsWith("Host: ", StringComparison.OrdinalIgnoreCase))
                 {
-                    this.HostHeader = line;
+                    this.HostHeader = line.Remove(0, "Host: ".Length);
                 }
             }
 
@@ -63,6 +63,14 @@ namespace FC.GEPluginCtrls.HttpServer
                 this.Method = tokens[0];
                 this.Uri = tokens[1];
                 this.HttpVersion = tokens[2];
+                this.Query = string.Empty;
+
+                if (this.Uri.IndexOf('?') > -1)
+                {
+                    string[] parts = this.Uri.Split('?');
+                    ////this.Uri = parts[0]; 
+                    this.Query = parts[1];
+                }
             }
         }
 
@@ -90,5 +98,10 @@ namespace FC.GEPluginCtrls.HttpServer
         /// Gets the HTTP version (HTTP/1.1)
         /// </summary>
         internal string HttpVersion { get; private set; }
+
+        /// <summary>
+        /// Gets the GET query string
+        /// </summary>
+        internal string Query { get; private set; }
     }
 }

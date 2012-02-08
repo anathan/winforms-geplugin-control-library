@@ -99,12 +99,13 @@ namespace FC.GEPluginCtrls
         #region Public methods
 
         /// <summary>
-        /// Allow javascript to send debug messages
+        /// Allows javascript to send debug messages
         /// </summary>
+        /// <param name="category">the category of the message</param>
         /// <param name="message">the debug message</param>
-        public void DebugMessage(string message)
+        public void DebugMessage(string category, string message)
         {
-            System.Diagnostics.Debug.WriteLine(message, "JS> ");
+            System.Diagnostics.Debug.WriteLine(message, category);
         }
 
         /// <summary>
