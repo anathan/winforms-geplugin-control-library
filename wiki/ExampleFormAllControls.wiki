@@ -11,7 +11,7 @@ Here the plugin behaves exactly as it would with the default set-up in a web pag
 
 The ApiObject member of GEEventArgs returned in the PluginReady event is the GEPlugin object. This allows one to work seemlessly with the Google Earth Api - just as if you were programming in the native !JavaScript.
 
-The 'ge' object is also available outside the PluginReady event from the [http://code.google.com/p/winforms-geplugin-control-library/wiki/GEWebBrowser#Public_Properties GEWebBrowser's Plugin property].
+The GEPlugin object is also available outside the PluginReady event from the [http://code.google.com/p/winforms-geplugin-control-library/wiki/GEWebBrowser#Public_Properties GEWebBrowser's Plugin property].
 
 Although working in with in the native !JavaScript is possible, it is worth noting that the other controls ([GEStatusStrip], [GEToolStrip], [KmlTreeView]) and the other helper classes ([GEHelpers], [KmlHelpers], [GEOptions], etc) offer a much cleaner, safer and managed way to work with the Api.
 
