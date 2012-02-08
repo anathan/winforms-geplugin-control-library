@@ -34,10 +34,9 @@ namespace FC.GEPluginCtrls
         #region Private fields
 
         /// <summary>
-        /// Use the IGEPlugin COM interface. 
-        /// Equivalent to QueryInterface for COM objects
+        /// Timer used when polling data
         /// </summary>
-        private dynamic geplugin = null;
+        private static Timer timer = null;
 
         /// <summary>
         /// An instance of the current browser
@@ -47,12 +46,7 @@ namespace FC.GEPluginCtrls
         /// <summary>
         /// Timer interval in miliseconds
         /// </summary>
-        private int interval = 100;
-
-        /// <summary>
-        /// Timer used when polling data
-        /// </summary>
-        private Timer timer = null;
+        private int interval = 250;
 
         /// <summary>
         /// Indicates whether the streaming status label is visible
@@ -110,9 +104,9 @@ namespace FC.GEPluginCtrls
             {
                 this.interval = value;
 
-                if (null != this.timer)
+                if (null != timer)
                 {
-                    this.timer.Interval = value;
+                    timer.Interval = value;
                 }
             }
         }
@@ -247,35 +241,29 @@ namespace FC.GEPluginCtrls
         public void SetBrowserInstance(GEWebBrowser instance)
         {
             this.browser = instance;
-            this.geplugin = instance.Plugin;
-
-            if (!GEHelpers.IsGE(this.geplugin))
-            {
-                throw new ArgumentException("ge is not of the type GEPlugin");
-            }
 
             if (this.browser.PluginIsReady)
             {
                 this.Enabled = true;
-                this.timer = new Timer();
-                this.timer.Interval = this.interval;
-                this.timer.Start();
-                this.timer.Tick += (o, e) => this.Timer_Tick(o, e);
+                timer = new Timer();
+                timer.Interval = this.interval;
+                timer.Start();
+                timer.Tick += new EventHandler(this.Timer_Tick);
+
+                this.browser.PluginReady += (o, e) => this.Enabled = true;
+                this.FindForm().FormClosing += (o, e) => timer.Stop();
 
                 try
                 {
                     this.browserVersionStatusLabel.Text = "ie " + this.browser.Version.ToString();
-                    this.apiVersionStatusLabel.Text = "api " + this.geplugin.getApiVersion();
-                    this.pluginVersionStatusLabel.Text = "plugin " + this.geplugin.getPluginVersion();
+                    this.apiVersionStatusLabel.Text = "api " + this.browser.Plugin.getApiVersion();
+                    this.pluginVersionStatusLabel.Text = "plugin " + this.browser.Plugin.getPluginVersion();
                 }
                 catch (RuntimeBinderException rbex)
                 {
                     Debug.WriteLine("SetBrowserInstance: " + rbex.Message, "StatusStrip");
-                    ////throw;
                 }
             }
-
-            this.browser.PluginReady += (o, e) => this.Enabled = true;
         }
 
         #endregion
@@ -291,41 +279,34 @@ namespace FC.GEPluginCtrls
         {
             if (this.browser.PluginIsReady)
             {
-                float percent = 0;
+                double percent = 0;
 
                 try
                 {
-                    percent = this.geplugin.getStreamingPercent();
+                    percent = this.browser.Plugin.getStreamingPercent();
                 }
                 catch (COMException)
                 {
-                    this.timer.Stop();
+                    timer.Stop();
                     return;
                 }
 
-                try
+                if (100 == percent || 0 == percent)
                 {
-                    if (100 == percent || 0 == percent)
-                    {
-                        this.streamingStatusLabel.ForeColor = Color.Gray;
-                        this.streamingStatusLabel.Text = "idle";
-                        this.streamingProgressBar.Value = 0;
-                    }
-                    else
-                    {
-                        this.streamingStatusLabel.ForeColor = Color.Black;
-                        this.streamingProgressBar.Value = (int)percent;
-                        this.streamingStatusLabel.Text = percent + "%";
-                    }
+                    this.streamingStatusLabel.ForeColor = Color.Gray;
+                    this.streamingStatusLabel.Text = "idle";
+                    this.streamingProgressBar.Value = 0;
                 }
-                catch (NullReferenceException)
+                else
                 {
-                    // TODO sometimes on application close...need to look into this...
+                    this.streamingStatusLabel.ForeColor = Color.Black;
+                    this.streamingProgressBar.Value = (int)percent;
+                    this.streamingStatusLabel.Text = percent + "%";
                 }
             }
             else
             {
-                this.timer.Stop();
+                timer.Stop();
             }
         }
 

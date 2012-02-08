@@ -64,6 +64,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.VisualStudio.DebuggerVisualizers, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -92,10 +93,12 @@
     <Compile Include="Enumerations\AltitudeMode.cs" />
     <Compile Include="Enumerations\EventId.cs" />
     <Compile Include="Enumerations\Layer.cs" />
+    <Compile Include="Enumerations\RefreshMode.cs" />
     <Compile Include="Enumerations\UnitSystem.cs" />
     <Compile Include="Enumerations\ListItemStyle.cs" />
     <Compile Include="Enumerations\MapType.cs" />
     <Compile Include="Enumerations\NavigationControl.cs" />
+    <Compile Include="Enumerations\ViewRefreshMode.cs" />
     <Compile Include="Enumerations\Visibility.cs" />
     <Compile Include="External.cs" />
     <Compile Include="Enumerations\ApiType.cs" />
@@ -104,7 +107,9 @@
     <Compile Include="Geo\Coordinate.cs" />
     <Compile Include="Geo\Maths.cs" />
     <Compile Include="Helpers\Extensions.cs" />
+    <Compile Include="HttpServer\GEServer.cs" />
     <Compile Include="HttpServer\HttpRequest.cs" />
+    <Compile Include="HttpServer\StateObject.cs" />
     <Compile Include="Wrappers\GENavigationControl.cs" />
     <Compile Include="Wrappers\GEOptions.cs" />
     <Compile Include="GEEventArgs.cs" />
@@ -163,7 +168,6 @@
     <Compile Include="Controls\GEToolStrip.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="HttpServer\GEServer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Plugin.html">
@@ -196,14 +200,14 @@
     </BootstrapperPackage>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- Uncomment the folowing line to allow StyleCop to run during the build -->
+  <!-- Uncomment the folowing line to allow StyleCop to run during the build, you may need to alter the path to StyleCop.Targets -->
   <!-- <Import Project="$(ProgramFiles)\MSBuild\StyleCop\v4.6\StyleCop.Targets" /> -->
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
   </Target> -->
   <Target Name="AfterBuild">
-    <!-- Uncomment the folowing line to allow Fxcop to run after the build -->
+    <!-- Uncomment the folowing line to allow Fxcop to run after the build, you may need to alter the path to FxCopCmd.exe -->
     <!-- <Exec Command="&quot;$(ProgramFiles)\Microsoft Fxcop 10.0\FxCopCmd.exe&quot; /file:&quot;$(TargetPath)&quot; /console" /> -->
   </Target>
   <PropertyGroup>

@@ -19,10 +19,11 @@
 namespace FC.GEPluginCtrls
 {
     using System;
+    using System.Runtime.InteropServices;
 
     /// <summary>
     /// Wrapper for the GEOptions com object.
-    /// Maps all its getter and setter methods to managed properties
+    /// Acts as a proxy and maps all the getter and setter methods to managed properties.
     /// </summary>
     public sealed class GEOptions
     {
@@ -257,7 +258,13 @@ namespace FC.GEPluginCtrls
 
             set
             {
-                this.options.setStatusBarVisibility(Convert.ToUInt16(value));
+                try
+                {
+                    this.options.setStatusBarVisibility(Convert.ToUInt16(value));
+                }
+                catch (COMException)
+                {
+                }
             }
         }
 
@@ -313,7 +320,7 @@ namespace FC.GEPluginCtrls
             {
                 this.options.setMapType(mapType);
             }
-            catch (System.Runtime.InteropServices.COMException)
+            catch (COMException)
             {
             }
         }

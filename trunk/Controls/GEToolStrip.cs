@@ -36,12 +36,6 @@ namespace FC.GEPluginCtrls
         #region Private fields
 
         /// <summary>
-        /// Use the IGEPlugin COM interface. 
-        /// Equivalent to QueryInterface for COM objects
-        /// </summary>
-        private dynamic plugin = null;
-
-        /// <summary>
         /// An instance of the current browser
         /// </summary>
         private GEWebBrowser browser = null;
@@ -237,12 +231,11 @@ namespace FC.GEPluginCtrls
         public void SetBrowserInstance(GEWebBrowser instance)
         {
             this.browser = instance;
-            this.plugin = instance.Plugin;
 
             if (this.browser.PluginIsReady)
             {
-                this.options = new GEOptions(this.plugin);
-                this.control = new GENavigationControl(this.plugin);
+                this.options = new GEOptions(this.browser.Plugin);
+                this.control = new GENavigationControl(this.browser.Plugin);
                 this.SynchronizeOptions();
                 this.Enabled = true;
             }
@@ -297,16 +290,16 @@ namespace FC.GEPluginCtrls
                 this.control.Visibility = (Visibility)Convert.ToUInt16(this.controlsMenuItem.Checked);
 
                 // no wrapper for the sun - so make a direct api call to GEPlugin.getSun().setVisibility()
-                this.plugin.getSun().setVisibility(Convert.ToUInt16(this.sunMenuItem.Checked));
+                this.browser.Plugin.getSun().setVisibility(Convert.ToUInt16(this.sunMenuItem.Checked));
 
                 if (this.browser.ImageryBase == ImageryBase.Earth)
                 {
-                    GEHelpers.EnableLayer(this.plugin, Layer.Borders, this.bordersMenuItem.Checked);
-                    GEHelpers.EnableLayer(this.plugin, Layer.Buildings, this.buildingsMenuItem.Checked);
-                    GEHelpers.EnableLayer(this.plugin, Layer.BuildingsLowRes, this.buildingsGreyMenuItem.Checked);
-                    GEHelpers.EnableLayer(this.plugin, Layer.Roads, this.roadsMenuItem.Checked);
-                    GEHelpers.EnableLayer(this.plugin, Layer.Terrain, this.terrainMenuItem.Checked);
-                    GEHelpers.EnableLayer(this.plugin, Layer.Trees, this.treesMenuItem.Checked);
+                    GEHelpers.EnableLayer(this.browser.Plugin, Layer.Borders, this.bordersMenuItem.Checked);
+                    GEHelpers.EnableLayer(this.browser.Plugin, Layer.Buildings, this.buildingsMenuItem.Checked);
+                    GEHelpers.EnableLayer(this.browser.Plugin, Layer.BuildingsLowRes, this.buildingsGreyMenuItem.Checked);
+                    GEHelpers.EnableLayer(this.browser.Plugin, Layer.Roads, this.roadsMenuItem.Checked);
+                    GEHelpers.EnableLayer(this.browser.Plugin, Layer.Terrain, this.terrainMenuItem.Checked);
+                    GEHelpers.EnableLayer(this.browser.Plugin, Layer.Trees, this.treesMenuItem.Checked);
 
                     foreach (ToolStripMenuItem item in this.imageryDropDownButton.DropDownItems)
                     {
@@ -382,8 +375,7 @@ namespace FC.GEPluginCtrls
                 {
                     this.browser.FetchKmlLocal(input);
                 }
-                else if (input.StartsWith("http", StringComparison.OrdinalIgnoreCase) ||
-                    input.StartsWith("www", StringComparison.OrdinalIgnoreCase))
+                else if (GEHelpers.IsUri(input, UriKind.Absolute))
                 {
                     // input is a remote file...
                     this.browser.FetchKml(input);
@@ -401,7 +393,7 @@ namespace FC.GEPluginCtrls
                         if (double.TryParse(parts[0], out latitude) &&
                             double.TryParse(parts[1], out longitude))
                         {
-                            KmlHelpers.CreateLookAt(this.plugin, latitude, longitude);
+                            KmlHelpers.CreateLookAt(this.browser.Plugin, latitude, longitude);
                         }
                     }
                 }
@@ -435,7 +427,7 @@ namespace FC.GEPluginCtrls
 
             if (this.browser.PluginIsReady && (item != null))
             {
-                GEHelpers.EnableLayer(this.plugin, (Layer)item.Tag, item.Checked);
+                GEHelpers.EnableLayer(this.browser.Plugin, (Layer)item.Tag, item.Checked);
             }
         }
 
@@ -525,10 +517,10 @@ namespace FC.GEPluginCtrls
 
                             break;
                         case "SUN":
-                            this.plugin.getSun().setVisibility(value);
+                            this.browser.Plugin.getSun().setVisibility(value);
                             break;
                         case "HISTORY":
-                            this.plugin.getTime().setHistoricalImageryEnabled(value);
+                            this.browser.Plugin.getTime().setHistoricalImageryEnabled(value);
                             break;
                         default:
                             break;
@@ -636,7 +628,7 @@ namespace FC.GEPluginCtrls
         {
             if (this.browser.PluginIsReady)
             {
-                GEHelpers.ShowCurrentViewInMaps(this.plugin);
+                GEHelpers.ShowCurrentViewInMaps(this.browser.Plugin);
             }
         }
 

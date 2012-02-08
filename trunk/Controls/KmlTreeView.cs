@@ -23,6 +23,7 @@ namespace FC.GEPluginCtrls
     using System.Collections.Generic;
     using System.ComponentModel;
     using System.Drawing;
+    using System.Globalization;
     using System.Runtime.InteropServices;
     using System.Windows.Forms;
     using System.Windows.Forms.VisualStyles;
@@ -41,11 +42,6 @@ namespace FC.GEPluginCtrls
     public sealed partial class KmlTreeView : TreeView, IGEControls
     {
         #region Private fields
-
-        /// <summary>
-        /// The plugin
-        /// </summary>
-        private dynamic geplugin = null;
 
         /// <summary>
         /// The current browser
@@ -129,17 +125,7 @@ namespace FC.GEPluginCtrls
                 KmlHelpers.HasChildNodes(feature)))
             {
                 // add a place holder 
-                treeNode.Nodes.Clear();
                 treeNode.Nodes.Add(new KmlTreeViewNode());
-
-                if (this.InvokeRequired)
-                {
-                    this.BeginInvoke((MethodInvoker)delegate { this.Refresh(); });
-                }
-                else
-                {
-                    this.Refresh();
-                }
             }
 
             return treeNode;
@@ -153,14 +139,15 @@ namespace FC.GEPluginCtrls
         /// <returns>The treenode for the object from the given ID (or an empty treenode if the ID isn't found)</returns>
         public KmlTreeViewNode GetNodeById(string id)
         {
-            if (this.Nodes.ContainsKey(id))
+            TreeNode[] nodes = this.Nodes.Find(id, true);
+            KmlTreeViewNode node = new KmlTreeViewNode();
+
+            if (nodes.Length == 1)
             {
-                return this.Nodes[this.Nodes.IndexOfKey(id)] as KmlTreeViewNode;
+                node = nodes[0] as KmlTreeViewNode;
             }
-            else
-            {
-                return new TreeNode() as KmlTreeViewNode;
-            }
+
+            return node;
         }
 
         /// <summary>
@@ -170,6 +157,7 @@ namespace FC.GEPluginCtrls
         public void ParseKmlObject(dynamic feature)
         {
             this.Nodes.Add(this.CreateNode(feature));
+            this.Refresh();
         }
 
         /// <summary>
@@ -190,6 +178,7 @@ namespace FC.GEPluginCtrls
         public override void Refresh()
         {
             base.Refresh();
+            this.BeginUpdate();
 
             if (!this.CheckBoxes)
             {
@@ -203,6 +192,9 @@ namespace FC.GEPluginCtrls
 
             foreach (KmlTreeViewNode node in this.Nodes)
             {
+                // Refresh internal properties of each node
+                // http://code.google.com/p/winforms-geplugin-control-library/issues/detail?id=66
+                node.Refresh();
                 stack.Push(node);
             }
 
@@ -220,6 +212,8 @@ namespace FC.GEPluginCtrls
                     stack.Push(node.Nodes[i] as KmlTreeViewNode);
                 }
             }
+
+            this.EndUpdate();
         }
 
         /// <summary>
@@ -229,9 +223,8 @@ namespace FC.GEPluginCtrls
         public void SetBrowserInstance(GEWebBrowser instance)
         {
             this.browser = instance;
-            this.geplugin = instance.Plugin;
-
-            if (!GEHelpers.IsGE(this.geplugin))
+  
+            if (!GEHelpers.IsGE(this.browser.Plugin))
             {
                 throw new ArgumentException("ge is not of the type GEPlugin");
             }
@@ -280,6 +273,11 @@ namespace FC.GEPluginCtrls
             // If there is a place-holder node 
             if (eventNode.Nodes.ContainsKey(ApiType.None.ToString()))
             {
+                if (eventNode.IsLoading == true)
+                {
+                    return;
+                }
+
                 // animate the place holder
                 int index = eventNode.Nodes.IndexOfKey(ApiType.None.ToString());
                 ((KmlTreeViewNode)eventNode.Nodes[index]).Animate();
@@ -294,7 +292,7 @@ namespace FC.GEPluginCtrls
             else
             {
                 // There is no place-holder node...
-                // so just set the check state of the children and the refresh the tree
+                // so just set the check state of the children
                 this.SetChildStateImageIndex(eventNode);
             }
         }
@@ -317,7 +315,17 @@ namespace FC.GEPluginCtrls
         {
             base.OnNodeMouseDoubleClick(e);
 
-            KmlTreeViewNode node = e.Node as KmlTreeViewNode;
+            // check if the node needs updating...
+            // ideally this should be event driven rather than via user interaction
+            // but as yet the api does not expose networklink events...
+            KmlTreeViewNode node =
+                UpdateCheck(e.Node as KmlTreeViewNode, this.browser);
+            node.Refresh(); 
+
+            if (node.IsLoading)
+            {
+                return;
+            }
 
             switch (node.ApiType)
             {
@@ -326,7 +334,7 @@ namespace FC.GEPluginCtrls
                 case ApiType.KmlDocument:
                 case ApiType.KmlGroundOverlay:
                     {
-                        GEHelpers.OpenFeatureBalloon(this.geplugin, node.ApiObject, setBalloon: node.Checked);
+                        GEHelpers.OpenFeatureBalloon(this.browser.Plugin, node.ApiObject, setBalloon: node.Checked);
                     }
 
                     break;
@@ -334,17 +342,18 @@ namespace FC.GEPluginCtrls
                 case ApiType.KmlTour:
                 case ApiType.KmlPhotoOverlay:
                     {
-                        GEHelpers.ToggleMediaPlayer(this.geplugin, node.ApiObject, node.Checked);
+                        GEHelpers.ToggleMediaPlayer(this.browser.Plugin, node.ApiObject, node.Checked);
                     }
 
                     return;   // exit here as the media player handles the view update
 
                 case ApiType.None:
-                default:
                     return;
+                default:
+                    break;
             }
 
-            GEHelpers.FlyToObject(this.geplugin, node.ApiObject);
+            GEHelpers.FlyToObject(this.browser.Plugin, node.ApiObject);
         }
 
         /// <summary>
@@ -437,6 +446,55 @@ namespace FC.GEPluginCtrls
         #region Private methods
 
         /// <summary>
+        /// Generates an ID for a feature loaded from a remote reasource 
+        /// </summary>
+        /// <param name="url">the base url</param>
+        /// <param name="id">the object id</param>
+        /// <returns>the generated id</returns>
+        private static string GenerateId(string url, string id)
+        {
+            string hashed = string.IsNullOrEmpty(id) ? string.Empty : url + "#" + id;
+            return string.IsNullOrEmpty(url) ? id : hashed;
+        }
+
+        /// <summary>
+        /// Checks if a given element in the treeview needs updating
+        /// </summary>
+        /// <param name="node">The node to check for</param>
+        /// <param name="browser">The browser instance to check in</param>
+        /// <returns>a tree view node based on the new data.</returns>
+        private static KmlTreeViewNode UpdateCheck(KmlTreeViewNode node, GEWebBrowser browser)
+        {
+            dynamic liveObject = null;
+
+            try
+            {
+                liveObject = browser.Plugin.getElementByUrl(node.Name);
+            }
+            catch (COMException)
+            {
+            }
+
+            if (liveObject != null)
+            {
+                KmlTreeViewNode newNode = new KmlTreeViewNode(liveObject);
+                newNode.Name = node.Name;
+                newNode.BaseUrl = node.BaseUrl; 
+
+                if (node.Parent != null)
+                {
+                    // update the tree
+                    node.Parent.Nodes.Insert(node.Index, newNode);
+                    node.Parent.Nodes.Remove(node);
+                }
+
+                return newNode;
+            }
+
+            return node;
+        }
+
+        /// <summary>
         /// Builds the tri-state image list for use with the control
         /// </summary>
         private void BuildTriStateImageList()
@@ -490,8 +548,7 @@ namespace FC.GEPluginCtrls
         }
 
         /// <summary>
-        /// Asynchronous method for building a list of children for a KmlTreeViewNode
-        /// bases on the api object represented by the node
+        /// Asynchronous method for building a list of nodes
         /// </summary>
         /// <param name="sender">The object that raised the event.</param>
         /// <param name="e">Event arguments.</param>
@@ -499,30 +556,54 @@ namespace FC.GEPluginCtrls
         {
             // node passed in from RunWorkerAsync
             KmlTreeViewNode baseNode = e.Argument as KmlTreeViewNode;
+            baseNode.IsLoading = true;
 
             // create a stack to hold the children we will create
             Stack<KmlTreeViewNode> children = new Stack<KmlTreeViewNode>();
+            bool linkFailed = false;
 
-            bool networklinkFailed = false;
             if (baseNode.ApiType == ApiType.KmlNetworkLink)
             {
                 // fetch the networklink data 
-                dynamic data = this.browser.FetchKmlSynchronous(KmlHelpers.GetUrl(baseNode.ApiObject));
+                string url = KmlHelpers.GetUrl(baseNode.ApiObject).ToString();
+                dynamic data = null;
+                bool rebuild = false;
+
+                // can't use the new FetchAndParse with archive files...
+                if (url.EndsWith("kmz", StringComparison.OrdinalIgnoreCase) || 
+                    url.EndsWith("dae", StringComparison.OrdinalIgnoreCase))
+                {
+                    data = this.browser.FetchKmlSynchronous(url);
+                }
+                else
+                {
+                    data = this.browser.FetchAndParse(url);
+                    rebuild = true;
+                }
+
                 if (data != null)
                 {
-                    // TODO : support update methods for networklinks!
+                    KmlTreeViewNode link = this.CreateNode(data);
 
-                    ////XmlNodeList modes = KmlHelpers.GetElementsByTagName(baseNode.ApiObject, "refreshMode");
-                    ////XmlNodeList interval = KmlHelpers.GetElementsByTagName(baseNode.ApiObject, "refreshInterval");
+                    if (rebuild)
+                    {
+                        // The kmlobjects are created via parsekml so they need their id's need to be rebuilt
+                        // so that the Url is still present (e.g. http://foo.com/#id vs #id)
+                        // the baseurl of the node is set so that any child nodes can also have there id's rebuilt
+                        // when they are created.
+                        link.Name = GenerateId(url, data.getId());
+                        link.BaseUrl = url; 
+                    }
 
                     // create a new treenode from the data and push it on to the stack
-                    children.Push(this.CreateNode(data));
+                    children.Push(link);
                 }
                 else
                 {
                     // no data, so push a new place holder node in and set the loadError flag
+                    baseNode.IsLoading = false;
                     children.Push(new KmlTreeViewNode());
-                    networklinkFailed = true;
+                    linkFailed = true;
                 }
             }
             else
@@ -530,14 +611,14 @@ namespace FC.GEPluginCtrls
                 // the feature must be a KmlFolder or a KmlDocument (KmlContainer)
                 // ...so get the child nodes from it
                 dynamic kmlChildNodes = KmlHelpers.GetChildNodes(baseNode.ApiObject);
+
                 if (kmlChildNodes != null)
                 {
                     int count = kmlChildNodes.getLength();
                     for (int i = 0; i < count; i++)
                     {
                         // create a new KmlTreeViewNode from each feature in the KmlContainer 
-                        // and push it on to the stack. A COMException is occasionally raised 
-                        // when the application exits whist nodes are being created, not sure how to resolve this...
+                        // and push it on to the stack. 
                         try
                         {
                             children.Push(this.CreateNode(kmlChildNodes.item(i)));
@@ -545,41 +626,58 @@ namespace FC.GEPluginCtrls
                         catch (COMException)
                         {
                             children.Clear();
+                            return;
                         }
                     }
                 }
             }
 
-            e.Result = new object[] { baseNode, children, networklinkFailed };
+            // pass the base node, child stack and error flag as the result.
+            e.Result = new object[] { baseNode, children, linkFailed };
         }
 
         /// <summary>
-        /// Method for adding a list of children to a KmlTreeViewNode.
-        /// This method is called after NodeBuilder_DoWork has finished.
+        /// Adds children to a KmlTreeViewNode.
         /// </summary>
         /// <param name="sender">The object that raised the event.</param>
         /// <param name="e">Event arguments.</param>
         private void NodeBuilder_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
+            if (e.Result == null)
+            {
+                return;
+            }
+
             // the result object from NodeBuilder_DoWork
             object[] result = e.Result as object[];
-
             KmlTreeViewNode baseNode = result[0] as KmlTreeViewNode;
             Stack<KmlTreeViewNode> children = result[1] as Stack<KmlTreeViewNode>;
-
-            bool networklinkFailed = Convert.ToBoolean(result[2]);
+            bool linkFailed = Convert.ToBoolean(result[2], CultureInfo.InvariantCulture);
 
             // clear the node of all children
             baseNode.Nodes.Clear();
 
             // add the children to the node 
-            // ( just a new placeholder if there was error loading a networklink)
+            // (is just a new placeholder if there was error loading a networklink)
             while (children.Count > 0)
             {
-                baseNode.Nodes.Add(children.Pop());
+                KmlTreeViewNode child = children.Pop();
+                baseNode.Nodes.Add(child);
+
+                // If the parent has a BaseUrl then we need to use this to generate the 
+                // correct ids for the child, we also set the baseurl on the child for its children ...
+                // we also do an update check as it is possible the node needs to be updated...
+                string url = ((KmlTreeViewNode)child.Parent).BaseUrl;
+
+                if (!string.IsNullOrEmpty(url) && child.ApiObject != null)
+                {
+                    child.Name = GenerateId(url, child.ApiObject.getId());
+                    child.BaseUrl = url; 
+                    UpdateCheck(child, this.browser);
+                }
             }
 
-            if (networklinkFailed)
+            if (linkFailed)
             {
                 baseNode.Collapse();
                 baseNode.ImageKey = baseNode.SelectedImageKey = "linkFolderClosedDisconected";

@@ -64,50 +64,6 @@ namespace FC.GEPluginCtrls
         }
 
         /// <summary>
-        /// Creates an Html String Balloon
-        /// </summary>
-        /// <param name="ge">The plugin instance</param>
-        /// <param name="html">The balloon content html string</param>
-        /// <param name="minWidth">Optional minimum balloon width, default is 100</param>
-        /// <param name="minHeight">Optional minimum balloon height, default is 100</param>
-        /// <param name="maxWidth">Optional maximum balloon width, default is 800</param>
-        /// <param name="maxHeight">Optional maximum balloon height, default is 600</param>
-        /// <param name="setBalloon">Optionally set the balloon to be the current in the plugin</param>
-        /// <returns>The feature balloon (or false)</returns>
-        public static dynamic CreateHtmlStringBalloon(
-            dynamic ge,
-            string html = "",
-            int minWidth = 0,
-            int minHeight = 0,
-            int maxWidth = 800,
-            int maxHeight = 600,
-            bool setBalloon = true)
-        {
-            try
-            {
-                dynamic balloon = ge.createHtmlStringBalloon(string.Empty);
-                balloon.setContentString(html);
-                balloon.setMinHeight(minHeight);
-                balloon.setMaxHeight(maxHeight);
-                balloon.setMinWidth(minWidth);
-                balloon.setMaxWidth(maxWidth);
-
-                if (setBalloon)
-                {
-                    ge.setBalloon(balloon);
-                }
-
-                return balloon;
-            }
-            catch (RuntimeBinderException rbex)
-            {
-                Debug.WriteLine("OpenFeatureBalloon: " + rbex.Message, "GEHelpers");
-            }
-
-            return false;
-        }
-
-        /// <summary>
         /// Enables or disables a plugin layer - wrapper for ge.getLayerRoot().enableLayerById()
         /// </summary>
         /// <param name="ge">The plugin instance</param>
@@ -128,6 +84,9 @@ namespace FC.GEPluginCtrls
             {
                 Debug.WriteLine("GetAllFeaturesKml: " + rbex.Message, "GEHelpers");
             }
+            catch (COMException)
+            {
+            }
         }
 
         /// <summary>
@@ -147,7 +106,7 @@ namespace FC.GEPluginCtrls
 
             try
             {
-                feature = ge.getElementById(id);
+                feature = ge.getElementById("#" + id); 
             }
             catch (RuntimeBinderException rbex)
             {
@@ -278,7 +237,7 @@ namespace FC.GEPluginCtrls
         /// </summary>
         /// <param name="wrapper">The com object wrapper</param>
         /// <returns>The name of the type, or an empty string on failure</returns>
-        public static string GetTypeFromRcw(object wrapper)
+        public static string GetTypeFromWrapper(object wrapper)
         {
             string type = string.Empty;
 
@@ -300,20 +259,29 @@ namespace FC.GEPluginCtrls
         }
 
         /// <summary>
-        /// Gets the type of a given <paramref name="feature">feature</paramref>
+        /// Gets the ApiType of a given <paramref name="feature">feature</paramref>
         /// </summary>
         /// <param name="feature">The feature to get the type of</param>
         /// <returns>
-        /// The type of the <paramref name="feature">feature</paramref>
-        /// or 'ApiType.None' if the <paramref name="feature">feature</paramref> is not an api type.
+        /// The type of the <paramref name="feature">feature</paramref> or 'ApiType.None'.
         /// </returns>
-        public static ApiType GetApiType(object feature)
+        public static ApiType GetApiType(dynamic feature)
         {
-            string type = ((dynamic)feature).getType();
-
-            if (Enum.IsDefined(typeof(ApiType), type))
+            if (feature != null)
             {
-                return (ApiType)Enum.Parse(typeof(ApiType), type);
+                try
+                {
+                    string type = ((dynamic)feature).getType();
+
+                    if (Enum.IsDefined(typeof(ApiType), type))
+                    {
+                        return (ApiType)Enum.Parse(typeof(ApiType), type);
+                    }
+                }
+                catch (RuntimeBinderException rbex)
+                {
+                    Debug.WriteLine("GetApiType: " + rbex.Message, "GEHelpers");
+                }
             }
 
             return ApiType.None;
@@ -345,6 +313,19 @@ namespace FC.GEPluginCtrls
         }
 
         /// <summary>
+        /// Checks if a given string <paramref name="input"/> is a valid url
+        /// of the given <paramref name="kind"/>
+        /// </summary>
+        /// <param name="input">the string to check</param>
+        /// <param name="kind">the kind of uri to check for</param>
+        /// <returns>true if the string is a uri</returns>
+        public static bool IsUri(string input, UriKind kind)
+        {
+            Uri x = null;
+            return Uri.TryCreate(input, kind, out x);
+        }
+
+        /// <summary>
         /// Opens the balloon for the given feature in the plugin using OpenFeatureBalloon()
         /// </summary>
         /// <param name="ge">the plugin instance</param>
@@ -355,7 +336,7 @@ namespace FC.GEPluginCtrls
         /// <param name="maxWidth">Optional maximum balloon width, default is 800</param>
         /// <param name="maxHeight">Optional maximum balloon height, default is 600</param>
         /// <param name="setBalloon">Optionally set the balloon to be the current in the plugin</param>
-        /// <returns>The feature balloon (or false)</returns>
+        /// <returns>The feature balloon or null</returns>
         public static dynamic OpenFeatureBalloon(
             dynamic ge,
             dynamic feature,
@@ -372,10 +353,11 @@ namespace FC.GEPluginCtrls
             }
 
             dynamic balloon = null;
+            string content = string.Empty;
 
             try
             {
-                string content = string.Empty;
+                ge.setBalloon(balloon);
 
                 if (useUnsafeHtml)
                 {
@@ -385,44 +367,31 @@ namespace FC.GEPluginCtrls
                 {
                     content = feature.getBalloonHtml();
                 }
-
-                // Scrubbing string...
-                // see: http://code.google.com/apis/earth/documentation/balloons.html
-                if (string.IsNullOrEmpty(content) || content == "<!--\nContent-type: mhtml-die-die-die\n\n-->")
-                {
-                    // no content...
-                    return false;
-                }
-
-                balloon = GEHelpers.CreateHtmlStringBalloon(
-                    ge,
-                    content,
-                    minWidth,
-                    minHeight,
-                    maxWidth,
-                    maxHeight,
-                    setBalloon);
-
-                ApiType type = GEHelpers.GetApiType(feature);
-
-                if ((type != ApiType.KmlFolder && type != ApiType.KmlDocument) &&
-                    feature.getGeometry() != null)
-                {
-                    balloon.setFeature(feature);
-                }
-
-                return balloon;
-            }
-            catch (RuntimeBinderException rbex)
-            {
-                Debug.WriteLine("OpenFeatureBalloon: " + rbex.Message, "GEHelpers");
-            }
+            } 
             catch (COMException cex)
             {
                 Debug.WriteLine("OpenFeatureBalloon: " + cex.Message, "GEHelpers");
             }
 
-            return false;
+            // Scrubbing string...
+            // see: http://code.google.com/apis/earth/documentation/balloons.html
+            if (string.IsNullOrEmpty(content) || content == "<!--\nContent-type: mhtml-die-die-die\n\n-->")
+            {
+                return null;
+            }
+
+            balloon = KmlHelpers.CreateHtmlStringBalloon(
+                ge,
+                content,
+                minWidth,
+                minHeight,
+                maxWidth,
+                maxHeight,
+                setBalloon);
+
+            balloon.setFeature(feature);
+
+            return balloon;
         }
 
         /// <summary>
@@ -563,6 +532,7 @@ namespace FC.GEPluginCtrls
             {
                 if (type == ApiType.KmlTour)
                 {
+                    ge.setBalloon(null);
                     ge.getTourPlayer().setTour(feature);
                 }
                 else if (type == ApiType.KmlPhotoOverlay)
