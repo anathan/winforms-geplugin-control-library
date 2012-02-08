@@ -29,6 +29,8 @@ namespace ExampleFormTest
 
     public partial class Form1 : Form
     {
+        // a simple dynamic type to hold
+        // the GEPlugin object
         private dynamic ge;
 
         public Form1()
@@ -36,16 +38,27 @@ namespace ExampleFormTest
             InitializeComponent();
 
             geWebBrowser1.LoadEmbededPlugin();
+           
+            // The PluginReady event can be easily handled in a
+            // lambda expression like so.
             geWebBrowser1.PluginReady += (o, e) =>
             {
                 ge = e.ApiObject;
 
                 // Here you can now use 'ge' exactly as you would
-                // in the native javascript api...
-                var type = ge.getType();
-                var version = ge.getPluginVersion(); ;
-
-                MessageBox.Show(type, version);
+                // in the native javascript api. Whenever you make a 
+                // call to an api member, you should check for any RuntimeBinderExceptions
+                try
+                {
+                  var type = ge.getType();
+                  var version = ge.getPluginVersion();
+                  MessageBox.Show(type, version);
+                }
+                catch(RuntimeBinderException)
+                {
+                  // there was an error calling either
+                  // getType or getPluginVersion...
+                }
             };
         }
     }
