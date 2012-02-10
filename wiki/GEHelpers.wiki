@@ -218,7 +218,7 @@ public static void ShowCurrentViewInMaps(dynamic ge)
 /// So far this includes KmlTours (GETourPlayer) and KmlPhotoOverlays (GEPhotoOverlayViewer)
 /// </summary>
 /// <param name="ge">The plugin instance</param>
-/// <param name="feature">The KmlTreeViewNode to check</param>
+/// <param name="feature">The feature to check</param>
 /// <param name="visible">Vaule indicating whether the player should be visible or not.</param>
 public static void ToggleMediaPlayer(dynamic ge, dynamic feature, bool visible = true)
 }}}
