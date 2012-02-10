@@ -1,4 +1,4 @@
-﻿// <copyright file="GEOptions.cs" company="FC">
+ // <copyright file="GEOptions.cs" company="FC">
 // Copyright (c) 2008 Fraser Chapman
 // </copyright>
 // <author>Fraser Chapman</author>
@@ -15,7 +15,7 @@
 // GNU General Public License for more details.
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see http://www.gnu.org/licenses/.
-// </summary>namespace FC.GEPluginCtrls.Enumerations
+// </summary>
 namespace FC.GEPluginCtrls
 {
     using System;
