@@ -36,7 +36,7 @@ Some of the code is based on the "GEHelpers javasctipt library" by Roman Nurik. 
 /// This is a simple "ge.getFeatures().appendChild(kml)" wrapper
 /// </summary>
 /// <param name="ge">the plugin instance to add the features to</param>
-/// <param name="kml">the faetures to add</param>
+/// <param name="kml">the features to add</param>
 /// <exception cref="System.ArgumentException" >Throws an exception if ge is not an instance of GEPlugin.</exception>
 public static void AddFeaturesToPlugin(dynamic ge, dynamic kml)
 }}}
