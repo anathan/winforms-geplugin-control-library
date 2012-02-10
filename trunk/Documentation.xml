@@ -986,7 +986,7 @@
             <param name="setBalloon">Optionally set the balloon to be the current in the plugin</param>
             <returns>A HtmlStringBalloon object (or null)</returns>
         </member>
-        <member name="M:FC.GEPluginCtrls.KmlHelpers.CreateLineString(System.Object,System.Object,System.Object,System.String,System.Boolean,System.Boolean)">
+        <member name="M:FC.GEPluginCtrls.KmlHelpers.CreateLineString(System.Object,System.Object,System.Object,System.String,System.Boolean,System.Boolean,System.Int32,FC.GEPluginCtrls.KmlColor)">
             <summary>
             Draws a line string between the given placemarks or points
             </summary>
@@ -996,9 +996,11 @@
             <param name="id">Optional ID of the linestring placemark. Default is empty</param>
             <param name="tessellate">Optionally sets tessellation for the linestring. Default is true</param>
             <param name="addFeature">Optionally adds the linestring directly to the plugin. Default is true</param>
+            <param name="width">Optional linestring-width, default is 1</param>
+            <param name="color">Optional KmlColor, default is white/opaque</param>
             <returns>A linestring placemark (or null)</returns>
         </member>
-        <member name="M:FC.GEPluginCtrls.KmlHelpers.CreateLineString(System.Object,System.Collections.Generic.IList{FC.GEPluginCtrls.Geo.Coordinate},System.String,System.Boolean,System.Boolean)">
+        <member name="M:FC.GEPluginCtrls.KmlHelpers.CreateLineString(System.Object,System.Collections.Generic.IList{FC.GEPluginCtrls.Geo.Coordinate},System.String,System.Boolean,System.Boolean,System.Int32,FC.GEPluginCtrls.KmlColor)">
             <summary>
             Draws a line string between the given coordinates
             </summary>
@@ -1007,7 +1009,18 @@
             <param name="id">Optional ID of the linestring placemark. Default is empty</param>
             <param name="tessellate">Optionally sets tessellation for the linestring. Default is true</param>
             <param name="addFeature">Optionally adds the linestring directly to the plugin. Default is true</param>
+            <param name="width">Optional linestring-width, default is 1</param>
+            <param name="color">Optional KmlColor, default is white/opaque</param>
             <returns>A linestring placemark (or null)</returns>
+        </member>
+        <member name="M:FC.GEPluginCtrls.KmlHelpers.ToKmlColor(System.Drawing.Color,System.Double)">
+            <summary>
+            Converts a System.Drawing.Color into a KmlColor
+            </summary>
+            <param name="color">the color to base the KmlColor on</param>
+            <param name="alpha">Optional alpha value in the range [0-1].
+            Where 0 is fully transparant and 1 is fully opaque. Default value is 1</param>
+            <returns>A Kml color object</returns>
         </member>
         <member name="M:FC.GEPluginCtrls.KmlHelpers.CreateLookAt(System.Object,System.Double,System.Double,System.String,System.Double,FC.GEPluginCtrls.AltitudeMode,System.Double,System.Double,System.Double,System.Boolean)">
             <summary>
@@ -1024,6 +1037,14 @@
             <param name="range">Optional range in metres. Default is 1000</param>
             <param name="setView">Optional set the current view to the lookAt</param>
             <returns>a lookat object (or null)</returns>
+        </member>
+        <member name="M:FC.GEPluginCtrls.KmlHelpers.CreateStyle(System.Object,System.String)">
+            <summary>
+            Creates a style that can be referenced by StyleMaps and features.
+            </summary>
+            <param name="ge">The plugin instance</param>
+            <param name="id">Optional style Id. Default is empty</param>
+            <returns></returns>
         </member>
         <member name="M:FC.GEPluginCtrls.KmlHelpers.GetExtendedData(System.Object)">
             <summary>
@@ -1808,14 +1829,14 @@
             Coordinate equality
             </summary>
             <param name="obj">the object to check against</param>
-            <returns>true if the objects are equal</returns>
+            <returns>True if the objects are equal</returns>
         </member>
         <member name="M:FC.GEPluginCtrls.Geo.Coordinate.Equals(FC.GEPluginCtrls.Geo.Coordinate)">
             <summary>
             Coordinate equality
             </summary>
             <param name="other">the Coordinate to check against</param>
-            <returns>true if the Coordinates are equal</returns>
+            <returns>True if the Coordinates are equal</returns>
         </member>
         <member name="M:FC.GEPluginCtrls.Geo.Coordinate.Equals2D(FC.GEPluginCtrls.Geo.Coordinate)">
             <summary>
@@ -2971,7 +2992,7 @@
             This is a simple "ge.getFeatures().appendChild(kml)" wrapper
             </summary>
             <param name="ge">the plugin instance to add the features to</param>
-            <param name="kml">the faetures to add</param>
+            <param name="kml">the features to add</param>
             <exception cref="T:System.ArgumentException">Throws an exception if ge is not an instance of GEPlugin.</exception>
         </member>
         <member name="M:FC.GEPluginCtrls.GEHelpers.EnableLayer(System.Object,FC.GEPluginCtrls.Layer,System.Boolean)">
@@ -3107,7 +3128,7 @@
             So far this includes KmlTours (GETourPlayer) and KmlPhotoOverlays (GEPhotoOverlayViewer)
             </summary>
             <param name="ge">The plugin instance</param>
-            <param name="feature">The KmlTreeViewNode to check</param>
+            <param name="feature">The feature to check</param>
             <param name="visible">Vaule indicating whether the player should be visible or not.</param>
         </member>
         <member name="T:FC.GEPluginCtrls.Geo.Maths">
@@ -3680,6 +3701,68 @@
             <summary>
             Gets the total duration of the active tour, in seconds.
             If no tour is loaded, the behavior of this method is undefined.
+            </summary>
+        </member>
+        <member name="T:FC.GEPluginCtrls.KmlColor">
+            <summary>
+            Wrapper for the KmlColor com object, maps all the getter and setter methods to managed properties.
+            The range of values for any one color component is 0 to 255 (0x00 to 0xff).
+            For alpha, 0x00 is fully transparent and 0xff is fully opaque.
+            </summary>
+        </member>
+        <member name="M:FC.GEPluginCtrls.KmlColor.#ctor(System.Byte,System.Byte,System.Byte,System.Byte)">
+            <summary>
+            Initializes a new instance of the KmlColor struct.
+            </summary>
+            <param name="alpha">the alpha value</param>
+            <param name="blue">the blue value</param>
+            <param name="green">the green value</param>
+            <param name="red">the red value</param>
+        </member>
+        <member name="M:FC.GEPluginCtrls.KmlColor.#ctor(System.Tuple{System.Byte,System.Byte,System.Byte,System.Byte})">
+            <summary>
+            Initializes a new instance of the KmlColor struct.
+            </summary>
+            <param name="aabbggrr">Tupple in the squence: alpha, blue, green, red</param>
+        </member>
+        <member name="M:FC.GEPluginCtrls.KmlColor.#ctor(System.Drawing.Color,System.Double)">
+            <summary>
+            Initializes a new instance of the KmlColor struct.
+            </summary>
+            <param name="color">the color to base the new kml color on</param>
+            <param name="alpha">the alpha value</param>
+        </member>
+        <member name="M:FC.GEPluginCtrls.KmlColor.ToString">
+            <summary>
+            Overrides the ToString method
+            </summary>
+            <returns>The KmlColor object in the aabbggrr format</returns>
+        </member>
+        <member name="M:FC.GEPluginCtrls.KmlColor.alphaRangeFix(System.Double)">
+            <summary>
+            Converts a System.double in the range [0.0-1.0] to a System.byte [0-255]
+            </summary>
+            <param name="input">The alpha value as a double</param>
+            <returns>The alpha value as a byte</returns>
+        </member>
+        <member name="P:FC.GEPluginCtrls.KmlColor.Alpha">
+            <summary>
+            Gets or sets the Alpha (opacity) value 
+            </summary>
+        </member>
+        <member name="P:FC.GEPluginCtrls.KmlColor.Blue">
+            <summary>
+            Gets or sets the Blue value 
+            </summary>
+        </member>
+        <member name="P:FC.GEPluginCtrls.KmlColor.Green">
+            <summary>
+            Gets or sets the Green value 
+            </summary>
+        </member>
+        <member name="P:FC.GEPluginCtrls.KmlColor.Red">
+            <summary>
+            Gets or sets the Red value 
             </summary>
         </member>
     </members>

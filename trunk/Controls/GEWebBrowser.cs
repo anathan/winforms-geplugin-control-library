@@ -82,6 +82,7 @@ namespace FC.GEPluginCtrls
             : base()
         {
             this.InitializeComponent();
+            this.DoubleBuffered = true;
 
             // External - COM visible class
             this.ObjectForScripting = this.external;

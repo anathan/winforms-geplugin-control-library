@@ -40,7 +40,7 @@ namespace FC.GEPluginCtrls
         /// This is a simple "ge.getFeatures().appendChild(kml)" wrapper
         /// </summary>
         /// <param name="ge">the plugin instance to add the features to</param>
-        /// <param name="kml">the faetures to add</param>
+        /// <param name="kml">the features to add</param>
         /// <exception cref="System.ArgumentException" >Throws an exception if ge is not an instance of GEPlugin.</exception>
         public static void AddFeaturesToPlugin(dynamic ge, dynamic kml)
         {
@@ -271,7 +271,7 @@ namespace FC.GEPluginCtrls
             {
                 try
                 {
-                    string type = ((dynamic)feature).getType();
+                    string type = feature.getType();
 
                     if (Enum.IsDefined(typeof(ApiType), type))
                     {
@@ -517,7 +517,7 @@ namespace FC.GEPluginCtrls
         /// So far this includes KmlTours (GETourPlayer) and KmlPhotoOverlays (GEPhotoOverlayViewer)
         /// </summary>
         /// <param name="ge">The plugin instance</param>
-        /// <param name="feature">The KmlTreeViewNode to check</param>
+        /// <param name="feature">The feature to check</param>
         /// <param name="visible">Vaule indicating whether the player should be visible or not.</param>
         public static void ToggleMediaPlayer(dynamic ge, dynamic feature, bool visible = true)
         {
