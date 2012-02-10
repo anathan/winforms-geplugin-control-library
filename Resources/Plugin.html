@@ -33,7 +33,7 @@
 
 
     google.load('earth', '1', { 'language': 'en-GB' });
-    google.load('maps','3.6', { other_params: 'sensor=false' });
+    google.load('maps','3.6', { other_params: 'sensor=false&libraries=geometry' });
     
     var ge = null; // GEPlugin
     var geocoder = null; // GClientGeocoder
@@ -355,7 +355,7 @@
     </script>
     <style type="text/css">
       html { height: 100% }
-      body { height: 100%; margin: 0; padding: 0 }
+      body { height: 100%; margin: 0; padding: 0; cursor: none; }
       #map3d { height: 100% }
     </style>
   </head>

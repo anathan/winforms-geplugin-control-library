@@ -255,7 +255,7 @@ namespace FC.GEPluginCtrls.Geo
         /// Coordinate equality
         /// </summary>
         /// <param name="obj">the object to check against</param>
-        /// <returns>true if the objects are equal</returns>
+        /// <returns>True if the objects are equal</returns>
         public override bool Equals(object obj)
         {
             Coordinate other = obj as Coordinate;
@@ -272,7 +272,7 @@ namespace FC.GEPluginCtrls.Geo
         /// Coordinate equality
         /// </summary>
         /// <param name="other">the Coordinate to check against</param>
-        /// <returns>true if the Coordinates are equal</returns>
+        /// <returns>True if the Coordinates are equal</returns>
         public bool Equals(Coordinate other)
         {
             return this.Latitude == other.Latitude &&

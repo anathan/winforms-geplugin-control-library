@@ -19,6 +19,7 @@
 namespace FC.GEPluginCtrls
 {
     using System;
+    using System.Drawing;
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.Runtime.InteropServices;
@@ -224,11 +225,11 @@ namespace FC.GEPluginCtrls
             }
             catch (RuntimeBinderException rbex)
             {
-                Debug.WriteLine("CreatePlacemark: " + rbex.Message, "GEHelpers");
+                Debug.WriteLine("CreatePlacemark: " + rbex.Message, "KmlHelpers");
             }
             catch (COMException cex)
             {
-                Debug.WriteLine("CreatePlacemark: " + cex.Message, "GEHelpers");
+                Debug.WriteLine("CreatePlacemark: " + cex.Message, "KmlHelpers");
             }
 
             return placemark;
@@ -299,7 +300,7 @@ namespace FC.GEPluginCtrls
             }
             catch (RuntimeBinderException rbex)
             {
-                Debug.WriteLine("CreatePoint: " + rbex.Message, "GEHelpers");
+                Debug.WriteLine("CreatePoint: " + rbex.Message, "KmlHelpers");
             }
 
             return point;
@@ -325,7 +326,7 @@ namespace FC.GEPluginCtrls
             altitude: coordinate.Altitude,
             altitudeMode: coordinate.AltitudeMode);
         }
-        
+
         /// <summary>
         /// Creates an Html String Balloon
         /// </summary>
@@ -364,7 +365,7 @@ namespace FC.GEPluginCtrls
             }
             catch (RuntimeBinderException rbex)
             {
-                Debug.WriteLine("OpenFeatureBalloon: " + rbex.Message, "GEHelpers");
+                Debug.WriteLine("OpenFeatureBalloon: " + rbex.Message, "KmlHelpers");
             }
 
             return balloon;
@@ -379,6 +380,8 @@ namespace FC.GEPluginCtrls
         /// <param name="id">Optional ID of the linestring placemark. Default is empty</param>
         /// <param name="tessellate">Optionally sets tessellation for the linestring. Default is true</param>
         /// <param name="addFeature">Optionally adds the linestring directly to the plugin. Default is true</param>
+        /// <param name="width">Optional linestring-width, default is 1</param>
+        /// <param name="color">Optional KmlColor, default is white/opaque</param>
         /// <returns>A linestring placemark (or null)</returns>
         public static dynamic CreateLineString(
             dynamic ge,
@@ -386,7 +389,9 @@ namespace FC.GEPluginCtrls
             dynamic end,
             string id = "",
             bool tessellate = true,
-            bool addFeature = true)
+            bool addFeature = true,
+            int width = 1,
+            KmlColor color = new KmlColor())
         {
             if (!GEHelpers.IsGE(ge))
             {
@@ -397,7 +402,7 @@ namespace FC.GEPluginCtrls
             {
                 start = start.getGeometry();
             }
-
+          
             if (GEHelpers.IsApiType(end, ApiType.KmlPlacemark))
             {
                 end = end.getGeometry();
@@ -407,11 +412,22 @@ namespace FC.GEPluginCtrls
 
             try
             {
-                placemark = CreatePlacemark(ge, addFeature: addFeature);
+                placemark = CreatePlacemark(ge);
+
                 dynamic lineString = ge.createLineString(id);
                 lineString.setTessellate(Convert.ToUInt16(tessellate));
                 lineString.getCoordinates().pushLatLngAlt(start.getLatitude(), start.getLongitude(), start.getAltitude());
                 lineString.getCoordinates().pushLatLngAlt(end.getLatitude(), end.getLongitude(), end.getAltitude());
+
+                if (placemark.getStyleSelector() == null)
+                {
+                    placemark.setStyleSelector(ge.createStyle(""));
+                }
+
+                dynamic lineStyle = placemark.getStyleSelector().getLineStyle();
+                lineStyle.setWidth(width);
+                lineStyle.getColor().set(color.ToString());
+
                 placemark.setGeometry(lineString);
 
                 if (addFeature)
@@ -421,7 +437,7 @@ namespace FC.GEPluginCtrls
             }
             catch (RuntimeBinderException rbex)
             {
-                Debug.WriteLine("CreateLineString: " + rbex.Message, "GEHelpers");
+                Debug.WriteLine("CreateLineString: " + rbex.Message, "KmlHelpers");
             }
 
             return placemark;
@@ -435,13 +451,17 @@ namespace FC.GEPluginCtrls
         /// <param name="id">Optional ID of the linestring placemark. Default is empty</param>
         /// <param name="tessellate">Optionally sets tessellation for the linestring. Default is true</param>
         /// <param name="addFeature">Optionally adds the linestring directly to the plugin. Default is true</param>
+        /// <param name="width">Optional linestring-width, default is 1</param>
+        /// <param name="color">Optional KmlColor, default is white/opaque</param>
         /// <returns>A linestring placemark (or null)</returns>
         public static dynamic CreateLineString(
             dynamic ge,
             IList<Coordinate> coordinates,
             string id = "",
             bool tessellate = true,
-            bool addFeature = true)
+            bool addFeature = true,
+            int width = 1,
+            KmlColor color = new KmlColor())
         {
             if (!GEHelpers.IsGE(ge))
             {
@@ -461,14 +481,35 @@ namespace FC.GEPluginCtrls
                     lineString.getCoordinates().pushLatLngAlt(c.Latitude, c.Longitude, c.Altitude);
                 }
 
+                if (placemark.getStyleSelector() == null)
+                {
+                    placemark.setStyleSelector(ge.createStyle(""));
+                }
+
+                dynamic lineStyle = placemark.getStyleSelector().getLineStyle();
+                lineStyle.setWidth(width);
+                lineStyle.getColor().set(color.ToString());
+
                 placemark.setGeometry(lineString);
             }
             catch (RuntimeBinderException rbex)
             {
-                Debug.WriteLine("CreateLineString: " + rbex.ToString(), "GEHelpers");
+                Debug.WriteLine("CreateLineString: " + rbex.ToString(), "KmlHelpers");
             }
 
             return placemark;
+        }
+
+        /// <summary>
+        /// Converts a System.Drawing.Color into a KmlColor
+        /// </summary>
+        /// <param name="color">the color to base the KmlColor on</param>
+        /// <param name="alpha">Optional alpha value in the range [0-1].
+        /// Where 0 is fully transparant and 1 is fully opaque. Default value is 1</param>
+        /// <returns>A Kml color object</returns>
+        public static KmlColor ToKmlColor(this Color color, double alpha = 1)
+        {
+            return new KmlColor(color, alpha);
         }
 
         /// <summary>
@@ -516,10 +557,32 @@ namespace FC.GEPluginCtrls
             }
             catch (RuntimeBinderException rbex)
             {
-                Debug.WriteLine("CreateLookAt: " + rbex.Message, "GEHelpers");
+                Debug.WriteLine("CreateLookAt: " + rbex.Message, "KmlHelpers");
             }
 
             return lookat;
+        }
+
+        /// <summary>
+        /// Creates a style that can be referenced by StyleMaps and features.
+        /// </summary>
+        /// <param name="ge">The plugin instance</param>
+        /// <param name="id">Optional style Id. Default is empty</param>
+        /// <returns></returns>
+        public static dynamic CreateStyle(dynamic ge, string id = "")
+        {
+            dynamic style = null;
+
+            try
+            {
+                style = ge.createStyle("");
+            }
+            catch (RuntimeBinderException rbex)
+            {
+                Debug.WriteLine("CreateStyle: " + rbex.Message, "KmlHelpers");
+            }
+
+            return style;
         }
 
         /// <summary>
