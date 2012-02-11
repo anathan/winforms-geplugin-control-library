@@ -40,7 +40,8 @@ public KmlColor(UInt32 value)
 /// Initializes a new instance of the KmlColor struct from a system color and alpha value.
 /// </summary>
 /// <param name="color">the color to base the new kml color on</param>
-/// <param name="alpha">Optional alpha value, default is 1 (opaque)</param>
+/// <param name="alpha">Optional alpha value in the range [0-1].
+/// Where 0 is fully transparant and 1 is fully opaque. Default value is 1</param>
 public KmlColor(Color color, double alpha = 1.0)
 }}}
 
@@ -51,7 +52,8 @@ public KmlColor(Color color, double alpha = 1.0)
 /// If the name parameter is not the valid name of a predefined color, the KmlColour defaults to black(0x000000)
 /// </summary>
 /// <param name="name">The name of the color</param>
-/// <param name="alpha">Optional alpha value, default is 1 (opaque)</param>
+/// <param name="alpha">Optional alpha value in the range [0-1].
+/// Where 0 is fully transparant and 1 is fully opaque. Default value is 1</param>
 public KmlColor(string name, double alpha = 1.0)
 }}}
 
@@ -110,7 +112,7 @@ public override string ToString()
 
 == Remarks ==
 
-The KmlColor type is used by methods in the [KmlHelpers] and [GEHelpers] classes.
+The KmlColor type is used by methods in the [KmlHelpers] and [GEHelpers] classes. It is also worth noting that the methods ToKmlColor and ToKmlColorString in KmlHelpers (which both extend the System Color object) are useful when working with color in the api.
 
 = Examples =
 
