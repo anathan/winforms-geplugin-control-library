@@ -18,13 +18,14 @@
     * [KmlHelpers]
       * [WalkKmlDom]
     * [GEHelpers]
-  * Geo
-    * [Bounds]
-    * [Coordinate]
-    * [Maths]
-  * !HttpServer
-    * [GEServer]
-    * [usingTheServer Basic local server example]
+  * Namespaces
+    * Geo
+        * [Bounds]
+        * [Coordinate]
+        * [Maths]
+      * !HttpServer
+        * [GEServer]
+        * [usingTheServer Basic local server example]
   * Wrappers
     * [GEOptions]
     * [GENavigationControl]
