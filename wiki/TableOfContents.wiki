@@ -22,6 +22,9 @@
   * Wrapper classes
     * [GEOptions]
     * [GENavigationControl]
+    * [GETourPlayer]
+    * [GEWindow]
+    * [KmlColor]
   * Enumerations 
     * [AltitudeMode]
     * [EventId]
