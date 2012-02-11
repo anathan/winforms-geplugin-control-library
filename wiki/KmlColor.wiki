@@ -46,6 +46,17 @@ public KmlColor(Color color, double alpha = 1.0)
 
 {{{
 /// <summary>
+/// Initializes a new instance of the KmlColor struct from a color name and alpha value.
+/// Named colors are listed here: http://msdn.microsoft.com/en-us/library/system.drawing.knowncolor.aspx
+/// If the name parameter is not the valid name of a predefined color, the KmlColour defaults to black(0x000000)
+/// </summary>
+/// <param name="name">The name of the color</param>
+/// <param name="colorObject">the api object to base the new color on</param>
+public KmlColor(string name, double alpha = 1.0)
+}}}
+
+{{{
+/// <summary>
 /// Initializes a new instance of the KmlColor struct from an Api KmlColor object.
 /// </summary>
 /// <param name="colorObject">the api object to base the new color on</param>
