@@ -162,6 +162,75 @@
             Gets or sets a value indicating whether the node is cheked and the kml object is visible
             </summary>
         </member>
+        <member name="T:FC.GEPluginCtrls.KmlColor">
+            <summary>
+            Wrapper for the KmlColor com object, maps all the getter and setter methods to managed properties.
+            The range of values for any one color component is 0 to 255 (0x00 to 0xff).
+            For alpha, 0x00 is fully transparent and 0xff is fully opaque.
+            </summary>
+        </member>
+        <member name="M:FC.GEPluginCtrls.KmlColor.#ctor(System.Byte,System.Byte,System.Byte,System.Byte)">
+            <summary>
+            Initializes a new instance of the KmlColor struct.
+            </summary>
+            <param name="alpha">the alpha value</param>
+            <param name="blue">the blue value</param>
+            <param name="green">the green value</param>
+            <param name="red">the red value</param>
+        </member>
+        <member name="M:FC.GEPluginCtrls.KmlColor.#ctor(System.Tuple{System.Byte,System.Byte,System.Byte,System.Byte})">
+            <summary>
+            Initializes a new instance of the KmlColor struct.
+            </summary>
+            <param name="aabbggrr">Tuple in the squence: alpha, blue, green, red</param>
+        </member>
+        <member name="M:FC.GEPluginCtrls.KmlColor.#ctor(System.Drawing.Color,System.Double)">
+            <summary>
+            Initializes a new instance of the KmlColor struct.
+            </summary>
+            <param name="color">the color to base the new kml color on</param>
+            <param name="alpha">the alpha value</param>
+        </member>
+        <member name="M:FC.GEPluginCtrls.KmlColor.#ctor(System.Object)">
+            <summary>
+            Initializes a new instance of the KmlColor struct from an Api KmlColor object.
+            </summary>
+            <param name="colorObject">the api object to base the new color on</param>
+            <param name="alpha">the alpha value</param>
+        </member>
+        <member name="M:FC.GEPluginCtrls.KmlColor.ToString">
+            <summary>
+            Overrides the ToString method
+            </summary>
+            <returns>The KmlColor object in the aabbggrr format</returns>
+        </member>
+        <member name="M:FC.GEPluginCtrls.KmlColor.alphaRangeFix(System.Double)">
+            <summary>
+            Converts a System.double in the range [0.0-1.0] to a System.byte [0-255]
+            </summary>
+            <param name="input">The alpha value as a double</param>
+            <returns>The alpha value as a byte</returns>
+        </member>
+        <member name="P:FC.GEPluginCtrls.KmlColor.Alpha">
+            <summary>
+            Gets or sets the Alpha (opacity) value 
+            </summary>
+        </member>
+        <member name="P:FC.GEPluginCtrls.KmlColor.Blue">
+            <summary>
+            Gets or sets the Blue value 
+            </summary>
+        </member>
+        <member name="P:FC.GEPluginCtrls.KmlColor.Green">
+            <summary>
+            Gets or sets the Green value 
+            </summary>
+        </member>
+        <member name="P:FC.GEPluginCtrls.KmlColor.Red">
+            <summary>
+            Gets or sets the Red value 
+            </summary>
+        </member>
         <member name="T:FC.GEPluginCtrls.GEWindow">
             <summary>
             Wrapper for the GEWindow com object.
@@ -647,6 +716,11 @@
             The language combobox
             </summary>
         </member>
+        <member name="F:FC.GEPluginCtrls.GEToolStrip.toolStripItemAlignment">
+            <summary>
+            The tool strip alignment setting
+            </summary>
+        </member>
         <member name="M:FC.GEPluginCtrls.GEToolStrip.Dispose(System.Boolean)">
             <summary>
             Clean up any resources being used.
@@ -847,6 +921,11 @@
             <summary>
             Gets or sets the AutoCompleteMode of the navigation textbox
             Default is AutoCompleteMode.Append
+            </summary>
+        </member>
+        <member name="P:FC.GEPluginCtrls.GEToolStrip.ToolStripItemAlignment">
+            <summary>
+            Gets or sets the alignment property of the toolstrip items
             </summary>
         </member>
         <member name="T:FC.GEPluginCtrls.GENavigationControl">
@@ -3701,68 +3780,6 @@
             <summary>
             Gets the total duration of the active tour, in seconds.
             If no tour is loaded, the behavior of this method is undefined.
-            </summary>
-        </member>
-        <member name="T:FC.GEPluginCtrls.KmlColor">
-            <summary>
-            Wrapper for the KmlColor com object, maps all the getter and setter methods to managed properties.
-            The range of values for any one color component is 0 to 255 (0x00 to 0xff).
-            For alpha, 0x00 is fully transparent and 0xff is fully opaque.
-            </summary>
-        </member>
-        <member name="M:FC.GEPluginCtrls.KmlColor.#ctor(System.Byte,System.Byte,System.Byte,System.Byte)">
-            <summary>
-            Initializes a new instance of the KmlColor struct.
-            </summary>
-            <param name="alpha">the alpha value</param>
-            <param name="blue">the blue value</param>
-            <param name="green">the green value</param>
-            <param name="red">the red value</param>
-        </member>
-        <member name="M:FC.GEPluginCtrls.KmlColor.#ctor(System.Tuple{System.Byte,System.Byte,System.Byte,System.Byte})">
-            <summary>
-            Initializes a new instance of the KmlColor struct.
-            </summary>
-            <param name="aabbggrr">Tupple in the squence: alpha, blue, green, red</param>
-        </member>
-        <member name="M:FC.GEPluginCtrls.KmlColor.#ctor(System.Drawing.Color,System.Double)">
-            <summary>
-            Initializes a new instance of the KmlColor struct.
-            </summary>
-            <param name="color">the color to base the new kml color on</param>
-            <param name="alpha">the alpha value</param>
-        </member>
-        <member name="M:FC.GEPluginCtrls.KmlColor.ToString">
-            <summary>
-            Overrides the ToString method
-            </summary>
-            <returns>The KmlColor object in the aabbggrr format</returns>
-        </member>
-        <member name="M:FC.GEPluginCtrls.KmlColor.alphaRangeFix(System.Double)">
-            <summary>
-            Converts a System.double in the range [0.0-1.0] to a System.byte [0-255]
-            </summary>
-            <param name="input">The alpha value as a double</param>
-            <returns>The alpha value as a byte</returns>
-        </member>
-        <member name="P:FC.GEPluginCtrls.KmlColor.Alpha">
-            <summary>
-            Gets or sets the Alpha (opacity) value 
-            </summary>
-        </member>
-        <member name="P:FC.GEPluginCtrls.KmlColor.Blue">
-            <summary>
-            Gets or sets the Blue value 
-            </summary>
-        </member>
-        <member name="P:FC.GEPluginCtrls.KmlColor.Green">
-            <summary>
-            Gets or sets the Green value 
-            </summary>
-        </member>
-        <member name="P:FC.GEPluginCtrls.KmlColor.Red">
-            <summary>
-            Gets or sets the Red value 
             </summary>
         </member>
     </members>

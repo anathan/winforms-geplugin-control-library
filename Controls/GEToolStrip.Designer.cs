@@ -209,6 +209,11 @@ namespace FC.GEPluginCtrls
         private System.Windows.Forms.ToolStripComboBox languageComboBox;
 
         /// <summary>
+        /// The tool strip alignment setting
+        /// </summary>
+        private System.Windows.Forms.ToolStripItemAlignment toolStripItemAlignment;
+
+        /// <summary>
         /// Clean up any resources being used.
         /// </summary>
         /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
@@ -268,6 +273,7 @@ namespace FC.GEPluginCtrls
             this.moonMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.languageSeparator = new System.Windows.Forms.ToolStripSeparator();
             this.languageComboBox = new System.Windows.Forms.ToolStripComboBox();
+            this.toolStripItemAlignment = System.Windows.Forms.ToolStripItemAlignment.Left;
             this.SuspendLayout();
             // 
             // imageList1
@@ -662,6 +668,7 @@ namespace FC.GEPluginCtrls
             this.ResumeLayout(false);
 
         }
+
         #endregion
     }
 }

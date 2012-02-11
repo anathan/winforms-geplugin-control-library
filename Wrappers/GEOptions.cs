@@ -1,4 +1,4 @@
- // <copyright file="GEOptions.cs" company="FC">
+﻿ // <copyright file="GEOptions.cs" company="FC">
 // Copyright (c) 2008 Fraser Chapman
 // </copyright>
 // <author>Fraser Chapman</author>
