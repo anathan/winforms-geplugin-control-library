@@ -112,4 +112,41 @@ public override string ToString()
 
 The KmlColor type is used by methods in the [KmlHelper] and [GEHelper] classes.
 
+= Examples =
+
+The following code 
+
+{{{
+KmlColor c1 = new KmlColor();
+KmlColor c2 = new KmlColor(4294967295);
+KmlColor c3 = new KmlColor(255, 0, 0, 255);
+KmlColor c4 = new KmlColor(System.Drawing.Color.Blue);
+KmlColor c5 = new KmlColor(System.Drawing.Color.IndianRed, 0.5);
+KmlColor c6 = new KmlColor("Control", 0.5);
+KmlColor c7 = new KmlColor("Green", 0.2);
+KmlColor c8 = new KmlColor("RoyalBlue");
+
+KmlColor[] c = new KmlColor[] { c1, c2, c3, c4, c5, c6, c7, c8 };
+
+List<KmlColor> list = new List<KmlColor>();
+list.AddRange(c);
+list.ForEach(delegate(KmlColor x)
+{
+  System.Diagnostics.Debug.WriteLine(x.ToString());
+});
+}}}
+
+Would output
+
+{{{
+00000000
+FFFFFFFF
+FF0000FF
+FFFF0000
+7F5C5CCD
+7FE2E2E2
+33008000
+FFE16941
+}}}
+
 <wiki:gadget url="http://earthapi.googlepages.com/ad.xml" border="0" width="728" height="90" />
