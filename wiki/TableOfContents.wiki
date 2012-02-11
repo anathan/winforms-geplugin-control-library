@@ -22,7 +22,7 @@
     * [Bounds]
     * [Coordinate]
     * [Maths]
-  * HttpServer
+  * !HttpServer
     * [GEServer]
     * [usingTheServer Basic local server example]
   * Wrappers
