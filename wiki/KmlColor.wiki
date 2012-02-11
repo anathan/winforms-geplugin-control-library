@@ -110,7 +110,7 @@ public override string ToString()
 
 == Remarks ==
 
-The KmlColor type is used by methods in the [KmlHelper] and [GEHelper] classes.
+The KmlColor type is used by methods in the [KmlHelpers] and [GEHelpers] classes.
 
 = Examples =
 
