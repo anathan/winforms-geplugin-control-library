@@ -14,12 +14,18 @@
       * [SetBrowserInstance]
     * [KmlTreeView]
       * [SetBrowserInstance]
-  * Helpers and utilities
-    * [Maths]
+  * Helpers
     * [KmlHelpers]
       * [WalkKmlDom]
     * [GEHelpers]
-  * Wrapper classes
+  * Geo
+    * [Bounds]
+    * [Coordinate]
+    * [Maths]
+  * HttpServer
+    * [GEServer]
+    * [usingTheServer Basic local server example]
+  * Wrappers
     * [GEOptions]
     * [GENavigationControl]
     * [GETourPlayer]
@@ -31,9 +37,6 @@
   * Working with !JavaScript
     * [InjectJavascript]
     * [InvokeJavascript]
-  * Local server
-    * [GEServer]
-    * [usingTheServer Basic local server example]
   * Examples
     * [ExampleForm Basic winform example]
     * [usingTheServer Basic local server example]
