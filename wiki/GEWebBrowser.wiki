@@ -35,7 +35,7 @@ The GEWebBrowser control cannot be used by partially trusted code. For more info
 public event EventHandler<GEEventArgs> PluginReady;
 }}}
 
-[KmlEvent]
+[AddEventListener KmlEvent]
 
 {{{
 /// <summary>
@@ -62,7 +62,7 @@ public event EventHandler<GEEventArgs> KmlLoaded;
 public event EventHandler<GEEventArgs> ScriptError;
 }}}
 
-[PluginEvent]
+[AddEventListener PluginEvent]
 
 {{{
 /// <summary>
@@ -71,7 +71,7 @@ public event EventHandler<GEEventArgs> ScriptError;
 public event EventHandler<GEEventArgs> PluginEvent;
 }}}
 
-[ViewEvent]
+[AddEventListener ViewEvent]
 
 {{{
 /// <summary>
@@ -140,7 +140,7 @@ public void AddEventListener(dynamic feature, EventId action, string javascript 
 
 {{{
 /// <summary>
-/// Wrapper for the  google.earth.createInstance method
+/// Wrapper for the google.earth.createInstance method
 /// See: http://code.google.com/apis/earth/documentation/reference/google_earth_namespace.html#70288485024d8129dd1c290fb2e5553b
 /// </summary>
 /// <param name="database">The database name</param>
