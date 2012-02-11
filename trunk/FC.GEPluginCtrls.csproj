@@ -108,7 +108,6 @@
     <Compile Include="Constants\JSFunction.cs" />
     <Compile Include="Geo\Bounds.cs" />
     <Compile Include="Geo\Coordinate.cs" />
-    <Compile Include="Geo\LatLng.cs" />
     <Compile Include="Geo\Maths.cs" />
     <Compile Include="Helpers\Extensions.cs" />
     <Compile Include="HttpServer\GEServer.cs" />

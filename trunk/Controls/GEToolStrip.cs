@@ -24,7 +24,6 @@ namespace FC.GEPluginCtrls
     using System.Diagnostics;
     using System.Drawing;
     using System.Drawing.Imaging;
-    using System.Globalization;
     using System.Windows.Forms;
     using Microsoft.CSharp.RuntimeBinder;
 
@@ -190,6 +189,25 @@ namespace FC.GEPluginCtrls
             set { this.navigationTextBox.AutoCompleteMode = value; }
         }
 
+        /// <summary>
+        /// Gets or sets the alignment property of the toolstrip items
+        /// </summary>
+        [Category("Control Options"),
+        Description("Gets or sets the alignment of the toolstrip items."),
+        DefaultValueAttribute(ToolStripItemAlignment.Left)]
+        public ToolStripItemAlignment ToolStripItemAlignment
+        {
+            get { return this.toolStripItemAlignment; }
+            set
+            {
+                if (this.toolStripItemAlignment != value)
+                {
+                    this.toolStripItemAlignment = value;
+                    this.ToggleAlignment();
+                }
+            }
+        }
+        
         #endregion
 
         #region Public methods
@@ -330,6 +348,21 @@ namespace FC.GEPluginCtrls
                 item.Tag = entry.Key;
                 this.languageComboBox.Items.Add(item);
             }
+        }
+
+        private void ToggleAlignment()
+        {
+            List<ToolStripItem> list = new List<ToolStripItem>();
+            foreach (ToolStripItem item in this.Items)
+            {
+                item.Alignment = toolStripItemAlignment;
+                list.Add(item);
+            }
+            this.Items.Clear();
+            list.ForEach(delegate(ToolStripItem i) 
+            { 
+                this.Items.Add(i);
+            });
         }
 
         #endregion

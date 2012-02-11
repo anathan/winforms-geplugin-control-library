@@ -133,6 +133,12 @@ namespace FC.GEPluginCtrls
             double defaultRange = 1000,
             double scaleRange = 1.5)
         {
+
+            if (!IsGE(ge))
+            {
+                throw new ArgumentException("ge is not of the type GEPlugin");
+            }
+
             try
             {
                 if (feature.getAbstractView() != null)
