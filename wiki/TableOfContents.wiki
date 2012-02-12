@@ -8,6 +8,7 @@
         * [ScreenGrab]
       * Events
         * [PluginReady]
+        * [ScriptError]
     * [GEStatusStrip]
       * [SetBrowserInstance]
     * [GEToolStrip]
