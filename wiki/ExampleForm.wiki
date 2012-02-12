@@ -17,7 +17,7 @@ However, it is worth noting that the other controls ([GEStatusStrip], [GEToolStr
 
 = Example =
 
-This example presumes you have dragged a single instance a the GEWebBrowser control onto an empty form.
+This example presumes you have dragged a single instance a the GEWebBrowser control onto an empty form. Here the only two events we wire up are PluginReady and ScriptError. The ScriptError is not necessary, although it can help with debugging any errors if you alter the host JavaScript for example.
 
 {{{
 
@@ -59,6 +59,12 @@ namespace ExampleFormTest
                   // there was an error calling either
                   // getType or getPluginVersion...
                 }
+            };
+
+            // handle any script errors
+            this.geWebBrowser1.ScriptError += (o, e) =>
+            {
+                MessageBox.Show(e.Message, e.Data);
             };
         }
     }
