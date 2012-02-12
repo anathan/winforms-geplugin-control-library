@@ -84,10 +84,67 @@ namespace EventsTest
 
 }}}
 
-The easiest way to use your own callback functions in managed code is to extend the External class. This allows you to register your own COM visible methods and to pass event objects to them from the plug-in. The following example shows how to register a custom external class and how to use a method of the class as an event handler.
+Another way to use your own callback functions in managed code is to extend the External class. This allows you to register your own COM visible methods and to pass event objects to them from the plug-in. The following example shows how to register a custom external class and how to use a method of the class as an event handler.
 
 {{{
-To follow...
+namespace TestApplication
+{
+    using System;
+    using System.Collections.Generic;
+    using System.Windows.Forms;
+    using System.Runtime.InteropServices;
+    using FC.GEPluginCtrls;
+
+    public partial class Form1 : Form
+    {
+        public Form1()
+        {
+            InitializeComponent();
+            this.geWebBrowser1.ObjectForScripting = new MyExternal(geWebBrowser1);
+            this.geWebBrowser1.LoadEmbeddedPlugin();
+        }
+    }
+
+    [ComVisibleAttribute(true)]
+    public class MyExternal : External
+    {
+        GEWebBrowser browser = null;
+        dynamic pm1 = null;
+
+        public MyExternal(GEWebBrowser browser)
+            : base()
+        {
+            this.browser = browser;
+
+            this.PluginReady += (o, e) =>
+            {
+                //create a placemark
+                pm1 = KmlHelpers.CreatePlacemark(e.ApiObject, "pm1", 52, 0);
+
+                // add the event listener to the placemark.
+                // notice the callback parameter, it is an anonymous javascript function
+                // that calls 'SomeMethod' with an argument 'hello'
+                this.browser.AddEventListener(pm1, EventId.Click, "function(e){application.SomeMethod(e);}");
+            };
+        }
+
+        /// <summary>
+        /// SomeMethod, called when the placemark is clicked
+        /// </summary>
+        /// <param name="e">event data</param>
+        public void SomeMethod(dynamic e)
+        {
+            // you can use native api calls on the object 
+            string type = e.getType(); // KmlMouseEvent
+            string targetType = e.getTarget().getType(); // KmlPlacemark
+            MessageBox.Show(type, targetType);
+
+            // Remove the event, notice we don't need to supply the custom 
+            // script argument. The internal event logic does that for you.
+            this.browser.RemoveEventListener(pm1, EventId.Click);
+        }
+    }
+}
 }}}
 
 
