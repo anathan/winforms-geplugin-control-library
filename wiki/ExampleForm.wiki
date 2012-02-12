@@ -39,8 +39,7 @@ namespace ExampleFormTest
 
             geWebBrowser1.LoadEmbededPlugin();
            
-            // The PluginReady event can be easily handled in a
-            // lambda expression like so.
+            // Handle the he PluginReady event 
             geWebBrowser1.PluginReady += (o, e) =>
             {
                 ge = e.ApiObject;
