@@ -288,6 +288,7 @@ namespace FC.GEPluginCtrls
                 throw new ArgumentException("ge is not of the type GEPlugin");
             }
 
+
             dynamic point = null;
 
             try
@@ -345,18 +346,31 @@ namespace FC.GEPluginCtrls
             int minHeight = 0,
             int maxWidth = 800,
             int maxHeight = 600,
-            bool setBalloon = true)
+            bool setBalloon = true,
+            dynamic feature = null,
+            bool closeButtonEnabled = true,
+            KmlColor backgroundColor = new KmlColor(),
+            KmlColor foregroundColor = new KmlColor())
         {
             dynamic balloon = null;
 
             try
             {
                 balloon = ge.createHtmlStringBalloon(string.Empty);
-                balloon.setContentString(html);
                 balloon.setMinHeight(minHeight);
                 balloon.setMaxHeight(maxHeight);
                 balloon.setMinWidth(minWidth);
                 balloon.setMaxWidth(maxWidth);
+                balloon.setCloseButtonEnabled(Convert.ToInt16(closeButtonEnabled));
+                balloon.setBackgroundColor(backgroundColor);
+                balloon.setForegroundColor(foregroundColor);
+
+                balloon.setContentString(html);
+
+                if (feature != null)
+                {
+                    balloon.setFeature(feature);
+                } 
 
                 if (setBalloon)
                 {
@@ -503,13 +517,25 @@ namespace FC.GEPluginCtrls
         /// <summary>
         /// Converts a System.Drawing.Color into a KmlColor
         /// </summary>
-        /// <param name="color">the color to base the KmlColor on</param>
+        /// <param name="color">A color to base the KmlColor on</param>
         /// <param name="alpha">Optional alpha value in the range [0-1].
         /// Where 0 is fully transparant and 1 is fully opaque. Default value is 1</param>
         /// <returns>A Kml color object</returns>
-        public static KmlColor ToKmlColor(this Color color, double alpha = 1)
+        public static KmlColor ToKmlColor(this Color color, double alpha = 1.0)
         {
             return new KmlColor(color, alpha);
+        }
+
+        /// <summary>
+        /// Converts a System.Drawing.Color into a KmlColor string
+        /// </summary>
+        /// <param name="color">A color to base the KmlColor on</param>
+        /// <param name="alpha">Optional alpha value in the range [0-1].
+        /// Where 0 is fully transparant and 1 is fully opaque. Default value is 1</param>
+        /// <returns>A Kml color string in the aabbggrr format</returns>
+        public static string ToKmlColorString(this Color color, double alpha = 1.0)
+        {
+            return new KmlColor(color, alpha).ToString();
         }
 
         /// <summary>

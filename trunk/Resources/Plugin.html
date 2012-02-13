@@ -66,7 +66,7 @@
     */
     var failureCallback_ = function(error)
     {
-      application.SendError("PluginLoadFailError", "Plugin failed to load: " + error);
+      application.SendError("Plugin Error", "Plugin failed to load: " + error);
     }
 
     /**
@@ -220,8 +220,8 @@
           callback = function(event) { kmlEventListener_(event, action); };
         } 
         
-        events_.generic[hash] = callback;
-        google.earth.addEventListener(feature, action, eval(events_.generic[hash]), useCapture);
+        events_.generic[hash] = eval(callback);
+        google.earth.addEventListener(feature, action, events_.generic[hash], useCapture);
       }
     }
 
@@ -233,7 +233,7 @@
     * @param action {string} The event string identifying the event to listen for.
     * @param callback {string} The function that was set as the callback.
     */
-    var jsRemoveEventListener = function(feature, hash, action, callback, useCapture)
+    var jsRemoveEventListener = function(feature, hash, action, useCapture)
     {      
       action = action.toLowerCase();
       if(action == "viewchangebegin" || action == "viewchange" || action == "viewchangeend")
