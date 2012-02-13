@@ -338,7 +338,7 @@ namespace FC.GEPluginCtrls
         /// </summary>
         /// <param name="feature">The target feature</param>
         /// <param name="action">The event Id</param>
-        /// <param name="callback">The name of javascript callback function to use, or an anonymous function</param>
+        /// <param name="callback">Optional, the name of javascript callback function to use, or an anonymous function</param>
         /// <param name="useCapture">Optionally use event capture</param>
         /// <example>GEWebBrowser.AddEventListener(object, "click", "someFunction");</example>
         /// <example>GEWebBrowser.AddEventListener(object, "click", "function(event){alert(event.getType);}");</example>
@@ -746,9 +746,11 @@ namespace FC.GEPluginCtrls
         /// </summary>
         /// <param name="feature">The target feature</param>
         /// <param name="action">The event Id</param>
+        /// <param name="callback">Optional, the same callback as was provided when the event was added</param>
         /// <param name="useCapture">Optional, use event capture</param>
         public void RemoveEventListener(object feature, EventId action, bool useCapture = false)
         {
+            //feature, hash, action, useCapture
             object[] args = new object[] 
             { 
                 feature, 

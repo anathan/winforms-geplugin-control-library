@@ -143,9 +143,7 @@ namespace FC.GEPluginCtrls.Geo
         {
             double phi1 = Maths.ConvertDegreesToRadians(origin.Latitude);
             double lambda1 = Maths.ConvertDegreesToRadians(origin.Longitude);
-
-            ////bearing = Maths.ConvertDegreesToRadians(bearing);
-            ////bearing = Maths.ConvertRadiansToDegrees(bearing); // ...err
+            bearing = Maths.ConvertDegreesToRadians(bearing);
 
             double angularDistance = 0;
 
@@ -159,13 +157,13 @@ namespace FC.GEPluginCtrls.Geo
                 angularDistance = distance / Maths.EarthMeanRadiusMiles;
             }
 
-            double phi2 = Math.Asin((Math.Sin(phi1) * Math.Cos(angularDistance)) +
-                (Math.Cos(phi1) * Math.Sin(angularDistance) * Math.Cos(bearing)));
+            double phi2 = Math.Asin(Math.Sin(phi1) * Math.Cos(angularDistance) +
+                Math.Cos(phi1) * Math.Sin(angularDistance) * Math.Cos(bearing));
 
             double lambda2 = lambda1 +
                 Math.Atan2(
                 Math.Sin(bearing) * Math.Sin(angularDistance) * Math.Cos(phi1),
-                Math.Cos(angularDistance) - (Math.Sin(phi1) * Math.Sin(phi2)));
+                Math.Cos(angularDistance) - Math.Sin(phi1) * Math.Sin(phi2));
 
             return new Coordinate(Maths.ConvertRadiansToDegrees(phi2), Maths.ConvertRadiansToDegrees(lambda2));
         }

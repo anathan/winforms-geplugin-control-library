@@ -136,6 +136,10 @@ namespace FC.GEPluginCtrls
             {
                 Debug.WriteLine("InvokeCallBack: " + rbex.Message, "External");
             }
+            catch (NullReferenceException nrex)
+            {
+                Debug.WriteLine("InvokeCallBack: " + nrex.Message, "External");
+            }
         }
 
         /// <summary>
