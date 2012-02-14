@@ -1,6 +1,8 @@
 #summary A simple winform example
 #labels Featured
 
+<wiki:gadget url="http://earthapi.googlepages.com/ad.xml" border="0" width="728" height="90" />
+
 = Introduction =
 
 This form shows the most basic set up of the GEWebBrowser, there are no other controls added.
@@ -74,6 +76,3 @@ namespace ExampleFormTest
 When the following code is run the earth loads and is then the information is displayed, for example.
 
 https://sites.google.com/site/earthapi2/simpleform.jpg
-
-
-<wiki:gadget url="http://earthapi.googlepages.com/ad.xml" border="0" width="728" height="90" />
