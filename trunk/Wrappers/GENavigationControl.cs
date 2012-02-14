@@ -61,8 +61,8 @@ namespace FC.GEPluginCtrls
         /// Initializes a new instance of the GENavigationControl class.
         /// </summary>
         /// <param name="ge">GEPlugin COM object</param>
-        /// <param name="controlType">The control type. Defualt is NavigationControl.Large</param>
-        /// <param name="visibility">The visibility of the control. Defualt is Visibility.Show</param>
+        /// <param name="controlType">The control type. default is NavigationControl.Large</param>
+        /// <param name="visibility">The visibility of the control. default is Visibility.Show</param>
         /// <param name="streetViewEnabled">Optionally enables the streetview features. Default is true (on)</param>
         public GENavigationControl(
             dynamic ge,

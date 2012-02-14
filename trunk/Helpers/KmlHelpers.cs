@@ -338,6 +338,10 @@ namespace FC.GEPluginCtrls
         /// <param name="maxWidth">Optional maximum balloon width, default is 800</param>
         /// <param name="maxHeight">Optional maximum balloon height, default is 600</param>
         /// <param name="setBalloon">Optionally set the balloon to be the current in the plugin</param>
+        /// <param name="feature">Optionally associate the balloon with a feature</param>
+        /// <param name="closeButtonEnabled">Optionally display a closed button on the balloon, default is true</param>
+        /// <param name="backgroundColor">Optionally set the balloon backgroundColor in the #rrggbb format, default #FFFFFF</param>
+        /// <param name="foregroundColor">Optionally set the balloon backgroundColor in the #rrggbb format, default #000000</param>
         /// <returns>A HtmlStringBalloon object (or null)</returns>
         public static dynamic CreateHtmlStringBalloon(
             dynamic ge,
@@ -349,8 +353,8 @@ namespace FC.GEPluginCtrls
             bool setBalloon = true,
             dynamic feature = null,
             bool closeButtonEnabled = true,
-            KmlColor backgroundColor = new KmlColor(),
-            KmlColor foregroundColor = new KmlColor())
+            string backgroundColor = "#FFFFFF",
+            string foregroundColor = "#000000")
         {
             dynamic balloon = null;
 
@@ -362,15 +366,23 @@ namespace FC.GEPluginCtrls
                 balloon.setMinWidth(minWidth);
                 balloon.setMaxWidth(maxWidth);
                 balloon.setCloseButtonEnabled(Convert.ToInt16(closeButtonEnabled));
-                balloon.setBackgroundColor(backgroundColor);
-                balloon.setForegroundColor(foregroundColor);
+
+                if (!string.IsNullOrEmpty(backgroundColor))
+                {
+                    balloon.setBackgroundColor(backgroundColor);
+                }
+
+                if (!string.IsNullOrEmpty(foregroundColor))
+                {
+                    balloon.setForegroundColor(foregroundColor);
+                }
 
                 balloon.setContentString(html);
 
                 if (feature != null)
                 {
                     balloon.setFeature(feature);
-                } 
+                }
 
                 if (setBalloon)
                 {
@@ -380,6 +392,9 @@ namespace FC.GEPluginCtrls
             catch (RuntimeBinderException rbex)
             {
                 Debug.WriteLine("OpenFeatureBalloon: " + rbex.Message, "KmlHelpers");
+            }
+            catch (ArgumentOutOfRangeException)
+            {
             }
 
             return balloon;
@@ -849,7 +864,7 @@ namespace FC.GEPluginCtrls
         /// </summary>
         /// <param name="feature">The kml object to parse</param>
         /// <param name="callback">A delegate action, each node visited will be passed to this as the single parameter</param>
-        /// <param name="walkFeatures">Optionally walk features, defualt is true</param>
+        /// <param name="walkFeatures">Optionally walk features, default is true</param>
         /// <param name="walkGeometries">Optionally walk geometries, default is false</param>
         /// <remarks>This method is used by <see cref="KmlTreeView"/> to build the nodes</remarks>
         /// <example>KmlHelpers.WalkKmlDom(kml, (Action dynamic)(x => { /* each x in the dom */}));</example>

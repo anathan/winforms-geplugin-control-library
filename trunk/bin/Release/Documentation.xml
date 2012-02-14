@@ -965,8 +965,8 @@
             Initializes a new instance of the GENavigationControl class.
             </summary>
             <param name="ge">GEPlugin COM object</param>
-            <param name="controlType">The control type. Defualt is NavigationControl.Large</param>
-            <param name="visibility">The visibility of the control. Defualt is Visibility.Show</param>
+            <param name="controlType">The control type. default is NavigationControl.Large</param>
+            <param name="visibility">The visibility of the control. default is Visibility.Show</param>
             <param name="streetViewEnabled">Optionally enables the streetview features. Default is true (on)</param>
         </member>
         <member name="P:FC.GEPluginCtrls.GENavigationControl.ControlType">
@@ -1061,7 +1061,7 @@
             <param name="id">Optional point Id. Default is empty</param>
             <returns>A kml point (or null)</returns>
         </member>
-        <member name="M:FC.GEPluginCtrls.KmlHelpers.CreateHtmlStringBalloon(System.Object,System.String,System.Int32,System.Int32,System.Int32,System.Int32,System.Boolean,System.Object,System.Boolean,FC.GEPluginCtrls.KmlColor,FC.GEPluginCtrls.KmlColor)">
+        <member name="M:FC.GEPluginCtrls.KmlHelpers.CreateHtmlStringBalloon(System.Object,System.String,System.Int32,System.Int32,System.Int32,System.Int32,System.Boolean,System.Object,System.Boolean,System.String,System.String)">
             <summary>
             Creates an Html String Balloon
             </summary>
@@ -1072,6 +1072,10 @@
             <param name="maxWidth">Optional maximum balloon width, default is 800</param>
             <param name="maxHeight">Optional maximum balloon height, default is 600</param>
             <param name="setBalloon">Optionally set the balloon to be the current in the plugin</param>
+            <param name="feature">Optionally associate the balloon with a feature</param>
+            <param name="closeButtonEnabled">Optionally display a closed button on the balloon, default is true</param>
+            <param name="backgroundColor">Optionally set the balloon backgroundColor in the #rrggbb format, default #FFFFFF</param>
+            <param name="foregroundColor">Optionally set the balloon backgroundColor in the #rrggbb format, default #000000</param>
             <returns>A HtmlStringBalloon object (or null)</returns>
         </member>
         <member name="M:FC.GEPluginCtrls.KmlHelpers.CreateLineString(System.Object,System.Object,System.Object,System.String,System.Boolean,System.Boolean,System.Int32,FC.GEPluginCtrls.KmlColor)">
@@ -1228,7 +1232,7 @@
             </summary>
             <param name="feature">The kml object to parse</param>
             <param name="callback">A delegate action, each node visited will be passed to this as the single parameter</param>
-            <param name="walkFeatures">Optionally walk features, defualt is true</param>
+            <param name="walkFeatures">Optionally walk features, default is true</param>
             <param name="walkGeometries">Optionally walk geometries, default is false</param>
             <remarks>This method is used by <see cref="T:FC.GEPluginCtrls.KmlTreeView"/> to build the nodes</remarks>
             <example>KmlHelpers.WalkKmlDom(kml, (Action dynamic)(x =&gt; { /* each x in the dom */}));</example>
