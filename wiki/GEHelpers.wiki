@@ -166,6 +166,9 @@ public static bool IsUri(string input, UriKind kind)
 /// <param name="maxWidth">Optional maximum balloon width, default is 800</param>
 /// <param name="maxHeight">Optional maximum balloon height, default is 600</param>
 /// <param name="setBalloon">Optionally set the balloon to be the current in the plugin</param>
+/// <param name="closeButtonEnabled">Optionally display a closed button on the balloon, default is true</param>
+/// <param name="backgroundColor">Optionally set the balloon backgroundColor in the #rrggbb format, default #FFFFFF</param>
+/// <param name="foregroundColor">Optionally set the balloon backgroundColor in the #rrggbb format, default #000000</param>
 /// <returns>The feature balloon or null</returns>
 public static dynamic OpenFeatureBalloon(
 dynamic ge,
@@ -175,7 +178,10 @@ int minWidth = 100,
 int minHeight = 100,
 int maxWidth = 800,
 int maxHeight = 600,
-bool setBalloon = true)
+bool setBalloon = true,
+bool closeButtonEnabled = true,
+string backgroundColor = "#FFFFFF",
+string foregroundColor = "#000000")
 }}}
 
 {{{
