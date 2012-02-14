@@ -1,6 +1,8 @@
 #summary A simple winform example
 #labels Featured
 
+<wiki:gadget url="http://earthapi.googlepages.com/ad.xml" border="0" width="728" height="90" />
+
 = Introduction =
 
 This form shows the most basic set up of the GEWebBrowser along with all the other controls.
@@ -46,5 +48,3 @@ namespace SimpleControlsTest
 }
 
 }}}
-
-<wiki:gadget url="http://earthapi.googlepages.com/ad.xml" border="0" width="728" height="90" />
