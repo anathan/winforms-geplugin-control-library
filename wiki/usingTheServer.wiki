@@ -1,5 +1,7 @@
 #summary Basic use of the GEServer class
 
+<wiki:gadget url="http://earthapi.googlepages.com/ad.xml" border="0" width="728" height="90" />
+
 = Introduction =
 
 You can use the inbuilt http server to work with local files such as kmz, kml, jpg, png, html, etc.
