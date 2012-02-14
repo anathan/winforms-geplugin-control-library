@@ -30,13 +30,6 @@ public KmlColor(byte alpha = 255, byte blue = 255, byte green = 255, byte red = 
 
 {{{
 /// <summary>
-/// Initializes a new instance of the KmlColor struct.
-/// </summary>
-public KmlColor(UInt32 value)
-}}}
-
-{{{
-/// <summary>
 /// Initializes a new instance of the KmlColor struct from a system color and alpha value.
 /// </summary>
 /// <param name="color">the color to base the new kml color on</param>
@@ -120,15 +113,14 @@ The following code
 
 {{{
 KmlColor c1 = new KmlColor();
-KmlColor c2 = new KmlColor(4294967295);
-KmlColor c3 = new KmlColor(255, 0, 0, 255);
-KmlColor c4 = new KmlColor(System.Drawing.Color.Blue);
-KmlColor c5 = new KmlColor(System.Drawing.Color.IndianRed, 0.5);
-KmlColor c6 = new KmlColor("Control", 0.5);
-KmlColor c7 = new KmlColor("Green", 0.2);
-KmlColor c8 = new KmlColor("RoyalBlue");
+KmlColor c2 = new KmlColor(255, 0, 0, 255);
+KmlColor c3 = new KmlColor(System.Drawing.Color.Blue);
+KmlColor c4 = new KmlColor(System.Drawing.Color.IndianRed, 0.5);
+KmlColor c5 = new KmlColor("Control", 0.5);
+KmlColor c6 = new KmlColor("Green", 0.2);
+KmlColor c7 = new KmlColor("RoyalBlue");
 
-KmlColor[] c = new KmlColor[] { c1, c2, c3, c4, c5, c6, c7, c8 };
+KmlColor[] c = new KmlColor[] { c1, c2, c3, c4, c5, c6, c7 };
 
 List<KmlColor> list = new List<KmlColor>();
 list.AddRange(c);
@@ -142,7 +134,6 @@ Would output
 
 {{{
 00000000
-FFFFFFFF
 FF0000FF
 FFFF0000
 7F5C5CCD
