@@ -140,7 +140,7 @@ class ColorExample
 Would output
 
 {{{
-00000000
+FFFFFFFF
 FF0000FF
 FFFF0000
 7F5C5CCD
