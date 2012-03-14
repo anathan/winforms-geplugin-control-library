@@ -2,9 +2,9 @@
 #labels Featured
 #sidebar TableOfContents
 
-<wiki:toc max_depth="3" />
-
 <wiki:gadget url="http://earthapi.googlepages.com/ad.xml" border="0" width="728" height="90" />
+
+<wiki:toc max_depth="3" />
 
 https://sites.google.com/site/earthapi2/GEWebBrowser.JPG
 
