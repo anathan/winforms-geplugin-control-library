@@ -1,6 +1,8 @@
 #summary Various uses for the WalkKmlDom method.
 #sidebar TableOfContents
 
+<wiki:gadget url="http://earthapi.googlepages.com/ad.xml" border="0" width="728" height="90" />
+
 <wiki:toc max_depth="2" />
 
 = Introduction =
