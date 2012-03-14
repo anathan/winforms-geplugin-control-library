@@ -2,6 +2,8 @@
 #labels Featured
 #sidebar TableOfContents
 
+<wiki:gadget url="http://earthapi.googlepages.com/ad.xml" border="0" width="728" height="90" />
+
 <wiki:toc max_depth="2" />
 
 = Introduction =
@@ -119,5 +121,3 @@ public void Stop()
 == Source == 
 
 http://code.google.com/p/winforms-geplugin-control-library/source/browse/trunk/HttpServer/GEServer.cs
-
-<wiki:gadget url="http://earthapi.googlepages.com/ad.xml" border="0" width="728" height="90" />
