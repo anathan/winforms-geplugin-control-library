@@ -359,3 +359,5 @@ public override void Refresh()
 == Source == 
 
 [http://code.google.com/p/winforms-geplugin-control-library/source/browse/trunk/GEWebBrowser.cs GEWebBrowser.cs]
+
+<wiki:gadget url="http://earthapi.googlepages.com/ad.xml" border="0" width="728" height="90" />
