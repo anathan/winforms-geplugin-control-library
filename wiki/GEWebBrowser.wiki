@@ -4,6 +4,8 @@
 
 <wiki:toc max_depth="3" />
 
+<wiki:gadget url="http://earthapi.googlepages.com/ad.xml" border="0" width="728" height="90" />
+
 https://sites.google.com/site/earthapi2/GEWebBrowser.JPG
 
 = Introduction =
@@ -357,7 +359,3 @@ public override void Refresh()
 == Source == 
 
 [http://code.google.com/p/winforms-geplugin-control-library/source/browse/trunk/GEWebBrowser.cs GEWebBrowser.cs]
-
-== Ads ==
-
-<wiki:gadget url="http://earthapi.googlepages.com/ad.xml" border="0" width="728" height="90" />
