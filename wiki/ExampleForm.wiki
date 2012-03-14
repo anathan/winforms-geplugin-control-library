@@ -5,7 +5,7 @@
 
 = Introduction =
 
-This form shows the most basic set up of the GEWebBrowser, there are no other controls added.
+This form shows the most basic set up of the [GEWebBrowser], there are no other controls added.
 
 = Details =
 
