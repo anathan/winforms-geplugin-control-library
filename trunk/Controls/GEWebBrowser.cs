@@ -736,8 +736,14 @@ namespace FC.GEPluginCtrls
         /// </summary>
         public void LoadEmbeddedPlugin()
         {
-            this.DocumentStream = 
-                new MemoryStream(new UTF8Encoding(false).GetBytes(Properties.Resources.Plugin));
+            ////this.DocumentStream = new MemoryStream(new UTF8Encoding(false).GetBytes(Properties.Resources.Plugin));
+
+            string path = Path.GetTempFileName();
+            TextWriter tw = new StreamWriter(path);
+            tw.Write(Properties.Resources.Plugin);
+            tw.Close();
+
+            this.Navigate(new Uri(path), "_self", null, "User-Agent: GEWebBrowser");
         }
 
         /// <summary>
