@@ -17,13 +17,11 @@
 // along with this program. If not, see http://www.gnu.org/licenses/.
 // </summary>
 
-namespace FC.GEPlugin
+namespace FC.GEPluginCtrls
 {
     using System;
     using System.Drawing;
     using System.Globalization;
-
-    using FC.GEPlugin.Helpers;
 
     /// <summary>
     /// Wrapper for the KmlColor object, maps all the getter and setter methods to managed properties. 

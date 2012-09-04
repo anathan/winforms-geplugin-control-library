@@ -450,7 +450,7 @@ namespace FC.GEPluginCtrls
 
                 if (placemark.getStyleSelector() == null)
                 {
-                    placemark.setStyleSelector(ge.createStyle(""));
+                    placemark.setStyleSelector(ge.createStyle(string.Empty));
                 }
 
                 dynamic lineStyle = placemark.getStyleSelector().getLineStyle();
@@ -502,7 +502,7 @@ namespace FC.GEPluginCtrls
             try
             {
                 placemark = CreatePlacemark(ge, addFeature: addFeature);
-                dynamic lineString = ge.createLineString(string.Empty);
+                dynamic lineString = ge.createLineString(id);
                 lineString.setTessellate(Convert.ToUInt16(tessellate));
 
                 foreach (Coordinate c in coordinates)
@@ -512,7 +512,7 @@ namespace FC.GEPluginCtrls
 
                 if (placemark.getStyleSelector() == null)
                 {
-                    placemark.setStyleSelector(ge.createStyle(""));
+                    placemark.setStyleSelector(ge.createStyle(string.Empty));
                 }
 
                 dynamic lineStyle = placemark.getStyleSelector().getLineStyle();

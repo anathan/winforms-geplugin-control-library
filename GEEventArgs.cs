@@ -62,7 +62,7 @@ namespace FC.GEPluginCtrls
             : this(message)
         {
             EventId id = EventId.None;
-            if (Enum.TryParse<EventId>(data, out id))
+            if (Enum.TryParse(data, true, out id))
             {
                 this.EventId = id;
             }
