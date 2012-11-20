@@ -766,12 +766,17 @@ namespace FC.GEPluginCtrls
         /// Basically a wrapper for feature.getFeatures().getChildNodes();
         /// </summary>
         /// <param name="feature">The feature to get the children from</param>
-        /// <returns>A kml object contatining the child nodes</returns>
+        /// <returns>A kml object contatining the child nodes, or null if the feature has no children or on any error.</returns>
         public static dynamic GetChildNodes(dynamic feature)
         {
             try
             {
-                return feature.getFeatures().getChildNodes();
+                if (IsKmlContainer(feature))
+                {
+                    feature = feature.getFeatures();
+                }
+
+                return feature.getChildNodes();
             }
             catch (RuntimeBinderException rbex) 
             {
@@ -793,7 +798,12 @@ namespace FC.GEPluginCtrls
         {
             try
             {
-                return Convert.ToBoolean(feature.getFeatures().hasChildNodes());
+                if (IsKmlContainer(feature))
+                {
+                    feature = feature.getFeatures();
+                }
+
+                return Convert.ToBoolean(feature.hasChildNodes());
             }
             catch (RuntimeBinderException rbex) 
             {
@@ -903,7 +913,7 @@ namespace FC.GEPluginCtrls
                     {
                         if (walkGeometries)
                         {
-                            WalkKmlDom(feature.getGeometry(), callback, walkFeatures, walkGeometries);
+                            WalkKmlDom(feature.getGeometry(), callback, walkFeatures, true);
                         }
                     }
 
@@ -914,24 +924,22 @@ namespace FC.GEPluginCtrls
                     {
                         if (walkGeometries)
                         {
-                            WalkKmlDom(feature.getOuterBoundary(), callback, walkFeatures, walkGeometries);
+                            WalkKmlDom(feature.getOuterBoundary(), callback, walkFeatures, true);
                         }
                     }
 
                     break;
 
-                // objects that supports getGeometries
+                // objects that support getGeometries
                 case ApiType.KmlMultiGeometry:
                     {
                         if (walkGeometries)
                         {
-                            WalkKmlDom(feature.getOuterBoundary(), callback, walkFeatures, walkGeometries);
+                            objectContainer = feature.getGeometries();  // GESchemaObjectContainer
+                            ////WalkKmlDom(feature.getOuterBoundary(), callback, walkFeatures, walkGeometries);
                         }
                     }
 
-                    break;
-
-                default:
                     break;
             }
 
@@ -939,8 +947,10 @@ namespace FC.GEPluginCtrls
 
             if (objectContainer != null && HasChildNodes(objectContainer))
             {
+                // 'GetChildNodes' returns null in some circumstances.
+                // see: Issue 96 
                 dynamic childNodes = KmlHelpers.GetChildNodes(objectContainer);
-                int count = childNodes.getLength();
+                int count = (childNodes == null ? 0 : childNodes.getLength());
                 for (int i = 0; i < count; i++)
                 {
                     dynamic node = childNodes.item(i);
