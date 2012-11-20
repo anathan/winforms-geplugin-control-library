@@ -3866,5 +3866,100 @@
             The javascript method name of the google.earth.setLanguage wrapper.
             </summary>
         </member>
+        <member name="T:FC.GEPluginCtrls.ViewerOption">
+            <summary>
+            Enumeration of options for use with <see cref="T:FC.GEPluginCtrls.ViewerOptions"/>
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.ViewerOption.Sunlight">
+            <summary>
+            Passed to the ViewerOptions.SetOption method, along with a OptionsValue, to specify whether the Sun option should be visible.
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.ViewerOption.HistoricalImagery">
+            <summary>
+            Passed to the ViewerOptions.SetOption method, along with a OptionsValue, to specify whether historical imagery should be enabled.
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.ViewerOption.StreetView">
+            <summary>
+            Passed to the ViewerOptions.SetOption method, along with a OptionsValue, to specify whether Street View should be enabled when the view reaches ground level. Note that this applies only to programmatic movement, such as fly-to;
+            </summary>
+        </member>
+        <member name="T:FC.GEPluginCtrls.OptionState">
+            <summary>
+            Enumeration of states to use with <see cref="T:FC.GEPluginCtrls.ViewerOptions"/>
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.OptionState.Default">
+            <summary>
+            Sets the render state to its default value.
+            </summary>
+            <remarks>
+            Currently, sunlight, Street View, and historical imagery all default to a disabled state.
+            </remarks>
+        </member>
+        <member name="F:FC.GEPluginCtrls.OptionState.Enabled">
+            <summary>
+            Set the render state to on. Passed to the KmlViewerOptions.setOption method.
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.OptionState.Disabled">
+            <summary>
+            Set the render state to off. Passed to the KmlViewerOptions.setOption method.
+            </summary>
+        </member>
+        <member name="T:FC.GEPluginCtrls.ViewerOptions">
+            <summary>
+            Controls the display of sunlight, historical imagery, and Street View panoramas in the plug-in.
+            </summary>
+            <remarks>
+            <para>
+            Unlike kmlViewerOptions in the api this class automatically applies any changes when SetOption is called.
+            This negates the user having to create a camera, set its options, then apply its view to the current abstract view to see the change.
+            </para>
+            </remarks>
+        </member>
+        <member name="F:FC.GEPluginCtrls.ViewerOptions.viewerOptions">
+            <summary>
+            The ViewerOptions object
+            </summary>
+        </member>
+        <member name="M:FC.GEPluginCtrls.ViewerOptions.#ctor(System.Object)">
+            <summary>
+            Initializes a new instance of the <see cref="T:FC.GEPluginCtrls.ViewerOptions"/> class. 
+            Initializes a new instance of the ViewerOptions class.
+            </summary>
+            <param name="ge">
+            The plug-in object 
+            </param>
+        </member>
+        <member name="M:FC.GEPluginCtrls.ViewerOptions.GetOption(FC.GEPluginCtrls.ViewerOption)">
+            <summary>
+            Returns the current state of the specified option.
+            </summary>
+            <param name="option">
+            The ViewerOption. 
+            </param>
+            <returns>
+            The current ViewerOptionsValue for the specified ViewerOption 
+            </returns>
+        </member>
+        <member name="M:FC.GEPluginCtrls.ViewerOptions.SetOption(FC.GEPluginCtrls.ViewerOption,FC.GEPluginCtrls.OptionState)">
+            <summary>
+            Set the state of viewer options, including sunlight, Street View, and historical imagery.
+            </summary>
+            <param name="option">
+            The ViewerOption. 
+            </param>
+            <param name="value">
+            The ViewerOptionsValue. 
+            </param>
+        </member>
+        <member name="M:FC.GEPluginCtrls.ViewerOptions.ApplyOptions">
+            <summary>
+            Applies the ViewerOptions to the current view.
+            </summary>
+        </member>
     </members>
 </doc>
