@@ -17,12 +17,15 @@
 // along with this program. If not, see http://www.gnu.org/licenses/.
 // </summary>
 
+#region
+
 using System;
+using System.ComponentModel;
+
+#endregion
 
 namespace FC.GEPluginCtrls
 {
-    using System.ComponentModel;
-
     /// <summary>
     /// Enumeration of the available layers for the plug-in.
     /// </summary>

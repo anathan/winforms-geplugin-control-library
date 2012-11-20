@@ -16,9 +16,15 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see http://www.gnu.org/licenses/.
 // </summary>
+
+#region
+
+using System;
+
+#endregion
+
 namespace FC.GEPluginCtrls.Geo
 {
-    using System;
     ////using LatLng = System.Tuple<double, double>;
 
     /// <summary>
@@ -141,20 +147,20 @@ namespace FC.GEPluginCtrls.Geo
         /// <returns>destination location as a Tuple(double lat, double lng)</returns>
         public static Coordinate Destination(Coordinate origin, double distance, double bearing, UnitSystem units = UnitSystem.Metric)
         {
-            double phi1 = Maths.ConvertDegreesToRadians(origin.Latitude);
-            double lambda1 = Maths.ConvertDegreesToRadians(origin.Longitude);
-            bearing = Maths.ConvertDegreesToRadians(bearing);
+            double phi1 = ConvertDegreesToRadians(origin.Latitude);
+            double lambda1 = ConvertDegreesToRadians(origin.Longitude);
+            bearing = ConvertDegreesToRadians(bearing);
 
-            double angularDistance = 0;
+            double angularDistance;
 
             if (units == UnitSystem.Metric)
             {
-                angularDistance = distance / Maths.EarthMeanRadiusKilometres;
+                angularDistance = distance / EarthMeanRadiusKilometres;
             }
             else
             {
-                distance = Maths.ConvertKilometresToMiles(distance);
-                angularDistance = distance / Maths.EarthMeanRadiusMiles;
+                distance = ConvertKilometresToMiles(distance);
+                angularDistance = distance / EarthMeanRadiusMiles;
             }
 
             double phi2 = Math.Asin(Math.Sin(phi1) * Math.Cos(angularDistance) +
@@ -165,7 +171,7 @@ namespace FC.GEPluginCtrls.Geo
                 Math.Sin(bearing) * Math.Sin(angularDistance) * Math.Cos(phi1),
                 Math.Cos(angularDistance) - Math.Sin(phi1) * Math.Sin(phi2));
 
-            return new Coordinate(Maths.ConvertRadiansToDegrees(phi2), Maths.ConvertRadiansToDegrees(lambda2));
+            return new Coordinate(ConvertRadiansToDegrees(phi2), ConvertRadiansToDegrees(lambda2));
         }
 
         /// <summary>
@@ -198,10 +204,8 @@ namespace FC.GEPluginCtrls.Geo
             {
                 return d * EarthMeanRadiusKilometres;
             }
-            else
-            {
-                return d * EarthMeanRadiusMiles;
-            }
+
+            return d * EarthMeanRadiusMiles;
         }
 
         /// <summary>
@@ -225,10 +229,8 @@ namespace FC.GEPluginCtrls.Geo
             {
                 return d * EarthMeanRadiusKilometres;
             }
-            else
-            {
-                return d * EarthMeanRadiusMiles;
-            }
+
+            return d * EarthMeanRadiusMiles;
         }
 
         /// <summary>

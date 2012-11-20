@@ -16,25 +16,30 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see http://www.gnu.org/licenses/.
 // </summary>
+
+#region
+
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Diagnostics;
+using System.Drawing;
+using System.Drawing.Imaging;
+using System.Globalization;
+using System.IO;
+using System.Net;
+using System.Runtime.InteropServices;
+using System.Security.Permissions;
+using System.Threading;
+using System.Windows.Forms;
+using System.Xml;
+using FC.GEPluginCtrls.Properties;
+using Microsoft.CSharp.RuntimeBinder;
+
+#endregion
+
 namespace FC.GEPluginCtrls
 {
-    using System;
-    using System.Collections.Generic;
-    using System.ComponentModel;
-    using System.Diagnostics;
-    using System.Drawing;
-    using System.Drawing.Imaging;
-    using System.Globalization;
-    using System.IO;
-    using System.Net;
-    using System.Runtime.InteropServices;
-    using System.Security.Permissions;
-    using System.Text;
-    using System.Threading;
-    using System.Windows.Forms;
-    using System.Xml;
-    using Microsoft.CSharp.RuntimeBinder;
-
     /// <summary>
     /// This browser control holds the Google Earth Plug-in,
     /// it also provides wrapper methods to work with the Google.Earth namespace
@@ -47,7 +52,7 @@ namespace FC.GEPluginCtrls
         /// <summary>
         /// Cache of kml event objects
         /// </summary>
-        private static Dictionary<string, AutoResetEvent> kmlObjectCacheSyncEvents =
+        private static readonly Dictionary<string, AutoResetEvent> kmlObjectCacheSyncEvents =
             new Dictionary<string, AutoResetEvent>();
 
         /// <summary>
@@ -55,7 +60,7 @@ namespace FC.GEPluginCtrls
         /// to be called from javascript. An instance of this is set
         /// to the base object's ObjectForScripting property in the constuctor.
         /// </summary>
-        private External external = new External();
+        private readonly External external = new External();
 
         /// <summary>
         /// Use the IGEPlugin COM interface. 
@@ -79,7 +84,6 @@ namespace FC.GEPluginCtrls
         /// Initializes a new instance of the GEWebBrowser class.
         /// </summary>
         public GEWebBrowser()
-            : base()
         {
             this.InitializeComponent();
             this.DoubleBuffered = true;
@@ -91,26 +95,26 @@ namespace FC.GEPluginCtrls
             // if we have a reference to the plugin object
             // set the various fields and raise the PluginReady event
             this.external.PluginReady += (o, e) =>
-            {
-                if (null != e.ApiObject)
-                {
-                    this.plugin = e.ApiObject;
-                    this.pluginIsReady = true;
-                    this.PluginReady(this, e);
+                                             {
+                                                 if (null != e.ApiObject)
+                                                 {
+                                                     this.plugin = e.ApiObject;
+                                                     this.pluginIsReady = true;
+                                                     this.PluginReady(this, e);
 
-                    Form parent = this.FindForm();
+                                                     Form parent = this.FindForm();
 
-                    if (parent != null)
-                    {
-                        parent.FormClosing += (f, x) =>
-                        {
-                            // prevents script errors on exit...
-                            this.KillPlugin();
-                            this.DocumentText = string.Empty;
-                        };
-                    }
-                }
-            };
+                                                     if (parent != null)
+                                                     {
+                                                         parent.FormClosing += (f, x) =>
+                                                                                   {
+                                                                                       // prevents script errors on exit...
+                                                                                       this.KillPlugin();
+                                                                                       this.DocumentText = string.Empty;
+                                                                                   };
+                                                     }
+                                                 }
+                                             };
 
             // wireup the other external events to their handlers
             this.external.KmlLoaded += (o, e) => this.KmlLoaded(this, e);
@@ -123,30 +127,41 @@ namespace FC.GEPluginCtrls
             // listen for any errors in the window
             // handle any errors and raise a custom script error event
             this.DocumentCompleted += (o, e) =>
-            {
-                this.Document.Window.Error += (w, we) =>
-                {
-                    we.Handled = true;
-                    this.ScriptError(this, new GEEventArgs("line:" + we.LineNumber, "Description: " + we.Description));
-                };
+                                          {
+                                              HtmlDocument htmlDocument = this.Document;
+                                              if (htmlDocument != null && htmlDocument.Window != null)
+                                              {
+                                                  htmlDocument.Window.Error += OnWindowOnError;
+                                              }
 
-                this.Navigating += (b, ne) =>
-                {
-                    if (RedirectLinksToSystemBrowser)
-                    {
-                        // prevent WebBrowser navigation
-                        ne.Cancel = true;
-                        
-                        if (ne.Url.Host.Length > 0)
-                        {
-                            // then open the URL in the system browser
-                            Process process = new Process();
-                            process.StartInfo.FileName = ne.Url.ToString();
-                            process.Start();
-                        }
-                    }
-                };
-            };
+                                              this.Navigating += OnWebBrowserNavigatingEventHandler;
+                                          };
+        }
+
+        private void OnWebBrowserNavigatingEventHandler(object b, WebBrowserNavigatingEventArgs ne)
+        {
+            if (!RedirectLinksToSystemBrowser) return;
+
+            // prevent WebBrowser navigation
+            ne.Cancel = true;
+
+            if (ne.Url.Host.Length <= 0) return;
+
+            // then open the URL in the system browser
+            Process process = new Process
+                                  {
+                                      StartInfo =
+                                          {
+                                              FileName = ne.Url.ToString()
+                                          }
+                                  };
+            process.Start();
+        }
+
+        private void OnWindowOnError(object w, HtmlElementErrorEventArgs we)
+        {
+            we.Handled = true;
+            this.ScriptError(this, new GEEventArgs("line:" + we.LineNumber, "Description: " + we.Description));
         }
 
         #region Public Events
@@ -201,10 +216,7 @@ namespace FC.GEPluginCtrls
         [Browsable(false)]
         public ImageryBase ImageryBase
         {
-            get
-            {
-                return this.imageryBase;
-            }
+            get { return this.imageryBase; }
 
             set
             {
@@ -219,10 +231,7 @@ namespace FC.GEPluginCtrls
         [Browsable(false)]
         public bool PluginIsReady
         {
-            get
-            {
-                return this.pluginIsReady;
-            }
+            get { return this.pluginIsReady; }
         }
 
         /// <summary>
@@ -230,8 +239,8 @@ namespace FC.GEPluginCtrls
         /// Default is true, setting this false opens links inside the GEWebBrowser control.
         /// </summary>
         [Category("Control Options"),
-        Description("Gets or sets a value indicating whether to redirect html links to the system browser."),
-        DefaultValueAttribute(true)]
+         Description("Gets or sets a value indicating whether to redirect html links to the system browser."),
+         DefaultValue(true)]
         public bool RedirectLinksToSystemBrowser { get; set; }
 
         #endregion
@@ -299,16 +308,13 @@ namespace FC.GEPluginCtrls
         /// </summary>
         internal static Dictionary<string, AutoResetEvent> KmlObjectCacheSyncEvents
         {
-            get
-            {
-                return GEWebBrowser.kmlObjectCacheSyncEvents;
-            }
+            get { return kmlObjectCacheSyncEvents; }
         }
 
         #endregion
 
         #region Public methods
-        
+
         /// <summary>
         /// Kills all running geplugin processes on the system
         /// </summary>
@@ -349,14 +355,14 @@ namespace FC.GEPluginCtrls
                 callback = "_x=" + callback;
             }
 
-            object[] args = new object[]
-            { 
-                feature, 
-                feature.GetHashCode(), 
-                action.ToString().ToUpperInvariant(), 
-                callback,
-                useCapture 
-            };
+            object[] args = new[]
+                                {
+                                    feature,
+                                    feature.GetHashCode(),
+                                    action.ToString().ToUpperInvariant(),
+                                    callback,
+                                    useCapture
+                                };
 
             this.InvokeJavaScript(JSFunction.AddEventListener, args);
         }
@@ -373,7 +379,7 @@ namespace FC.GEPluginCtrls
             {
                 this.pluginIsReady = false;
                 string name = database.ToString();
-                this.InvokeJavaScript(JSFunction.CreateInstance, new string[] { name });
+                this.InvokeJavaScript(JSFunction.CreateInstance, new object[] {name});
                 this.imageryBase = database;
             }
         }
@@ -391,7 +397,7 @@ namespace FC.GEPluginCtrls
         {
             if (this.Document != null)
             {
-                this.InvokeJavaScript(JSFunction.ExecuteBatch, new object[] { method, context });
+                this.InvokeJavaScript(JSFunction.ExecuteBatch, new object[] {method, context});
             }
         }
 
@@ -445,7 +451,7 @@ namespace FC.GEPluginCtrls
             {
                 this.InvokeJavaScript(
                     JSFunction.FetchKml,
-                    new string[] { url.ToString(), completionCallback });
+                    new object[] {url.ToString(), completionCallback});
             }
         }
 
@@ -479,23 +485,20 @@ namespace FC.GEPluginCtrls
                     "createCallback_('OnKmlFetched', '{0}')",
                     url);
 
-                string[] paramters = new string[] { url.ToString(), completionCallback };
+                object[] paramters = new object[] {url.ToString(), completionCallback};
 
                 KmlObjectCacheSyncEvents[url.ToString()] = new AutoResetEvent(false);
 
                 if (this.InvokeRequired)
                 {
-                    this.BeginInvoke((MethodInvoker)delegate
-                    {
-                        this.InvokeJavaScript(JSFunction.FetchKml, paramters);
-                    });
+                    this.BeginInvoke((MethodInvoker) (() => this.InvokeJavaScript(JSFunction.FetchKml, paramters)));
                 }
                 else
                 {
                     this.InvokeJavaScript(JSFunction.FetchKml, paramters);
                 }
 
-                WaitHandle.WaitAll(new WaitHandle[] { KmlObjectCacheSyncEvents[url.ToString()] }, timeout);
+                WaitHandle.WaitAll(new WaitHandle[] {KmlObjectCacheSyncEvents[url.ToString()]}, timeout);
 
                 if (External.KmlObjectCache.ContainsKey(url.ToString()))
                 {
@@ -519,6 +522,11 @@ namespace FC.GEPluginCtrls
         /// <returns>A KmlObject or null</returns>
         public object FetchAndParse(string url, int timeout = 5000)
         {
+            if (url == null)
+            {
+                throw new ArgumentNullException("url");
+            }
+
             return this.FetchAndParse(new Uri(url), timeout);
         }
 
@@ -531,14 +539,13 @@ namespace FC.GEPluginCtrls
         /// <returns>A KmlObject or null</returns>
         public object FetchAndParse(Uri url, int timeout = 5000)
         {
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
+            HttpWebRequest request = (HttpWebRequest) WebRequest.Create(url);
             request.Proxy = null;
             request.Timeout = timeout;
 
             WebResponse response = null;
             Stream responseStream = null;
             XmlDocument kml = new XmlDocument();
-            string name = string.Empty;
 
             try
             {
@@ -558,7 +565,10 @@ namespace FC.GEPluginCtrls
                 if (response != null)
                 {
                     response.Close();
-                    responseStream.Close();
+                    if (responseStream != null)
+                    {
+                        responseStream.Close();
+                    }
                 }
 
                 Debug.WriteLine("FetchAndParse: " + url, "GEWebBrowser");
@@ -577,7 +587,7 @@ namespace FC.GEPluginCtrls
         {
             dynamic result = null;
 
-            if (File.Exists(path) && 
+            if (File.Exists(path) &&
                 path.EndsWith("kml", StringComparison.OrdinalIgnoreCase))
             {
                 FileStream stream = null;
@@ -610,7 +620,7 @@ namespace FC.GEPluginCtrls
                         reader.Close();
                     }
                 }
-            } 
+            }
 
             return result;
         }
@@ -661,7 +671,7 @@ namespace FC.GEPluginCtrls
         {
             if (null != this.Document)
             {
-                return this.InvokeJavaScript(JSFunction.DoGeocode, new object[] { input });
+                return this.InvokeJavaScript(JSFunction.DoGeocode, new object[] {input});
             }
 
             return null;
@@ -680,10 +690,15 @@ namespace FC.GEPluginCtrls
                 {
                     HtmlElement headElement = this.Document.GetElementsByTagName("head")[0];
                     HtmlElement scriptElement = this.Document.CreateElement("script");
+                    if (scriptElement == null)
+                    {
+                        return;
+                    }
+
                     scriptElement.SetAttribute("type", "text/javascript");
 
                     // use the custom mshtml interface to append the script to the element
-                    IHtmlScriptElement element = (IHtmlScriptElement)scriptElement.DomElement;
+                    IHtmlScriptElement element = (IHtmlScriptElement) scriptElement.DomElement;
                     element.Text = "/* <![CDATA[ */ " + javaScript + " /* ]]> */";
                     headElement.AppendChild(scriptElement);
                 }
@@ -702,7 +717,7 @@ namespace FC.GEPluginCtrls
         /// <example>Example: GEWebBrowser.InvokeJavascript("say");</example>
         public object InvokeJavaScript(string function)
         {
-            return this.InvokeJavaScript(function, new object[] { });
+            return this.InvokeJavaScript(function, new object[] {});
         }
 
         /// <summary>
@@ -718,10 +733,10 @@ namespace FC.GEPluginCtrls
             {
                 Debug.WriteLine(
                     string.Format(
-                    CultureInfo.InvariantCulture, 
-                    "InvokeJavascript: {0}( {1} )",
-                    function,
-                    string.Join(", ", args)),
+                        CultureInfo.InvariantCulture,
+                        "InvokeJavascript: {0}( {1} )",
+                        function,
+                        string.Join(", ", args)),
                     "GEWebBrowser");
 
                 // see http://msdn.microsoft.com/en-us/library/4b1a88bz.aspx
@@ -739,9 +754,11 @@ namespace FC.GEPluginCtrls
             ////this.DocumentStream = new MemoryStream(new UTF8Encoding(false).GetBytes(Properties.Resources.Plugin));
 
             string path = Path.GetTempFileName();
-            TextWriter tw = new StreamWriter(path);
-            tw.Write(Properties.Resources.Plugin);
-            tw.Close();
+            using (TextWriter tw = new StreamWriter(path))
+            {
+                tw.Write(Resources.Plugin);
+                tw.Close();
+            }
 
             this.Navigate(new Uri(path), "_self", null, "User-Agent: GEWebBrowser");
         }
@@ -756,13 +773,13 @@ namespace FC.GEPluginCtrls
         public void RemoveEventListener(object feature, EventId action, bool useCapture = false)
         {
             //feature, hash, action, useCapture
-            object[] args = new object[] 
-            { 
-                feature, 
-                feature.GetHashCode(),
-                action.ToString().ToUpperInvariant(),
-                useCapture 
-            };
+            object[] args = new[]
+                                {
+                                    feature,
+                                    feature.GetHashCode(),
+                                    action.ToString().ToUpperInvariant(),
+                                    useCapture
+                                };
 
             this.InvokeJavaScript(JSFunction.RemoveEventListener, args);
         }
@@ -783,8 +800,8 @@ namespace FC.GEPluginCtrls
             try
             {
                 Graphics graphics = Graphics.FromImage(bitmap);
-                System.Drawing.Point point =
-                    new System.Drawing.Point();
+                Point point =
+                    new Point();
 
                 // copy the current display as a bitmap
                 graphics.CopyFromScreen(
@@ -808,7 +825,7 @@ namespace FC.GEPluginCtrls
         public void SetLanguage(string code)
         {
             this.pluginIsReady = false;
-            this.InvokeJavaScript(JSFunction.SetLanguage, new object[] { code });
+            this.InvokeJavaScript(JSFunction.SetLanguage, new object[] {code});
         }
 
         /// <summary>

@@ -16,11 +16,15 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see http://www.gnu.org/licenses/.
 // </summary>
+
+#region
+
+using System;
+
+#endregion
+
 namespace FC.GEPluginCtrls
 {
-    using System;
-    using System.Collections.Generic;
-
     /// <summary>
     /// This interface should be implemented by any object
     /// that is designed to act as the interface between javascript and managed code

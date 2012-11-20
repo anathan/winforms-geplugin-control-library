@@ -16,11 +16,15 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see http://www.gnu.org/licenses/.
 // </summary>
+
+#region
+
+using System;
+
+#endregion
+
 namespace FC.GEPluginCtrls
 {
-    using System;
-    using Microsoft.CSharp.RuntimeBinder;
-
     /// <summary>
     /// Wrapper used to used to manipulate the navigation controls in Google Earth.
     /// </summary>
@@ -38,7 +42,7 @@ namespace FC.GEPluginCtrls
         /// <summary>
         /// The com navigation control
         /// </summary>
-        private dynamic navigation = null;
+        private readonly dynamic navigation = null;
 
         #endregion
 

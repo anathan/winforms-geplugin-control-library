@@ -186,684 +186,6 @@
             Sets the src property
             </summary>
         </member>
-        <member name="T:FC.GEPluginCtrls.KmlTreeView">
-            <summary>
-            The KmlTreeView provides a quick and easy way to display kml content.
-            It intergratres with the <see cref="T:FC.GEPluginCtrls.GEWebBrowser"/> allowing a user to
-            easily 'fly-to' and toggle the visiblity of features in the plugin.
-            </summary>
-            <remarks>
-            The control supports virtual loading of content using the <see cref="T:FC.GEPluginCtrls.KmlTreeViewNode"/> class.
-            The KmlTreeView makes use of stacks and background workers to keep the control
-            fast and responsive when dealing with large numbers of nodes. The control also supports
-            tri-view checkboxes to show partial selection within a container.
-            </remarks>
-            <summary>
-            Designer file
-            </summary>
-        </member>
-        <member name="T:FC.GEPluginCtrls.IGEControls">
-            <summary>
-            This interface should be implemented by any controls that work with the browser
-            </summary>
-        </member>
-        <member name="M:FC.GEPluginCtrls.IGEControls.SetBrowserInstance(FC.GEPluginCtrls.GEWebBrowser)">
-            <summary>
-            Tell the control the instance of GEWebBrowser to work with
-            </summary>
-            <param name="instance">The GEWebBrowser instance</param>
-        </member>
-        <member name="F:FC.GEPluginCtrls.KmlTreeView.browser">
-            <summary>
-            The current browser
-            </summary>
-        </member>
-        <member name="F:FC.GEPluginCtrls.KmlTreeView.triStateImageList">
-            <summary>
-            The custom image list for tri-state check-box support
-            </summary>
-        </member>
-        <member name="F:FC.GEPluginCtrls.KmlTreeView.checkBoxesVisible">
-            <summary>
-            Vaule indicating whether check-boxes are visible.
-            </summary>
-        </member>
-        <member name="F:FC.GEPluginCtrls.KmlTreeView.preventChecking">
-            <summary>
-            Vaule indicating whether to prevent the check-boxes check event.
-            </summary>
-        </member>
-        <member name="M:FC.GEPluginCtrls.KmlTreeView.#ctor">
-            <summary>
-            Initializes a new instance of the KmlTreeView class.
-            </summary>
-        </member>
-        <member name="M:FC.GEPluginCtrls.KmlTreeView.CreateNode(System.Object)">
-            <summary>
-            Creates a KmlTreeViewNode from an kml feature 
-            </summary>
-            <param name="feature">The kml feature to base the node on</param>
-            <returns>A KmlTreeViewNode based on the feature</returns>
-        </member>
-        <member name="M:FC.GEPluginCtrls.KmlTreeView.GetNodeById(System.String)">
-            <summary>
-             Returns the index of the first occurrence of a tree node with the specified object ID.
-             As the node key is automatically set from the kmlObject ID the IDs should always correspond and be unique.
-            </summary>
-            <param name="id">The API object id</param>
-            <returns>The treenode for the object from the given ID (or an empty treenode if the ID isn't found)</returns>
-        </member>
-        <member name="M:FC.GEPluginCtrls.KmlTreeView.ParseKmlObject(System.Object)">
-            <summary>
-            Load a kml object into the treeview
-            </summary>
-            <param name="feature">The kml object to parse</param>
-        </member>
-        <member name="M:FC.GEPluginCtrls.KmlTreeView.ParseKmlObject(System.Object[])">
-            <summary>
-            Load a collection of kml objects into the treeview
-            </summary>
-            <param name="features">The kml objects to parse</param>
-        </member>
-        <member name="M:FC.GEPluginCtrls.KmlTreeView.Refresh">
-            <summary>
-            Refreshes and updates the layout of the control
-            </summary>
-        </member>
-        <member name="M:FC.GEPluginCtrls.KmlTreeView.SetBrowserInstance(FC.GEPluginCtrls.GEWebBrowser)">
-            <summary>
-            Set the browser instance for the control to work with
-            </summary>
-            <param name="instance">The GEWebBrowser instance</param>
-        </member>
-        <member name="M:FC.GEPluginCtrls.KmlTreeView.OnAfterCheck(System.Windows.Forms.TreeViewEventArgs)">
-            <summary>
-            Raised after a KmlTreeView id checked
-            </summary>
-            <param name="e">Event arguments</param>
-        </member>
-        <member name="M:FC.GEPluginCtrls.KmlTreeView.OnAfterExpand(System.Windows.Forms.TreeViewEventArgs)">
-            <summary>
-            Raised after a KmlTreeViewNode is expanded
-            </summary>
-            <param name="e">Event arguments</param>
-        </member>
-        <member name="M:FC.GEPluginCtrls.KmlTreeView.OnLayout(System.Windows.Forms.LayoutEventArgs)">
-            <summary>
-            Raised when the KmlTreeView layout changes
-            </summary>
-            <param name="e">The event arguments</param>
-        </member>
-        <member name="M:FC.GEPluginCtrls.KmlTreeView.OnNodeMouseDoubleClick(System.Windows.Forms.TreeNodeMouseClickEventArgs)">
-            <summary>
-            Raised when a KmlTreeView node is double clicked
-            </summary>
-            <param name="e">Event arguments</param>
-        </member>
-        <member name="M:FC.GEPluginCtrls.KmlTreeView.OnNodeMouseClick(System.Windows.Forms.TreeNodeMouseClickEventArgs)">
-            <summary>
-            Raised when the mouse is clicked on the KmlTreeView
-            </summary>
-            <param name="e">The event arguments</param>
-        </member>
-        <member name="M:FC.GEPluginCtrls.KmlTreeView.GenerateId(System.String,System.String)">
-            <summary>
-            Generates an ID for a feature loaded from a remote reasource 
-            </summary>
-            <param name="url">the base url</param>
-            <param name="id">the object id</param>
-            <returns>the generated id</returns>
-        </member>
-        <member name="M:FC.GEPluginCtrls.KmlTreeView.UpdateCheck(FC.GEPluginCtrls.KmlTreeViewNode,FC.GEPluginCtrls.GEWebBrowser)">
-            <summary>
-            Checks if a given element in the treeview needs updating
-            </summary>
-            <param name="node">The node to check for</param>
-            <param name="browser">The browser instance to check in</param>
-            <returns>a tree view node based on the new data.</returns>
-        </member>
-        <member name="M:FC.GEPluginCtrls.KmlTreeView.BuildTriStateImageList">
-            <summary>
-            Builds the tri-state image list for use with the control
-            </summary>
-        </member>
-        <member name="M:FC.GEPluginCtrls.KmlTreeView.SetChildStateImageIndex(FC.GEPluginCtrls.KmlTreeViewNode)">
-            <summary>
-            Sets the StateImageIndex of each child node of the given <paramref name="node">parent tree node</paramref>
-            </summary>
-            <param name="node">The parent tree node</param>
-        </member>
-        <member name="M:FC.GEPluginCtrls.KmlTreeView.NodeBuilderDoWork(System.Object,System.ComponentModel.DoWorkEventArgs)">
-            <summary>
-            Asynchronous method for building a list of nodes
-            </summary>
-            <param name="sender">The object that raised the event.</param>
-            <param name="e">Event arguments.</param>
-        </member>
-        <member name="M:FC.GEPluginCtrls.KmlTreeView.NodeBuilderRunWorkerCompleted(System.Object,System.ComponentModel.RunWorkerCompletedEventArgs)">
-            <summary>
-            Adds children to a KmlTreeViewNode.
-            </summary>
-            <param name="sender">The object that raised the event.</param>
-            <param name="e">Event arguments.</param>
-        </member>
-        <member name="F:FC.GEPluginCtrls.KmlTreeView.components">
-            <summary> 
-            Required designer variable.
-            </summary>
-        </member>
-        <member name="F:FC.GEPluginCtrls.KmlTreeView.imageList1">
-            <summary>
-            The treeview image list for kml features
-            </summary>
-        </member>
-        <member name="M:FC.GEPluginCtrls.KmlTreeView.Dispose(System.Boolean)">
-            <summary> 
-            Clean up any resources being used.
-            </summary>
-            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
-        </member>
-        <member name="M:FC.GEPluginCtrls.KmlTreeView.InitializeComponent">
-            <summary> 
-            Required method for Designer support - do not modify 
-            the contents of this method with the code editor.
-            </summary>
-        </member>
-        <member name="P:FC.GEPluginCtrls.KmlTreeView.CheckBoxes">
-            <summary>
-            Gets or sets a value indicating whether the treeview should display checkboxes or not.
-            Default True
-            </summary>
-        </member>
-        <member name="T:FC.GEPluginCtrls.GEWebBrowser">
-            <summary>
-            Designer file
-            </summary>
-            <summary>
-            This browser control holds the Google Earth Plug-in,
-            it also provides wrapper methods to work with the Google.Earth namespace
-            </summary>
-        </member>
-        <member name="F:FC.GEPluginCtrls.GEWebBrowser.components">
-            <summary>
-            Required designer variable.
-            </summary>
-        </member>
-        <member name="M:FC.GEPluginCtrls.GEWebBrowser.Dispose(System.Boolean)">
-            <summary>
-            Clean up any resources being used.
-            </summary>
-            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
-        </member>
-        <member name="M:FC.GEPluginCtrls.GEWebBrowser.InitializeComponent">
-            <summary>
-            Required method for Designer support - do not modify
-            the contents of this method with the code editor.
-            </summary>
-        </member>
-        <member name="F:FC.GEPluginCtrls.GEWebBrowser.kmlObjectCacheSyncEvents">
-            <summary>
-            Cache of kml event objects
-            </summary>
-        </member>
-        <member name="F:FC.GEPluginCtrls.GEWebBrowser.external">
-            <summary>
-            External is A COM Visible class that holds all the public methods
-            to be called from javascript. An instance of this is set
-            to the base object's ObjectForScripting property in the constuctor.
-            </summary>
-        </member>
-        <member name="F:FC.GEPluginCtrls.GEWebBrowser.plugin">
-            <summary>
-            Use the IGEPlugin COM interface. 
-            Equivalent to QueryInterface for COM objects
-            </summary>
-        </member>
-        <member name="F:FC.GEPluginCtrls.GEWebBrowser.imageryBase">
-            <summary>
-            Current plug-in Imagery database
-            </summary>
-        </member>
-        <member name="F:FC.GEPluginCtrls.GEWebBrowser.pluginIsReady">
-            <summary>
-            Indicates whether the plug-in is ready to use.
-            </summary>
-        </member>
-        <member name="M:FC.GEPluginCtrls.GEWebBrowser.#ctor">
-            <summary>
-            Initializes a new instance of the GEWebBrowser class.
-            </summary>
-        </member>
-        <member name="M:FC.GEPluginCtrls.GEWebBrowser.KillPlugin">
-            <summary>
-            Kills all running geplugin processes on the system
-            </summary>
-        </member>
-        <member name="M:FC.GEPluginCtrls.GEWebBrowser.AddEventListener(System.Object,FC.GEPluginCtrls.EventId,System.String,System.Boolean)">
-            <summary>
-            Wrapper for the the google.earth.addEventListener method
-            </summary>
-            <param name="feature">The target feature</param>
-            <param name="action">The event Id</param>
-            <param name="callback">Optional, the name of javascript callback function to use, or an anonymous function</param>
-            <param name="useCapture">Optionally use event capture</param>
-            <example>GEWebBrowser.AddEventListener(object, "click", "someFunction");</example>
-            <example>GEWebBrowser.AddEventListener(object, "click", "function(event){alert(event.getType);}");</example>
-        </member>
-        <member name="M:FC.GEPluginCtrls.GEWebBrowser.CreateInstance(FC.GEPluginCtrls.ImageryBase)">
-            <summary>
-            Wrapper for the  google.earth.createInstance method
-            See: http://code.google.com/apis/earth/documentation/reference/google_earth_namespace.html#70288485024d8129dd1c290fb2e5553b
-            </summary>
-            <param name="database">The database name</param>
-            <example>Example: GEWebBrowser.CreateInstance(ImageryBase.Moon);</example>
-        </member>
-        <member name="M:FC.GEPluginCtrls.GEWebBrowser.ExecuteBatch(System.String,System.Object)">
-            <summary>
-            Wrapper for the google.earth.executeBatch method
-            See: http://code.google.com/apis/earth/documentation/reference/google_earth_namespace.html#b26414915202d39cad12bcd5bd99e739
-            Efficiently executes an arbitrary, user-defined function (the batch function),minimizing
-            the amount of overhead incurred during cross-process communication between the browser
-            and Google Earth Plugin. 
-            </summary>
-            <param name="method">The javascript method to execute</param>
-            <param name="context">An optional parmeter to pass to the method</param>
-        </member>
-        <member name="M:FC.GEPluginCtrls.GEWebBrowser.FetchKml(System.String)">
-            <summary>
-            Load a remote kml/kmz file 
-            This function requires a 'twin' LoadKml function in javascript
-            this twin function will call "google.earth.fetchKml"
-            </summary>
-            <param name="url">string path to a kml reasource</param>
-            <example>Example: GEWebBrowser.FetchKml("http://www.site.com/file.kml");</example>
-        </member>
-        <member name="M:FC.GEPluginCtrls.GEWebBrowser.FetchKml(System.Uri)">
-            <summary>
-            Load a remote kml/kmz file 
-            This function requires a 'twin' LoadKml function in javascript
-            this twin function will call "google.earth.fetchKml"
-            </summary>
-            <param name="url">Uri to a kml reasource</param>
-            <example>Example: GEWebBrowser.FetchKml("http://www.site.com/file.kml");</example>
-        </member>
-        <member name="M:FC.GEPluginCtrls.GEWebBrowser.FetchKml(System.String,System.String)">
-            <summary>
-            Asynchronously load a remote kml/kmz file 
-            This function invokes "google.earth.fetchKml"
-            </summary>
-            <param name="url">path to a kml/kmz file</param>
-            <param name="completionCallback">name of javascript callback function to call after fetching completes</param>
-            <example>Example: GEWebBrowser.FetchKml("http://www.site.com/file.kml", "createCallback_(OnKmlLoaded)");</example>
-        </member>
-        <member name="M:FC.GEPluginCtrls.GEWebBrowser.FetchKml(System.Uri,System.String)">
-            <summary>
-            Synchronously load a remote kml/kmz file.
-            The result of the synchronous request is parsed by the plugin and the resultant object is returned. 
-            This function invokes "google.earth.fetchKml"
-            </summary>
-            <param name="url">path to a kml/kmz file</param>
-            <param name="completionCallback">name of javascript callback function to call after fetching completes</param>
-            <example>Example: GEWebBrowser.FetchKml("http://www.site.com/file.kml", "createCallback_(OnKmlLoaded)");</example>
-        </member>
-        <member name="M:FC.GEPluginCtrls.GEWebBrowser.FetchKmlSynchronous(System.String,System.Int32)">
-            <summary>
-            Synchronously load a remote kml/kmz file.
-            The result of the synchronous request is parsed by the plugin and the resultant object is returned. 
-            </summary>
-            <param name="url">path to a kml/kmz file</param>
-            <param name="timeout">time to wait for return in ms</param>
-            <returns>A KmlObject or null.</returns>
-            <example>Example: GEWebBrowser.FetchKmlSynchronous("http://www.site.com/file.kml");</example>
-        </member>
-        <member name="M:FC.GEPluginCtrls.GEWebBrowser.FetchKmlSynchronous(System.Uri,System.Int32)">
-            <summary>
-            Synchronously load a remote kml/kmz file.
-            The result of the synchronous request is parsed by the plugin and the resultant object is returned. 
-            </summary>
-            <param name="url">Uri of a kml/kmz file</param>
-            <param name="timeout">time to wait for return in ms</param>
-            <returns>The kml as a kmlObject</returns>
-            <example>Example: GEWebBrowser.FetchKmlSynchronous("http://www.site.com/file.kml");</example>
-        </member>
-        <member name="M:FC.GEPluginCtrls.GEWebBrowser.FetchAndParse(System.String,System.Int32)">
-            <summary>
-            As FetchKmlSynchronous - but uses a native HttpWebRequest rather than google.earth.fetchKml.
-            The result of the synchronous request is parsed by the plugin and the resultant object is returned.    
-            </summary>
-            <param name="url">path to a kml file</param>
-            <param name="timeout">time to wait for return in ms</param>
-            <returns>A KmlObject or null</returns>
-        </member>
-        <member name="M:FC.GEPluginCtrls.GEWebBrowser.FetchAndParse(System.Uri,System.Int32)">
-            <summary>
-            Same as FetchKmlSynchronous but uses a native HttpWebRequest rather than google.earth.fetchKml.
-            The result of the synchronous request is parsed by the plugin and the resultant object is returned.    
-            </summary>
-            <param name="url">Uri of a kml file</param>
-            <param name="timeout">time to wait for return in ms</param>
-            <returns>A KmlObject or null</returns>
-        </member>
-        <member name="M:FC.GEPluginCtrls.GEWebBrowser.FetchKmlLocal(System.String)">
-            <summary>
-            Loads kml file from the local file system and attempts to parse the data into the plugin.
-            </summary>
-            <param name="path">path to a kml file</param>
-            <returns>A KmlObject or null</returns>
-            <example>Example: GWEebBrower.FetchKml("C:\file.kml");</example>
-        </member>
-        <member name="M:FC.GEPluginCtrls.GEWebBrowser.ParseKml(System.String)">
-            <summary>
-            GEPlugin.parseKml() wrapper
-            Parse a string of KML and return a handle to the root of the KML object structure that was created
-            </summary>
-            <param name="kml">a string of KML to process</param>
-            <returns>The KML object structure that was created</returns>
-        </member>
-        <member name="M:FC.GEPluginCtrls.GEWebBrowser.ParseKmlObject(System.Object)">
-            <summary>
-            Parses a KmlObject and loads it into the plugin.
-            </summary>
-            <param name="kml">kml object to parse</param>
-        </member>
-        <member name="M:FC.GEPluginCtrls.GEWebBrowser.InvokeDoGeocode(System.String)">
-            <summary>
-            Invokes the javascript function 'jsDoGeocode'
-            Automatically flys to the location if one is found for the input
-            </summary>
-            <param name="input">the location to geocode</param>
-            <returns>the KmlPoint object for the geocode, or an empty object</returns>
-            <example>Example: GEWebBrowser.InvokeDoGeocode("London");</example>
-        </member>
-        <member name="M:FC.GEPluginCtrls.GEWebBrowser.InjectJavaScript(System.String)">
-            <summary>
-            Inject a javascript element into the document head
-            </summary>
-            <param name="javaScript">the script code</param>
-            <example>GEWebBrowser.InjectJavascript("var say=function(msg){alert(msg);}");</example>
-        </member>
-        <member name="M:FC.GEPluginCtrls.GEWebBrowser.InvokeJavaScript(System.String)">
-            <summary>
-            Executes a script function defined in the currently loaded document. 
-            </summary>
-            <param name="function">The name of the function to invoke</param>
-            <returns>The result of the evaluated function</returns>
-            <example>Example: GEWebBrowser.InvokeJavascript("say");</example>
-        </member>
-        <member name="M:FC.GEPluginCtrls.GEWebBrowser.InvokeJavaScript(System.String,System.Object[])">
-            <summary>
-            Executes a script function that is defined in the currently loaded document. 
-            </summary>
-            <param name="function">The name of the function to invoke</param>
-            <param name="args">any arguments</param>
-            <returns>The result of the evaluated function</returns>
-            <example>Example: GEWebBrowser.InvokeJavascript("say", new object[] { "hello" });</example>
-        </member>
-        <member name="M:FC.GEPluginCtrls.GEWebBrowser.LoadEmbeddedPlugin">
-            <summary>
-            Load the embedded html document into the browser 
-            </summary>
-        </member>
-        <member name="M:FC.GEPluginCtrls.GEWebBrowser.RemoveEventListener(System.Object,FC.GEPluginCtrls.EventId,System.Boolean)">
-            <summary>
-            Wrapper for the the google.earth.removeEventListener method
-            See: https://developers.google.com/earth/documentation/reference/google_earth_namespace#a4367d554eb492adcafa52925ddbf0c71
-            </summary>
-            <param name="feature">The target feature</param>
-            <param name="action">The event Id</param>
-            <param name="useCapture">Optional, use event capture</param>
-        </member>
-        <member name="M:FC.GEPluginCtrls.GEWebBrowser.ScreenGrab">
-            <summary>
-            Take a 'screen grab' of the current GEWebBrowser view
-            </summary>
-            <returns>bitmap image</returns>
-        </member>
-        <member name="M:FC.GEPluginCtrls.GEWebBrowser.SetLanguage(System.String)">
-            <summary>
-            Set the plugin langauge
-            </summary>
-            <param name="code">The language code to use</param>
-        </member>
-        <member name="M:FC.GEPluginCtrls.GEWebBrowser.Refresh">
-            <summary>
-            Reloads the document currently displayed in the control
-            Overides the default WebBrowser Refresh method
-            </summary>
-        </member>
-        <member name="E:FC.GEPluginCtrls.GEWebBrowser.PluginReady">
-            <summary>
-            Raised when the plugin is ready
-            </summary>
-        </member>
-        <member name="E:FC.GEPluginCtrls.GEWebBrowser.KmlEvent">
-            <summary>
-            Raised when there is a kmlEvent
-            </summary>
-        </member>
-        <member name="E:FC.GEPluginCtrls.GEWebBrowser.KmlLoaded">
-            <summary>
-            Raised when a kml/kmz file has loaded
-            </summary>
-        </member>
-        <member name="E:FC.GEPluginCtrls.GEWebBrowser.ScriptError">
-            <summary>
-            Raised when there is a script error in the document 
-            </summary>
-        </member>
-        <member name="E:FC.GEPluginCtrls.GEWebBrowser.PluginEvent">
-            <summary>
-            Rasied when there is a GEPlugin event
-            </summary>
-        </member>
-        <member name="E:FC.GEPluginCtrls.GEWebBrowser.ViewEvent">
-            <summary>
-            Rasied when there is a viewchangebegin, viewchange or viewchangeend event 
-            </summary>
-        </member>
-        <member name="P:FC.GEPluginCtrls.GEWebBrowser.Plugin">
-            <summary>
-            Gets the plugin instance associated with the control
-            </summary>
-        </member>
-        <member name="P:FC.GEPluginCtrls.GEWebBrowser.ImageryBase">
-            <summary>
-            Gets or sets the current imagery base for the plug-in
-            </summary>
-        </member>
-        <member name="P:FC.GEPluginCtrls.GEWebBrowser.PluginIsReady">
-            <summary>
-            Gets a value indicating whether the plug-in is ready
-            </summary>
-        </member>
-        <member name="P:FC.GEPluginCtrls.GEWebBrowser.RedirectLinksToSystemBrowser">
-            <summary>
-            Gets or sets a value indicating whether to redirect html links to the system browser
-            Default is true, setting this false opens links inside the GEWebBrowser control.
-            </summary>
-        </member>
-        <member name="P:FC.GEPluginCtrls.GEWebBrowser.AllowWebBrowserDrop">
-            <summary>
-            Gets or sets a value indicating whether the  control navigates to documents that are dropped onto it.
-            </summary>
-        </member>
-        <member name="P:FC.GEPluginCtrls.GEWebBrowser.ContextMenuStrip">
-            <summary>
-            Gets or sets the System.Windows.Forms.ContextMenuStrip associated with this control
-            </summary>
-        </member>
-        <member name="P:FC.GEPluginCtrls.GEWebBrowser.ScrollBarsEnabled">
-            <summary>
-            Gets or sets a value indicating whether scroll bars are displayed in the control.
-            </summary>
-        </member>
-        <member name="P:FC.GEPluginCtrls.GEWebBrowser.IsWebBrowserContextMenuEnabled">
-            <summary>
-            Gets or sets a value indicating whether the shortcut menu of the control is enabled.
-            </summary>
-        </member>
-        <member name="P:FC.GEPluginCtrls.GEWebBrowser.WebBrowserShortcutsEnabled">
-            <summary>
-             Gets or sets a value indicating whether keyboard shortcuts are enabled within the control.
-            </summary>
-        </member>
-        <member name="P:FC.GEPluginCtrls.GEWebBrowser.KmlObjectCacheSyncEvents">
-            <summary>
-            Gets thread event handles for IKmlObjects collected.
-            </summary>
-        </member>
-        <member name="T:FC.GEPluginCtrls.Languages">
-            <summary>
-            A class to provide the supported language codes
-            Supported language codes are listed in the Google Maps API Coverage document
-            see: http://spreadsheets.google.com/pub?key=p9pdwsai2hDMsLkXsoM05KQ
-            </summary>
-        </member>
-        <member name="M:FC.GEPluginCtrls.Languages.Codes">
-            <summary>
-            Provides a Dictionary of language codes and native names 
-            </summary>
-            <returns>A Dictionary of language codes and native names</returns>
-        </member>
-        <member name="T:FC.GEPluginCtrls.GEStatusStrip">
-            <summary>
-            Designer file
-            </summary>
-            <summary>
-            The GEStatusStrip shows various information about the plug-in
-            </summary>
-        </member>
-        <member name="F:FC.GEPluginCtrls.GEStatusStrip.components">
-            <summary> 
-            Required designer variable.
-            </summary>
-        </member>
-        <member name="F:FC.GEPluginCtrls.GEStatusStrip.apiVersionStatusLabel">
-            <summary>
-            The api version status label
-            </summary>
-        </member>
-        <member name="F:FC.GEPluginCtrls.GEStatusStrip.browserVersionStatusLabel">
-            <summary>
-            The browser version status label
-            </summary>
-        </member>
-        <member name="F:FC.GEPluginCtrls.GEStatusStrip.pluginVersionStatusLabel">
-            <summary>
-            The plug-in version status label
-            </summary>
-        </member>
-        <member name="F:FC.GEPluginCtrls.GEStatusStrip.streamingProgressBar">
-            <summary>
-            The streaming progress bar
-            </summary>
-        </member>
-        <member name="F:FC.GEPluginCtrls.GEStatusStrip.streamingStatusLabel">
-            <summary>
-            The streaming status label
-            </summary>
-        </member>
-        <member name="M:FC.GEPluginCtrls.GEStatusStrip.Dispose(System.Boolean)">
-            <summary> 
-            Clean up any resources being used.
-            </summary>
-            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
-        </member>
-        <member name="M:FC.GEPluginCtrls.GEStatusStrip.InitializeComponent">
-            <summary> 
-            Required method for Designer support - do not modify 
-            the contents of this method with the code editor.
-            </summary>
-        </member>
-        <member name="F:FC.GEPluginCtrls.GEStatusStrip.timer">
-            <summary>
-            Timer used when polling data
-            </summary>
-        </member>
-        <member name="F:FC.GEPluginCtrls.GEStatusStrip.browser">
-            <summary>
-            An instance of the current browser
-            </summary>
-        </member>
-        <member name="F:FC.GEPluginCtrls.GEStatusStrip.interval">
-            <summary>
-            Timer interval in miliseconds
-            </summary>
-        </member>
-        <member name="F:FC.GEPluginCtrls.GEStatusStrip.streamingStatusLabelVisible">
-            <summary>
-            Indicates whether the streaming status label is visible
-            </summary>
-        </member>
-        <member name="F:FC.GEPluginCtrls.GEStatusStrip.streamingProgressBarVisible">
-            <summary>
-            Indicates whether the streaming progress bar is visible
-            </summary>
-        </member>
-        <member name="F:FC.GEPluginCtrls.GEStatusStrip.apiVersionStatusLabelVisible">
-            <summary>
-            Indicates whether the api version label is visible
-            </summary>
-        </member>
-        <member name="F:FC.GEPluginCtrls.GEStatusStrip.pluginVersionStatusLabelVisible">
-            <summary>
-            Indicates whether the plug-in version label is visible
-            </summary>
-        </member>
-        <member name="F:FC.GEPluginCtrls.GEStatusStrip.browserVersionStatusLabelVisible">
-            <summary>
-            Indicates whether the browser version label is visible
-            </summary>
-        </member>
-        <member name="M:FC.GEPluginCtrls.GEStatusStrip.#ctor">
-            <summary>
-            Initializes a new instance of the GEStatusStrip class.
-            </summary>
-        </member>
-        <member name="M:FC.GEPluginCtrls.GEStatusStrip.SetBrowserInstance(FC.GEPluginCtrls.GEWebBrowser)">
-            <summary>
-            Set the browser instance for the control to work with
-            </summary>
-            <param name="instance">The GEWebBrowser instance</param>
-            <example>Example: GEToolStrip.SetBrowserInstance(GEWebBrowser)</example>
-        </member>
-        <member name="M:FC.GEPluginCtrls.GEStatusStrip.Timer_Tick(System.Object,System.EventArgs)">
-            <summary>
-            Timer tick callback function
-            </summary>
-            <param name="sender">The object that raised the event.</param>
-            <param name="e">Event arguments.</param>
-        </member>
-        <member name="P:FC.GEPluginCtrls.GEStatusStrip.Interval">
-            <summary>
-            Gets or sets the timer interval for polling data
-            </summary>
-        </member>
-        <member name="P:FC.GEPluginCtrls.GEStatusStrip.ShowStreamingProgressBar">
-            <summary>
-            Gets or sets a value indicating whether the progress bar is visible
-            </summary>
-        </member>
-        <member name="P:FC.GEPluginCtrls.GEStatusStrip.ShowStreamingStatusLabel">
-            <summary>
-            Gets or sets a value indicating whether the streaming label is visible
-            </summary>
-        </member>
-        <member name="P:FC.GEPluginCtrls.GEStatusStrip.ShowBrowserVersionStatusLabel">
-            <summary>
-            Gets or sets a value indicating whether the browser version label is visible
-            </summary>
-        </member>
-        <member name="P:FC.GEPluginCtrls.GEStatusStrip.ShowApiVersionStatusLabel">
-            <summary>
-            Gets or sets a value indicating whether the api version label is visible
-            </summary>
-        </member>
-        <member name="P:FC.GEPluginCtrls.GEStatusStrip.ShowPluginVersionStatusLabel">
-            <summary>
-            Gets or sets a value indicating whether the plug-in version label is visible
-            </summary>
-        </member>
         <member name="T:FC.GEPluginCtrls.Geo.Maths">
             <summary>
             Various Geodesic methods to work with the plugin api
@@ -1072,88 +394,16 @@
             Gets or sets the working socket
             </summary>
         </member>
-        <member name="T:FC.GEPluginCtrls.KmlTreeViewNode">
+        <member name="T:FC.GEPluginCtrls.IGEControls">
             <summary>
-            Custom node class for the <see cref="T:FC.GEPluginCtrls.KmlTreeView"/>
+            This interface should be implemented by any controls that work with the browser
             </summary>
         </member>
-        <member name="M:FC.GEPluginCtrls.KmlTreeViewNode.#ctor">
+        <member name="M:FC.GEPluginCtrls.IGEControls.SetBrowserInstance(FC.GEPluginCtrls.GEWebBrowser)">
             <summary>
-            Initializes a new instance of the KmlTreeViewNode class.
+            Tell the control the instance of GEWebBrowser to work with
             </summary>
-        </member>
-        <member name="M:FC.GEPluginCtrls.KmlTreeViewNode.#ctor(System.Object)">
-            <summary>
-            Initializes a new instance of the KmlTreeViewNode class.
-            </summary>
-            <param name="kmlFeature">A <paramref name="kmlFeature">kml feature</paramref> to base the treenode on</param>
-        </member>
-        <member name="M:FC.GEPluginCtrls.KmlTreeViewNode.SetStyle">
-            <summary>
-            Sets the icon style for the node
-            </summary>
-        </member>
-        <member name="M:FC.GEPluginCtrls.KmlTreeViewNode.Animate">
-            <summary>
-            Animates the icon style for the node.
-            </summary>
-        </member>
-        <member name="M:FC.GEPluginCtrls.KmlTreeViewNode.Refresh">
-            <summary>
-            see http://code.google.com/p/winforms-geplugin-control-library/issues/detail?id=66
-            </summary>
-        </member>
-        <member name="M:FC.GEPluginCtrls.KmlTreeViewNode.TidyToolTip(System.String)">
-            <summary>
-            Clean any html and add linebreaks for use with tooltips.
-            TODO : make this a lot better....
-            </summary>
-            <param name="source">a html string</param>
-            <returns>plain text with linebreaks</returns>
-        </member>
-        <member name="P:FC.GEPluginCtrls.KmlTreeViewNode.ToolTipText">
-            <summary>
-            Gets or sets the value of the node tool tip text.
-            </summary>
-        </member>
-        <member name="P:FC.GEPluginCtrls.KmlTreeViewNode.ApiObject">
-            <summary>
-            Gets the underlying kml object that the node represents.
-            </summary>
-        </member>
-        <member name="P:FC.GEPluginCtrls.KmlTreeViewNode.ApiType">
-            <summary>
-            Gets a value indicating the api type (e.g. KmlPlacemark, KmlDocument)
-            of the underlying <see cref="P:FC.GEPluginCtrls.KmlTreeViewNode.ApiObject">feature</see> the node represents.
-            </summary>
-        </member>
-        <member name="P:FC.GEPluginCtrls.KmlTreeViewNode.BaseUrl">
-            <summary>
-            Gets or sets a value indicating the url, if any, of the data the node is based on
-            </summary>
-        </member>
-        <member name="P:FC.GEPluginCtrls.KmlTreeViewNode.IsLoading">
-            <summary>
-            Gets or sets a value indicating whether the node is loading data
-            </summary>
-        </member>
-        <member name="P:FC.GEPluginCtrls.KmlTreeViewNode.KmlUrl">
-            <summary>
-            Gets the url of the underlying kml object.
-            </summary>
-            <remarks>
-            The url is obtained via kmlHelpers which adds support for legacy kml spcifications.
-            </remarks>
-        </member>
-        <member name="P:FC.GEPluginCtrls.KmlTreeViewNode.KmlListStyle">
-            <summary>
-            Gets the list style of the underlying kml object. Default is ListItemStyle.Check
-            </summary>
-        </member>
-        <member name="P:FC.GEPluginCtrls.KmlTreeViewNode.ApiObjectVisible">
-            <summary>
-            Gets or sets a value indicating whether the node is cheked and the kml object is visible
-            </summary>
+            <param name="instance">The GEWebBrowser instance</param>
         </member>
         <member name="T:FC.GEPluginCtrls.Geo.Coordinate">
             <summary>
@@ -1314,158 +564,6 @@
             <summary>
             Gets a value indicating whether the Coordinate is Three Dimensional
             </summary>
-        </member>
-        <member name="T:FC.GEPluginCtrls.GEHelpers">
-            <summary>
-            This class provides some basic Google Earth plugin helpers functions.
-            Interfaces whose names begin with GE allow for programmatic access to core plugin functionality and other miscellaneous options.
-            It is based on the "GEHelpers javasctipt library" by Roman Nurik
-            See: http://earth-api-samples.googlecode.com/svn/trunk/lib/geplugin-helpers.js
-            </summary>
-        </member>
-        <member name="M:FC.GEPluginCtrls.GEHelpers.AddFeaturesToPlugin(System.Object,System.Object)">
-            <summary>
-            This is a simple "ge.getFeatures().appendChild(kml)" wrapper
-            </summary>
-            <param name="ge">the plugin instance to add the features to</param>
-            <param name="kml">the features to add</param>
-            <exception cref="T:System.ArgumentException">Throws an exception if ge is not an instance of GEPlugin.</exception>
-        </member>
-        <member name="M:FC.GEPluginCtrls.GEHelpers.EnableLayer(System.Object,FC.GEPluginCtrls.Layer,System.Boolean)">
-            <summary>
-            Enables or disables a plugin layer - wrapper for ge.getLayerRoot().enableLayerById()
-            </summary>
-            <param name="ge">The plugin instance</param>
-            <param name="layer">The id of the layer to work with</param>
-            <param name="value">True turns the layer on, false off</param>
-        </member>
-        <member name="M:FC.GEPluginCtrls.GEHelpers.GetElementById(System.Object,System.String)">
-            <summary>
-            Get an element by ID - wrapper for ge.getElementById()
-            </summary>
-            <param name="ge">The plugin instance</param>
-            <param name="id">The id feature to find</param>
-            <returns>The feature specified by the ID parameter if it exists</returns>
-        </member>
-        <member name="M:FC.GEPluginCtrls.GEHelpers.FlyToObject(System.Object,System.Object,System.Boolean,System.Double,System.Double,System.Double)">
-            <summary>
-            Attempts to set the view of the plugin to the given api object 
-            </summary>
-            <param name="ge">the plugin</param>
-            <param name="feature">the api object</param>
-            <param name="boundsFallback">Optionally set whether to fallback to the bounds method</param>
-            <param name="aspectRatio">Optional aspect ratio</param>
-            <param name="defaultRange">Optional default range</param>
-            <param name="scaleRange">Optional scale range</param>
-        </member>
-        <member name="M:FC.GEPluginCtrls.GEHelpers.GetAllFeaturesKml(System.Object)">
-            <summary>
-            Gets the Kml of all the features in the plug-in
-            </summary>
-            <param name="ge">The plugin</param>
-            <returns>String of all the Kml from the plugin - or an empty string</returns>
-        </member>
-        <member name="M:FC.GEPluginCtrls.GEHelpers.GetCurrentViewAsPoint(System.Object)">
-            <summary>
-            Get the current pluin view as a point object
-            </summary>
-            <param name="ge">the plugin</param>
-            <returns>Point set to the current view (or false)</returns>
-        </member>
-        <member name="M:FC.GEPluginCtrls.GEHelpers.GetTypeFromWrapper(System.Object)">
-            <summary>
-            Depreciated: now the dynamic type is used and getType can be called directly.
-            Gets the type of an active scripting object from a generic runtime callable wrapper.
-            This method attempts to invoke the member 'getType' on the given object.
-            </summary>
-            <param name="wrapper">The com object wrapper</param>
-            <returns>The name of the type, or an empty string on failure</returns>
-        </member>
-        <member name="M:FC.GEPluginCtrls.GEHelpers.GetApiType(System.Object)">
-            <summary>
-            Gets the ApiType of a given <paramref name="feature">feature</paramref>
-            </summary>
-            <param name="feature">The feature to get the type of</param>
-            <returns>
-            The type of the <paramref name="feature">feature</paramref> or 'ApiType.None'.
-            </returns>
-        </member>
-        <member name="M:FC.GEPluginCtrls.GEHelpers.IsGE(System.Object)">
-            <summary>
-            Checks if the given object in an RCW is of the type GEPlugin
-            </summary>
-            <param name="feature">The object to check</param>
-            <returns>true if the object is of the type GEPlugin </returns>
-        </member>
-        <member name="M:FC.GEPluginCtrls.GEHelpers.IsApiType(System.Object,FC.GEPluginCtrls.ApiType)">
-            <summary>
-            Checks if a given <paramref name="feature">feature</paramref>
-            is of a given type <paramref name="type">type</paramref>
-            </summary>
-            <param name="feature">The feature to test</param>
-            <param name="type">The type to check</param>
-            <returns>
-            True if the <paramref name="feature">feature</paramref>
-            is the given <paramref name="type">type</paramref>
-            </returns>
-        </member>
-        <member name="M:FC.GEPluginCtrls.GEHelpers.IsUri(System.String,System.UriKind)">
-            <summary>
-            Checks if a given string <paramref name="input"/> is a valid url
-            of the given <paramref name="kind"/>
-            </summary>
-            <param name="input">the string to check</param>
-            <param name="kind">the kind of uri to check for</param>
-            <returns>true if the string is a uri</returns>
-        </member>
-        <member name="M:FC.GEPluginCtrls.GEHelpers.OpenFeatureBalloon(System.Object,System.Object,System.Boolean,System.Int32,System.Int32,System.Int32,System.Int32,System.Boolean)">
-            <summary>
-            Opens the balloon for the given feature in the plugin using OpenFeatureBalloon()
-            </summary>
-            <param name="ge">the plugin instance</param>
-            <param name="feature">the feature to open a balloon for</param>
-            <param name="useUnsafeHtml">Optional setting to use getBalloonHtmlUnsafe, default is false</param>
-            <param name="minWidth">Optional minimum balloon width, default is 100</param>
-            <param name="minHeight">Optional minimum balloon height, default is 100</param>
-            <param name="maxWidth">Optional maximum balloon width, default is 800</param>
-            <param name="maxHeight">Optional maximum balloon height, default is 600</param>
-            <param name="setBalloon">Optionally set the balloon to be the current in the plugin</param>
-            <returns>The feature balloon or null</returns>
-        </member>
-        <member name="M:FC.GEPluginCtrls.GEHelpers.RemoveAllFeatures(System.Object)">
-            <summary>
-            Remove all features from the plugin 
-            </summary>
-            <param name="ge">The plugin instance</param>
-        </member>
-        <member name="M:FC.GEPluginCtrls.GEHelpers.RemoveFeatureById(System.Object,System.String)">
-            <summary>
-            Remove a feature from the plug-in based on the feature ID
-            </summary>
-            <param name="ge">The plugin instance</param>
-            <param name="id">The id of the feature to remove</param>
-        </member>
-        <member name="M:FC.GEPluginCtrls.GEHelpers.RemoveFeatureById(System.Object,System.String[])">
-            <summary>
-            Remove a features from the plug-in based on the feature IDs
-            </summary>
-            <param name="ge">The plugin instance</param>
-            <param name="ids">The ids of the features to remove</param>
-        </member>
-        <member name="M:FC.GEPluginCtrls.GEHelpers.ShowCurrentViewInMaps(System.Object)">
-            <summary>
-            Displays the current plugin view in Google Maps using the default system browser
-            </summary>
-            <param name="ge">The plugin instance</param>
-        </member>
-        <member name="M:FC.GEPluginCtrls.GEHelpers.ToggleMediaPlayer(System.Object,System.Object,System.Boolean)">
-            <summary>
-            Toggles any 'media player' associated with a particular Kml type represented by a treenode.
-            So far this includes KmlTours (GETourPlayer) and KmlPhotoOverlays (GEPhotoOverlayViewer)
-            </summary>
-            <param name="ge">The plugin instance</param>
-            <param name="feature">The feature to check</param>
-            <param name="visible">Vaule indicating whether the player should be visible or not.</param>
         </member>
         <member name="T:FC.GEPluginCtrls.ListItemStyle">
             <summary>
@@ -2133,258 +1231,6 @@
             The small navigation control type, used with GENavigationControl.setControlType().
             </summary>
         </member>
-        <member name="T:FC.GEPluginCtrls.KmlHelpers">
-            <summary>
-            This class provides basic Kml helper methods
-            </summary>
-        </member>
-        <member name="M:FC.GEPluginCtrls.KmlHelpers.ComputeBounds(System.Object)">
-            <summary>
-            Computes the bounding box for the given object.
-            Note that this method walks the object's DOM, so may have poor performance for large objects.
-            </summary>
-            <param name="kmlFeature">{KmlFeature|KmlGeometry} object The feature or geometry whose bounds should be computed</param>
-            <returns>A bounds object based on the <paramref name="kmlFeature"/> (or an empty bounds object)</returns>
-            <remarks>
-            Based on the methods at:
-            http://code.google.com/p/earth-api-utility-library/source/browse/trunk/extensions/src/dom/utils.js
-            </remarks>
-        </member>
-        <member name="M:FC.GEPluginCtrls.KmlHelpers.CreateBoundsView(System.Object,FC.GEPluginCtrls.Geo.Bounds,System.Double,System.Double,System.Double)">
-            <summary>
-            Creates a kmlLookAt from a Bounds object.
-            </summary>
-            <param name="ge">the plugin</param>
-            <param name="bounds">the bounds object to create the view of</param>
-            <param name="aspectRatio">Optional aspect ratio</param>
-            <param name="defaultRange">Optional default range</param>
-            <param name="scaleRange">Optional scale range</param>
-            <returns>A KmlLookAt based on the <paramref name="bounds"/> (or null)</returns>
-        </member>
-        <member name="M:FC.GEPluginCtrls.KmlHelpers.CreatePlacemark(System.Object,System.String,System.Double,System.Double,System.Double,FC.GEPluginCtrls.AltitudeMode,System.String,System.String,System.Boolean)">
-            <summary>
-            Creates a kml placemark
-            </summary>
-            <param name="ge">The plugin instance</param>
-            <param name="id">Optional placemark Id. Default is empty</param>
-            <param name="latitude">The placemark latitude in decimal degrees</param>
-            <param name="longitude">The placemark longitude in decimal degrees</param>
-            <param name="altitude">Optional placemark altitude in metres. Default is 0</param>
-            <param name="altitudeMode">Optional altitudeMode. Default is AltitudeMode.RelativeToGround</param>
-            <param name="name">Optional name of the placemark. Default is empty</param>
-            <param name="description">Optional placemark description text. Default is empty</param>
-            <param name="addFeature">Optionally adds the placemark directly to the plugin. Default is true</param>
-            <returns>A placemark (or null)</returns>
-        </member>
-        <member name="M:FC.GEPluginCtrls.KmlHelpers.CreatePlacemark(System.Object,FC.GEPluginCtrls.Geo.Coordinate,System.String,System.String,System.String,System.Boolean)">
-            <summary>
-            Creates a kml placemark
-            </summary>
-            <param name="ge">The plugin instance</param>
-            <param name="coordinate">A Coordinate to use as the placemarks location</param>
-            <param name="id">Optional placemark Id. Default is empty</param>
-            <param name="name">Optional name of the placemark. Default is empty</param>
-            <param name="description">Optional placemark description text. Default is empty</param>
-            <param name="addFeature">Optionally adds the placemark directly to the plugin. Default is true</param>
-            <returns>A placemark (or null)</returns>
-        </member>
-        <member name="M:FC.GEPluginCtrls.KmlHelpers.CreatePoint(System.Object,System.String,System.Double,System.Double,System.Double,FC.GEPluginCtrls.AltitudeMode)">
-            <summary>
-            Creates a kml point
-            </summary>
-            <param name="ge">The plugin instance</param>
-            <param name="id">Optional placemark Id. Default is empty</param>
-            <param name="latitude">The placemark latitude in decimal degrees</param>
-            <param name="longitude">The placemark longitude in decimal degrees</param>
-            <param name="altitude">Optional placemark altitude in metres. Default is 0</param>
-            <param name="altitudeMode">Optional altitudeMode. Default is AltitudeMode.RelativeToGround</param>
-            <returns>A Kml point (or null)</returns>
-        </member>
-        <member name="M:FC.GEPluginCtrls.KmlHelpers.CreatePoint(System.Object,FC.GEPluginCtrls.Geo.Coordinate,System.String)">
-            <summary>
-            Creates a kml point from a Coordinate
-            </summary>
-            <param name="ge">The plugin instance</param>
-            <param name="coordinate">The Coordinate to base the point on</param>
-            <param name="id">Optional point Id. Default is empty</param>
-            <returns>A kml point (or null)</returns>
-        </member>
-        <member name="M:FC.GEPluginCtrls.KmlHelpers.CreateHtmlStringBalloon(System.Object,System.String,System.Int32,System.Int32,System.Int32,System.Int32,System.Boolean,System.Object,System.Boolean,System.String,System.String)">
-            <summary>
-            Creates an Html String Balloon
-            </summary>
-            <param name="ge">The plugin instance</param>
-            <param name="html">The balloon content html string</param>
-            <param name="minWidth">Optional minimum balloon width, default is 100</param>
-            <param name="minHeight">Optional minimum balloon height, default is 100</param>
-            <param name="maxWidth">Optional maximum balloon width, default is 800</param>
-            <param name="maxHeight">Optional maximum balloon height, default is 600</param>
-            <param name="setBalloon">Optionally set the balloon to be the current in the plugin</param>
-            <param name="feature">Optionally associate the balloon with a feature</param>
-            <param name="closeButtonEnabled">Optionally display a closed button on the balloon, default is true</param>
-            <param name="backgroundColor">Optionally set the balloon backgroundColor in the #rrggbb format, default #FFFFFF</param>
-            <param name="foregroundColor">Optionally set the balloon backgroundColor in the #rrggbb format, default #000000</param>
-            <returns>A HtmlStringBalloon object (or null)</returns>
-        </member>
-        <member name="M:FC.GEPluginCtrls.KmlHelpers.CreateLineString(System.Object,System.Object,System.Object,System.String,System.Boolean,System.Boolean,System.Int32,FC.GEPluginCtrls.KmlColor)">
-            <summary>
-            Draws a line string between the given placemarks or points
-            </summary>
-            <param name="ge">The plugin instance</param>
-            <param name="start">The first placemark or point</param>
-            <param name="end">The second placemark or point</param>
-            <param name="id">Optional ID of the linestring placemark. Default is empty</param>
-            <param name="tessellate">Optionally sets tessellation for the linestring. Default is true</param>
-            <param name="addFeature">Optionally adds the linestring directly to the plugin. Default is true</param>
-            <param name="width">Optional linestring-width, default is 1</param>
-            <param name="color">Optional KmlColor, default is white/opaque</param>
-            <returns>A linestring placemark (or null)</returns>
-        </member>
-        <member name="M:FC.GEPluginCtrls.KmlHelpers.CreateLineString(System.Object,System.Collections.Generic.IList{FC.GEPluginCtrls.Geo.Coordinate},System.String,System.Boolean,System.Boolean,System.Int32,FC.GEPluginCtrls.KmlColor)">
-            <summary>
-            Draws a line string between the given coordinates
-            </summary>
-            <param name="ge">The plugin instance</param>
-            <param name="coordinates">List of points</param>
-            <param name="id">Optional ID of the linestring placemark. Default is empty</param>
-            <param name="tessellate">Optionally sets tessellation for the linestring. Default is true</param>
-            <param name="addFeature">Optionally adds the linestring directly to the plugin. Default is true</param>
-            <param name="width">Optional linestring-width, default is 1</param>
-            <param name="color">Optional KmlColor, default is white/opaque</param>
-            <returns>A linestring placemark (or null)</returns>
-        </member>
-        <member name="M:FC.GEPluginCtrls.KmlHelpers.ToKmlColor(System.Drawing.Color,System.Double)">
-            <summary>
-            Converts a System.Drawing.Color into a KmlColor
-            </summary>
-            <param name="color">A color to base the KmlColor on</param>
-            <param name="alpha">Optional alpha value in the range [0-1].
-            Where 0 is fully transparant and 1 is fully opaque. Default value is 1</param>
-            <returns>A Kml color object</returns>
-        </member>
-        <member name="M:FC.GEPluginCtrls.KmlHelpers.ToKmlColorString(System.Drawing.Color,System.Double)">
-            <summary>
-            Converts a System.Drawing.Color into a KmlColor string
-            </summary>
-            <param name="color">A color to base the KmlColor on</param>
-            <param name="alpha">Optional alpha value in the range [0-1].
-            Where 0 is fully transparant and 1 is fully opaque. Default value is 1</param>
-            <returns>A Kml color string in the aabbggrr format</returns>
-        </member>
-        <member name="M:FC.GEPluginCtrls.KmlHelpers.CreateLookAt(System.Object,System.Double,System.Double,System.String,System.Double,FC.GEPluginCtrls.AltitudeMode,System.Double,System.Double,System.Double,System.Boolean)">
-            <summary>
-            Look at the given coordinates
-            </summary>
-            <param name="ge">the plugin</param>
-            <param name="latitude">latitude in decimal degrees</param>
-            <param name="longitude">longitude in decimal degrees</param>
-            <param name="id">Optional LookAt Id. Default is empty</param>
-            <param name="altitude">Optional altitude. Default is 0</param>
-            <param name="altitudeMode">Optional altitudeMode. Default is AltitudeMode.RelativeToGround</param>
-            <param name="heading">Optional heading in degrees. Default is 0 (north)</param>
-            <param name="tilt">Optional tilt in degrees. Default is 0</param>
-            <param name="range">Optional range in metres. Default is 1000</param>
-            <param name="setView">Optional set the current view to the lookAt</param>
-            <returns>a lookat object (or null)</returns>
-        </member>
-        <member name="M:FC.GEPluginCtrls.KmlHelpers.CreateStyle(System.Object,System.String)">
-            <summary>
-            Creates a style that can be referenced by StyleMaps and features.
-            </summary>
-            <param name="ge">The plugin instance</param>
-            <param name="id">Optional style Id. Default is empty</param>
-            <returns></returns>
-        </member>
-        <member name="M:FC.GEPluginCtrls.KmlHelpers.GetExtendedData(System.Object)">
-            <summary>
-            Gives access to untyped data/value pairs using the basic Data element
-            See: http://code.google.com/apis/kml/documentation/kmlreference.html#extendeddata
-            </summary>
-            <param name="kmlFeature">feature to get data from</param>
-            <returns>A list of key value pairs</returns>
-        </member>
-        <member name="M:FC.GEPluginCtrls.KmlHelpers.GetElementsByTagName(System.Object,System.String)">
-            <summary>
-            Returns an System.Xml.XmlNodeList containing a list of all descendant elements
-            that match the specified <paramref name="tagName"/>.
-            </summary>
-            <param name="kmlFeature">
-            The Kml feature on which to check for nodes matching the <paramref name="tagName"/>
-            </param>
-            <param name="tagName">
-            The qualified name to match.
-            It is matched against the Name property of the matching node.
-            The special value "*" matches all tags
-            </param>
-            <returns>
-            An System.Xml.XmlNodeList containing a list of all matching nodes.
-            If no nodes match name, the returned collection will be empty.
-            </returns>
-        </member>
-        <member name="M:FC.GEPluginCtrls.KmlHelpers.GetUrl(System.Object)">
-            <summary>
-             Gives access to the url element in pre KML Release 2.1 documents
-             This allows the controls to work with legacy Kml formats
-            </summary>
-            <param name="kmlFeature">The network link to look for a url in</param>
-            <returns>A url from the feature or null</returns>
-            <remarks>This method is used by <see cref="T:FC.GEPluginCtrls.KmlTreeView"/> for legacy kml support</remarks>
-            <example>string url = KmlHelpers.GetUrl(kmlObject);</example>
-        </member>
-        <member name="M:FC.GEPluginCtrls.KmlHelpers.GetListItemType(System.Object)">
-            <summary>
-            Wrapper for getOwnerDocument().getComputedStyle().getListStyle().getListItemType()
-            See: 
-            </summary>
-            <param name="kmlFeature">The feature to find the list item type of</param>
-            <returns>The corresponding ListItem type <see cref="T:FC.GEPluginCtrls.ListItemStyle"/></returns>
-            <remarks>This method is used by <see cref="T:FC.GEPluginCtrls.KmlTreeView"/> to build the nodes</remarks>
-            <example>Example: KmlHelpers.GetListItemType(kmlFeature)</example>
-        </member>
-        <member name="M:FC.GEPluginCtrls.KmlHelpers.GetChildNodes(System.Object)">
-            <summary>
-            Gets the child nodes from a kml feature. 
-            Basically a wrapper for feature.getFeatures().getChildNodes();
-            </summary>
-            <param name="feature">The feature to get the children from</param>
-            <returns>A kml object contatining the child nodes, or null if the feature has no children or on any error.</returns>
-        </member>
-        <member name="M:FC.GEPluginCtrls.KmlHelpers.HasChildNodes(System.Object)">
-            <summary>
-            Tests if a given kml feature has child nodes
-            </summary>
-            <param name="feature">The feature to check</param>
-            <returns>True if the feature has children</returns>
-        </member>
-        <member name="M:FC.GEPluginCtrls.KmlHelpers.IsKmlContainer(System.Object)">
-            <summary>
-            Tests if a given kml feature is a Kml container
-            </summary>
-            <param name="feature">The feature to check</param>
-            <returns>True if the feature is a Kml container</returns>
-        </member>
-        <member name="M:FC.GEPluginCtrls.KmlHelpers.SetBoundsView(System.Object,FC.GEPluginCtrls.Geo.Bounds,System.Double,System.Double,System.Double)">
-            <summary>
-            Sets a Bounds object to the current plugin view
-            </summary>
-            <param name="ge">the plugin</param>
-            <param name="bounds">the bounds object to create the view of</param>
-            <param name="aspectRatio">Optional aspect ratio</param>
-            <param name="defaultRange">Optional default range</param>
-            <param name="scaleRange">Optional scale range</param>
-        </member>
-        <member name="M:FC.GEPluginCtrls.KmlHelpers.WalkKmlDom(System.Object,System.Action{System.Object},System.Boolean,System.Boolean)">
-            <summary>
-            Based on kmldomwalk.js 
-            see: http://code.google.com/p/earth-api-samples/source/browse/trunk/lib/kmldomwalk.js
-            </summary>
-            <param name="feature">The kml object to parse</param>
-            <param name="callback">A delegate action, each node visited will be passed to this as the single parameter</param>
-            <param name="walkFeatures">Optionally walk features, default is true</param>
-            <param name="walkGeometries">Optionally walk geometries, default is false</param>
-            <remarks>This method is used by <see cref="T:FC.GEPluginCtrls.KmlTreeView"/> to build the nodes</remarks>
-            <example>KmlHelpers.WalkKmlDom(kml, (Action dynamic)(x =&gt; { /* each x in the dom */}));</example>
-        </member>
         <member name="T:FC.GEPluginCtrls.GEEventArgs">
             <summary>
             Custom event arguments 
@@ -2751,411 +1597,6 @@
             (i.e. the elevation of the seafloor at the location).
             </summary>
         </member>
-        <member name="T:FC.GEPluginCtrls.GEToolStrip">
-            <summary>
-            The GEToolStrip provides a quick way to access and set the plugin options
-            </summary>
-            <summary>
-            Designer file
-            </summary>
-        </member>
-        <member name="F:FC.GEPluginCtrls.GEToolStrip.browser">
-            <summary>
-            An instance of the current browser
-            </summary>
-        </member>
-        <member name="F:FC.GEPluginCtrls.GEToolStrip.options">
-            <summary>
-            An instance of the options wrapper class
-            </summary>
-        </member>
-        <member name="F:FC.GEPluginCtrls.GEToolStrip.control">
-            <summary>
-            The plugin navigation cotrol 
-            </summary>
-        </member>
-        <member name="F:FC.GEPluginCtrls.GEToolStrip.navigationItemsVisible">
-            <summary>
-            Indicates whether the navigation items are visible
-            </summary>
-        </member>
-        <member name="M:FC.GEPluginCtrls.GEToolStrip.#ctor">
-            <summary>
-            Initializes a new instance of the GEToolStrip class.
-            </summary>
-        </member>
-        <member name="M:FC.GEPluginCtrls.GEToolStrip.AddAutoCompleteSuggestions(System.String[])">
-            <summary>
-            Adds multiple entries to the Auto Compleate suggestion list
-            </summary>
-            <param name="suggestions">The suggestions to be entered</param>
-            <example>Example: GEToolStrip.AddAutoCompleteSuggestions(new string[] { "London", "Paris", "Rome" });</example>
-        </member>
-        <member name="M:FC.GEPluginCtrls.GEToolStrip.AddAutoCompleteSuggestions(System.String)">
-            <summary>
-            Adds an entry to the Auto Compleate suggestion list
-            </summary>
-            <param name="suggestion">The suggestion entry</param>
-            <example>Example: GEToolStrip.AddAutoCompleteSuggestions("London");</example>
-        </member>
-        <member name="M:FC.GEPluginCtrls.GEToolStrip.ClearAutoCompleteSuggestions">
-            <summary>
-            Removes all entries from the Auto Compleate suggestion list
-            </summary>
-            <example>Example: GEToolStrip.ClearAutoCompleteSuggestions()</example>
-        </member>
-        <member name="M:FC.GEPluginCtrls.GEToolStrip.SetBrowserInstance(FC.GEPluginCtrls.GEWebBrowser)">
-            <summary>
-            Set the browser instance for the control to work with
-            </summary>
-            <param name="instance">The GEWebBrowser instance</param>
-            <example>Example: GEToolStrip.SetBrowserInstance(GEWebBrowser)</example>
-        </member>
-        <member name="M:FC.GEPluginCtrls.GEToolStrip.ResetToolStripDefaults">
-            <summary>
-            Resets the toolstrips menu items to match the default initialization state of the plug-in.
-            </summary>
-        </member>
-        <member name="M:FC.GEPluginCtrls.GEToolStrip.SynchronizeOptions">
-            <summary>
-            Force the plug-in to confom to the tool-strip settings
-            </summary>
-        </member>
-        <member name="M:FC.GEPluginCtrls.GEToolStrip.BuildLanguageOptions">
-            <summary>
-            Builds the language combobox options from the Languages class
-            </summary>
-        </member>
-        <member name="M:FC.GEPluginCtrls.GEToolStrip.NavigationTextBox_KeyUp(System.Object,System.Windows.Forms.KeyEventArgs)">
-            <summary>
-            Called when the KeyUp event is rasied in the navigation text box
-            </summary>
-            <param name="sender">The object that raised the event.</param>
-            <param name="e">Event arguments.</param>
-        </member>
-        <member name="M:FC.GEPluginCtrls.GEToolStrip.NavigationButton_Click(System.Object,System.EventArgs)">
-            <summary>
-            Called when the 'go' navigation button is clicked
-            </summary>
-            <param name="sender">The object that raised the event.</param>
-            <param name="e">Event arguments.</param>
-        </member>
-        <member name="M:FC.GEPluginCtrls.GEToolStrip.RefreshButton_Click(System.Object,System.EventArgs)">
-            <summary>
-            Called when the refresh button is clicked
-            </summary>
-            <param name="sender">The object that raised the event.</param>
-            <param name="e">Event arguments.</param>
-        </member>
-        <member name="M:FC.GEPluginCtrls.GEToolStrip.LayersItem_Clicked(System.Object,System.EventArgs)">
-            <summary>
-            Called when an item in the layers menu is clicked 
-            </summary>
-            <param name="sender">The object that raised the event.</param>
-            <param name="e">Event arguments.</param>
-        </member>
-        <member name="M:FC.GEPluginCtrls.GEToolStrip.OptionsItem_Clicked(System.Object,System.EventArgs)">
-            <summary>
-            Called when an item in the options menu is clicked 
-            </summary>
-            <param name="sender">The object that raised the event.</param>
-            <param name="e">Event arguments.</param>
-        </member>
-        <member name="M:FC.GEPluginCtrls.GEToolStrip.ViewItem_Clicked(System.Object,System.EventArgs)">
-            <summary>
-            Called when an item in the view menu is clicked 
-            </summary>
-            <param name="sender">The object that raised the event.</param>
-            <param name="e">Event arguments.</param>
-        </member>
-        <member name="M:FC.GEPluginCtrls.GEToolStrip.ImageryItem_Clicked(System.Object,System.EventArgs)">
-            <summary>
-            Called when an item in the imagery menu is clicked 
-            </summary>
-            <param name="sender">The object that raised the event.</param>
-            <param name="e">Event arguments.</param>
-        </member>
-        <member name="M:FC.GEPluginCtrls.GEToolStrip.ScreenGrabButton_Click(System.Object,System.EventArgs)">
-            <summary>
-            Called when the Screen grab button is clicked 
-            </summary>
-            <param name="sender">The object that raised the event.</param>
-            <param name="e">Event arguments.</param>
-        </member>
-        <member name="M:FC.GEPluginCtrls.GEToolStrip.ViewInMapsButton_Click(System.Object,System.EventArgs)">
-            <summary>
-            Called when the view in maps button is clicked
-            </summary>
-            <param name="sender">The object that raised the event.</param>
-            <param name="e">Event arguments.</param>
-        </member>
-        <member name="M:FC.GEPluginCtrls.GEToolStrip.GEToolStrip_Layout(System.Object,System.Windows.Forms.LayoutEventArgs)">
-            <summary>
-            Called when the tool strip layout changes
-            </summary>
-            <param name="sender">The object that raised the event.</param>
-            <param name="e">Event arguments.</param>
-        </member>
-        <member name="M:FC.GEPluginCtrls.GEToolStrip.LanguageComboBox_SelectedIndexChanged(System.Object,System.EventArgs)">
-            <summary>
-            Called whenever the language combobox selected index is changed
-            </summary>
-            <param name="sender">The object that raised the event.</param>
-            <param name="e">Event arguments.</param>
-        </member>
-        <member name="F:FC.GEPluginCtrls.GEToolStrip.components">
-            <summary>
-            Required designer variable.
-            </summary>
-        </member>
-        <member name="F:FC.GEPluginCtrls.GEToolStrip.navigationTextBox">
-            <summary>
-            The navigation text box
-            </summary>
-        </member>
-        <member name="F:FC.GEPluginCtrls.GEToolStrip.navigationTextBoxStringCollection">
-            <summary>
-            The string collection of entered terms in the navigationTextBox
-            </summary>
-        </member>
-        <member name="F:FC.GEPluginCtrls.GEToolStrip.submitButton">
-            <summary>
-            The navigation 'go' button
-            </summary>
-        </member>
-        <member name="F:FC.GEPluginCtrls.GEToolStrip.navigationSeparator">
-            <summary>
-            The naviagtion seperator
-            </summary>
-        </member>
-        <member name="F:FC.GEPluginCtrls.GEToolStrip.viewDropDownButton">
-            <summary>
-            The view drop down button
-            </summary>
-        </member>
-        <member name="F:FC.GEPluginCtrls.GEToolStrip.skyMenuItem">
-            <summary>
-            The sky menu item
-            </summary>
-        </member>
-        <member name="F:FC.GEPluginCtrls.GEToolStrip.sunMenuItem">
-            <summary>
-            The sun menu item
-            </summary>
-        </member>
-        <member name="F:FC.GEPluginCtrls.GEToolStrip.historyMenuItem">
-            <summary>
-            The history menu item
-            </summary>
-        </member>
-        <member name="F:FC.GEPluginCtrls.GEToolStrip.optionsDropDownButton">
-            <summary>
-            The options drop down button
-            </summary>
-        </member>
-        <member name="F:FC.GEPluginCtrls.GEToolStrip.bordersMenuItem">
-            <summary>
-            The borders menu item
-            </summary>
-        </member>
-        <member name="F:FC.GEPluginCtrls.GEToolStrip.buildingsMenuItem">
-            <summary>
-            The buildings menu item
-            </summary>
-        </member>
-        <member name="F:FC.GEPluginCtrls.GEToolStrip.buildingsGreyMenuItem">
-            <summary>
-            The low-res buildings menu item
-            </summary>
-        </member>
-        <member name="F:FC.GEPluginCtrls.GEToolStrip.roadsMenuItem">
-            <summary>
-            The roads menu item
-            </summary>
-        </member>
-        <member name="F:FC.GEPluginCtrls.GEToolStrip.terrainMenuItem">
-            <summary>
-            The terrain menu item
-            </summary>
-        </member>
-        <member name="F:FC.GEPluginCtrls.GEToolStrip.treesMenuItem">
-            <summary>
-            The trees menu item
-            </summary>
-        </member>
-        <member name="F:FC.GEPluginCtrls.GEToolStrip.layersDropDownButton">
-            <summary>
-            The layers menu item
-            </summary>
-        </member>
-        <member name="F:FC.GEPluginCtrls.GEToolStrip.controlsMenuItem">
-            <summary>
-            The controls menu item
-            </summary>
-        </member>
-        <member name="F:FC.GEPluginCtrls.GEToolStrip.imperialUnitsMenuItem">
-            <summary>
-            The imperial units menu item
-            </summary>
-        </member>
-        <member name="F:FC.GEPluginCtrls.GEToolStrip.fadeInOutMenuItem">
-            <summary>
-            The new item animation menu item
-            </summary>
-        </member>
-        <member name="F:FC.GEPluginCtrls.GEToolStrip.statusBarMenuItem">
-            <summary>
-            The staus menu item
-            </summary>
-        </member>
-        <member name="F:FC.GEPluginCtrls.GEToolStrip.gridMenuItem">
-            <summary>
-            The grid menu item
-            </summary>
-        </member>
-        <member name="F:FC.GEPluginCtrls.GEToolStrip.overviewMapMenuItem">
-            <summary>
-            The overview map menu item
-            </summary>
-        </member>
-        <member name="F:FC.GEPluginCtrls.GEToolStrip.scaleLegendMenuItem">
-            <summary>
-            The scale legend menu item
-            </summary>
-        </member>
-        <member name="F:FC.GEPluginCtrls.GEToolStrip.atmosphereMenuItem">
-            <summary>
-            The atmosphere menu item
-            </summary>
-        </member>
-        <member name="F:FC.GEPluginCtrls.GEToolStrip.imageryDropDownButton">
-            <summary>
-            The imagery drop down button
-            </summary>
-        </member>
-        <member name="F:FC.GEPluginCtrls.GEToolStrip.earthMenuItem">
-            <summary>
-            The earth menu item
-            </summary>
-        </member>
-        <member name="F:FC.GEPluginCtrls.GEToolStrip.marsMenuItem">
-            <summary>
-            The mars menu item
-            </summary>
-        </member>
-        <member name="F:FC.GEPluginCtrls.GEToolStrip.moonMenuItem">
-            <summary>
-            The moon menu item
-            </summary>
-        </member>
-        <member name="F:FC.GEPluginCtrls.GEToolStrip.refreshButton">
-            <summary>
-            The refresh button
-            </summary>
-        </member>
-        <member name="F:FC.GEPluginCtrls.GEToolStrip.imageList1">
-            <summary>
-            The default image list
-            </summary>
-        </member>
-        <member name="F:FC.GEPluginCtrls.GEToolStrip.mouseNavigationMenuItem">
-            <summary>
-            The scale mouse navigation menu item
-            </summary>
-        </member>
-        <member name="F:FC.GEPluginCtrls.GEToolStrip.dropDownSeparator">
-            <summary>
-            The dropDownSeparator seperator
-            </summary>
-        </member>
-        <member name="F:FC.GEPluginCtrls.GEToolStrip.screenGrabButton">
-            <summary>
-            The print screen button
-            </summary>
-        </member>
-        <member name="F:FC.GEPluginCtrls.GEToolStrip.viewInMapsButton">
-            <summary>
-            The view in Maps button
-            </summary>
-        </member>
-        <member name="F:FC.GEPluginCtrls.GEToolStrip.languageSeparator">
-            <summary>
-            The language seperator
-            </summary>
-        </member>
-        <member name="F:FC.GEPluginCtrls.GEToolStrip.languageComboBox">
-            <summary>
-            The language combobox
-            </summary>
-        </member>
-        <member name="F:FC.GEPluginCtrls.GEToolStrip.toolStripItemAlignment">
-            <summary>
-            The tool strip alignment setting
-            </summary>
-        </member>
-        <member name="M:FC.GEPluginCtrls.GEToolStrip.Dispose(System.Boolean)">
-            <summary>
-            Clean up any resources being used.
-            </summary>
-            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
-        </member>
-        <member name="M:FC.GEPluginCtrls.GEToolStrip.InitializeComponent">
-            <summary>
-            Required method for Designer support - do not modify
-            the contents of this method with the code editor.
-            </summary>
-        </member>
-        <member name="P:FC.GEPluginCtrls.GEToolStrip.ShowNavigationItems">
-            <summary>
-            Gets or sets a value indicating whether the navigation items are visible
-            </summary>
-        </member>
-        <member name="P:FC.GEPluginCtrls.GEToolStrip.ShowLayersDropDown">
-            <summary>
-            Gets or sets a value indicating whether the Layers drop down is visible
-            </summary>
-        </member>
-        <member name="P:FC.GEPluginCtrls.GEToolStrip.ShowOptionsDropDown">
-            <summary>
-            Gets or sets a value indicating whether the Options drop down is visible
-            </summary>
-        </member>
-        <member name="P:FC.GEPluginCtrls.GEToolStrip.ShowViewDropDown">
-            <summary>
-            Gets or sets a value indicating whether the View drop down is visible
-            </summary>
-        </member>
-        <member name="P:FC.GEPluginCtrls.GEToolStrip.ShowImageryDropDown">
-            <summary>
-            Gets or sets a value indicating whether the Imagery drop down is visible
-            </summary>
-        </member>
-        <member name="P:FC.GEPluginCtrls.GEToolStrip.ShowScreenGrabButton">
-            <summary>
-            Gets or sets a value indicating whether the screen grab button is visible
-            </summary>
-        </member>
-        <member name="P:FC.GEPluginCtrls.GEToolStrip.ShowViewInMapsButton">
-            <summary>
-            Gets or sets a value indicating whether the view in maps button is visible
-            </summary>
-        </member>
-        <member name="P:FC.GEPluginCtrls.GEToolStrip.ShowLanguageComboBox">
-            <summary>
-            Gets or sets a value indicating whether the language combobox is visible
-            </summary>
-        </member>
-        <member name="P:FC.GEPluginCtrls.GEToolStrip.NavigationAutoCompleteMode">
-            <summary>
-            Gets or sets the AutoCompleteMode of the navigation textbox
-            Default is AutoCompleteMode.Append
-            </summary>
-        </member>
-        <member name="P:FC.GEPluginCtrls.GEToolStrip.ToolStripItemAlignment">
-            <summary>
-            Gets or sets the alignment property of the toolstrip items
-            </summary>
-        </member>
         <member name="T:FC.GEPluginCtrls.GEOptions">
             <summary>
             Wrapper for the GEOptions com object.
@@ -3271,18 +1712,6 @@
             The values passed and returned with an object's properties are always metric.
             Default value is false (metric)
             </summary>
-        </member>
-        <member name="T:FC.GEPluginCtrls.Extensions">
-            <summary>
-            Extension helper methods for the control libray
-            </summary>
-        </member>
-        <member name="M:FC.GEPluginCtrls.Extensions.GetId(FC.GEPluginCtrls.Layer)">
-            <summary>
-            Gets the internal ID for a Layer
-            </summary>
-            <param name="input">Layer type</param>
-            <returns>The layer ID or an empty string</returns>
         </member>
         <member name="T:FC.GEPluginCtrls.Geo.Bounds">
             <summary>
@@ -3486,11 +1915,6 @@
         <member name="F:FC.GEPluginCtrls.External.kmlObjectCache">
             <summary>
             Stores fetched Kml Objects
-            </summary>
-        </member>
-        <member name="M:FC.GEPluginCtrls.External.#ctor">
-            <summary>
-            Initializes a new instance of the External class.
             </summary>
         </member>
         <member name="M:FC.GEPluginCtrls.External.DebugMessage(System.String,System.String)">
@@ -3811,71 +2235,6 @@
             Gets or sets a value indicating whether the server should accept new clients
             </summary>
         </member>
-        <member name="T:FC.GEPluginCtrls.JSFunction">
-            <summary>
-            A collection the names of javascript functions that should be available in the active document.
-            These are wrapper functions to allow access to objects outside the Google Earth Api.
-            </summary>
-            <remarks>
-            This collection can be thought of as a simple kind of an interface for javascipt methods in an active document.
-            That is, any function name listed here should be present in a document that is designed to work with the controls.
-            </remarks>
-        </member>
-        <member name="F:FC.GEPluginCtrls.JSFunction.AddEventListener">
-            <summary>
-            The javascript method name of the google.earth.addEventListener wrapper.
-            </summary>
-        </member>
-        <member name="F:FC.GEPluginCtrls.JSFunction.CreateInstance">
-            <summary>
-            The javascript method name of the google.earth.createInstance wrapper.
-            </summary>
-        </member>
-        <member name="F:FC.GEPluginCtrls.JSFunction.DoGeocode">
-            <summary>
-            The javascript method name of the  GClientGeocoder.getLatLng wrapper.
-            </summary>
-        </member>
-        <member name="F:FC.GEPluginCtrls.JSFunction.Evaluate">
-            <summary>
-            The javascript method name of the eval wrapper.
-            </summary>
-        </member>
-        <member name="F:FC.GEPluginCtrls.JSFunction.Execute">
-            <summary>
-            The javascript method name of the  window.execScript wrapper.
-            </summary>
-        </member>
-        <member name="F:FC.GEPluginCtrls.JSFunction.ExecuteBatch">
-            <summary>
-            The javascript method name of the google.earth.executeBatch wrapper.
-            </summary>
-        </member>
-        <member name="F:FC.GEPluginCtrls.JSFunction.FetchKml">
-            <summary>
-            The javascript method name of the google.earth.fetchKml wrapper.
-            </summary>
-        </member>
-        <member name="F:FC.GEPluginCtrls.JSFunction.GetLanguage">
-            <summary>
-            The javascript method name of the google.earth.getLanguage wrapper.
-            </summary>
-        </member>
-        <member name="F:FC.GEPluginCtrls.JSFunction.IsInstalled">
-            <summary>
-            The javascript method name of the google.earth.isInstalled wrapper.
-            </summary>
-        </member>
-        <member name="F:FC.GEPluginCtrls.JSFunction.RemoveEventListener">
-            <summary>
-            The javascript method name of the google.earth.removeEventListener wrapper.
-            </summary>
-        </member>
-        <member name="F:FC.GEPluginCtrls.JSFunction.SetLanguage">
-            <summary>
-            The javascript method name of the google.earth.setLanguage wrapper.
-            </summary>
-        </member>
         <member name="T:FC.GEPluginCtrls.ViewerOption">
             <summary>
             Enumeration of options for use with <see cref="T:FC.GEPluginCtrls.ViewerOptions"/>
@@ -3975,6 +2334,1642 @@
             <summary>
             Applies the ViewerOptions to the current view.
             </summary>
+        </member>
+        <member name="T:FC.GEPluginCtrls.Languages">
+            <summary>
+            A class to provide the supported language codes
+            Supported language codes are listed in the Google Maps API Coverage document
+            see: http://spreadsheets.google.com/pub?key=p9pdwsai2hDMsLkXsoM05KQ
+            </summary>
+        </member>
+        <member name="M:FC.GEPluginCtrls.Languages.Codes">
+            <summary>
+            Provides a Dictionary of language codes and native names 
+            </summary>
+            <returns>A Dictionary of language codes and native names</returns>
+        </member>
+        <member name="T:FC.GEPluginCtrls.JSFunction">
+            <summary>
+            A collection the names of javascript functions that should be available in the active document.
+            These are wrapper functions to allow access to objects outside the Google Earth Api.
+            </summary>
+            <remarks>
+            This collection can be thought of as a simple kind of an interface for javascipt methods in an active document.
+            That is, any function name listed here should be present in a document that is designed to work with the controls.
+            </remarks>
+        </member>
+        <member name="F:FC.GEPluginCtrls.JSFunction.AddEventListener">
+            <summary>
+            The javascript method name of the google.earth.addEventListener wrapper.
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.JSFunction.CreateInstance">
+            <summary>
+            The javascript method name of the google.earth.createInstance wrapper.
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.JSFunction.DoGeocode">
+            <summary>
+            The javascript method name of the  GClientGeocoder.getLatLng wrapper.
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.JSFunction.Evaluate">
+            <summary>
+            The javascript method name of the eval wrapper.
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.JSFunction.Execute">
+            <summary>
+            The javascript method name of the  window.execScript wrapper.
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.JSFunction.ExecuteBatch">
+            <summary>
+            The javascript method name of the google.earth.executeBatch wrapper.
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.JSFunction.FetchKml">
+            <summary>
+            The javascript method name of the google.earth.fetchKml wrapper.
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.JSFunction.GetLanguage">
+            <summary>
+            The javascript method name of the google.earth.getLanguage wrapper.
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.JSFunction.IsInstalled">
+            <summary>
+            The javascript method name of the google.earth.isInstalled wrapper.
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.JSFunction.RemoveEventListener">
+            <summary>
+            The javascript method name of the google.earth.removeEventListener wrapper.
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.JSFunction.SetLanguage">
+            <summary>
+            The javascript method name of the google.earth.setLanguage wrapper.
+            </summary>
+        </member>
+        <member name="T:FC.GEPluginCtrls.GEWebBrowser">
+            <summary>
+            This browser control holds the Google Earth Plug-in,
+            it also provides wrapper methods to work with the Google.Earth namespace
+            </summary>
+            <summary>
+            Designer file
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.GEWebBrowser.kmlObjectCacheSyncEvents">
+            <summary>
+            Cache of kml event objects
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.GEWebBrowser.external">
+            <summary>
+            External is A COM Visible class that holds all the public methods
+            to be called from javascript. An instance of this is set
+            to the base object's ObjectForScripting property in the constuctor.
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.GEWebBrowser.plugin">
+            <summary>
+            Use the IGEPlugin COM interface. 
+            Equivalent to QueryInterface for COM objects
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.GEWebBrowser.imageryBase">
+            <summary>
+            Current plug-in Imagery database
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.GEWebBrowser.pluginIsReady">
+            <summary>
+            Indicates whether the plug-in is ready to use.
+            </summary>
+        </member>
+        <member name="M:FC.GEPluginCtrls.GEWebBrowser.#ctor">
+            <summary>
+            Initializes a new instance of the GEWebBrowser class.
+            </summary>
+        </member>
+        <member name="M:FC.GEPluginCtrls.GEWebBrowser.KillPlugin">
+            <summary>
+            Kills all running geplugin processes on the system
+            </summary>
+        </member>
+        <member name="M:FC.GEPluginCtrls.GEWebBrowser.AddEventListener(System.Object,FC.GEPluginCtrls.EventId,System.String,System.Boolean)">
+            <summary>
+            Wrapper for the the google.earth.addEventListener method
+            </summary>
+            <param name="feature">The target feature</param>
+            <param name="action">The event Id</param>
+            <param name="callback">Optional, the name of javascript callback function to use, or an anonymous function</param>
+            <param name="useCapture">Optionally use event capture</param>
+            <example>GEWebBrowser.AddEventListener(object, "click", "someFunction");</example>
+            <example>GEWebBrowser.AddEventListener(object, "click", "function(event){alert(event.getType);}");</example>
+        </member>
+        <member name="M:FC.GEPluginCtrls.GEWebBrowser.CreateInstance(FC.GEPluginCtrls.ImageryBase)">
+            <summary>
+            Wrapper for the  google.earth.createInstance method
+            See: http://code.google.com/apis/earth/documentation/reference/google_earth_namespace.html#70288485024d8129dd1c290fb2e5553b
+            </summary>
+            <param name="database">The database name</param>
+            <example>Example: GEWebBrowser.CreateInstance(ImageryBase.Moon);</example>
+        </member>
+        <member name="M:FC.GEPluginCtrls.GEWebBrowser.ExecuteBatch(System.String,System.Object)">
+            <summary>
+            Wrapper for the google.earth.executeBatch method
+            See: http://code.google.com/apis/earth/documentation/reference/google_earth_namespace.html#b26414915202d39cad12bcd5bd99e739
+            Efficiently executes an arbitrary, user-defined function (the batch function),minimizing
+            the amount of overhead incurred during cross-process communication between the browser
+            and Google Earth Plugin. 
+            </summary>
+            <param name="method">The javascript method to execute</param>
+            <param name="context">An optional parmeter to pass to the method</param>
+        </member>
+        <member name="M:FC.GEPluginCtrls.GEWebBrowser.FetchKml(System.String)">
+            <summary>
+            Load a remote kml/kmz file 
+            This function requires a 'twin' LoadKml function in javascript
+            this twin function will call "google.earth.fetchKml"
+            </summary>
+            <param name="url">string path to a kml reasource</param>
+            <example>Example: GEWebBrowser.FetchKml("http://www.site.com/file.kml");</example>
+        </member>
+        <member name="M:FC.GEPluginCtrls.GEWebBrowser.FetchKml(System.Uri)">
+            <summary>
+            Load a remote kml/kmz file 
+            This function requires a 'twin' LoadKml function in javascript
+            this twin function will call "google.earth.fetchKml"
+            </summary>
+            <param name="url">Uri to a kml reasource</param>
+            <example>Example: GEWebBrowser.FetchKml("http://www.site.com/file.kml");</example>
+        </member>
+        <member name="M:FC.GEPluginCtrls.GEWebBrowser.FetchKml(System.String,System.String)">
+            <summary>
+            Asynchronously load a remote kml/kmz file 
+            This function invokes "google.earth.fetchKml"
+            </summary>
+            <param name="url">path to a kml/kmz file</param>
+            <param name="completionCallback">name of javascript callback function to call after fetching completes</param>
+            <example>Example: GEWebBrowser.FetchKml("http://www.site.com/file.kml", "createCallback_(OnKmlLoaded)");</example>
+        </member>
+        <member name="M:FC.GEPluginCtrls.GEWebBrowser.FetchKml(System.Uri,System.String)">
+            <summary>
+            Synchronously load a remote kml/kmz file.
+            The result of the synchronous request is parsed by the plugin and the resultant object is returned. 
+            This function invokes "google.earth.fetchKml"
+            </summary>
+            <param name="url">path to a kml/kmz file</param>
+            <param name="completionCallback">name of javascript callback function to call after fetching completes</param>
+            <example>Example: GEWebBrowser.FetchKml("http://www.site.com/file.kml", "createCallback_(OnKmlLoaded)");</example>
+        </member>
+        <member name="M:FC.GEPluginCtrls.GEWebBrowser.FetchKmlSynchronous(System.String,System.Int32)">
+            <summary>
+            Synchronously load a remote kml/kmz file.
+            The result of the synchronous request is parsed by the plugin and the resultant object is returned. 
+            </summary>
+            <param name="url">path to a kml/kmz file</param>
+            <param name="timeout">time to wait for return in ms</param>
+            <returns>A KmlObject or null.</returns>
+            <example>Example: GEWebBrowser.FetchKmlSynchronous("http://www.site.com/file.kml");</example>
+        </member>
+        <member name="M:FC.GEPluginCtrls.GEWebBrowser.FetchKmlSynchronous(System.Uri,System.Int32)">
+            <summary>
+            Synchronously load a remote kml/kmz file.
+            The result of the synchronous request is parsed by the plugin and the resultant object is returned. 
+            </summary>
+            <param name="url">Uri of a kml/kmz file</param>
+            <param name="timeout">time to wait for return in ms</param>
+            <returns>The kml as a kmlObject</returns>
+            <example>Example: GEWebBrowser.FetchKmlSynchronous("http://www.site.com/file.kml");</example>
+        </member>
+        <member name="M:FC.GEPluginCtrls.GEWebBrowser.FetchAndParse(System.String,System.Int32)">
+            <summary>
+            As FetchKmlSynchronous - but uses a native HttpWebRequest rather than google.earth.fetchKml.
+            The result of the synchronous request is parsed by the plugin and the resultant object is returned.    
+            </summary>
+            <param name="url">path to a kml file</param>
+            <param name="timeout">time to wait for return in ms</param>
+            <returns>A KmlObject or null</returns>
+        </member>
+        <member name="M:FC.GEPluginCtrls.GEWebBrowser.FetchAndParse(System.Uri,System.Int32)">
+            <summary>
+            Same as FetchKmlSynchronous but uses a native HttpWebRequest rather than google.earth.fetchKml.
+            The result of the synchronous request is parsed by the plugin and the resultant object is returned.    
+            </summary>
+            <param name="url">Uri of a kml file</param>
+            <param name="timeout">time to wait for return in ms</param>
+            <returns>A KmlObject or null</returns>
+        </member>
+        <member name="M:FC.GEPluginCtrls.GEWebBrowser.FetchKmlLocal(System.String)">
+            <summary>
+            Loads kml file from the local file system and attempts to parse the data into the plugin.
+            </summary>
+            <param name="path">path to a kml file</param>
+            <returns>A KmlObject or null</returns>
+            <example>Example: GWEebBrower.FetchKml("C:\file.kml");</example>
+        </member>
+        <member name="M:FC.GEPluginCtrls.GEWebBrowser.ParseKml(System.String)">
+            <summary>
+            GEPlugin.parseKml() wrapper
+            Parse a string of KML and return a handle to the root of the KML object structure that was created
+            </summary>
+            <param name="kml">a string of KML to process</param>
+            <returns>The KML object structure that was created</returns>
+        </member>
+        <member name="M:FC.GEPluginCtrls.GEWebBrowser.ParseKmlObject(System.Object)">
+            <summary>
+            Parses a KmlObject and loads it into the plugin.
+            </summary>
+            <param name="kml">kml object to parse</param>
+        </member>
+        <member name="M:FC.GEPluginCtrls.GEWebBrowser.InvokeDoGeocode(System.String)">
+            <summary>
+            Invokes the javascript function 'jsDoGeocode'
+            Automatically flys to the location if one is found for the input
+            </summary>
+            <param name="input">the location to geocode</param>
+            <returns>the KmlPoint object for the geocode, or an empty object</returns>
+            <example>Example: GEWebBrowser.InvokeDoGeocode("London");</example>
+        </member>
+        <member name="M:FC.GEPluginCtrls.GEWebBrowser.InjectJavaScript(System.String)">
+            <summary>
+            Inject a javascript element into the document head
+            </summary>
+            <param name="javaScript">the script code</param>
+            <example>GEWebBrowser.InjectJavascript("var say=function(msg){alert(msg);}");</example>
+        </member>
+        <member name="M:FC.GEPluginCtrls.GEWebBrowser.InvokeJavaScript(System.String)">
+            <summary>
+            Executes a script function defined in the currently loaded document. 
+            </summary>
+            <param name="function">The name of the function to invoke</param>
+            <returns>The result of the evaluated function</returns>
+            <example>Example: GEWebBrowser.InvokeJavascript("say");</example>
+        </member>
+        <member name="M:FC.GEPluginCtrls.GEWebBrowser.InvokeJavaScript(System.String,System.Object[])">
+            <summary>
+            Executes a script function that is defined in the currently loaded document. 
+            </summary>
+            <param name="function">The name of the function to invoke</param>
+            <param name="args">any arguments</param>
+            <returns>The result of the evaluated function</returns>
+            <example>Example: GEWebBrowser.InvokeJavascript("say", new object[] { "hello" });</example>
+        </member>
+        <member name="M:FC.GEPluginCtrls.GEWebBrowser.LoadEmbeddedPlugin">
+            <summary>
+            Load the embedded html document into the browser 
+            </summary>
+        </member>
+        <member name="M:FC.GEPluginCtrls.GEWebBrowser.RemoveEventListener(System.Object,FC.GEPluginCtrls.EventId,System.Boolean)">
+            <summary>
+            Wrapper for the the google.earth.removeEventListener method
+            See: https://developers.google.com/earth/documentation/reference/google_earth_namespace#a4367d554eb492adcafa52925ddbf0c71
+            </summary>
+            <param name="feature">The target feature</param>
+            <param name="action">The event Id</param>
+            <param name="useCapture">Optional, use event capture</param>
+        </member>
+        <member name="M:FC.GEPluginCtrls.GEWebBrowser.ScreenGrab">
+            <summary>
+            Take a 'screen grab' of the current GEWebBrowser view
+            </summary>
+            <returns>bitmap image</returns>
+        </member>
+        <member name="M:FC.GEPluginCtrls.GEWebBrowser.SetLanguage(System.String)">
+            <summary>
+            Set the plugin langauge
+            </summary>
+            <param name="code">The language code to use</param>
+        </member>
+        <member name="M:FC.GEPluginCtrls.GEWebBrowser.Refresh">
+            <summary>
+            Reloads the document currently displayed in the control
+            Overides the default WebBrowser Refresh method
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.GEWebBrowser.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:FC.GEPluginCtrls.GEWebBrowser.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:FC.GEPluginCtrls.GEWebBrowser.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="E:FC.GEPluginCtrls.GEWebBrowser.PluginReady">
+            <summary>
+            Raised when the plugin is ready
+            </summary>
+        </member>
+        <member name="E:FC.GEPluginCtrls.GEWebBrowser.KmlEvent">
+            <summary>
+            Raised when there is a kmlEvent
+            </summary>
+        </member>
+        <member name="E:FC.GEPluginCtrls.GEWebBrowser.KmlLoaded">
+            <summary>
+            Raised when a kml/kmz file has loaded
+            </summary>
+        </member>
+        <member name="E:FC.GEPluginCtrls.GEWebBrowser.ScriptError">
+            <summary>
+            Raised when there is a script error in the document 
+            </summary>
+        </member>
+        <member name="E:FC.GEPluginCtrls.GEWebBrowser.PluginEvent">
+            <summary>
+            Rasied when there is a GEPlugin event
+            </summary>
+        </member>
+        <member name="E:FC.GEPluginCtrls.GEWebBrowser.ViewEvent">
+            <summary>
+            Rasied when there is a viewchangebegin, viewchange or viewchangeend event 
+            </summary>
+        </member>
+        <member name="P:FC.GEPluginCtrls.GEWebBrowser.Plugin">
+            <summary>
+            Gets the plugin instance associated with the control
+            </summary>
+        </member>
+        <member name="P:FC.GEPluginCtrls.GEWebBrowser.ImageryBase">
+            <summary>
+            Gets or sets the current imagery base for the plug-in
+            </summary>
+        </member>
+        <member name="P:FC.GEPluginCtrls.GEWebBrowser.PluginIsReady">
+            <summary>
+            Gets a value indicating whether the plug-in is ready
+            </summary>
+        </member>
+        <member name="P:FC.GEPluginCtrls.GEWebBrowser.RedirectLinksToSystemBrowser">
+            <summary>
+            Gets or sets a value indicating whether to redirect html links to the system browser
+            Default is true, setting this false opens links inside the GEWebBrowser control.
+            </summary>
+        </member>
+        <member name="P:FC.GEPluginCtrls.GEWebBrowser.AllowWebBrowserDrop">
+            <summary>
+            Gets or sets a value indicating whether the  control navigates to documents that are dropped onto it.
+            </summary>
+        </member>
+        <member name="P:FC.GEPluginCtrls.GEWebBrowser.ContextMenuStrip">
+            <summary>
+            Gets or sets the System.Windows.Forms.ContextMenuStrip associated with this control
+            </summary>
+        </member>
+        <member name="P:FC.GEPluginCtrls.GEWebBrowser.ScrollBarsEnabled">
+            <summary>
+            Gets or sets a value indicating whether scroll bars are displayed in the control.
+            </summary>
+        </member>
+        <member name="P:FC.GEPluginCtrls.GEWebBrowser.IsWebBrowserContextMenuEnabled">
+            <summary>
+            Gets or sets a value indicating whether the shortcut menu of the control is enabled.
+            </summary>
+        </member>
+        <member name="P:FC.GEPluginCtrls.GEWebBrowser.WebBrowserShortcutsEnabled">
+            <summary>
+             Gets or sets a value indicating whether keyboard shortcuts are enabled within the control.
+            </summary>
+        </member>
+        <member name="P:FC.GEPluginCtrls.GEWebBrowser.KmlObjectCacheSyncEvents">
+            <summary>
+            Gets thread event handles for IKmlObjects collected.
+            </summary>
+        </member>
+        <member name="T:FC.GEPluginCtrls.GEToolStrip">
+            <summary>
+            Designer file
+            </summary>
+            <summary>
+            The GEToolStrip provides a quick way to access and set the plugin options
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.GEToolStrip.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.GEToolStrip.navigationTextBox">
+            <summary>
+            The navigation text box
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.GEToolStrip.navigationTextBoxStringCollection">
+            <summary>
+            The string collection of entered terms in the navigationTextBox
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.GEToolStrip.submitButton">
+            <summary>
+            The navigation 'go' button
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.GEToolStrip.navigationSeparator">
+            <summary>
+            The naviagtion seperator
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.GEToolStrip.viewDropDownButton">
+            <summary>
+            The view drop down button
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.GEToolStrip.skyMenuItem">
+            <summary>
+            The sky menu item
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.GEToolStrip.sunMenuItem">
+            <summary>
+            The sun menu item
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.GEToolStrip.historyMenuItem">
+            <summary>
+            The history menu item
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.GEToolStrip.optionsDropDownButton">
+            <summary>
+            The options drop down button
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.GEToolStrip.bordersMenuItem">
+            <summary>
+            The borders menu item
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.GEToolStrip.buildingsMenuItem">
+            <summary>
+            The buildings menu item
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.GEToolStrip.buildingsGreyMenuItem">
+            <summary>
+            The low-res buildings menu item
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.GEToolStrip.roadsMenuItem">
+            <summary>
+            The roads menu item
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.GEToolStrip.terrainMenuItem">
+            <summary>
+            The terrain menu item
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.GEToolStrip.treesMenuItem">
+            <summary>
+            The trees menu item
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.GEToolStrip.layersDropDownButton">
+            <summary>
+            The layers menu item
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.GEToolStrip.controlsMenuItem">
+            <summary>
+            The controls menu item
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.GEToolStrip.imperialUnitsMenuItem">
+            <summary>
+            The imperial units menu item
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.GEToolStrip.fadeInOutMenuItem">
+            <summary>
+            The new item animation menu item
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.GEToolStrip.statusBarMenuItem">
+            <summary>
+            The staus menu item
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.GEToolStrip.gridMenuItem">
+            <summary>
+            The grid menu item
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.GEToolStrip.overviewMapMenuItem">
+            <summary>
+            The overview map menu item
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.GEToolStrip.scaleLegendMenuItem">
+            <summary>
+            The scale legend menu item
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.GEToolStrip.atmosphereMenuItem">
+            <summary>
+            The atmosphere menu item
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.GEToolStrip.imageryDropDownButton">
+            <summary>
+            The imagery drop down button
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.GEToolStrip.earthMenuItem">
+            <summary>
+            The earth menu item
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.GEToolStrip.marsMenuItem">
+            <summary>
+            The mars menu item
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.GEToolStrip.moonMenuItem">
+            <summary>
+            The moon menu item
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.GEToolStrip.refreshButton">
+            <summary>
+            The refresh button
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.GEToolStrip.imageList1">
+            <summary>
+            The default image list
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.GEToolStrip.mouseNavigationMenuItem">
+            <summary>
+            The scale mouse navigation menu item
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.GEToolStrip.dropDownSeparator">
+            <summary>
+            The dropDownSeparator seperator
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.GEToolStrip.screenGrabButton">
+            <summary>
+            The print screen button
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.GEToolStrip.viewInMapsButton">
+            <summary>
+            The view in Maps button
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.GEToolStrip.languageSeparator">
+            <summary>
+            The language seperator
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.GEToolStrip.languageComboBox">
+            <summary>
+            The language combobox
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.GEToolStrip.toolStripItemAlignment">
+            <summary>
+            The tool strip alignment setting
+            </summary>
+        </member>
+        <member name="M:FC.GEPluginCtrls.GEToolStrip.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:FC.GEPluginCtrls.GEToolStrip.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.GEToolStrip.browser">
+            <summary>
+            An instance of the current browser
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.GEToolStrip.options">
+            <summary>
+            An instance of the options wrapper class
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.GEToolStrip.control">
+            <summary>
+            The plugin navigation cotrol 
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.GEToolStrip.navigationItemsVisible">
+            <summary>
+            Indicates whether the navigation items are visible
+            </summary>
+        </member>
+        <member name="M:FC.GEPluginCtrls.GEToolStrip.#ctor">
+            <summary>
+            Initializes a new instance of the GEToolStrip class.
+            </summary>
+        </member>
+        <member name="M:FC.GEPluginCtrls.GEToolStrip.AddAutoCompleteSuggestions(System.String[])">
+            <summary>
+            Adds multiple entries to the Auto Compleate suggestion list
+            </summary>
+            <param name="suggestions">The suggestions to be entered</param>
+            <example>Example: GEToolStrip.AddAutoCompleteSuggestions(new string[] { "London", "Paris", "Rome" });</example>
+        </member>
+        <member name="M:FC.GEPluginCtrls.GEToolStrip.AddAutoCompleteSuggestions(System.String)">
+            <summary>
+            Adds an entry to the Auto Compleate suggestion list
+            </summary>
+            <param name="suggestion">The suggestion entry</param>
+            <example>Example: GEToolStrip.AddAutoCompleteSuggestions("London");</example>
+        </member>
+        <member name="M:FC.GEPluginCtrls.GEToolStrip.ClearAutoCompleteSuggestions">
+            <summary>
+            Removes all entries from the Auto Compleate suggestion list
+            </summary>
+            <example>Example: GEToolStrip.ClearAutoCompleteSuggestions()</example>
+        </member>
+        <member name="M:FC.GEPluginCtrls.GEToolStrip.SetBrowserInstance(FC.GEPluginCtrls.GEWebBrowser)">
+            <summary>
+            Set the browser instance for the control to work with
+            </summary>
+            <param name="instance">The GEWebBrowser instance</param>
+            <example>Example: GEToolStrip.SetBrowserInstance(GEWebBrowser)</example>
+        </member>
+        <member name="M:FC.GEPluginCtrls.GEToolStrip.ResetToolStripDefaults">
+            <summary>
+            Resets the toolstrips menu items to match the default initialization state of the plug-in.
+            </summary>
+        </member>
+        <member name="M:FC.GEPluginCtrls.GEToolStrip.SynchronizeOptions">
+            <summary>
+            Force the plug-in to confom to the tool-strip settings
+            </summary>
+        </member>
+        <member name="M:FC.GEPluginCtrls.GEToolStrip.BuildLanguageOptions">
+            <summary>
+            Builds the language combobox options from the Languages class
+            </summary>
+        </member>
+        <member name="M:FC.GEPluginCtrls.GEToolStrip.NavigationTextBox_KeyUp(System.Object,System.Windows.Forms.KeyEventArgs)">
+            <summary>
+            Called when the KeyUp event is rasied in the navigation text box
+            </summary>
+            <param name="sender">The object that raised the event.</param>
+            <param name="e">Event arguments.</param>
+        </member>
+        <member name="M:FC.GEPluginCtrls.GEToolStrip.NavigationButton_Click(System.Object,System.EventArgs)">
+            <summary>
+            Called when the 'go' navigation button is clicked
+            </summary>
+            <param name="sender">The object that raised the event.</param>
+            <param name="e">Event arguments.</param>
+        </member>
+        <member name="M:FC.GEPluginCtrls.GEToolStrip.RefreshButton_Click(System.Object,System.EventArgs)">
+            <summary>
+            Called when the refresh button is clicked
+            </summary>
+            <param name="sender">The object that raised the event.</param>
+            <param name="e">Event arguments.</param>
+        </member>
+        <member name="M:FC.GEPluginCtrls.GEToolStrip.LayersItem_Clicked(System.Object,System.EventArgs)">
+            <summary>
+            Called when an item in the layers menu is clicked 
+            </summary>
+            <param name="sender">The object that raised the event.</param>
+            <param name="e">Event arguments.</param>
+        </member>
+        <member name="M:FC.GEPluginCtrls.GEToolStrip.OptionsItem_Clicked(System.Object,System.EventArgs)">
+            <summary>
+            Called when an item in the options menu is clicked 
+            </summary>
+            <param name="sender">The object that raised the event.</param>
+            <param name="e">Event arguments.</param>
+        </member>
+        <member name="M:FC.GEPluginCtrls.GEToolStrip.ViewItem_Clicked(System.Object,System.EventArgs)">
+            <summary>
+            Called when an item in the view menu is clicked 
+            </summary>
+            <param name="sender">The object that raised the event.</param>
+            <param name="e">Event arguments.</param>
+        </member>
+        <member name="M:FC.GEPluginCtrls.GEToolStrip.ImageryItem_Clicked(System.Object,System.EventArgs)">
+            <summary>
+            Called when an item in the imagery menu is clicked 
+            </summary>
+            <param name="sender">The object that raised the event.</param>
+            <param name="e">Event arguments.</param>
+        </member>
+        <member name="M:FC.GEPluginCtrls.GEToolStrip.ScreenGrabButton_Click(System.Object,System.EventArgs)">
+            <summary>
+            Called when the Screen grab button is clicked 
+            </summary>
+            <param name="sender">The object that raised the event.</param>
+            <param name="e">Event arguments.</param>
+        </member>
+        <member name="M:FC.GEPluginCtrls.GEToolStrip.ViewInMapsButton_Click(System.Object,System.EventArgs)">
+            <summary>
+            Called when the view in maps button is clicked
+            </summary>
+            <param name="sender">The object that raised the event.</param>
+            <param name="e">Event arguments.</param>
+        </member>
+        <member name="M:FC.GEPluginCtrls.GEToolStrip.GEToolStrip_Layout(System.Object,System.Windows.Forms.LayoutEventArgs)">
+            <summary>
+            Called when the tool strip layout changes
+            </summary>
+            <param name="sender">The object that raised the event.</param>
+            <param name="e">Event arguments.</param>
+        </member>
+        <member name="M:FC.GEPluginCtrls.GEToolStrip.LanguageComboBox_SelectedIndexChanged(System.Object,System.EventArgs)">
+            <summary>
+            Called whenever the language combobox selected index is changed
+            </summary>
+            <param name="sender">The object that raised the event.</param>
+            <param name="e">Event arguments.</param>
+        </member>
+        <member name="P:FC.GEPluginCtrls.GEToolStrip.ShowNavigationItems">
+            <summary>
+            Gets or sets a value indicating whether the navigation items are visible
+            </summary>
+        </member>
+        <member name="P:FC.GEPluginCtrls.GEToolStrip.ShowLayersDropDown">
+            <summary>
+            Gets or sets a value indicating whether the Layers drop down is visible
+            </summary>
+        </member>
+        <member name="P:FC.GEPluginCtrls.GEToolStrip.ShowOptionsDropDown">
+            <summary>
+            Gets or sets a value indicating whether the Options drop down is visible
+            </summary>
+        </member>
+        <member name="P:FC.GEPluginCtrls.GEToolStrip.ShowViewDropDown">
+            <summary>
+            Gets or sets a value indicating whether the View drop down is visible
+            </summary>
+        </member>
+        <member name="P:FC.GEPluginCtrls.GEToolStrip.ShowImageryDropDown">
+            <summary>
+            Gets or sets a value indicating whether the Imagery drop down is visible
+            </summary>
+        </member>
+        <member name="P:FC.GEPluginCtrls.GEToolStrip.ShowScreenGrabButton">
+            <summary>
+            Gets or sets a value indicating whether the screen grab button is visible
+            </summary>
+        </member>
+        <member name="P:FC.GEPluginCtrls.GEToolStrip.ShowViewInMapsButton">
+            <summary>
+            Gets or sets a value indicating whether the view in maps button is visible
+            </summary>
+        </member>
+        <member name="P:FC.GEPluginCtrls.GEToolStrip.ShowLanguageComboBox">
+            <summary>
+            Gets or sets a value indicating whether the language combobox is visible
+            </summary>
+        </member>
+        <member name="P:FC.GEPluginCtrls.GEToolStrip.NavigationAutoCompleteMode">
+            <summary>
+            Gets or sets the AutoCompleteMode of the navigation textbox
+            Default is AutoCompleteMode.Append
+            </summary>
+        </member>
+        <member name="P:FC.GEPluginCtrls.GEToolStrip.ToolStripItemAlignment">
+            <summary>
+            Gets or sets the alignment property of the toolstrip items
+            </summary>
+        </member>
+        <member name="T:FC.GEPluginCtrls.GEStatusStrip">
+            <summary>
+            Designer file
+            </summary>
+            <summary>
+            The GEStatusStrip shows various information about the plug-in
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.GEStatusStrip.components">
+            <summary> 
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.GEStatusStrip.apiVersionStatusLabel">
+            <summary>
+            The api version status label
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.GEStatusStrip.browserVersionStatusLabel">
+            <summary>
+            The browser version status label
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.GEStatusStrip.pluginVersionStatusLabel">
+            <summary>
+            The plug-in version status label
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.GEStatusStrip.streamingProgressBar">
+            <summary>
+            The streaming progress bar
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.GEStatusStrip.streamingStatusLabel">
+            <summary>
+            The streaming status label
+            </summary>
+        </member>
+        <member name="M:FC.GEPluginCtrls.GEStatusStrip.Dispose(System.Boolean)">
+            <summary> 
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:FC.GEPluginCtrls.GEStatusStrip.InitializeComponent">
+            <summary> 
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.GEStatusStrip.timer">
+            <summary>
+            Timer used when polling data
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.GEStatusStrip.browser">
+            <summary>
+            An instance of the current browser
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.GEStatusStrip.interval">
+            <summary>
+            Timer interval in miliseconds
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.GEStatusStrip.streamingStatusLabelVisible">
+            <summary>
+            Indicates whether the streaming status label is visible
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.GEStatusStrip.streamingProgressBarVisible">
+            <summary>
+            Indicates whether the streaming progress bar is visible
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.GEStatusStrip.apiVersionStatusLabelVisible">
+            <summary>
+            Indicates whether the api version label is visible
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.GEStatusStrip.pluginVersionStatusLabelVisible">
+            <summary>
+            Indicates whether the plug-in version label is visible
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.GEStatusStrip.browserVersionStatusLabelVisible">
+            <summary>
+            Indicates whether the browser version label is visible
+            </summary>
+        </member>
+        <member name="M:FC.GEPluginCtrls.GEStatusStrip.#ctor">
+            <summary>
+            Initializes a new instance of the GEStatusStrip class.
+            </summary>
+        </member>
+        <member name="M:FC.GEPluginCtrls.GEStatusStrip.SetBrowserInstance(FC.GEPluginCtrls.GEWebBrowser)">
+            <summary>
+            Set the browser instance for the control to work with
+            </summary>
+            <param name="instance">The GEWebBrowser instance</param>
+            <example>Example: GEToolStrip.SetBrowserInstance(GEWebBrowser)</example>
+        </member>
+        <member name="M:FC.GEPluginCtrls.GEStatusStrip.Timer_Tick(System.Object,System.EventArgs)">
+            <summary>
+            Timer tick callback function
+            </summary>
+            <param name="sender">The object that raised the event.</param>
+            <param name="e">Event arguments.</param>
+        </member>
+        <member name="P:FC.GEPluginCtrls.GEStatusStrip.Interval">
+            <summary>
+            Gets or sets the timer interval for polling data
+            </summary>
+        </member>
+        <member name="P:FC.GEPluginCtrls.GEStatusStrip.ShowStreamingProgressBar">
+            <summary>
+            Gets or sets a value indicating whether the progress bar is visible
+            </summary>
+        </member>
+        <member name="P:FC.GEPluginCtrls.GEStatusStrip.ShowStreamingStatusLabel">
+            <summary>
+            Gets or sets a value indicating whether the streaming label is visible
+            </summary>
+        </member>
+        <member name="P:FC.GEPluginCtrls.GEStatusStrip.ShowBrowserVersionStatusLabel">
+            <summary>
+            Gets or sets a value indicating whether the browser version label is visible
+            </summary>
+        </member>
+        <member name="P:FC.GEPluginCtrls.GEStatusStrip.ShowApiVersionStatusLabel">
+            <summary>
+            Gets or sets a value indicating whether the api version label is visible
+            </summary>
+        </member>
+        <member name="P:FC.GEPluginCtrls.GEStatusStrip.ShowPluginVersionStatusLabel">
+            <summary>
+            Gets or sets a value indicating whether the plug-in version label is visible
+            </summary>
+        </member>
+        <member name="T:FC.GEPluginCtrls.KmlTreeView">
+            <summary>
+            The KmlTreeView provides a quick and easy way to display kml content.
+            It intergratres with the <see cref="T:FC.GEPluginCtrls.GEWebBrowser"/> allowing a user to
+            easily 'fly-to' and toggle the visiblity of features in the plugin.
+            </summary>
+            <remarks>
+            The control supports virtual loading of content using the <see cref="T:FC.GEPluginCtrls.KmlTreeViewNode"/> class.
+            The KmlTreeView makes use of stacks and background workers to keep the control
+            fast and responsive when dealing with large numbers of nodes. The control also supports
+            tri-view checkboxes to show partial selection within a container.
+            </remarks>
+            <summary>
+            Designer file
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.KmlTreeView.browser">
+            <summary>
+            The current browser
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.KmlTreeView.triStateImageList">
+            <summary>
+            The custom image list for tri-state check-box support
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.KmlTreeView.checkBoxesVisible">
+            <summary>
+            Vaule indicating whether check-boxes are visible.
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.KmlTreeView.preventChecking">
+            <summary>
+            Vaule indicating whether to prevent the check-boxes check event.
+            </summary>
+        </member>
+        <member name="M:FC.GEPluginCtrls.KmlTreeView.#ctor">
+            <summary>
+            Initializes a new instance of the KmlTreeView class.
+            </summary>
+        </member>
+        <member name="M:FC.GEPluginCtrls.KmlTreeView.CreateNode(System.Object)">
+            <summary>
+            Creates a KmlTreeViewNode from an kml feature 
+            </summary>
+            <param name="feature">The kml feature to base the node on</param>
+            <returns>A KmlTreeViewNode based on the feature</returns>
+        </member>
+        <member name="M:FC.GEPluginCtrls.KmlTreeView.GetNodeById(System.String)">
+            <summary>
+             Returns the index of the first occurrence of a tree node with the specified object ID.
+             As the node key is automatically set from the kmlObject ID the IDs should always correspond and be unique.
+            </summary>
+            <param name="id">The API object id</param>
+            <returns>The treenode for the object from the given ID (or an empty treenode if the ID isn't found)</returns>
+        </member>
+        <member name="M:FC.GEPluginCtrls.KmlTreeView.ParseKmlObject(System.Object)">
+            <summary>
+            Load a kml object into the treeview
+            </summary>
+            <param name="feature">The kml object to parse</param>
+        </member>
+        <member name="M:FC.GEPluginCtrls.KmlTreeView.ParseKmlObject(System.Object[])">
+            <summary>
+            Load a collection of kml objects into the treeview
+            </summary>
+            <param name="features">The kml objects to parse</param>
+        </member>
+        <member name="M:FC.GEPluginCtrls.KmlTreeView.Refresh">
+            <summary>
+            Refreshes and updates the layout of the control
+            </summary>
+        </member>
+        <member name="M:FC.GEPluginCtrls.KmlTreeView.SetBrowserInstance(FC.GEPluginCtrls.GEWebBrowser)">
+            <summary>
+            Set the browser instance for the control to work with
+            </summary>
+            <param name="instance">The GEWebBrowser instance</param>
+        </member>
+        <member name="M:FC.GEPluginCtrls.KmlTreeView.OnAfterCheck(System.Windows.Forms.TreeViewEventArgs)">
+            <summary>
+            Raised after a KmlTreeView id checked
+            </summary>
+            <param name="e">Event arguments</param>
+        </member>
+        <member name="M:FC.GEPluginCtrls.KmlTreeView.OnAfterExpand(System.Windows.Forms.TreeViewEventArgs)">
+            <summary>
+            Raised after a KmlTreeViewNode is expanded
+            </summary>
+            <param name="e">Event arguments</param>
+        </member>
+        <member name="M:FC.GEPluginCtrls.KmlTreeView.OnLayout(System.Windows.Forms.LayoutEventArgs)">
+            <summary>
+            Raised when the KmlTreeView layout changes
+            </summary>
+            <param name="e">The event arguments</param>
+        </member>
+        <member name="M:FC.GEPluginCtrls.KmlTreeView.OnNodeMouseDoubleClick(System.Windows.Forms.TreeNodeMouseClickEventArgs)">
+            <summary>
+            Raised when a KmlTreeView node is double clicked
+            </summary>
+            <param name="e">Event arguments</param>
+        </member>
+        <member name="M:FC.GEPluginCtrls.KmlTreeView.OnNodeMouseClick(System.Windows.Forms.TreeNodeMouseClickEventArgs)">
+            <summary>
+            Raised when the mouse is clicked on the KmlTreeView
+            </summary>
+            <param name="e">The event arguments</param>
+        </member>
+        <member name="M:FC.GEPluginCtrls.KmlTreeView.GenerateId(System.String,System.String)">
+            <summary>
+            Generates an ID for a feature loaded from a remote reasource 
+            </summary>
+            <param name="url">the base url</param>
+            <param name="id">the object id</param>
+            <returns>the generated id</returns>
+        </member>
+        <member name="M:FC.GEPluginCtrls.KmlTreeView.UpdateCheck(FC.GEPluginCtrls.KmlTreeViewNode,FC.GEPluginCtrls.GEWebBrowser)">
+            <summary>
+            Checks if a given element in the treeview needs updating
+            </summary>
+            <param name="node">The node to check for</param>
+            <param name="browser">The browser instance to check in</param>
+            <returns>a tree view node based on the new data.</returns>
+        </member>
+        <member name="M:FC.GEPluginCtrls.KmlTreeView.BuildTriStateImageList">
+            <summary>
+            Builds the tri-state image list for use with the control
+            </summary>
+        </member>
+        <member name="M:FC.GEPluginCtrls.KmlTreeView.SetChildStateImageIndex(FC.GEPluginCtrls.KmlTreeViewNode)">
+            <summary>
+            Sets the StateImageIndex of each child node of the given <paramref name="node">parent tree node</paramref>
+            </summary>
+            <param name="node">The parent tree node</param>
+        </member>
+        <member name="M:FC.GEPluginCtrls.KmlTreeView.NodeBuilderDoWork(System.Object,System.ComponentModel.DoWorkEventArgs)">
+            <summary>
+            Asynchronous method for building a list of nodes
+            </summary>
+            <param name="sender">The object that raised the event.</param>
+            <param name="e">Event arguments.</param>
+        </member>
+        <member name="M:FC.GEPluginCtrls.KmlTreeView.NodeBuilderRunWorkerCompleted(System.Object,System.ComponentModel.RunWorkerCompletedEventArgs)">
+            <summary>
+            Adds children to a KmlTreeViewNode.
+            </summary>
+            <param name="sender">The object that raised the event.</param>
+            <param name="e">Event arguments.</param>
+        </member>
+        <member name="F:FC.GEPluginCtrls.KmlTreeView.components">
+            <summary> 
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.KmlTreeView.imageList1">
+            <summary>
+            The treeview image list for kml features
+            </summary>
+        </member>
+        <member name="M:FC.GEPluginCtrls.KmlTreeView.Dispose(System.Boolean)">
+            <summary> 
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:FC.GEPluginCtrls.KmlTreeView.InitializeComponent">
+            <summary> 
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="P:FC.GEPluginCtrls.KmlTreeView.CheckBoxes">
+            <summary>
+            Gets or sets a value indicating whether the treeview should display checkboxes or not.
+            Default True
+            </summary>
+        </member>
+        <member name="T:FC.GEPluginCtrls.KmlTreeViewNode">
+            <summary>
+            Custom node class for the <see cref="T:FC.GEPluginCtrls.KmlTreeView"/>
+            </summary>
+        </member>
+        <member name="M:FC.GEPluginCtrls.KmlTreeViewNode.#ctor">
+            <summary>
+            Initializes a new instance of the KmlTreeViewNode class.
+            </summary>
+        </member>
+        <member name="M:FC.GEPluginCtrls.KmlTreeViewNode.#ctor(System.Object)">
+            <summary>
+            Initializes a new instance of the KmlTreeViewNode class.
+            </summary>
+            <param name="kmlFeature">A <paramref name="kmlFeature">kml feature</paramref> to base the treenode on</param>
+        </member>
+        <member name="M:FC.GEPluginCtrls.KmlTreeViewNode.SetStyle">
+            <summary>
+            Sets the icon style for the node
+            </summary>
+        </member>
+        <member name="M:FC.GEPluginCtrls.KmlTreeViewNode.Animate">
+            <summary>
+            Animates the icon style for the node.
+            </summary>
+        </member>
+        <member name="M:FC.GEPluginCtrls.KmlTreeViewNode.Refresh">
+            <summary>
+            see http://code.google.com/p/winforms-geplugin-control-library/issues/detail?id=66
+            </summary>
+        </member>
+        <member name="M:FC.GEPluginCtrls.KmlTreeViewNode.TidyToolTip(System.String)">
+            <summary>
+            Clean any html and add linebreaks for use with tooltips.
+            TODO : make this a lot better....
+            </summary>
+            <param name="source">a html string</param>
+            <returns>plain text with linebreaks</returns>
+        </member>
+        <member name="P:FC.GEPluginCtrls.KmlTreeViewNode.ToolTipText">
+            <summary>
+            Gets or sets the value of the node tool tip text.
+            </summary>
+        </member>
+        <member name="P:FC.GEPluginCtrls.KmlTreeViewNode.ApiObject">
+            <summary>
+            Gets the underlying kml object that the node represents.
+            </summary>
+        </member>
+        <member name="P:FC.GEPluginCtrls.KmlTreeViewNode.ApiType">
+            <summary>
+            Gets a value indicating the api type (e.g. KmlPlacemark, KmlDocument)
+            of the underlying <see cref="P:FC.GEPluginCtrls.KmlTreeViewNode.ApiObject">feature</see> the node represents.
+            </summary>
+        </member>
+        <member name="P:FC.GEPluginCtrls.KmlTreeViewNode.BaseUrl">
+            <summary>
+            Gets or sets a value indicating the url, if any, of the data the node is based on
+            </summary>
+        </member>
+        <member name="P:FC.GEPluginCtrls.KmlTreeViewNode.IsLoading">
+            <summary>
+            Gets or sets a value indicating whether the node is loading data
+            </summary>
+        </member>
+        <member name="P:FC.GEPluginCtrls.KmlTreeViewNode.KmlUrl">
+            <summary>
+            Gets the url of the underlying kml object.
+            </summary>
+            <remarks>
+            The url is obtained via kmlHelpers which adds support for legacy kml spcifications.
+            </remarks>
+        </member>
+        <member name="P:FC.GEPluginCtrls.KmlTreeViewNode.KmlListStyle">
+            <summary>
+            Gets the list style of the underlying kml object. Default is ListItemStyle.Check
+            </summary>
+        </member>
+        <member name="P:FC.GEPluginCtrls.KmlTreeViewNode.ApiObjectVisible">
+            <summary>
+            Gets or sets a value indicating whether the node is cheked and the kml object is visible
+            </summary>
+        </member>
+        <member name="T:FC.GEPluginCtrls.GEHelpers">
+            <summary>
+            This class provides some basic Google Earth plugin helpers functions.
+            Interfaces whose names begin with GE allow for programmatic access to core plugin functionality and other miscellaneous options.
+            It is based on the "GEHelpers javasctipt library" by Roman Nurik
+            See: http://earth-api-samples.googlecode.com/svn/trunk/lib/geplugin-helpers.js
+            </summary>
+        </member>
+        <member name="M:FC.GEPluginCtrls.GEHelpers.AddFeaturesToPlugin(System.Object,System.Object)">
+            <summary>
+            This is a simple "ge.getFeatures().appendChild(kml)" wrapper
+            </summary>
+            <param name="ge">the plugin instance to add the features to</param>
+            <param name="kml">the features to add</param>
+            <exception cref="T:System.ArgumentException">Throws an exception if ge is not an instance of GEPlugin.</exception>
+        </member>
+        <member name="M:FC.GEPluginCtrls.GEHelpers.EnableLayer(System.Object,FC.GEPluginCtrls.Layer,System.Boolean)">
+            <summary>
+            Enables or disables a plugin layer - wrapper for ge.getLayerRoot().enableLayerById()
+            </summary>
+            <param name="ge">The plugin instance</param>
+            <param name="layer">The id of the layer to work with</param>
+            <param name="value">True turns the layer on, false off</param>
+        </member>
+        <member name="M:FC.GEPluginCtrls.GEHelpers.GetElementById(System.Object,System.String)">
+            <summary>
+            Get an element by ID - wrapper for ge.getElementById()
+            </summary>
+            <param name="ge">The plugin instance</param>
+            <param name="id">The id feature to find</param>
+            <returns>The feature specified by the ID parameter if it exists</returns>
+        </member>
+        <member name="M:FC.GEPluginCtrls.GEHelpers.FlyToObject(System.Object,System.Object,System.Boolean,System.Double,System.Double,System.Double)">
+            <summary>
+            Attempts to set the view of the plugin to the given api object 
+            </summary>
+            <param name="ge">the plugin</param>
+            <param name="feature">the api object</param>
+            <param name="boundsFallback">Optionally set whether to fallback to the bounds method</param>
+            <param name="aspectRatio">Optional aspect ratio</param>
+            <param name="defaultRange">Optional default range</param>
+            <param name="scaleRange">Optional scale range</param>
+        </member>
+        <member name="M:FC.GEPluginCtrls.GEHelpers.GetAllFeaturesKml(System.Object)">
+            <summary>
+            Gets the Kml of all the features in the plug-in
+            </summary>
+            <param name="ge">The plugin</param>
+            <returns>String of all the Kml from the plugin - or an empty string</returns>
+        </member>
+        <member name="M:FC.GEPluginCtrls.GEHelpers.GetCurrentViewAsPoint(System.Object)">
+            <summary>
+            Get the current pluin view as a point object
+            </summary>
+            <param name="ge">the plugin</param>
+            <returns>Point set to the current view (or false)</returns>
+        </member>
+        <member name="M:FC.GEPluginCtrls.GEHelpers.GetTypeFromWrapper(System.Object)">
+            <summary>
+            Depreciated: now the dynamic type is used and getType can be called directly.
+            Gets the type of an active scripting object from a generic runtime callable wrapper.
+            This method attempts to invoke the member 'getType' on the given object.
+            </summary>
+            <param name="wrapper">The com object wrapper</param>
+            <returns>The name of the type, or an empty string on failure</returns>
+        </member>
+        <member name="M:FC.GEPluginCtrls.GEHelpers.GetApiType(System.Object)">
+            <summary>
+            Gets the ApiType of a given <paramref name="feature">feature</paramref>
+            </summary>
+            <param name="feature">The feature to get the type of</param>
+            <returns>
+            The type of the <paramref name="feature">feature</paramref> or 'ApiType.None'.
+            </returns>
+        </member>
+        <member name="M:FC.GEPluginCtrls.GEHelpers.IsGE(System.Object)">
+            <summary>
+            Checks if the given object in an RCW is of the type GEPlugin
+            </summary>
+            <param name="feature">The object to check</param>
+            <returns>true if the object is of the type GEPlugin </returns>
+        </member>
+        <member name="M:FC.GEPluginCtrls.GEHelpers.IsApiType(System.Object,FC.GEPluginCtrls.ApiType)">
+            <summary>
+            Checks if a given <paramref name="feature">feature</paramref>
+            is of a given type <paramref name="type">type</paramref>
+            </summary>
+            <param name="feature">The feature to test</param>
+            <param name="type">The type to check</param>
+            <returns>
+            True if the <paramref name="feature">feature</paramref>
+            is the given <paramref name="type">type</paramref>
+            </returns>
+        </member>
+        <member name="M:FC.GEPluginCtrls.GEHelpers.IsUri(System.String,System.UriKind)">
+            <summary>
+            Checks if a given string <paramref name="input"/> is a valid url
+            of the given <paramref name="kind"/>
+            </summary>
+            <param name="input">the string to check</param>
+            <param name="kind">the kind of uri to check for</param>
+            <returns>true if the string is a uri</returns>
+        </member>
+        <member name="M:FC.GEPluginCtrls.GEHelpers.OpenFeatureBalloon(System.Object,System.Object,System.Boolean,System.Int32,System.Int32,System.Int32,System.Int32,System.Boolean)">
+            <summary>
+            Opens the balloon for the given feature in the plugin using OpenFeatureBalloon()
+            </summary>
+            <param name="ge">the plugin instance</param>
+            <param name="feature">the feature to open a balloon for</param>
+            <param name="useUnsafeHtml">Optional setting to use getBalloonHtmlUnsafe, default is false</param>
+            <param name="minWidth">Optional minimum balloon width, default is 100</param>
+            <param name="minHeight">Optional minimum balloon height, default is 100</param>
+            <param name="maxWidth">Optional maximum balloon width, default is 800</param>
+            <param name="maxHeight">Optional maximum balloon height, default is 600</param>
+            <param name="setBalloon">Optionally set the balloon to be the current in the plugin</param>
+            <returns>The feature balloon or null</returns>
+        </member>
+        <member name="M:FC.GEPluginCtrls.GEHelpers.RemoveAllFeatures(System.Object)">
+            <summary>
+            Remove all features from the plugin 
+            </summary>
+            <param name="ge">The plugin instance</param>
+        </member>
+        <member name="M:FC.GEPluginCtrls.GEHelpers.RemoveFeatureById(System.Object,System.String)">
+            <summary>
+            Remove a feature from the plug-in based on the feature ID
+            </summary>
+            <param name="ge">The plugin instance</param>
+            <param name="id">The id of the feature to remove</param>
+        </member>
+        <member name="M:FC.GEPluginCtrls.GEHelpers.RemoveFeatureById(System.Object,System.String[])">
+            <summary>
+            Remove a features from the plug-in based on the feature IDs
+            </summary>
+            <param name="ge">The plugin instance</param>
+            <param name="ids">The ids of the features to remove</param>
+        </member>
+        <member name="M:FC.GEPluginCtrls.GEHelpers.ShowCurrentViewInMaps(System.Object)">
+            <summary>
+            Displays the current plugin view in Google Maps using the default system browser
+            </summary>
+            <param name="ge">The plugin instance</param>
+        </member>
+        <member name="M:FC.GEPluginCtrls.GEHelpers.ToggleMediaPlayer(System.Object,System.Object,System.Boolean)">
+            <summary>
+            Toggles any 'media player' associated with a particular Kml type represented by a treenode.
+            So far this includes KmlTours (GETourPlayer) and KmlPhotoOverlays (GEPhotoOverlayViewer)
+            </summary>
+            <param name="ge">The plugin instance</param>
+            <param name="feature">The feature to check</param>
+            <param name="visible">Vaule indicating whether the player should be visible or not.</param>
+        </member>
+        <member name="T:FC.GEPluginCtrls.KmlHelpers">
+            <summary>
+            This class provides basic Kml helper methods
+            </summary>
+        </member>
+        <member name="M:FC.GEPluginCtrls.KmlHelpers.ComputeBounds(System.Object)">
+            <summary>
+            Computes the bounding box for the given object.
+            Note that this method walks the object's DOM, so may have poor performance for large objects.
+            </summary>
+            <param name="kmlFeature">{KmlFeature|KmlGeometry} object The feature or geometry whose bounds should be computed</param>
+            <returns>A bounds object based on the <paramref name="kmlFeature"/> (or an empty bounds object)</returns>
+            <remarks>
+            Based on the methods at:
+            http://code.google.com/p/earth-api-utility-library/source/browse/trunk/extensions/src/dom/utils.js
+            </remarks>
+        </member>
+        <member name="M:FC.GEPluginCtrls.KmlHelpers.CreateBoundsView(System.Object,FC.GEPluginCtrls.Geo.Bounds,System.Double,System.Double,System.Double)">
+            <summary>
+            Creates a kmlLookAt from a Bounds object.
+            </summary>
+            <param name="ge">the plugin</param>
+            <param name="bounds">the bounds object to create the view of</param>
+            <param name="aspectRatio">Optional aspect ratio</param>
+            <param name="defaultRange">Optional default range</param>
+            <param name="scaleRange">Optional scale range</param>
+            <returns>A KmlLookAt based on the <paramref name="bounds"/> (or null)</returns>
+        </member>
+        <member name="M:FC.GEPluginCtrls.KmlHelpers.CreatePlacemark(System.Object,System.String,System.Double,System.Double,System.Double,FC.GEPluginCtrls.AltitudeMode,System.String,System.String,System.Boolean)">
+            <summary>
+            Creates a kml placemark
+            </summary>
+            <param name="ge">The plugin instance</param>
+            <param name="id">Optional placemark Id. Default is empty</param>
+            <param name="latitude">The placemark latitude in decimal degrees</param>
+            <param name="longitude">The placemark longitude in decimal degrees</param>
+            <param name="altitude">Optional placemark altitude in metres. Default is 0</param>
+            <param name="altitudeMode">Optional altitudeMode. Default is AltitudeMode.RelativeToGround</param>
+            <param name="name">Optional name of the placemark. Default is empty</param>
+            <param name="description">Optional placemark description text. Default is empty</param>
+            <param name="addFeature">Optionally adds the placemark directly to the plugin. Default is true</param>
+            <returns>A placemark (or null)</returns>
+        </member>
+        <member name="M:FC.GEPluginCtrls.KmlHelpers.CreatePlacemark(System.Object,FC.GEPluginCtrls.Geo.Coordinate,System.String,System.String,System.String,System.Boolean)">
+            <summary>
+            Creates a kml placemark
+            </summary>
+            <param name="ge">The plugin instance</param>
+            <param name="coordinate">A Coordinate to use as the placemarks location</param>
+            <param name="id">Optional placemark Id. Default is empty</param>
+            <param name="name">Optional name of the placemark. Default is empty</param>
+            <param name="description">Optional placemark description text. Default is empty</param>
+            <param name="addFeature">Optionally adds the placemark directly to the plugin. Default is true</param>
+            <returns>A placemark (or null)</returns>
+        </member>
+        <member name="M:FC.GEPluginCtrls.KmlHelpers.CreatePoint(System.Object,System.String,System.Double,System.Double,System.Double,FC.GEPluginCtrls.AltitudeMode)">
+            <summary>
+            Creates a kml point
+            </summary>
+            <param name="ge">The plugin instance</param>
+            <param name="id">Optional placemark Id. Default is empty</param>
+            <param name="latitude">The placemark latitude in decimal degrees</param>
+            <param name="longitude">The placemark longitude in decimal degrees</param>
+            <param name="altitude">Optional placemark altitude in metres. Default is 0</param>
+            <param name="altitudeMode">Optional altitudeMode. Default is AltitudeMode.RelativeToGround</param>
+            <returns>A Kml point (or null)</returns>
+        </member>
+        <member name="M:FC.GEPluginCtrls.KmlHelpers.CreatePoint(System.Object,FC.GEPluginCtrls.Geo.Coordinate,System.String)">
+            <summary>
+            Creates a kml point from a Coordinate
+            </summary>
+            <param name="ge">The plugin instance</param>
+            <param name="coordinate">The Coordinate to base the point on</param>
+            <param name="id">Optional point Id. Default is empty</param>
+            <returns>A kml point (or null)</returns>
+        </member>
+        <member name="M:FC.GEPluginCtrls.KmlHelpers.CreateHtmlStringBalloon(System.Object,System.String,System.Int32,System.Int32,System.Int32,System.Int32,System.Boolean,System.Object,System.Boolean,System.String,System.String)">
+            <summary>
+            Creates an Html String Balloon
+            </summary>
+            <param name="ge">The plugin instance</param>
+            <param name="html">The balloon content html string</param>
+            <param name="minWidth">Optional minimum balloon width, default is 100</param>
+            <param name="minHeight">Optional minimum balloon height, default is 100</param>
+            <param name="maxWidth">Optional maximum balloon width, default is 800</param>
+            <param name="maxHeight">Optional maximum balloon height, default is 600</param>
+            <param name="setBalloon">Optionally set the balloon to be the current in the plugin</param>
+            <param name="feature">Optionally associate the balloon with a feature</param>
+            <param name="closeButtonEnabled">Optionally display a closed button on the balloon, default is true</param>
+            <param name="backgroundColor">Optionally set the balloon backgroundColor in the #rrggbb format, default #FFFFFF</param>
+            <param name="foregroundColor">Optionally set the balloon backgroundColor in the #rrggbb format, default #000000</param>
+            <returns>A HtmlStringBalloon object (or null)</returns>
+        </member>
+        <member name="M:FC.GEPluginCtrls.KmlHelpers.CreateLineString(System.Object,System.Object,System.Object,System.String,System.Boolean,System.Boolean,System.Int32,FC.GEPluginCtrls.KmlColor)">
+            <summary>
+            Draws a line string between the given placemarks or points
+            </summary>
+            <param name="ge">The plugin instance</param>
+            <param name="start">The first placemark or point</param>
+            <param name="end">The second placemark or point</param>
+            <param name="id">Optional ID of the linestring placemark. Default is empty</param>
+            <param name="tessellate">Optionally sets tessellation for the linestring. Default is true</param>
+            <param name="addFeature">Optionally adds the linestring directly to the plugin. Default is true</param>
+            <param name="width">Optional linestring-width, default is 1</param>
+            <param name="color">Optional KmlColor, default is white/opaque</param>
+            <returns>A linestring placemark (or null)</returns>
+        </member>
+        <member name="M:FC.GEPluginCtrls.KmlHelpers.CreateLineString(System.Object,System.Collections.Generic.IList{FC.GEPluginCtrls.Geo.Coordinate},System.String,System.Boolean,System.Boolean,System.Int32,FC.GEPluginCtrls.KmlColor)">
+            <summary>
+            Draws a line string between the given coordinates
+            </summary>
+            <param name="ge">The plugin instance</param>
+            <param name="coordinates">List of points</param>
+            <param name="id">Optional ID of the linestring placemark. Default is empty</param>
+            <param name="tessellate">Optionally sets tessellation for the linestring. Default is true</param>
+            <param name="addFeature">Optionally adds the linestring directly to the plugin. Default is true</param>
+            <param name="width">Optional linestring-width, default is 1</param>
+            <param name="color">Optional KmlColor, default is white/opaque</param>
+            <returns>A linestring placemark (or null)</returns>
+        </member>
+        <member name="M:FC.GEPluginCtrls.KmlHelpers.ToKmlColor(System.Drawing.Color,System.Double)">
+            <summary>
+            Converts a System.Drawing.Color into a KmlColor
+            </summary>
+            <param name="color">A color to base the KmlColor on</param>
+            <param name="alpha">Optional alpha value in the range [0-1].
+            Where 0 is fully transparant and 1 is fully opaque. Default value is 1</param>
+            <returns>A Kml color object</returns>
+        </member>
+        <member name="M:FC.GEPluginCtrls.KmlHelpers.ToKmlColorString(System.Drawing.Color,System.Double)">
+            <summary>
+            Converts a System.Drawing.Color into a KmlColor string
+            </summary>
+            <param name="color">A color to base the KmlColor on</param>
+            <param name="alpha">Optional alpha value in the range [0-1].
+            Where 0 is fully transparant and 1 is fully opaque. Default value is 1</param>
+            <returns>A Kml color string in the aabbggrr format</returns>
+        </member>
+        <member name="M:FC.GEPluginCtrls.KmlHelpers.CreateLookAt(System.Object,System.Double,System.Double,System.String,System.Double,FC.GEPluginCtrls.AltitudeMode,System.Double,System.Double,System.Double,System.Boolean)">
+            <summary>
+            Look at the given coordinates
+            </summary>
+            <param name="ge">the plugin</param>
+            <param name="latitude">latitude in decimal degrees</param>
+            <param name="longitude">longitude in decimal degrees</param>
+            <param name="id">Optional LookAt Id. Default is empty</param>
+            <param name="altitude">Optional altitude. Default is 0</param>
+            <param name="altitudeMode">Optional altitudeMode. Default is AltitudeMode.RelativeToGround</param>
+            <param name="heading">Optional heading in degrees. Default is 0 (north)</param>
+            <param name="tilt">Optional tilt in degrees. Default is 0</param>
+            <param name="range">Optional range in metres. Default is 1000</param>
+            <param name="setView">Optional set the current view to the lookAt</param>
+            <returns>a lookat object (or null)</returns>
+        </member>
+        <member name="M:FC.GEPluginCtrls.KmlHelpers.CreateStyle(System.Object,System.String)">
+            <summary>
+            Creates a style that can be referenced by StyleMaps and features.
+            </summary>
+            <param name="ge">The plugin instance</param>
+            <param name="id">Optional style Id. Default is empty</param>
+            <returns></returns>
+        </member>
+        <member name="M:FC.GEPluginCtrls.KmlHelpers.GetExtendedData(System.Object)">
+            <summary>
+            Gives access to untyped data/value pairs using the basic Data element
+            See: http://code.google.com/apis/kml/documentation/kmlreference.html#extendeddata
+            </summary>
+            <param name="kmlFeature">feature to get data from</param>
+            <returns>A list of key value pairs</returns>
+        </member>
+        <member name="M:FC.GEPluginCtrls.KmlHelpers.GetElementsByTagName(System.Object,System.String)">
+            <summary>
+            Returns an System.Xml.XmlNodeList containing a list of all descendant elements
+            that match the specified <paramref name="tagName"/>.
+            </summary>
+            <param name="kmlFeature">
+            The Kml feature on which to check for nodes matching the <paramref name="tagName"/>
+            </param>
+            <param name="tagName">
+            The qualified name to match.
+            It is matched against the Name property of the matching node.
+            The special value "*" matches all tags
+            </param>
+            <returns>
+            An System.Xml.XmlNodeList containing a list of all matching nodes.
+            If no nodes match name, the returned collection will be empty.
+            </returns>
+        </member>
+        <member name="M:FC.GEPluginCtrls.KmlHelpers.GetUrl(System.Object)">
+            <summary>
+             Gives access to the url element in pre KML Release 2.1 documents
+             This allows the controls to work with legacy Kml formats
+            </summary>
+            <param name="kmlFeature">The network link to look for a url in</param>
+            <returns>A url from the feature or null</returns>
+            <remarks>This method is used by <see cref="T:FC.GEPluginCtrls.KmlTreeView"/> for legacy kml support</remarks>
+            <example>string url = KmlHelpers.GetUrl(kmlObject);</example>
+        </member>
+        <member name="M:FC.GEPluginCtrls.KmlHelpers.GetListItemType(System.Object)">
+            <summary>
+            Wrapper for getOwnerDocument().getComputedStyle().getListStyle().getListItemType()
+            See: 
+            </summary>
+            <param name="kmlFeature">The feature to find the list item type of</param>
+            <returns>The corresponding ListItem type <see cref="T:FC.GEPluginCtrls.ListItemStyle"/></returns>
+            <remarks>This method is used by <see cref="T:FC.GEPluginCtrls.KmlTreeView"/> to build the nodes</remarks>
+            <example>Example: KmlHelpers.GetListItemType(kmlFeature)</example>
+        </member>
+        <member name="M:FC.GEPluginCtrls.KmlHelpers.GetChildNodes(System.Object)">
+            <summary>
+            Gets the child nodes from a kml feature. 
+            Basically a wrapper for feature.getFeatures().getChildNodes();
+            </summary>
+            <param name="feature">The feature to get the children from</param>
+            <returns>A kml object contatining the child nodes, or null if the feature has no children or on any error.</returns>
+        </member>
+        <member name="M:FC.GEPluginCtrls.KmlHelpers.HasChildNodes(System.Object)">
+            <summary>
+            Tests if a given kml feature has child nodes
+            </summary>
+            <param name="feature">The feature to check</param>
+            <returns>True if the feature has children</returns>
+        </member>
+        <member name="M:FC.GEPluginCtrls.KmlHelpers.IsKmlContainer(System.Object)">
+            <summary>
+            Tests if a given kml feature is a Kml container
+            </summary>
+            <param name="feature">The feature to check</param>
+            <returns>True if the feature is a Kml container</returns>
+        </member>
+        <member name="M:FC.GEPluginCtrls.KmlHelpers.SetBoundsView(System.Object,FC.GEPluginCtrls.Geo.Bounds,System.Double,System.Double,System.Double)">
+            <summary>
+            Sets a Bounds object to the current plugin view
+            </summary>
+            <param name="ge">the plugin</param>
+            <param name="bounds">the bounds object to create the view of</param>
+            <param name="aspectRatio">Optional aspect ratio</param>
+            <param name="defaultRange">Optional default range</param>
+            <param name="scaleRange">Optional scale range</param>
+        </member>
+        <member name="M:FC.GEPluginCtrls.KmlHelpers.WalkKmlDom(System.Object,System.Action{System.Object},System.Boolean,System.Boolean)">
+            <summary>
+            Based on kmldomwalk.js 
+            see: http://code.google.com/p/earth-api-samples/source/browse/trunk/lib/kmldomwalk.js
+            </summary>
+            <param name="feature">The kml object to parse</param>
+            <param name="callback">A delegate action, each node visited will be passed to this as the single parameter</param>
+            <param name="walkFeatures">Optionally walk features, default is true</param>
+            <param name="walkGeometries">Optionally walk geometries, default is false</param>
+            <remarks>This method is used by <see cref="T:FC.GEPluginCtrls.KmlTreeView"/> to build the nodes</remarks>
+            <example>KmlHelpers.WalkKmlDom(kml, (Action dynamic)(x =&gt; { /* each x in the dom */}));</example>
+        </member>
+        <member name="T:FC.GEPluginCtrls.Extensions">
+            <summary>
+            Extension helper methods for the control libray
+            </summary>
+        </member>
+        <member name="M:FC.GEPluginCtrls.Extensions.GetId(FC.GEPluginCtrls.Layer)">
+            <summary>
+            Gets the internal ID for a Layer
+            </summary>
+            <param name="input">Layer type</param>
+            <returns>The layer ID or an empty string</returns>
         </member>
     </members>
 </doc>

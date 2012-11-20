@@ -18,11 +18,15 @@
 //   along with this program. If not, see http://www.gnu.org/licenses/.
 // </summary>
 
+#region
+
+using System;
+using System.Runtime.InteropServices;
+
+#endregion
+
 namespace FC.GEPluginCtrls
 {
-    using System;
-    using System.Runtime.InteropServices;
-
     /// <summary>
     /// Enumeration of options for use with <see cref="ViewerOptions"/>
     /// </summary>

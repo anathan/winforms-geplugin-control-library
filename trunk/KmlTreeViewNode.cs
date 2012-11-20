@@ -16,25 +16,28 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see http://www.gnu.org/licenses/.
 // </summary>namespace FC.GEPluginCtrls.Enumerations
+
+#region
+
+using System;
+using System.Diagnostics;
+using System.Runtime.InteropServices;
+using System.Windows.Forms;
+
+#endregion
+
 namespace FC.GEPluginCtrls
 {
-    using System;
-    using System.Diagnostics;
-    using System.Runtime.InteropServices;
-    using System.Windows.Forms;
-    using Microsoft.CSharp.RuntimeBinder;
-
     /// <summary>
     /// Custom node class for the <see cref="KmlTreeView"/>
     /// </summary>
-    [SerializableAttribute]
+    [Serializable]
     public sealed class KmlTreeViewNode : TreeNode
     {
         /// <summary>
         /// Initializes a new instance of the KmlTreeViewNode class.
         /// </summary>
         internal KmlTreeViewNode()
-            : base()
         {
             this.ApiObject = null;
             this.ApiType = ApiType.None;
@@ -111,10 +114,8 @@ namespace FC.GEPluginCtrls
                 {
                     return KmlHelpers.GetUrl(this.ApiObject).ToString();
                 }
-                else
-                {
-                    return string.Empty;
-                }
+
+                return string.Empty;
             }
         }
 
@@ -129,10 +130,8 @@ namespace FC.GEPluginCtrls
                 {
                     return KmlHelpers.GetListItemType(this.ApiObject);
                 }
-                else
-                {
-                    return ListItemStyle.Check;
-                }
+
+                return ListItemStyle.Check;
             }
         }
 
@@ -269,9 +268,7 @@ namespace FC.GEPluginCtrls
         {
             this.IsLoading = true;
 
-            Timer t = new Timer();
-            t.Interval = 500;
-            t.Enabled = true;
+            Timer t = new Timer {Interval = 500, Enabled = true};
             int i = 2;
 
             t.Tick += (o, e) =>
@@ -313,8 +310,7 @@ namespace FC.GEPluginCtrls
             }
             catch (COMException cex)
             {
-                string.Format("{0}", cex.ToString());
-                return;
+                Debug.WriteLine(cex, "Refresh");
             }
         }
 
@@ -334,17 +330,15 @@ namespace FC.GEPluginCtrls
             int arrayIndex = 0;
             bool inside = false;
 
-            for (int i = 0; i < source.Length; i++)
+            foreach (char @let in source)
             {
-                char let = source[i];
-
-                if (let == '<')
+                if (@let == '<')
                 {
                     inside = true;
                     continue;
                 }
 
-                if (let == '>')
+                if (@let == '>')
                 {
                     inside = false;
                     continue;
@@ -352,7 +346,7 @@ namespace FC.GEPluginCtrls
 
                 if (!inside)
                 {
-                    array[arrayIndex] = let;
+                    array[arrayIndex] = @let;
                     arrayIndex++;
                 }
             }

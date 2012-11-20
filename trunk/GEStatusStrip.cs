@@ -16,16 +16,22 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see http://www.gnu.org/licenses/.
 // </summary>
+
+#region
+
+using System;
+using System.ComponentModel;
+using System.Diagnostics;
+using System.Drawing;
+using System.Runtime.InteropServices;
+using System.Security.Permissions;
+using System.Windows.Forms;
+using Microsoft.CSharp.RuntimeBinder;
+
+#endregion
+
 namespace FC.GEPluginCtrls
 {
-    using System;
-    using System.ComponentModel;
-    using System.Diagnostics;
-    using System.Drawing;
-    using System.Runtime.InteropServices;
-    using System.Windows.Forms;
-    using Microsoft.CSharp.RuntimeBinder;
-
     /// <summary>
     /// The GEStatusStrip shows various information about the plug-in
     /// </summary>
@@ -36,12 +42,12 @@ namespace FC.GEPluginCtrls
         /// <summary>
         /// Timer used when polling data
         /// </summary>
-        private static Timer timer = null;
+        private static Timer timer;
 
         /// <summary>
         /// An instance of the current browser
         /// </summary>
-        private GEWebBrowser browser = null;
+        private GEWebBrowser browser;
 
         /// <summary>
         /// Timer interval in miliseconds
@@ -79,7 +85,6 @@ namespace FC.GEPluginCtrls
         /// Initializes a new instance of the GEStatusStrip class.
         /// </summary>
         public GEStatusStrip()
-            : base()
         {
             this.InitializeComponent();
             this.Enabled = false;
@@ -92,7 +97,7 @@ namespace FC.GEPluginCtrls
         /// </summary>
         [Category("Control Options"),
         Description("Gets or sets the timer interval for polling data."),
-        DefaultValueAttribute(100)]
+        DefaultValue(100)]
         public int Interval
         {
             get
@@ -116,7 +121,7 @@ namespace FC.GEPluginCtrls
         /// </summary>
         [Category("Control Options"),
         Description("Specifies the visiblity of the progress streaming progress bar."),
-        DefaultValueAttribute(true)]
+        DefaultValue(true)]
         public bool ShowStreamingProgressBar
         {
             get
@@ -136,7 +141,7 @@ namespace FC.GEPluginCtrls
         /// </summary>
         [Category("Control Options"),
         Description("Specifies the visibility of the progress streaming label."),
-        DefaultValueAttribute(true)]
+        DefaultValue(true)]
         public bool ShowStreamingStatusLabel
         {
             get
@@ -156,7 +161,7 @@ namespace FC.GEPluginCtrls
         /// </summary>
         [Category("Control Options"),
         Description("Specifies the visibility of the browser version label."),
-        DefaultValueAttribute(true)]
+        DefaultValue(true)]
         public bool ShowBrowserVersionStatusLabel
         {
             get
@@ -166,15 +171,7 @@ namespace FC.GEPluginCtrls
 
             set
             {
-                if (!value)
-                {
-                    this.apiVersionStatusLabel.Spring = true;
-                }
-                else
-                {
-                    this.apiVersionStatusLabel.Spring = false;
-                }
-
+                this.apiVersionStatusLabel.Spring = !value;
                 this.browserVersionStatusLabelVisible = value;
                 this.browserVersionStatusLabel.Visible = value;
             }
@@ -185,7 +182,7 @@ namespace FC.GEPluginCtrls
         /// </summary>
         [Category("Control Options"),
         Description("Specifies the visibility of the api version label."),
-        DefaultValueAttribute(true)]
+        DefaultValue(true)]
         public bool ShowApiVersionStatusLabel
         {
             get
@@ -214,7 +211,7 @@ namespace FC.GEPluginCtrls
         /// </summary>
         [Category("Control Options"),
         Description("Specifies the visibility of the plugin version label."),
-        DefaultValueAttribute(true)]
+        DefaultValue(true)]
         public bool ShowPluginVersionStatusLabel
         {
             get
@@ -238,6 +235,7 @@ namespace FC.GEPluginCtrls
         /// </summary>
         /// <param name="instance">The GEWebBrowser instance</param>
         /// <example>Example: GEToolStrip.SetBrowserInstance(GEWebBrowser)</example>
+        [PermissionSet(SecurityAction.LinkDemand, Name = "FullTrust")]
         public void SetBrowserInstance(GEWebBrowser instance)
         {
             this.browser = instance;
@@ -245,17 +243,21 @@ namespace FC.GEPluginCtrls
             if (this.browser.PluginIsReady)
             {
                 this.Enabled = true;
-                timer = new Timer();
-                timer.Interval = this.interval;
+                timer = new Timer {Interval = this.interval};
                 timer.Start();
-                timer.Tick += new EventHandler(this.Timer_Tick);
+                timer.Tick += this.Timer_Tick;
 
                 this.browser.PluginReady += (o, e) => this.Enabled = true;
-                this.FindForm().FormClosing += (o, e) => timer.Stop();
+
+                Form findForm = this.FindForm();
+                if (findForm != null)
+                {
+                    findForm.FormClosing += (o, e) => timer.Stop();
+                }
 
                 try
                 {
-                    this.browserVersionStatusLabel.Text = "ie " + this.browser.Version.ToString();
+                    this.browserVersionStatusLabel.Text = "ie " + this.browser.Version;
                     this.apiVersionStatusLabel.Text = "api " + this.browser.Plugin.getApiVersion();
                     this.pluginVersionStatusLabel.Text = "plugin " + this.browser.Plugin.getPluginVersion();
                 }
@@ -279,7 +281,7 @@ namespace FC.GEPluginCtrls
         {
             if (this.browser.PluginIsReady)
             {
-                double percent = 0;
+                double percent;
 
                 try
                 {

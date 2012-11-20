@@ -16,18 +16,22 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see http://www.gnu.org/licenses/.
 // </summary>
+
+#region
+
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Drawing;
+using System.Runtime.InteropServices;
+using System.Xml;
+using FC.GEPluginCtrls.Geo;
+using Microsoft.CSharp.RuntimeBinder;
+
+#endregion
+
 namespace FC.GEPluginCtrls
 {
-    using System;
-    using System.Drawing;
-    using System.Collections.Generic;
-    using System.Diagnostics;
-    using System.Runtime.InteropServices;
-    using System.Xml;
-    using System.Xml.Linq;
-    using FC.GEPluginCtrls.Geo;
-    using Microsoft.CSharp.RuntimeBinder;
-
     /// <summary>
     /// This class provides basic Kml helper methods
     /// </summary>
@@ -140,11 +144,11 @@ namespace FC.GEPluginCtrls
             if (Convert.ToBoolean(boundsSpan.Latitude) || Convert.ToBoolean(boundsSpan.Longitude))
             {
                 // Distance - using law of cosines for speed...
-                double distEW = new Geo.Coordinate(center.Latitude, bounds.East)
-                   .Distance(new Geo.Coordinate(center.Latitude, bounds.West));
+                double distEW = new Coordinate(center.Latitude, bounds.East)
+                   .Distance(new Coordinate(center.Latitude, bounds.West));
 
-                double distNS = new Geo.Coordinate(bounds.North, center.Longitude)
-                   .Distance(new Geo.Coordinate(bounds.South, center.Longitude));
+                double distNS = new Coordinate(bounds.North, center.Longitude)
+                   .Distance(new Coordinate(bounds.South, center.Longitude));
 
                 aspectRatio = Math.Min(Math.Max(aspectRatio, distEW / distNS), 1.0);
 
@@ -642,9 +646,13 @@ namespace FC.GEPluginCtrls
 
             for (int i = 0; i < c; i++)
             {
-                keyValues.Add(
-                    list[i].Attributes["name"].InnerText,
-                    list[i].ChildNodes[0].InnerText);
+                XmlAttributeCollection xmlAttributeCollection = list[i].Attributes;
+                if (xmlAttributeCollection != null)
+                {
+                    keyValues.Add(
+                        xmlAttributeCollection["name"].InnerText,
+                        list[i].ChildNodes[0].InnerText);
+                }
             }
 
             return keyValues;
