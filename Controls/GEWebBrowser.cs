@@ -752,7 +752,6 @@ namespace FC.GEPluginCtrls
         /// </summary>
         /// <param name="feature">The target feature</param>
         /// <param name="action">The event Id</param>
-        /// <param name="callback">Optional, the same callback as was provided when the event was added</param>
         /// <param name="useCapture">Optional, use event capture</param>
         public void RemoveEventListener(object feature, EventId action, bool useCapture = false)
         {

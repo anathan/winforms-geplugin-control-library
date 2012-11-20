@@ -28,6 +28,9 @@ namespace FC.GEPluginCtrls
     /// </summary>
     public enum ViewerOption
     {
+        /// <summary>
+        /// No option
+        /// </summary>
         None = 0,
 
         /// <summary>
