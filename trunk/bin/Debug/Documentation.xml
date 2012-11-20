@@ -611,7 +611,6 @@
             </summary>
             <param name="feature">The target feature</param>
             <param name="action">The event Id</param>
-            <param name="callback">Optional, the same callback as was provided when the event was added</param>
             <param name="useCapture">Optional, use event capture</param>
         </member>
         <member name="M:FC.GEPluginCtrls.GEWebBrowser.ScreenGrab">
@@ -1611,32 +1610,43 @@
         </member>
         <member name="F:FC.GEPluginCtrls.Layer.Terrain">
             <summary>
-            The Terrain layer
+            The Terrain layer - 3D terrain
             </summary>
         </member>
         <member name="F:FC.GEPluginCtrls.Layer.Buildings">
             <summary>
-            The Buildings layer
+            The Buildings layer - 3D buildings
             </summary>
         </member>
         <member name="F:FC.GEPluginCtrls.Layer.BuildingsLowRes">
             <summary>
-            The Low Resolution (grey) Buildings layer
+            The Low Resolution (grey) Buildings layer <para>Note that this does not contain copies of photorealistic buildings;
+            rather, it includes buildings that do not yet exist in the photorealistic buildings layer.
+            As photorealistic versions of grey buildings are created, the buildings will be added to
+            <see cref="F:FC.GEPluginCtrls.Layer.Buildings"/>
+            and removed from
+            <see cref="F:FC.GEPluginCtrls.Layer.BuildingsLowRes"/>
+            </para>
             </summary>
         </member>
         <member name="F:FC.GEPluginCtrls.Layer.Borders">
             <summary>
-            The Borders layer
+            The Borders layer <para>Shows country and area borders, and place labels for cities, states, countries, oceans, etc.</para>
             </summary>
         </member>
         <member name="F:FC.GEPluginCtrls.Layer.Roads">
             <summary>
-            The Roads layer
+            The Roads layer - roads and road names
             </summary>
         </member>
         <member name="F:FC.GEPluginCtrls.Layer.Trees">
             <summary>
-            The Tree layer
+            The Tree layer - 3D tree models
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.Layer.All">
+            <summary>
+            All the available layers 
             </summary>
         </member>
         <member name="T:FC.GEPluginCtrls.GENavigationControl">
@@ -3869,6 +3879,11 @@
         <member name="T:FC.GEPluginCtrls.ViewerOption">
             <summary>
             Enumeration of options for use with <see cref="T:FC.GEPluginCtrls.ViewerOptions"/>
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.ViewerOption.None">
+            <summary>
+            No option
             </summary>
         </member>
         <member name="F:FC.GEPluginCtrls.ViewerOption.Sunlight">

@@ -76,16 +76,22 @@ namespace FC.GEPluginCtrls
                 throw new ArgumentException("ge is not of the type GEPlugin");
             }
 
-            try
+            ////ge.getLayerRoot().enableLayerById(layer.GetId(), value);
+            foreach (Layer eachLayer in Enum.GetValues(typeof (Layer)))
             {
-                ge.getLayerRoot().EnableLayerById(layer.GetId(), value);
-            }
-            catch (RuntimeBinderException rbex)
-            {
-                Debug.WriteLine("GetAllFeaturesKml: " + rbex.Message, "GEHelpers");
-            }
-            catch (COMException)
-            {
+                if (eachLayer.Equals(Layer.None) || !layer.HasFlag(eachLayer)) continue;
+
+                try
+                {
+                    ge.getLayerRoot().enableLayerById(eachLayer.GetId(), value);
+                }
+                catch (RuntimeBinderException rbex)
+                {
+                    Debug.WriteLine("GetAllFeaturesKml: " + rbex, "GEHelpers");
+                }
+                catch (COMException)
+                {
+                }
             }
         }
 
