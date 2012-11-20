@@ -117,14 +117,20 @@ namespace FC.GEPluginCtrls
             // create the node from the feature
             KmlTreeViewNode treeNode = new KmlTreeViewNode(feature);
 
-            // if the node is a networlink, or
-            // a document or folder with children
+            // if the children are hidden just return the empty node...
+            if(treeNode.KmlListStyle == ListItemStyle.CheckHideChildren)
+            {
+                return treeNode;
+            }
+
+            // if the node is a networlink or a document or folder
+            // and it has children...
             if (treeNode.ApiType == ApiType.KmlNetworkLink ||
                 ((treeNode.ApiType == ApiType.KmlDocument ||
                 treeNode.ApiType == ApiType.KmlFolder) &&
                 KmlHelpers.HasChildNodes(feature)))
             {
-                // add a place holder 
+                // add a place holder for the children... 
                 treeNode.Nodes.Add(new KmlTreeViewNode());
             }
 
@@ -273,7 +279,7 @@ namespace FC.GEPluginCtrls
             // If there is a place-holder node 
             if (eventNode.Nodes.ContainsKey(ApiType.None.ToString()))
             {
-                if (eventNode.IsLoading == true)
+                if (eventNode.IsLoading)
                 {
                     return;
                 }
@@ -285,8 +291,8 @@ namespace FC.GEPluginCtrls
                 // set up the background worker
                 // ...using named delegates to stop code clutter here
                 BackgroundWorker nodeBuilder = new BackgroundWorker();
-                nodeBuilder.DoWork += new DoWorkEventHandler(this.NodeBuilder_DoWork);
-                nodeBuilder.RunWorkerCompleted += new RunWorkerCompletedEventHandler(this.NodeBuilder_RunWorkerCompleted);
+                nodeBuilder.DoWork += this.NodeBuilderDoWork;
+                nodeBuilder.RunWorkerCompleted += this.NodeBuilderRunWorkerCompleted;
                 nodeBuilder.RunWorkerAsync(eventNode);
             }
             else
@@ -552,10 +558,10 @@ namespace FC.GEPluginCtrls
         /// </summary>
         /// <param name="sender">The object that raised the event.</param>
         /// <param name="e">Event arguments.</param>
-        private void NodeBuilder_DoWork(object sender, DoWorkEventArgs e)
+        private void NodeBuilderDoWork(object sender, DoWorkEventArgs e)
         {
             // node passed in from RunWorkerAsync
-            KmlTreeViewNode baseNode = e.Argument as KmlTreeViewNode;
+            KmlTreeViewNode baseNode = (KmlTreeViewNode)e.Argument;
             baseNode.IsLoading = true;
 
             // create a stack to hold the children we will create
@@ -641,7 +647,7 @@ namespace FC.GEPluginCtrls
         /// </summary>
         /// <param name="sender">The object that raised the event.</param>
         /// <param name="e">Event arguments.</param>
-        private void NodeBuilder_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        private void NodeBuilderRunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             if (e.Result == null)
             {
@@ -649,9 +655,9 @@ namespace FC.GEPluginCtrls
             }
 
             // the result object from NodeBuilder_DoWork
-            object[] result = e.Result as object[];
-            KmlTreeViewNode baseNode = result[0] as KmlTreeViewNode;
-            Stack<KmlTreeViewNode> children = result[1] as Stack<KmlTreeViewNode>;
+            object[] result = (object[])e.Result;
+            KmlTreeViewNode baseNode = (KmlTreeViewNode)result[0];
+            Stack<KmlTreeViewNode> children = (Stack<KmlTreeViewNode>)result[1];
             bool linkFailed = Convert.ToBoolean(result[2], CultureInfo.InvariantCulture);
 
             // clear the node of all children
