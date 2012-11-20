@@ -16,20 +16,25 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see http://www.gnu.org/licenses/.
 // </summary>
+
+#region
+
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Reflection;
+using System.Runtime.InteropServices;
+using Microsoft.CSharp.RuntimeBinder;
+
+#endregion
+
 namespace FC.GEPluginCtrls
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Diagnostics;
-    using System.Reflection;
-    using System.Runtime.InteropServices;
-    using Microsoft.CSharp.RuntimeBinder;
-
     /// <summary>
     /// This COM Visible class contains all the public methods to be called from Javascript.
     /// The various events are used by the <see cref="GEWebBrowser"/> when dealing with the plugin
     /// </summary>
-    [ComVisibleAttribute(true)]
+    [ComVisible(true)]
     public class External : IExternal
     {
         #region Private fields
@@ -37,17 +42,10 @@ namespace FC.GEPluginCtrls
         /// <summary>
         /// Stores fetched Kml Objects
         /// </summary>
-        private static Dictionary<string, object> kmlObjectCache =
+        private static readonly Dictionary<string, object> kmlObjectCache =
             new Dictionary<string, object>();
 
         #endregion
-
-        /// <summary>
-        /// Initializes a new instance of the External class.
-        /// </summary>
-        public External()
-        {
-        }
 
         #region Public events
 
@@ -91,7 +89,7 @@ namespace FC.GEPluginCtrls
         /// </summary>
         internal static Dictionary<string, object> KmlObjectCache
         {
-            get { return External.kmlObjectCache; }
+            get { return kmlObjectCache; }
         }
 
         #endregion
@@ -105,7 +103,7 @@ namespace FC.GEPluginCtrls
         /// <param name="message">the debug message</param>
         public void DebugMessage(string category, string message)
         {
-            System.Diagnostics.Debug.WriteLine(message, category);
+            Debug.WriteLine(message, category);
         }
 
         /// <summary>
@@ -117,16 +115,9 @@ namespace FC.GEPluginCtrls
         {
             try
             {
-                object[] data;
-
-                if (parameters.GetType().Name == "__ComObject")
-                {
-                    data = new object[] { (dynamic)parameters.kmlObject, (string)parameters.url };
-                }
-                else
-                {
-                    data = (object[])parameters;
-                }
+                object[] data = parameters.GetType().Name == "__ComObject"
+                                    ? new object[] {parameters.kmlObject, (string) parameters.url}
+                                    : parameters;
 
                 GEEventArgs ea = new GEEventArgs(data);
                 MethodInfo info = this.GetType().GetMethod(name, BindingFlags.Instance | BindingFlags.NonPublic);

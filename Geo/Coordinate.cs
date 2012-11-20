@@ -16,12 +16,16 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see http://www.gnu.org/licenses/.
 // </summary>
+
+#region
+
+using System;
+using System.Globalization;
+
+#endregion
+
 namespace FC.GEPluginCtrls.Geo
 {
-    using System;
-    using System.Globalization;
-    using System.Runtime.InteropServices;
-
     /// <summary>
     /// Coordinate class
     /// </summary>
@@ -245,10 +249,8 @@ namespace FC.GEPluginCtrls.Geo
             {
                 return Maths.DistanceHaversine(this, destination, units);
             }
-            else
-            {
-                return Maths.DistanceCosine(this, destination, units);
-            }
+            
+            return Maths.DistanceCosine(this, destination, units);
         }
 
         /// <summary>

@@ -16,17 +16,23 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see http://www.gnu.org/licenses/.
 // </summary>
+
+#region
+
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Diagnostics;
+using System.Drawing;
+using System.Drawing.Imaging;
+using System.IO;
+using System.Windows.Forms;
+using Microsoft.CSharp.RuntimeBinder;
+
+#endregion
+
 namespace FC.GEPluginCtrls
 {
-    using System;
-    using System.Collections.Generic;
-    using System.ComponentModel;
-    using System.Diagnostics;
-    using System.Drawing;
-    using System.Drawing.Imaging;
-    using System.Windows.Forms;
-    using Microsoft.CSharp.RuntimeBinder;
-
     /// <summary>
     /// The GEToolStrip provides a quick way to access and set the plugin options
     /// </summary>
@@ -42,12 +48,12 @@ namespace FC.GEPluginCtrls
         /// <summary>
         /// An instance of the options wrapper class
         /// </summary>
-        private GEOptions options = null;
+        private GEOptions options;
 
         /// <summary>
         /// The plugin navigation cotrol 
         /// </summary>
-        private GENavigationControl control = null;
+        private GENavigationControl control;
 
         /// <summary>
         /// Indicates whether the navigation items are visible
@@ -60,7 +66,6 @@ namespace FC.GEPluginCtrls
         /// Initializes a new instance of the GEToolStrip class.
         /// </summary>
         public GEToolStrip()
-            : base()
         {
             this.InitializeComponent();
             this.BuildLanguageOptions();
@@ -74,7 +79,7 @@ namespace FC.GEPluginCtrls
         /// </summary>
         [Category("Control Options"),
         Description("Specifies the visibility of the Navigation items."),
-        DefaultValueAttribute(true)]
+        DefaultValue(true)]
         public bool ShowNavigationItems
         {
             get
@@ -97,7 +102,7 @@ namespace FC.GEPluginCtrls
         /// </summary>
         [Category("Control Options"),
         Description("Specifies the visibility of the Layers drop down menu."),
-        DefaultValueAttribute(true)]
+        DefaultValue(true)]
         public bool ShowLayersDropDown
         {
             get { return this.layersDropDownButton.Visible; }
@@ -109,7 +114,7 @@ namespace FC.GEPluginCtrls
         /// </summary>
         [Category("Control Options"),
         Description("Specifies the visibility of the Options drop down menu."),
-        DefaultValueAttribute(true)]
+        DefaultValue(true)]
         public bool ShowOptionsDropDown
         {
             get { return this.optionsDropDownButton.Visible; }
@@ -121,7 +126,7 @@ namespace FC.GEPluginCtrls
         /// </summary>
         [Category("Control Options"),
         Description("Specifies the visibility of the View drop down."),
-        DefaultValueAttribute(true)]
+        DefaultValue(true)]
         public bool ShowViewDropDown
         {
             get { return this.viewDropDownButton.Visible; }
@@ -133,7 +138,7 @@ namespace FC.GEPluginCtrls
         /// </summary>
         [Category("Control Options"),
         Description("Specifies the visibility of the Imagery drop down."),
-        DefaultValueAttribute(true)]
+        DefaultValue(true)]
         public bool ShowImageryDropDown
         {
             get { return this.imageryDropDownButton.Visible; }
@@ -145,7 +150,7 @@ namespace FC.GEPluginCtrls
         /// </summary>
         [Category("Control Options"),
         Description("Specifies the visibility of the screen grab button."),
-        DefaultValueAttribute(true)]
+        DefaultValue(true)]
         public bool ShowScreenGrabButton
         {
             get { return this.screenGrabButton.Visible; }
@@ -157,7 +162,7 @@ namespace FC.GEPluginCtrls
         /// </summary>
         [Category("Control Options"),
         Description("Specifies the visibility of the show view in maps button."),
-        DefaultValueAttribute(true)]
+        DefaultValue(true)]
         public bool ShowViewInMapsButton
         {
             get { return this.viewInMapsButton.Visible; }
@@ -169,7 +174,7 @@ namespace FC.GEPluginCtrls
         /// </summary>
         [Category("Control Options"),
         Description("Specifies the visibility of the language combobox."),
-        DefaultValueAttribute(true)]
+        DefaultValue(true)]
         public bool ShowLanguageComboBox
         {
             get { return this.languageComboBox.Visible; }
@@ -182,7 +187,7 @@ namespace FC.GEPluginCtrls
         /// </summary>
         [Category("Control Options"),
         Description("Gets or sets the AutoCompleteMode of the navigation textbox. Default is AutoCompleteMode.Append"),
-        DefaultValueAttribute(AutoCompleteMode.SuggestAppend)]
+        DefaultValue(AutoCompleteMode.SuggestAppend)]
         public AutoCompleteMode NavigationAutoCompleteMode
         {
             get { return this.navigationTextBox.AutoCompleteMode; }
@@ -194,7 +199,7 @@ namespace FC.GEPluginCtrls
         /// </summary>
         [Category("Control Options"),
         Description("Gets or sets the alignment of the toolstrip items."),
-        DefaultValueAttribute(ToolStripItemAlignment.Left)]
+        DefaultValue(ToolStripItemAlignment.Left)]
         public ToolStripItemAlignment ToolStripItemAlignment
         {
             get { return this.toolStripItemAlignment; }
@@ -343,9 +348,7 @@ namespace FC.GEPluginCtrls
             Dictionary<string, string> languageList = Languages.Codes();
             foreach (KeyValuePair<string, string> entry in languageList)
             {
-                ToolStripMenuItem item = new ToolStripMenuItem();
-                item.Text = entry.Value;
-                item.Tag = entry.Key;
+                ToolStripMenuItem item = new ToolStripMenuItem {Text = entry.Value, Tag = entry.Key};
                 this.languageComboBox.Items.Add(item);
             }
         }
@@ -359,10 +362,7 @@ namespace FC.GEPluginCtrls
                 list.Add(item);
             }
             this.Items.Clear();
-            list.ForEach(delegate(ToolStripItem i) 
-            { 
-                this.Items.Add(i);
-            });
+            list.ForEach(i => this.Items.Add(i));
         }
 
         #endregion
@@ -404,7 +404,7 @@ namespace FC.GEPluginCtrls
                     this.navigationTextBoxStringCollection.Add(input);
                 }
 
-                if (System.IO.File.Exists(input))
+                if (File.Exists(input))
                 {
                     this.browser.FetchKmlLocal(input);
                 }
@@ -434,7 +434,7 @@ namespace FC.GEPluginCtrls
                 {
                     // finally attempt to geocode the input
                     // fly to the point here or in javascript? 
-                    dynamic point = this.browser.InvokeDoGeocode(input);
+                    this.browser.InvokeDoGeocode(input);
                 }
             }
         }
@@ -456,11 +456,11 @@ namespace FC.GEPluginCtrls
         /// <param name="e">Event arguments.</param>
         private void LayersItem_Clicked(object sender, EventArgs e)
         {
-            ToolStripMenuItem item = sender as ToolStripMenuItem;
+            ToolStripMenuItem item = (ToolStripMenuItem) sender;
 
-            if (this.browser.PluginIsReady && (item != null))
+            if (this.browser.PluginIsReady)
             {
-                GEHelpers.EnableLayer(this.browser.Plugin, (Layer)item.Tag, item.Checked);
+                GEHelpers.EnableLayer(this.browser.Plugin, (Layer) item.Tag, item.Checked);
             }
         }
 
@@ -508,8 +508,6 @@ namespace FC.GEPluginCtrls
                         case "STATUS":
                             this.options.StatusBarVisibility = item.Checked;
                             break;
-                        default:
-                            break;
                     }
                 }
                 catch (RuntimeBinderException rbex)
@@ -539,15 +537,7 @@ namespace FC.GEPluginCtrls
                     {
                         case "SKY":
                             this.layersDropDownButton.Enabled = !item.Checked;
-                            if (item.Checked)
-                            {
-                                this.options.SetMapType(MapType.Sky);
-                            }
-                            else
-                            {
-                                this.options.SetMapType(MapType.Earth);
-                            }
-
+                            this.options.SetMapType(item.Checked ? MapType.Sky : MapType.Earth);
                             break;
                         case "SUN":
                             this.browser.Plugin.getSun().setVisibility(value);
@@ -609,7 +599,6 @@ namespace FC.GEPluginCtrls
                             this.Enabled = false;
                             this.browser.CreateInstance(type);
                             break;
-                        case ImageryBase.Earth:
                         default:
                             this.layersDropDownButton.Enabled = true;
                             this.viewInMapsButton.Enabled = true;
@@ -642,12 +631,12 @@ namespace FC.GEPluginCtrls
                 Bitmap image = this.browser.ScreenGrab();
 
                 // Save the file with a dialog
-                SaveFileDialog dialog = new SaveFileDialog();
-                dialog.Filter = "JPEG files (*.jpg;*.jpeg)|*.jpg;*.jpeg|All files (*.*)|*.*";
-
-                if (dialog.ShowDialog() == DialogResult.OK)
+                using (SaveFileDialog dialog = new SaveFileDialog {Filter = "JPEG files (*.jpg;*.jpeg)|*.jpg;*.jpeg|All files (*.*)|*.*"})
                 {
-                    image.Save(dialog.FileName, ImageFormat.Jpeg);
+                    if (dialog.ShowDialog() == DialogResult.OK)
+                    {
+                        image.Save(dialog.FileName, ImageFormat.Jpeg);
+                    }
                 }
             }
         }
@@ -682,7 +671,7 @@ namespace FC.GEPluginCtrls
         /// <param name="e">Event arguments.</param>
         private void LanguageComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-            ToolStripMenuItem item = this.languageComboBox.SelectedItem as ToolStripMenuItem;
+            ToolStripMenuItem item = (ToolStripMenuItem) this.languageComboBox.SelectedItem;
             this.browser.SetLanguage(item.Tag.ToString());
         }
 

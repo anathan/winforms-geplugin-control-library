@@ -16,18 +16,23 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see http://www.gnu.org/licenses/.
 // </summary>
+
+#region
+
+using System;
+using System.Diagnostics;
+using System.Globalization;
+using System.Reflection;
+using System.Runtime.InteropServices;
+using System.Security.Permissions;
+using System.Text;
+using FC.GEPluginCtrls.Geo;
+using Microsoft.CSharp.RuntimeBinder;
+
+#endregion
+
 namespace FC.GEPluginCtrls
 {
-    using System;
-    using System.ComponentModel;
-    using System.Diagnostics;
-    using System.Globalization;
-    using System.Reflection;
-    using System.Runtime.InteropServices;
-    using System.Text;
-    using FC.GEPluginCtrls.Geo;
-    using Microsoft.CSharp.RuntimeBinder;
-
     /// <summary>
     /// This class provides some basic Google Earth plugin helpers functions.
     /// Interfaces whose names begin with GE allow for programmatic access to core plugin functionality and other miscellaneous options.
@@ -364,22 +369,13 @@ namespace FC.GEPluginCtrls
                 throw new ArgumentException("ge is not of the type GEPlugin");
             }
 
-            dynamic balloon = null;
             string content = string.Empty;
 
             try
             {
-                ge.setBalloon(balloon);
-
-                if (useUnsafeHtml)
-                {
-                    content = feature.getBalloonHtmlUnsafe();
-                }
-                else
-                {
-                    content = feature.getBalloonHtml();
-                }
-            } 
+                ge.setBalloon(null);
+                content = useUnsafeHtml ? feature.getBalloonHtmlUnsafe() : feature.getBalloonHtml();
+            }
             catch (COMException cex)
             {
                 Debug.WriteLine("OpenFeatureBalloon: " + cex.Message, "GEHelpers");
@@ -392,7 +388,7 @@ namespace FC.GEPluginCtrls
                 return null;
             }
 
-            balloon = KmlHelpers.CreateHtmlStringBalloon(
+            dynamic balloon = KmlHelpers.CreateHtmlStringBalloon(
                 ge,
                 content,
                 minWidth,
@@ -483,6 +479,7 @@ namespace FC.GEPluginCtrls
         /// Displays the current plugin view in Google Maps using the default system browser
         /// </summary>
         /// <param name="ge">The plugin instance</param>
+        [PermissionSet(SecurityAction.LinkDemand, Name = "FullTrust")]
         public static void ShowCurrentViewInMaps(dynamic ge)
         {
             if (!IsGE(ge))
@@ -490,19 +487,16 @@ namespace FC.GEPluginCtrls
                 throw new ArgumentException("ge is not of the type GEPlugin");
             }
 
-            dynamic lookat = null;
-            double range = 0;
-            double zoom = 0;
             string url = "about:blank";
 
             try
             {
                 // Get the current view 
-                lookat = ge.getView().copyAsLookAt(ge.ALTITUDE_RELATIVE_TO_GROUND);
-                range = lookat.getRange();
+                dynamic lookat = ge.getView().copyAsLookAt(ge.ALTITUDE_RELATIVE_TO_GROUND);
+                double range = lookat.getRange();
 
                 // calculate the equivelent zoom level from the given range
-                zoom = Math.Round(26 - (Math.Log(lookat.getRange()) / Math.Log(2)));
+                double zoom = Math.Round(26 - (Math.Log(range) / Math.Log(2)));
 
                 // Google Maps have an integer "zoom level" which defines the resolution of the current view.
                 // Zoom levels between 0 (entire world on map) to 21+ (down to individual buildings) are possible.

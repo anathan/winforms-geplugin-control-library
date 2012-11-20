@@ -16,18 +16,23 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see http://www.gnu.org/licenses/.
 // </summary>
+
+#region
+
+using System;
+using System.Diagnostics;
+using System.Globalization;
+using System.IO;
+using System.Net;
+using System.Net.Sockets;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+
+#endregion
+
 namespace FC.GEPluginCtrls.HttpServer
 {
-    using System;
-    using System.Diagnostics;
-    using System.Globalization;
-    using System.IO;
-    using System.Net;
-    using System.Net.Sockets;
-    using System.Text;
-    using System.Threading;
-    using System.Threading.Tasks;
-
     /// <summary>
     /// A simple HTTP server class to allow the use of local files in the Google Earth Plugin
     /// </summary>
@@ -38,7 +43,7 @@ namespace FC.GEPluginCtrls.HttpServer
         /// <summary>
         /// Thread signal
         /// </summary>
-        private static ManualResetEvent resetEvent = new ManualResetEvent(false);
+        private static readonly ManualResetEvent resetEvent = new ManualResetEvent(false);
 
         #endregion
         
@@ -46,7 +51,7 @@ namespace FC.GEPluginCtrls.HttpServer
         /// Initializes a new instance of the GEServer class.
         /// </summary>
         public GEServer() :
-            this(IPAddress.Loopback, 8080, Path.DirectorySeparatorChar.ToString())
+            this(IPAddress.Loopback, 8080, Path.DirectorySeparatorChar.ToString(CultureInfo.InvariantCulture))
         {
         }
 
@@ -123,7 +128,7 @@ namespace FC.GEPluginCtrls.HttpServer
         public void Start()
         {
             this.AcceptClients = true;
-            Task.Factory.StartNew(() => this.Accept());
+            Task.Factory.StartNew(this.Accept);
         }
         
         /// <summary>
@@ -153,14 +158,13 @@ namespace FC.GEPluginCtrls.HttpServer
             Socket handler = listener.EndAccept(result);
 
             // Create the state object.
-            StateObject state = new StateObject();
-            state.Socket = handler;
+            StateObject state = new StateObject {Socket = handler};
             handler.BeginReceive(
                 state.Buffer,
                 0, 
                 StateObject.BufferSize, 
                 0, 
-                new AsyncCallback(ReadCallback), 
+                ReadCallback, 
                 state);
         }
 
@@ -249,7 +253,7 @@ namespace FC.GEPluginCtrls.HttpServer
                         0,
                         StateObject.BufferSize, 
                         0,
-                        new AsyncCallback(ReadCallback),
+                        ReadCallback,
                         state);
                 }
             }
@@ -287,7 +291,7 @@ namespace FC.GEPluginCtrls.HttpServer
             try
             {
                 // Complete sending the data to the remote device.
-                int bytesSent = handler.EndSend(result);
+                handler.EndSend(result);
                 ////Debug.WriteLine("Sent {0} bytes to client.", bytesSent); 
             }
             catch (SocketException sex)
@@ -327,10 +331,9 @@ namespace FC.GEPluginCtrls.HttpServer
                 string header = BuildResponseHeader(GetMimeType(filePath), data.Length, HttpStatusCode.OK);
                 Send(handler, header);
 
-                StateObject state = new StateObject();
-                state.Socket = handler;
+                StateObject state = new StateObject {Socket = handler};
                 state.Data.Append(filePath);
-                handler.BeginSendFile(filePath, new AsyncCallback(SendFileCallback), state);
+                handler.BeginSendFile(filePath, SendFileCallback, state);
             }
             else
             {
@@ -426,21 +429,21 @@ namespace FC.GEPluginCtrls.HttpServer
         /// <returns>the local file path for the uri</returns>
         private static string TranslatePath(string requestUri)
         {
-            string directory = Path.GetDirectoryName(requestUri.Replace("/", Path.DirectorySeparatorChar.ToString()));
+            string directory = Path.GetDirectoryName(requestUri.Replace("/", Path.DirectorySeparatorChar.ToString(CultureInfo.InvariantCulture)));
             string fileName = Path.GetFileName(requestUri);
 
             if (!string.IsNullOrEmpty(directory))
             {
                 // remove any leading slash from the path
-                if (directory.StartsWith(Path.DirectorySeparatorChar.ToString(), StringComparison.OrdinalIgnoreCase))
+                if (directory.StartsWith(Path.DirectorySeparatorChar.ToString(CultureInfo.InvariantCulture), StringComparison.OrdinalIgnoreCase))
                 {
                     directory = directory.TrimStart(Path.DirectorySeparatorChar);
                 }
 
                 // add a trailing slash to the path if required
-                if (!directory.EndsWith(Path.DirectorySeparatorChar.ToString(), StringComparison.OrdinalIgnoreCase))
+                if (!directory.EndsWith(Path.DirectorySeparatorChar.ToString(CultureInfo.InvariantCulture), StringComparison.OrdinalIgnoreCase))
                 {
-                    directory += Path.DirectorySeparatorChar.ToString();
+                    directory += Path.DirectorySeparatorChar.ToString(CultureInfo.InvariantCulture);
                 }
             }
 
@@ -455,12 +458,12 @@ namespace FC.GEPluginCtrls.HttpServer
                 CultureInfo.InvariantCulture,
                 "{0}{1}{2}{3}",
                 RootDirectory, 
-                Path.DirectorySeparatorChar.ToString(),
+                Path.DirectorySeparatorChar.ToString(CultureInfo.InvariantCulture),
                 directory,
                 fileName).Replace(
-                Path.DirectorySeparatorChar.ToString() +
-                Path.DirectorySeparatorChar.ToString(),
-                Path.DirectorySeparatorChar.ToString());
+                Path.DirectorySeparatorChar.ToString(CultureInfo.InvariantCulture) +
+                Path.DirectorySeparatorChar.ToString(CultureInfo.InvariantCulture),
+                Path.DirectorySeparatorChar.ToString(CultureInfo.InvariantCulture));
 
             return path;
         }
@@ -472,7 +475,7 @@ namespace FC.GEPluginCtrls.HttpServer
         private void Accept()
         {
             // Data buffer for incoming data.
-            byte[] bytes = new byte[StateObject.BufferSize];
+            ////byte[] bytes = new byte[StateObject.BufferSize];
 
             // Establish the local endpoint for the socket.
             IPEndPoint localEndPoint = new IPEndPoint(this.IPAddress, this.Port);
@@ -493,7 +496,7 @@ namespace FC.GEPluginCtrls.HttpServer
 
                     // Start an asynchronous socket to listen for connections.
                     listener.BeginAccept(
-                        new AsyncCallback(AcceptCallback),
+                        AcceptCallback,
                         listener);
 
                     // Wait until a connection is made before continuing.

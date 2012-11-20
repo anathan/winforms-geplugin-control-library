@@ -16,11 +16,16 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see http://www.gnu.org/licenses/.
 // </summary>
+
+#region
+
+using System;
+using System.Runtime.InteropServices;
+
+#endregion
+
 namespace FC.GEPluginCtrls
 {
-    using System;
-    using System.Runtime.InteropServices;
-
     /// <summary>
     /// Wrapper for the GEOptions com object.
     /// Acts as a proxy and maps all the getter and setter methods to managed properties.
@@ -37,7 +42,7 @@ namespace FC.GEPluginCtrls
         /// <summary>
         /// The options object 
         /// </summary>
-        private dynamic options = null;
+        private readonly dynamic options = null;
 
         #endregion
 

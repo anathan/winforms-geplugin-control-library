@@ -16,10 +16,15 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see http://www.gnu.org/licenses/.
 // </summary>
+
+#region
+
+using System;
+
+#endregion
+
 namespace FC.GEPluginCtrls
 {
-    using System;
-
     /// <summary>
     /// Custom event arguments 
     /// </summary>
@@ -29,7 +34,6 @@ namespace FC.GEPluginCtrls
         /// Initializes a new instance of the GEEventArgs class
         /// </summary>
         public GEEventArgs()
-            : base()
         {
         }
 
@@ -38,7 +42,6 @@ namespace FC.GEPluginCtrls
         /// </summary>
         /// <param name="feature">Plugin API object to initialise with.</param>
         public GEEventArgs(object feature)
-            : base()
         {
             this.ApiObject = feature;
         }
@@ -48,7 +51,6 @@ namespace FC.GEPluginCtrls
         /// </summary>
         /// <param name="message">Event message</param>
         public GEEventArgs(string message)
-            : base()
         {
             this.Message = message;
         }
@@ -61,7 +63,7 @@ namespace FC.GEPluginCtrls
         public GEEventArgs(string message, string data)
             : this(message)
         {
-            EventId id = EventId.None;
+            EventId id;
             if (Enum.TryParse(data, true, out id))
             {
                 this.EventId = id;

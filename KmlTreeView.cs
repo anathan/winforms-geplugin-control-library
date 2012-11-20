@@ -16,18 +16,22 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see http://www.gnu.org/licenses/.
 // </summary>
+
+#region
+
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Drawing;
+using System.Globalization;
+using System.Runtime.InteropServices;
+using System.Windows.Forms;
+using System.Windows.Forms.VisualStyles;
+
+#endregion
+
 namespace FC.GEPluginCtrls
 {
-    using System;
-    using System.Collections;
-    using System.Collections.Generic;
-    using System.ComponentModel;
-    using System.Drawing;
-    using System.Globalization;
-    using System.Runtime.InteropServices;
-    using System.Windows.Forms;
-    using System.Windows.Forms.VisualStyles;
-
     /// <summary>
     /// The KmlTreeView provides a quick and easy way to display kml content.
     /// It intergratres with the <see cref="GEWebBrowser"/> allowing a user to
@@ -69,7 +73,6 @@ namespace FC.GEPluginCtrls
         /// Initializes a new instance of the KmlTreeView class.
         /// </summary>
         public KmlTreeView()
-            : base()
         {
             this.InitializeComponent();
             this.BuildTriStateImageList();
@@ -150,7 +153,7 @@ namespace FC.GEPluginCtrls
 
             if (nodes.Length == 1)
             {
-                node = nodes[0] as KmlTreeViewNode;
+                node = (KmlTreeViewNode) nodes[0];
             }
 
             return node;
@@ -215,7 +218,7 @@ namespace FC.GEPluginCtrls
 
                 for (int i = 0; i < node.Nodes.Count; i++)
                 {
-                    stack.Push(node.Nodes[i] as KmlTreeViewNode);
+                    stack.Push((KmlTreeViewNode)node.Nodes[i]);
                 }
             }
 
@@ -273,7 +276,7 @@ namespace FC.GEPluginCtrls
         {
             base.OnAfterExpand(e);
 
-            KmlTreeViewNode eventNode = e.Node as KmlTreeViewNode;
+            KmlTreeViewNode eventNode = (KmlTreeViewNode) e.Node;
             eventNode.SetStyle();
 
             // If there is a place-holder node 
@@ -290,10 +293,12 @@ namespace FC.GEPluginCtrls
 
                 // set up the background worker
                 // ...using named delegates to stop code clutter here
-                BackgroundWorker nodeBuilder = new BackgroundWorker();
-                nodeBuilder.DoWork += this.NodeBuilderDoWork;
-                nodeBuilder.RunWorkerCompleted += this.NodeBuilderRunWorkerCompleted;
-                nodeBuilder.RunWorkerAsync(eventNode);
+                using (BackgroundWorker nodeBuilder = new BackgroundWorker())
+                {
+                    nodeBuilder.DoWork += this.NodeBuilderDoWork;
+                    nodeBuilder.RunWorkerCompleted += this.NodeBuilderRunWorkerCompleted;
+                    nodeBuilder.RunWorkerAsync(eventNode);
+                }
             }
             else
             {
@@ -325,7 +330,7 @@ namespace FC.GEPluginCtrls
             // ideally this should be event driven rather than via user interaction
             // but as yet the api does not expose networklink events...
             KmlTreeViewNode node =
-                UpdateCheck(e.Node as KmlTreeViewNode, this.browser);
+                UpdateCheck((KmlTreeViewNode) e.Node, this.browser);
             node.Refresh(); 
 
             if (node.IsLoading)
@@ -355,8 +360,6 @@ namespace FC.GEPluginCtrls
 
                 case ApiType.None:
                     return;
-                default:
-                    break;
             }
 
             GEHelpers.FlyToObject(this.browser.Plugin, node.ApiObject);
@@ -368,10 +371,6 @@ namespace FC.GEPluginCtrls
         /// <param name="e">The event arguments</param>
         protected override void OnNodeMouseClick(TreeNodeMouseClickEventArgs e)
         {
-            Stack<KmlTreeViewNode> nodes;
-            KmlTreeViewNode treeNode;
-            bool state;
-
             base.OnNodeMouseClick(e);
             this.preventChecking = true;
 
@@ -384,7 +383,7 @@ namespace FC.GEPluginCtrls
                 return;
             }
 
-            treeNode = e.Node as KmlTreeViewNode;
+            KmlTreeViewNode treeNode = (KmlTreeViewNode) e.Node;
             if (e.Button == MouseButtons.Left)
             {
                 // toggle the check state
@@ -403,7 +402,7 @@ namespace FC.GEPluginCtrls
             
             this.OnAfterCheck(new TreeViewEventArgs(treeNode, TreeViewAction.ByMouse));
 
-            nodes = new Stack<KmlTreeViewNode>(treeNode.Nodes.Count);
+            Stack<KmlTreeViewNode> nodes = new Stack<KmlTreeViewNode>(treeNode.Nodes.Count);
             nodes.Push(treeNode);
 
             do
@@ -413,13 +412,13 @@ namespace FC.GEPluginCtrls
                 treeNode.ApiObjectVisible = treeNode.Checked;
                 for (int i = 0; i < treeNode.Nodes.Count; i++)
                 {
-                    nodes.Push(treeNode.Nodes[i] as KmlTreeViewNode);
+                    nodes.Push((KmlTreeViewNode)treeNode.Nodes[i]);
                 }
             }
             while (nodes.Count > 0);
 
-            state = false;
-            treeNode = e.Node as KmlTreeViewNode;
+            bool state = false;
+            treeNode = (KmlTreeViewNode) e.Node;
 
             while (treeNode.Parent != null)
             {
@@ -433,7 +432,7 @@ namespace FC.GEPluginCtrls
            
                 if (state)
                 {
-                    ((KmlTreeViewNode)treeNode.Parent).ApiObjectVisible = state;
+                    ((KmlTreeViewNode)treeNode.Parent).ApiObjectVisible = true;
                     treeNode.Parent.StateImageIndex = 2;
                 }
                 else
@@ -441,7 +440,7 @@ namespace FC.GEPluginCtrls
                     treeNode.Parent.StateImageIndex = index;
                 }
 
-                treeNode = treeNode.Parent as KmlTreeViewNode;
+                treeNode = (KmlTreeViewNode)treeNode.Parent;
             }
 
             this.preventChecking = false;
@@ -483,9 +482,7 @@ namespace FC.GEPluginCtrls
 
             if (liveObject != null)
             {
-                KmlTreeViewNode newNode = new KmlTreeViewNode(liveObject);
-                newNode.Name = node.Name;
-                newNode.BaseUrl = node.BaseUrl; 
+                KmlTreeViewNode newNode = new KmlTreeViewNode(liveObject) {Name = node.Name, BaseUrl = node.BaseUrl};
 
                 if (node.Parent != null)
                 {
@@ -572,7 +569,7 @@ namespace FC.GEPluginCtrls
             {
                 // fetch the networklink data 
                 string url = KmlHelpers.GetUrl(baseNode.ApiObject).ToString();
-                dynamic data = null;
+                dynamic data;
                 bool rebuild = false;
 
                 // can't use the new FetchAndParse with archive files...

@@ -16,11 +16,16 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see http://www.gnu.org/licenses/.
 // </summary>
+
+#region
+
+using System;
+using System.Globalization;
+
+#endregion
+
 namespace FC.GEPluginCtrls.Geo
 {
-    using System;
-    using System.Globalization;
-
     /// <summary>
     /// Bounds class
     /// </summary>
@@ -359,7 +364,7 @@ namespace FC.GEPluginCtrls.Geo
         /// <returns>true if the specified System.Object is equal to the current Bounds object</returns>
         public override bool Equals(object obj)
         {
-            var other = obj as Bounds;
+            Bounds other = obj as Bounds;
             if (other != null)
             {
                 return this.Equals(obj);
@@ -398,7 +403,7 @@ namespace FC.GEPluginCtrls.Geo
         /// <returns>[(ne.lat, ne.lng, ne.alt), (sw.lat, sw.lng, sw.alt)]</returns>
         public override string ToString()
         {
-            return string.Format(CultureInfo.InvariantCulture, "[{0}, {1}]", this.Northeast.ToString(), this.Southwest.ToString());
+            return string.Format(CultureInfo.InvariantCulture, "[{0}, {1}]", this.Northeast, this.Southwest);
         }
 
         #endregion
@@ -427,10 +432,8 @@ namespace FC.GEPluginCtrls.Geo
             {
                 return longitude <= this.East || longitude >= this.West;
             }
-            else
-            {
-                return this.West <= longitude && longitude <= this.East;
-            }
+
+            return this.West <= longitude && longitude <= this.East;
         }
 
         #endregion

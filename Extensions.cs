@@ -16,11 +16,16 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see http://www.gnu.org/licenses/.
 // </summary>
+
+#region
+
+using System.ComponentModel;
+using System.Reflection;
+
+#endregion
+
 namespace FC.GEPluginCtrls
 {
-    using System.ComponentModel;
-    using System.Reflection;
-
     /// <summary>
     /// Extension helper methods for the control libray
     /// </summary>
@@ -37,7 +42,7 @@ namespace FC.GEPluginCtrls
             DescriptionAttribute[] attributes =
                 (DescriptionAttribute[])fi.GetCustomAttributes(typeof(DescriptionAttribute), false);
 
-            if (attributes != null && attributes.Length > 0)
+            if (attributes.Length > 0)
             {
                 return attributes[0].Description;
             }

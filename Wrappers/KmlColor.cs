@@ -17,12 +17,16 @@
 // along with this program. If not, see http://www.gnu.org/licenses/.
 // </summary>
 
+#region
+
+using System;
+using System.Drawing;
+using System.Globalization;
+
+#endregion
+
 namespace FC.GEPluginCtrls
 {
-    using System;
-    using System.Drawing;
-    using System.Globalization;
-
     /// <summary>
     /// Wrapper for the KmlColor object, maps all the getter and setter methods to managed properties. 
     /// <para>

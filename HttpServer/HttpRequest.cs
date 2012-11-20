@@ -16,10 +16,15 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see http://www.gnu.org/licenses/.
 // </summary>namespace FC.GEPluginCtrls.Enumerations
+
+#region
+
+using System;
+
+#endregion
+
 namespace FC.GEPluginCtrls.HttpServer
 {
-    using System;
-
     /// <summary>
     /// For http request header data in the <see cref="GEServer"/>
     /// </summary>
@@ -34,7 +39,7 @@ namespace FC.GEPluginCtrls.HttpServer
         {
             // split the request by CRLF into lines
             string[] headerLines = data.Split(
-                new string[] { Environment.NewLine },
+                new[] { Environment.NewLine },
                 StringSplitOptions.RemoveEmptyEntries);
             string[] tokens = new string[] { };
 

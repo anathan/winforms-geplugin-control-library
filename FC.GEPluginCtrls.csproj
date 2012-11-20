@@ -65,35 +65,23 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="Microsoft.VisualStudio.DebuggerVisualizers, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
-    <Reference Include="System.Data.Entity" />
-    <Reference Include="System.Runtime.Serialization" />
-    <Reference Include="System.Security" />
-    <Reference Include="System.Xml.Linq">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="System.Data.DataSetExtensions">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="System.Data" />
-    <Reference Include="System.Deployment" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Controls\KmlTreeView.cs">
+    <Compile Include="KmlTreeView.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Controls\KmlTreeView.Designer.cs">
+    <Compile Include="KmlTreeView.Designer.cs">
       <DependentUpon>KmlTreeView.cs</DependentUpon>
     </Compile>
-    <Compile Include="Controls\KmlTreeViewNode.cs" />
+    <Compile Include="KmlTreeViewNode.cs" />
     <Compile Include="Enumerations\AltitudeMode.cs" />
     <Compile Include="Enumerations\EventId.cs" />
     <Compile Include="Enumerations\Layer.cs" />
@@ -106,35 +94,35 @@
     <Compile Include="Enumerations\Visibility.cs" />
     <Compile Include="External.cs" />
     <Compile Include="Enumerations\ApiType.cs" />
-    <Compile Include="Constants\JSFunction.cs" />
+    <Compile Include="JSFunction.cs" />
     <Compile Include="Geo\Bounds.cs" />
     <Compile Include="Geo\Coordinate.cs" />
     <Compile Include="Geo\Maths.cs" />
-    <Compile Include="Helpers\Extensions.cs" />
+    <Compile Include="Extensions.cs" />
     <Compile Include="HttpServer\GEServer.cs" />
     <Compile Include="HttpServer\HttpRequest.cs" />
     <Compile Include="HttpServer\StateObject.cs" />
     <Compile Include="Wrappers\GENavigationControl.cs" />
     <Compile Include="Wrappers\GEOptions.cs" />
     <Compile Include="GEEventArgs.cs" />
-    <Compile Include="Helpers\GEHelpers.cs" />
-    <Compile Include="Controls\GEStatusStrip.cs">
+    <Compile Include="GEHelpers.cs" />
+    <Compile Include="GEStatusStrip.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Controls\GEStatusStrip.Designer.cs">
+    <Compile Include="GEStatusStrip.Designer.cs">
       <DependentUpon>GEStatusStrip.cs</DependentUpon>
     </Compile>
     <Compile Include="Interfaces\IExternal.cs" />
     <Compile Include="Enumerations\ImageryBase.cs" />
-    <Compile Include="Helpers\KmlHelpers.cs" />
-    <Compile Include="Controls\Languages.cs" />
-    <Compile Include="Controls\GEToolStrip.Designer.cs">
+    <Compile Include="KmlHelpers.cs" />
+    <Compile Include="Languages.cs" />
+    <Compile Include="GEToolStrip.Designer.cs">
       <DependentUpon>GEToolStrip.cs</DependentUpon>
     </Compile>
-    <Compile Include="Controls\GEWebBrowser.cs">
+    <Compile Include="GEWebBrowser.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Controls\GEWebBrowser.Designer.cs">
+    <Compile Include="GEWebBrowser.Designer.cs">
       <DependentUpon>GEWebBrowser.cs</DependentUpon>
     </Compile>
     <Compile Include="Interfaces\IGEControls.cs" />
@@ -144,11 +132,11 @@
     <Compile Include="Wrappers\GEViewerOptions.cs" />
     <Compile Include="Wrappers\GEWindow.cs" />
     <Compile Include="Wrappers\KmlColor.cs" />
-    <EmbeddedResource Include="Controls\GEToolStrip.resx">
+    <EmbeddedResource Include="GEToolStrip.resx">
       <DependentUpon>GEToolStrip.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Controls\KmlTreeView.resx">
+    <EmbeddedResource Include="KmlTreeView.resx">
       <DependentUpon>KmlTreeView.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
@@ -171,7 +159,7 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <Compile Include="Controls\GEToolStrip.cs">
+    <Compile Include="GEToolStrip.cs">
       <SubType>Component</SubType>
     </Compile>
   </ItemGroup>
