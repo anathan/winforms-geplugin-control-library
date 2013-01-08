@@ -19,16 +19,18 @@ public Bitmap ScreenGrab()
 This example takes a screen grab and then prompts the user to save the file in jpeg format.
 
 {{{
-// Get the image
-System.Drawing.Bitmap image = geWebBrowser1.ScreenGrab();
- 
-// Save the file with a dialog
-SaveFileDialog dialog = new SaveFileDialog();
-dialog.Filter = "JPEG files (*.jpg;*.jpeg)|*.jpg;*.jpeg|All files (*.*)|*.*";
-if (dialog.ShowDialog() == DialogResult.OK)
+const string filter = "JPEG files (*.jpg;*.jpeg)|*.jpg;*.jpeg|All files (*.*)|*.*";
+
+// Take a 'screen grab' of the plug-in and ask the user to save.
+using (Bitmap image = this.browser.ScreenGrab())
 {
-  image.Save(dialog.FileName,
-        System.Drawing.Imaging.ImageFormat.Jpeg);
+    using (SaveFileDialog dialog = new SaveFileDialog {Filter = filter})
+    {
+        if (dialog.ShowDialog() == DialogResult.OK)
+        {
+            image.Save(dialog.FileName, ImageFormat.Jpeg);
+        }
+    }
 }
 }}}
 
