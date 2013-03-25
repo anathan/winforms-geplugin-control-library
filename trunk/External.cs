@@ -1,4 +1,4 @@
-﻿// <copyright file="External.cs" company="FC">
+ // <copyright file="External.cs" company="FC">
 // Copyright (c) 2008 Fraser Chapman
 // </copyright>
 // <author>Fraser Chapman</author>
@@ -144,7 +144,7 @@ namespace FC.GEPluginCtrls
                 throw new ArgumentException("ge is not of the type GEPlugin");
             }
 
-            this.OnPluginReady(this, new GEEventArgs("Ready", ge.getPluginVersion(), ge));
+            this.OnPluginReady(this, new GEEventArgs("Ready", "None", ge));
         }
 
         /// <summary>
