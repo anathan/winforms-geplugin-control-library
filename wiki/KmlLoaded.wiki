@@ -15,7 +15,7 @@ The actual kmlObject that represents the loaded data is accessible via the GEEve
 == Syntax ==
 
 {{{
-public event EventHandler<GEEventArgs> public event EventHandler<GEEventArgs> KmlLoaded =;
+public event EventHandler<GEEventArgs> KmlLoaded;
 }}}
 
 == Examples ==
