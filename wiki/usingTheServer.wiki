@@ -28,7 +28,7 @@ namespace ServerTest
     {
         // initialise the server and tell it where the
         // root directory is 
-        private Server server = new Server("webroot");
+        private GEServer server = new Server("webroot");
 
         public Form1()
         {
