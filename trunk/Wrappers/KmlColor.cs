@@ -16,17 +16,12 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see http://www.gnu.org/licenses/.
 // </summary>
-
-#region
-
-using System;
-using System.Drawing;
-using System.Globalization;
-
-#endregion
-
 namespace FC.GEPluginCtrls
 {
+    using System;
+    using System.Drawing;
+    using System.Globalization;
+
     /// <summary>
     /// Wrapper for the KmlColor object, maps all the getter and setter methods to managed properties. 
     /// <para>
@@ -109,9 +104,9 @@ namespace FC.GEPluginCtrls
         }
 
         /// <summary>
-        /// Initializes a new instance of the KmlColor struct from an Api KmlColor object.
+        /// Initializes a new instance of the KmlColor struct from a Google API KmlColor object.
         /// </summary>
-        /// <param name="color"> An Api object to base the new colour on </param>
+        /// <param name="color">A Google API KmlColor object to base the new colour on</param>
         public KmlColor(dynamic color)
             : this()
         {
@@ -236,11 +231,11 @@ namespace FC.GEPluginCtrls
         public override string ToString()
         {
             return string.Format(
-                CultureInfo.InvariantCulture, 
-                "{0}{1}{2}{3}", 
-                this.Alpha.ToString("X2", CultureInfo.InvariantCulture), 
-                this.Blue.ToString("X2", CultureInfo.InvariantCulture), 
-                this.Green.ToString("X2", CultureInfo.InvariantCulture), 
+                CultureInfo.InvariantCulture,
+                "{0}{1}{2}{3}",
+                this.Alpha.ToString("X2", CultureInfo.InvariantCulture),
+                this.Blue.ToString("X2", CultureInfo.InvariantCulture),
+                this.Green.ToString("X2", CultureInfo.InvariantCulture),
                 this.Red.ToString("X2", CultureInfo.InvariantCulture));
         }
 

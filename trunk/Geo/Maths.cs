@@ -16,20 +16,15 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see http://www.gnu.org/licenses/.
 // </summary>
-
-#region
-
-using System;
-
-#endregion
-
 namespace FC.GEPluginCtrls.Geo
 {
+    using System;
+
     ////using LatLng = System.Tuple<double, double>;
 
     /// <summary>
     /// Various Geodesic methods to work with the plugin api
-    /// This class is based on the javascript library geojs by Roman Nurik
+    /// This class is based on the JavaScript library geojs by Roman Nurik
     /// See http://code.google.com/p/geojs/
     /// </summary>
     public static class Maths
@@ -68,12 +63,12 @@ namespace FC.GEPluginCtrls.Geo
         }
 
         /// <summary>
-        /// Get the inital bearing from one location to another
+        /// Get the initial bearing from one location to another
         /// </summary>
         /// <param name="origin">the starting location</param>
         /// <param name="destination">the destination location</param>>
         /// <remarks>See: http://williams.best.vwh.net/avform.htm for the original function </remarks>
-        /// <returns>The inital bearing from origin to destination</returns>
+        /// <returns>The initial bearing from origin to destination</returns>
         public static double BearingInitial(Coordinate origin, Coordinate destination)
         {
             double phi1 = ConvertDegreesToRadians(origin.Latitude);
@@ -120,7 +115,7 @@ namespace FC.GEPluginCtrls.Geo
         /// <summary>
         /// Convert Kilometres To Miles 
         /// </summary>
-        /// <param name="kilometres">distance in kilometrees</param>
+        /// <param name="kilometres">distance in kilometres</param>
         /// <returns>distance in miles</returns>
         public static double ConvertKilometresToMiles(double kilometres)
         {
@@ -131,7 +126,7 @@ namespace FC.GEPluginCtrls.Geo
         /// Convert Miles To Kilometres
         /// </summary>
         /// <param name="miles">distance in miles</param>
-        /// <returns>distance in kilometrees</returns>
+        /// <returns>distance in kilometres</returns>
         public static double ConvertMilesToKilometres(double miles)
         {
             return miles == 0 ? miles : miles / MilesToKilometresRatio;
@@ -219,7 +214,7 @@ namespace FC.GEPluginCtrls.Geo
         {
             double phi1 = ConvertDegreesToRadians(origin.Latitude);
             double phi2 = ConvertDegreesToRadians(destination.Latitude);
-            double deltaPhi = ConvertDegreesToRadians(destination.Latitude - origin.Latitude); 
+            double deltaPhi = ConvertDegreesToRadians(destination.Latitude - origin.Latitude);
             double deltaLambda = ConvertDegreesToRadians(destination.Longitude - origin.Longitude);
             double h1 = (Math.Sin(deltaPhi / 2) * Math.Sin(deltaPhi / 2)) +
                 (Math.Sin(deltaLambda / 2) * Math.Sin(deltaLambda / 2) * Math.Cos(phi1) * Math.Cos(phi2));
@@ -289,7 +284,7 @@ namespace FC.GEPluginCtrls.Geo
         /// Reverses a number in the [0,PI] range
         /// </summary>
         /// <param name="radians">value in radians</param>
-        /// <returns>The oposite angle</returns>
+        /// <returns>The opposite angle</returns>
         public static double ReverseAngle(double radians)
         {
             return NormalizeAngle(radians + Math.PI);

@@ -19,7 +19,7 @@
 namespace FC.GEPluginCtrls
 {
     /// <summary>
-    /// Enumeration of the available map typs for the plug-in (earth/sky)
+    /// Enumeration of the available map types for the plug-in (earth/sky)
     /// </summary>
     public enum MapType
     {

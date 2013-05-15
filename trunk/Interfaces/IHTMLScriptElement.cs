@@ -16,20 +16,15 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see http://www.gnu.org/licenses/.
 // </summary>
-
-#region
-
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
-
-#endregion
-
 namespace FC.GEPluginCtrls
 {
+    using System.Runtime.CompilerServices;
+    using System.Runtime.InteropServices;
+
     /// <summary>
     /// A COM interface is needed because .NET does not provide a way
     /// to set the properties of a HTML script element.
-    /// This negates the need to refrence mshtml
+    /// This negates the need to reference mshtml
     /// </summary>
     [ComImport, Guid("3050F536-98B5-11CF-BB82-00AA00BDCE0B"),
     InterfaceType((short)2),

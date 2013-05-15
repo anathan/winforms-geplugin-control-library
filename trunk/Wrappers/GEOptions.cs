@@ -16,16 +16,11 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see http://www.gnu.org/licenses/.
 // </summary>
-
-#region
-
-using System;
-using System.Runtime.InteropServices;
-
-#endregion
-
 namespace FC.GEPluginCtrls
 {
+    using System;
+    using System.Runtime.InteropServices;
+
     /// <summary>
     /// Wrapper for the GEOptions com object.
     /// Acts as a proxy and maps all the getter and setter methods to managed properties.
@@ -35,9 +30,9 @@ namespace FC.GEPluginCtrls
         #region Private Fields
 
         /// <summary>
-        /// The plugin object 
+        /// The plug-in object 
         /// </summary>
-        private dynamic ge = null;
+        private readonly dynamic ge = null;
 
         /// <summary>
         /// The options object 
@@ -101,7 +96,7 @@ namespace FC.GEPluginCtrls
 
         /// <summary>
         /// Gets or sets a value indicating whether building highlighting is enabled. 
-        /// When enabled, buildings will be highlighted when they are moused over.
+        /// When enabled, buildings will be highlighted when a mouse-over event occurs on them.
         /// Disabled by default
         /// </summary>
         public bool BuildingHighlightingEnabled
@@ -318,7 +313,7 @@ namespace FC.GEPluginCtrls
         /// <summary>
         /// Sets the map type to Earth or sky mode.
         /// </summary>
-        /// <param name="mapType">The maptype to use in the plugin</param>
+        /// <param name="mapType">The MapType to use in the plug-in</param>
         public void SetMapType(MapType mapType)
         {
             try

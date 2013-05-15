@@ -16,15 +16,10 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see http://www.gnu.org/licenses/.
 // </summary>namespace FC.GEPluginCtrls.Enumerations
-
-#region
-
-using System;
-
-#endregion
-
 namespace FC.GEPluginCtrls.HttpServer
 {
+    using System;
+
     /// <summary>
     /// For http request header data in the <see cref="GEServer"/>
     /// </summary>

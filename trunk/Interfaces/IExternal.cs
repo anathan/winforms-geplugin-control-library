@@ -16,33 +16,28 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see http://www.gnu.org/licenses/.
 // </summary>
-
-#region
-
-using System;
-
-#endregion
-
 namespace FC.GEPluginCtrls
 {
+    using System;
+
     /// <summary>
     /// This interface should be implemented by any object
-    /// that is designed to act as the interface between javascript and managed code
+    /// that is designed to act as the interface between JavaScript and managed code
     /// </summary>
     public interface IExternal
     {
         /// <summary>
-        /// Raised when the plugin is ready
+        /// Raised when the plug-in is ready
         /// </summary>
         event EventHandler<GEEventArgs> PluginReady;
 
         /// <summary>
-        /// Raised when there is a kml event
+        /// Raised when there is a KML event
         /// </summary>
         event EventHandler<GEEventArgs> KmlEvent;
 
         /// <summary>
-        /// Raised when a kml/kmz file has loaded
+        /// Raised when a KML/KMZ file has loaded
         /// </summary>
         event EventHandler<GEEventArgs> KmlLoaded;
 
@@ -52,36 +47,36 @@ namespace FC.GEPluginCtrls
         event EventHandler<GEEventArgs> ScriptError;
 
         /// <summary>
-        /// Should be called from javascript to invoke a method in managed code
+        /// Should be called from JavaScript to invoke a method in managed code
         /// </summary>
         /// <param name="name">the name of method to be called</param>
         /// <param name="parameters">array of parameter objects</param>
         void InvokeCallback(string name, object parameters);
 
         /// <summary>
-        /// Should be called from javascript when the plugin is ready
+        /// Should be called from JavaScript when the plug-in is ready
         /// </summary>
-        /// <param name="ge">the plugin instance</param>
+        /// <param name="ge">the plug-in instance</param>
         void Ready(object ge);
 
         /// <summary>
-        /// Should be called from javascript when there is an error
+        /// Should be called from JavaScript when there is an error
         /// </summary>
         /// <param name="type">the error type</param>
         /// <param name="message">the error message</param>
         void SendError(string type, string message);
 
         /// <summary>
-        /// Should be called from javascript when there is a kml event
+        /// Should be called from JavaScript when there is a KML event
         /// </summary>
-        /// <param name="kmlEvent">the kml event</param>
+        /// <param name="kmlEvent">the KML event</param>
         /// <param name="action">the event id</param>
         void KmlEventCallback(object kmlEvent, string action);
 
         /// <summary>
-        /// Should be called from javascript when there is a GEPlugin event
+        /// Should be called from JavaScript when there is a GEPlugin event
         /// </summary>
-        /// <param name="sender">The plugin object</param>
+        /// <param name="sender">The plug-in object</param>
         /// <param name="action">The event action</param>
         void PluginEventCallback(object sender, string action);
     }

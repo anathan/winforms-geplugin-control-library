@@ -16,35 +16,31 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see http://www.gnu.org/licenses/.
 // </summary>
-
-#region
-
-using System;
-using System.Diagnostics;
-using System.Globalization;
-using System.Reflection;
-using System.Runtime.InteropServices;
-using System.Security.Permissions;
-using System.Text;
-using FC.GEPluginCtrls.Geo;
-using Microsoft.CSharp.RuntimeBinder;
-
-#endregion
-
 namespace FC.GEPluginCtrls
 {
+    using System;
+    using System.Diagnostics;
+    using System.Globalization;
+    using System.Reflection;
+    using System.Runtime.InteropServices;
+    using System.Security.Permissions;
+    using System.Text;
+    using FC.GEPluginCtrls.Geo;
+    using Microsoft.CSharp.RuntimeBinder;
+
     /// <summary>
-    /// This class provides some basic Google Earth plugin helpers functions.
-    /// Interfaces whose names begin with GE allow for programmatic access to core plugin functionality and other miscellaneous options.
-    /// It is based on the "GEHelpers javasctipt library" by Roman Nurik
-    /// See: http://earth-api-samples.googlecode.com/svn/trunk/lib/geplugin-helpers.js
+    /// This class provides some basic Google Earth plug-in helpers functions.
+    /// Interfaces whose names begin with GE allow for programmatic access to core plug-in functionality and other miscellaneous options.
+    /// It is based on the "GEHelpers JavaScript library" by Roman Nurik
     /// </summary>
     public static class GEHelpers
     {
+        // See: http://earth-api-samples.googlecode.com/svn/trunk/lib/geplugin-helpers.js
+
         /// <summary>
-        /// This is a simple "ge.getFeatures().appendChild(kml)" wrapper
+        /// This is a simple "ge.getFeatures().appendChild()" wrapper
         /// </summary>
-        /// <param name="ge">the plugin instance to add the features to</param>
+        /// <param name="ge">the plug-in instance to add the features to</param>
         /// <param name="kml">the features to add</param>
         /// <exception cref="System.ArgumentException" >Throws an exception if ge is not an instance of GEPlugin.</exception>
         public static void AddFeaturesToPlugin(dynamic ge, dynamic kml)
@@ -69,9 +65,9 @@ namespace FC.GEPluginCtrls
         }
 
         /// <summary>
-        /// Enables or disables a plugin layer - wrapper for ge.getLayerRoot().enableLayerById()
+        /// Enables or disables a plug-in layer - wrapper for ge.getLayerRoot().enableLayerById()
         /// </summary>
-        /// <param name="ge">The plugin instance</param>
+        /// <param name="ge">The plug-in instance</param>
         /// <param name="layer">The id of the layer to work with</param>
         /// <param name="value">True turns the layer on, false off</param>
         public static void EnableLayer(dynamic ge, Layer layer, bool value)
@@ -82,9 +78,12 @@ namespace FC.GEPluginCtrls
             }
 
             ////ge.getLayerRoot().enableLayerById(layer.GetId(), value);
-            foreach (Layer eachLayer in Enum.GetValues(typeof (Layer)))
+            foreach (Layer eachLayer in Enum.GetValues(typeof(Layer)))
             {
-                if (eachLayer.Equals(Layer.None) || !layer.HasFlag(eachLayer)) continue;
+                if (eachLayer.Equals(Layer.None) || !layer.HasFlag(eachLayer))
+                {
+                    continue;
+                }
 
                 try
                 {
@@ -117,7 +116,7 @@ namespace FC.GEPluginCtrls
 
             try
             {
-                feature = ge.getElementById("#" + id); 
+                feature = ge.getElementById("#" + id);
             }
             catch (RuntimeBinderException rbex)
             {
@@ -128,10 +127,10 @@ namespace FC.GEPluginCtrls
         }
 
         /// <summary>
-        /// Attempts to set the view of the plugin to the given api object 
+        /// Attempts to set the view of the plug-in to the given API object 
         /// </summary>
-        /// <param name="ge">the plugin</param>
-        /// <param name="feature">the api object</param>
+        /// <param name="ge">the plug-in</param>
+        /// <param name="feature">the API object</param>
         /// <param name="boundsFallback">Optionally set whether to fallback to the bounds method</param>
         /// <param name="aspectRatio">Optional aspect ratio</param>
         /// <param name="defaultRange">Optional default range</param>
@@ -144,7 +143,6 @@ namespace FC.GEPluginCtrls
             double defaultRange = 1000,
             double scaleRange = 1.5)
         {
-
             if (!IsGE(ge))
             {
                 throw new ArgumentException("ge is not of the type GEPlugin");
@@ -179,8 +177,8 @@ namespace FC.GEPluginCtrls
         /// <summary>
         /// Gets the Kml of all the features in the plug-in
         /// </summary>
-        /// <param name="ge">The plugin</param>
-        /// <returns>String of all the Kml from the plugin - or an empty string</returns>
+        /// <param name="ge">The plug-in</param>
+        /// <returns>String of all the Kml from the plug-in - or an empty string</returns>
         public static string GetAllFeaturesKml(dynamic ge)
         {
             if (!IsGE(ge))
@@ -212,9 +210,9 @@ namespace FC.GEPluginCtrls
         }
 
         /// <summary>
-        /// Get the current pluin view as a point object
+        /// Get the current plug-in view as a point object
         /// </summary>
-        /// <param name="ge">the plugin</param>
+        /// <param name="ge">the plug-in</param>
         /// <returns>Point set to the current view (or false)</returns>
         public static dynamic GetCurrentViewAsPoint(dynamic ge)
         {
@@ -276,7 +274,7 @@ namespace FC.GEPluginCtrls
         }
 
         /// <summary>
-        /// Gets the ApiType of a given <paramref name="feature">feature</paramref>
+        /// Gets the Google API type of a given <paramref name="feature">feature</paramref>
         /// </summary>
         /// <param name="feature">The feature to get the type of</param>
         /// <returns>
@@ -330,12 +328,12 @@ namespace FC.GEPluginCtrls
         }
 
         /// <summary>
-        /// Checks if a given string <paramref name="input"/> is a valid url
+        /// Checks if a given string <paramref name="input"/> is a valid URI
         /// of the given <paramref name="kind"/>
         /// </summary>
         /// <param name="input">the string to check</param>
-        /// <param name="kind">the kind of uri to check for</param>
-        /// <returns>true if the string is a uri</returns>
+        /// <param name="kind">the kind of URI to check for</param>
+        /// <returns>true if the string is a URI</returns>
         public static bool IsUri(string input, UriKind kind)
         {
             Uri x = null;
@@ -343,16 +341,16 @@ namespace FC.GEPluginCtrls
         }
 
         /// <summary>
-        /// Opens the balloon for the given feature in the plugin using OpenFeatureBalloon()
+        /// Opens the balloon for the given feature in the plug-in using OpenFeatureBalloon()
         /// </summary>
-        /// <param name="ge">the plugin instance</param>
+        /// <param name="ge">the plug-in instance</param>
         /// <param name="feature">the feature to open a balloon for</param>
         /// <param name="useUnsafeHtml">Optional setting to use getBalloonHtmlUnsafe, default is false</param>
         /// <param name="minWidth">Optional minimum balloon width, default is 100</param>
         /// <param name="minHeight">Optional minimum balloon height, default is 100</param>
         /// <param name="maxWidth">Optional maximum balloon width, default is 800</param>
         /// <param name="maxHeight">Optional maximum balloon height, default is 600</param>
-        /// <param name="setBalloon">Optionally set the balloon to be the current in the plugin</param>
+        /// <param name="setBalloon">Optionally set the balloon to be the current in the plug-in</param>
         /// <returns>The feature balloon or null</returns>
         public static dynamic OpenFeatureBalloon(
             dynamic ge,
@@ -403,9 +401,9 @@ namespace FC.GEPluginCtrls
         }
 
         /// <summary>
-        /// Remove all features from the plugin 
+        /// Remove all features from the plug-in 
         /// </summary>
-        /// <param name="ge">The plugin instance</param>
+        /// <param name="ge">The plug-in instance</param>
         public static void RemoveAllFeatures(dynamic ge)
         {
             if (!IsGE(ge))
@@ -432,7 +430,7 @@ namespace FC.GEPluginCtrls
         /// <summary>
         /// Remove a feature from the plug-in based on the feature ID
         /// </summary>
-        /// <param name="ge">The plugin instance</param>
+        /// <param name="ge">The plug-in instance</param>
         /// <param name="id">The id of the feature to remove</param>
         public static void RemoveFeatureById(dynamic ge, string id)
         {
@@ -460,7 +458,7 @@ namespace FC.GEPluginCtrls
         /// <summary>
         /// Remove a features from the plug-in based on the feature IDs
         /// </summary>
-        /// <param name="ge">The plugin instance</param>
+        /// <param name="ge">The plug-in instance</param>
         /// <param name="ids">The ids of the features to remove</param>
         public static void RemoveFeatureById(dynamic ge, string[] ids)
         {
@@ -476,9 +474,9 @@ namespace FC.GEPluginCtrls
         }
 
         /// <summary>
-        /// Displays the current plugin view in Google Maps using the default system browser
+        /// Displays the current plug-in view in Google Maps using the default system browser
         /// </summary>
-        /// <param name="ge">The plugin instance</param>
+        /// <param name="ge">The plug-in instance</param>
         [PermissionSet(SecurityAction.LinkDemand, Name = "FullTrust")]
         public static void ShowCurrentViewInMaps(dynamic ge)
         {
@@ -495,14 +493,14 @@ namespace FC.GEPluginCtrls
                 dynamic lookat = ge.getView().copyAsLookAt(ge.ALTITUDE_RELATIVE_TO_GROUND);
                 double range = lookat.getRange();
 
-                // calculate the equivelent zoom level from the given range
+                // calculate the equivalent zoom level from the given range
                 double zoom = Math.Round(26 - (Math.Log(range) / Math.Log(2)));
 
                 // Google Maps have an integer "zoom level" which defines the resolution of the current view.
                 // Zoom levels between 0 (entire world on map) to 21+ (down to individual buildings) are possible.
                 zoom = Math.Min(Math.Max(zoom, 1), 21);
 
-                // Build the maps url
+                // Build the maps URL
                 url = string.Format(
                     "http://maps.google.co.uk/maps?ll={0},{1}&z={2}",
                     lookat.getLatitude(),
@@ -514,17 +512,17 @@ namespace FC.GEPluginCtrls
                 Debug.WriteLine("ShowCurrentViewInMaps: " + rbex.Message, "GEHelpers");
             }
 
-            // launch the default browser with the url
+            // launch the default browser with the URL
             Process.Start(url);
         }
 
         /// <summary>
-        /// Toggles any 'media player' associated with a particular Kml type represented by a treenode.
+        /// Toggles any 'media player' associated with a particular Kml type represented by a tree node.
         /// So far this includes KmlTours (GETourPlayer) and KmlPhotoOverlays (GEPhotoOverlayViewer)
         /// </summary>
-        /// <param name="ge">The plugin instance</param>
+        /// <param name="ge">The plug-in instance</param>
         /// <param name="feature">The feature to check</param>
-        /// <param name="visible">Vaule indicating whether the player should be visible or not.</param>
+        /// <param name="visible">Value indicating whether the player should be visible or not.</param>
         public static void ToggleMediaPlayer(dynamic ge, dynamic feature, bool visible = true)
         {
             if (!IsGE(ge))

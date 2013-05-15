@@ -44,7 +44,7 @@ namespace FC.GEPluginCtrls
         private System.Windows.Forms.ToolStripButton submitButton;
 
         /// <summary>
-        /// The naviagtion seperator
+        /// The navigation separator
         /// </summary>
         private System.Windows.Forms.ToolStripSeparator navigationSeparator;
 
@@ -124,7 +124,7 @@ namespace FC.GEPluginCtrls
         private System.Windows.Forms.ToolStripMenuItem fadeInOutMenuItem;
 
         /// <summary>
-        /// The staus menu item
+        /// The status menu item
         /// </summary>
         private System.Windows.Forms.ToolStripMenuItem statusBarMenuItem;
 
@@ -167,7 +167,7 @@ namespace FC.GEPluginCtrls
         /// The moon menu item
         /// </summary>
         private System.Windows.Forms.ToolStripMenuItem moonMenuItem;
-        
+
         /// <summary>
         /// The refresh button
         /// </summary>
@@ -184,7 +184,7 @@ namespace FC.GEPluginCtrls
         private System.Windows.Forms.ToolStripMenuItem mouseNavigationMenuItem;
 
         /// <summary>
-        /// The dropDownSeparator seperator
+        /// The dropDownSeparator separator
         /// </summary>
         private System.Windows.Forms.ToolStripSeparator dropDownSeparator;
 
@@ -199,12 +199,12 @@ namespace FC.GEPluginCtrls
         private System.Windows.Forms.ToolStripButton viewInMapsButton;
 
         /// <summary>
-        /// The language seperator
+        /// The language separator
         /// </summary>
         private System.Windows.Forms.ToolStripSeparator languageSeparator;
 
         /// <summary>
-        /// The language combobox
+        /// The language combo box
         /// </summary>
         private System.Windows.Forms.ToolStripComboBox languageComboBox;
 

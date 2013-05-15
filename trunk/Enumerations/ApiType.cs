@@ -21,7 +21,7 @@ namespace FC.GEPluginCtrls
     /// <summary>
     /// Enumeration of the available types in the Google Earth Api.
     /// </summary>
-    /// <remarks>This is a compleate list as of v1.007 of the API</remarks>
+    /// <remarks>This is a complete list as of v1.007 of the API</remarks>
     public enum ApiType
     {
         /// <summary>
@@ -225,7 +225,7 @@ namespace FC.GEPluginCtrls
         KmlFeature = 114,
 
         /// <summary>
-        /// A Folder is used to arrange other features hierarchically (Folders, Placemarks, NetworkLinks, or Overlays).
+        /// A Folder is used to arrange other features hierarchically (folders, place marks, network links, or Overlays).
         /// </summary>
         KmlFolder = 115,
 

@@ -29,7 +29,7 @@ namespace FC.GEPluginCtrls
         private System.ComponentModel.IContainer components = null;
 
         /// <summary>
-        /// The api version status label
+        /// The API version status label
         /// </summary>
         private System.Windows.Forms.ToolStripStatusLabel apiVersionStatusLabel;
 

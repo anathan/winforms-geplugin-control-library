@@ -29,7 +29,7 @@ namespace FC.GEPluginCtrls
         private System.ComponentModel.IContainer components = null;
 
         /// <summary>
-        /// The treeview image list for kml features
+        /// The tree view image list for KML features
         /// </summary>
         private System.Windows.Forms.ImageList imageList1;
 
