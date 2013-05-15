@@ -16,18 +16,13 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see http://www.gnu.org/licenses/.
 // </summary>
-
-#region
-
-using System.Net.Sockets;
-using System.Text;
-
-#endregion
-
 namespace FC.GEPluginCtrls.HttpServer
 {
+    using System.Net.Sockets;
+    using System.Text;
+
     /// <summary>
-    /// State information for the various async operations in the GEServer.
+    /// State information for the various asynchronous operations in the GEServer.
     /// </summary>
     internal sealed class StateObject
     {

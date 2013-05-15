@@ -16,22 +16,17 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see http://www.gnu.org/licenses/.
 // </summary>
-
-#region
-
-using System;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.Drawing;
-using System.Runtime.InteropServices;
-using System.Security.Permissions;
-using System.Windows.Forms;
-using Microsoft.CSharp.RuntimeBinder;
-
-#endregion
-
 namespace FC.GEPluginCtrls
 {
+    using System;
+    using System.ComponentModel;
+    using System.Diagnostics;
+    using System.Drawing;
+    using System.Runtime.InteropServices;
+    using System.Security.Permissions;
+    using System.Windows.Forms;
+    using Microsoft.CSharp.RuntimeBinder;
+
     /// <summary>
     /// The GEStatusStrip shows various information about the plug-in
     /// </summary>
@@ -50,7 +45,7 @@ namespace FC.GEPluginCtrls
         private GEWebBrowser browser;
 
         /// <summary>
-        /// Timer interval in miliseconds
+        /// Timer interval in milliseconds
         /// </summary>
         private int interval = 250;
 
@@ -65,7 +60,7 @@ namespace FC.GEPluginCtrls
         private bool streamingProgressBarVisible = true;
 
         /// <summary>
-        /// Indicates whether the api version label is visible
+        /// Indicates whether the Google API version label is visible
         /// </summary>
         private bool apiVersionStatusLabelVisible = true;
 
@@ -178,10 +173,10 @@ namespace FC.GEPluginCtrls
         }
 
         /// <summary>
-        /// Gets or sets a value indicating whether the api version label is visible
+        /// Gets or sets a value indicating whether the Google API version label is visible
         /// </summary>
         [Category("Control Options"),
-        Description("Specifies the visibility of the api version label."),
+        Description("Specifies the visibility of the Google API version label."),
         DefaultValue(true)]
         public bool ShowApiVersionStatusLabel
         {
@@ -210,7 +205,7 @@ namespace FC.GEPluginCtrls
         /// Gets or sets a value indicating whether the plug-in version label is visible
         /// </summary>
         [Category("Control Options"),
-        Description("Specifies the visibility of the plugin version label."),
+        Description("Specifies the visibility of the plug-in version label."),
         DefaultValue(true)]
         public bool ShowPluginVersionStatusLabel
         {
@@ -243,7 +238,7 @@ namespace FC.GEPluginCtrls
             if (this.browser.PluginIsReady)
             {
                 this.Enabled = true;
-                timer = new Timer {Interval = this.interval};
+                timer = new Timer { Interval = this.interval };
                 timer.Start();
                 timer.Tick += this.Timer_Tick;
 

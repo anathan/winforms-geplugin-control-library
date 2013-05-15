@@ -16,28 +16,23 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see http://www.gnu.org/licenses/.
 // </summary>
-
-#region
-
-using System;
-
-#endregion
-
 namespace FC.GEPluginCtrls
 {
+    using System;
+
     /// <summary>
     /// Wrapper used to used to manipulate the navigation controls in Google Earth.
     /// </summary>
     /// <remarks>See http://code.google.com/apis/earth/documentation/reference/interface_g_e_navigation_control.html
-    /// for the api notes on the GENavigationControl object</remarks>
+    /// for the API notes on the GENavigationControl object</remarks>
     public sealed class GENavigationControl
     {
         #region Private fields
 
         /// <summary>
-        /// The plugin object
+        /// The plug-in object
         /// </summary>
-        private dynamic ge = null;
+        private readonly dynamic ge = null;
 
         /// <summary>
         /// The com navigation control
@@ -67,7 +62,7 @@ namespace FC.GEPluginCtrls
         /// <param name="ge">GEPlugin COM object</param>
         /// <param name="controlType">The control type. default is NavigationControl.Large</param>
         /// <param name="visibility">The visibility of the control. default is Visibility.Show</param>
-        /// <param name="streetViewEnabled">Optionally enables the streetview features. Default is true (on)</param>
+        /// <param name="streetViewEnabled">Optionally enables the street view features. Default is true (on)</param>
         public GENavigationControl(
             dynamic ge,
             NavigationControl controlType = NavigationControl.Large,
@@ -90,7 +85,7 @@ namespace FC.GEPluginCtrls
         #region Public properties
 
         /// <summary>
-        /// Gets or sets the navigaton control type
+        /// Gets or sets the navigation control type
         /// </summary>
         public NavigationControl ControlType
         {

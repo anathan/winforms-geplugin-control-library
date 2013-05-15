@@ -129,7 +129,7 @@
     <Compile Include="Interfaces\IHtmlScriptElement.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Wrappers\GETourPlayer.cs" />
-    <Compile Include="Wrappers\GEViewerOptions.cs" />
+    <Compile Include="Wrappers\KmlViewerOptions.cs" />
     <Compile Include="Wrappers\GEWindow.cs" />
     <Compile Include="Wrappers\KmlColor.cs" />
     <EmbeddedResource Include="GEToolStrip.resx">

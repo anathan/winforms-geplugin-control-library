@@ -16,18 +16,13 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see http://www.gnu.org/licenses/.
 // </summary>namespace FC.GEPluginCtrls.Enumerations
-
-#region
-
-using System;
-using System.Diagnostics;
-using System.Runtime.InteropServices;
-using System.Windows.Forms;
-
-#endregion
-
 namespace FC.GEPluginCtrls
 {
+    using System;
+    using System.Diagnostics;
+    using System.Runtime.InteropServices;
+    using System.Windows.Forms;
+
     /// <summary>
     /// Custom node class for the <see cref="KmlTreeView"/>
     /// </summary>
@@ -51,7 +46,7 @@ namespace FC.GEPluginCtrls
         /// <summary>
         /// Initializes a new instance of the KmlTreeViewNode class.
         /// </summary>
-        /// <param name="kmlFeature">A <paramref name="kmlFeature">kml feature</paramref> to base the treenode on</param>
+        /// <param name="kmlFeature">A <paramref name="kmlFeature">KML feature</paramref> to base the tree node on</param>
         internal KmlTreeViewNode(dynamic kmlFeature)
             : this()
         {
@@ -64,7 +59,7 @@ namespace FC.GEPluginCtrls
             this.Refresh();
         }
 
-        #region Public Properties 
+        #region Public Properties
 
         /// <summary>
         /// Gets or sets the value of the node tool tip text.
@@ -74,14 +69,14 @@ namespace FC.GEPluginCtrls
             get { return base.ToolTipText; }
             set { base.ToolTipText = TidyToolTip(value); }
         }
-        
+
         /// <summary>
-        /// Gets the underlying kml object that the node represents.
+        /// Gets the underlying KML object that the node represents.
         /// </summary>
         public dynamic ApiObject { get; private set; }
 
         /// <summary>
-        /// Gets a value indicating the api type (e.g. KmlPlacemark, KmlDocument)
+        /// Gets a value indicating the Google API type (e.g. KmlPlacemark, KmlDocument)
         /// of the underlying <see cref="ApiObject">feature</see> the node represents.
         /// </summary>
         public ApiType ApiType { get; private set; }
@@ -101,10 +96,10 @@ namespace FC.GEPluginCtrls
         internal bool IsLoading { get; set; }
 
         /// <summary>
-        /// Gets the url of the underlying kml object.
+        /// Gets the URL of the underlying KML object.
         /// </summary>
         /// <remarks>
-        /// The url is obtained via kmlHelpers which adds support for legacy kml spcifications.
+        /// The URL is obtained via kmlHelpers which adds support for legacy KML specifications.
         /// </remarks>
         internal string KmlUrl
         {
@@ -136,7 +131,7 @@ namespace FC.GEPluginCtrls
         }
 
         /// <summary>
-        /// Gets or sets a value indicating whether the node is cheked and the kml object is visible
+        /// Gets or sets a value indicating whether the node is checked and the KML object is visible
         /// </summary>
         internal bool ApiObjectVisible
         {
@@ -268,7 +263,7 @@ namespace FC.GEPluginCtrls
         {
             this.IsLoading = true;
 
-            Timer t = new Timer {Interval = 500, Enabled = true};
+            Timer t = new Timer { Interval = 500, Enabled = true };
             int i = 2;
 
             t.Tick += (o, e) =>
@@ -319,11 +314,11 @@ namespace FC.GEPluginCtrls
         #region Private Methods
 
         /// <summary>
-        /// Clean any html and add linebreaks for use with tooltips.
-        /// TODO : make this a lot better....
+        /// Clean any html and add line-breaks for use with tooltips.
+        /// TODO : make this a lot better...
         /// </summary>
         /// <param name="source">a html string</param>
-        /// <returns>plain text with linebreaks</returns>
+        /// <returns>plain text with line-breaks</returns>
         private static string TidyToolTip(string source)
         {
             char[] array = new char[source.Length];

@@ -16,37 +16,32 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see http://www.gnu.org/licenses/.
 // </summary>
-
-#region
-
-using System;
-using System.Diagnostics;
-using System.Globalization;
-using System.IO;
-using System.Net;
-using System.Net.Sockets;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-
-#endregion
-
 namespace FC.GEPluginCtrls.HttpServer
 {
+    using System;
+    using System.Diagnostics;
+    using System.Globalization;
+    using System.IO;
+    using System.Net;
+    using System.Net.Sockets;
+    using System.Text;
+    using System.Threading;
+    using System.Threading.Tasks;
+
     /// <summary>
     /// A simple HTTP server class to allow the use of local files in the Google Earth Plugin
     /// </summary>
     public class GEServer
     {
-        #region Private fields 
+        #region Private fields
 
         /// <summary>
         /// Thread signal
         /// </summary>
-        private static readonly ManualResetEvent resetEvent = new ManualResetEvent(false);
+        private static readonly ManualResetEvent ResetEvent = new ManualResetEvent(false);
 
         #endregion
-        
+
         /// <summary>
         /// Initializes a new instance of the GEServer class.
         /// </summary>
@@ -118,7 +113,7 @@ namespace FC.GEPluginCtrls.HttpServer
         /// </summary>
         private bool AcceptClients { get; set; }
 
-        #endregion 
+        #endregion
 
         #region Public methods
 
@@ -130,7 +125,7 @@ namespace FC.GEPluginCtrls.HttpServer
             this.AcceptClients = true;
             Task.Factory.StartNew(this.Accept);
         }
-        
+
         /// <summary>
         /// Stops the server
         /// </summary>
@@ -151,20 +146,20 @@ namespace FC.GEPluginCtrls.HttpServer
         private static void AcceptCallback(IAsyncResult result)
         {
             // Signal the main thread to continue.
-            resetEvent.Set();
+            ResetEvent.Set();
 
             // Get the socket that handles the client request.
             Socket listener = (Socket)result.AsyncState;
             Socket handler = listener.EndAccept(result);
 
             // Create the state object.
-            StateObject state = new StateObject {Socket = handler};
+            StateObject state = new StateObject { Socket = handler };
             handler.BeginReceive(
                 state.Buffer,
-                0, 
-                StateObject.BufferSize, 
-                0, 
-                ReadCallback, 
+                0,
+                StateObject.BufferSize,
+                0,
+                ReadCallback,
                 state);
         }
 
@@ -174,7 +169,7 @@ namespace FC.GEPluginCtrls.HttpServer
         /// <param name="mime">mime type for the response</param>
         /// <param name="bytes">size of the response in bytes</param>
         /// <param name="code">the status code for the response (100, 200, 404, etc)</param>
-        /// <returns>A formated HTTP response header</returns>
+        /// <returns>A formatted HTTP response header</returns>
         private static string BuildResponseHeader(string mime, int bytes, HttpStatusCode code)
         {
             StringBuilder data = new StringBuilder();
@@ -182,8 +177,8 @@ namespace FC.GEPluginCtrls.HttpServer
             string httpDate = DateTime.Now.ToUniversalTime().ToString("r", CultureInfo.InvariantCulture);
             string status = string.Format(
                 CultureInfo.InvariantCulture,
-                "{0} {1}", 
-                (int)code, 
+                "{0} {1}",
+                (int)code,
                 code.ToString());
 
             // Status-Line
@@ -251,7 +246,7 @@ namespace FC.GEPluginCtrls.HttpServer
                     handler.BeginReceive(
                         state.Buffer,
                         0,
-                        StateObject.BufferSize, 
+                        StateObject.BufferSize,
                         0,
                         ReadCallback,
                         state);
@@ -282,7 +277,7 @@ namespace FC.GEPluginCtrls.HttpServer
         /// <summary>
         /// Ends a pending asynchronous data send.
         /// </summary>
-        /// <param name="result">The status of the operarion</param>
+        /// <param name="result">The status of the operation</param>
         private static void SendCallback(IAsyncResult result)
         {
             // Retrieve the socket from the state object.
@@ -331,7 +326,7 @@ namespace FC.GEPluginCtrls.HttpServer
                 string header = BuildResponseHeader(GetMimeType(filePath), data.Length, HttpStatusCode.OK);
                 Send(handler, header);
 
-                StateObject state = new StateObject {Socket = handler};
+                StateObject state = new StateObject { Socket = handler };
                 state.Data.Append(filePath);
                 handler.BeginSendFile(filePath, SendFileCallback, state);
             }
@@ -347,7 +342,7 @@ namespace FC.GEPluginCtrls.HttpServer
         /// <summary>
         /// Ends a pending asynchronous file send.
         /// </summary>
-        /// <param name="result">The status of the operarion</param>
+        /// <param name="result">The status of the operation</param>
         private static void SendFileCallback(IAsyncResult result)
         {
             // Retrieve the socket from the state object.
@@ -358,7 +353,7 @@ namespace FC.GEPluginCtrls.HttpServer
             {
                 // Complete sending the file to the socket.
                 handler.EndSendFile(result);
-                resetEvent.Set();
+                ResetEvent.Set();
 
                 Debug.WriteLine(
                     string.Format(
@@ -457,7 +452,7 @@ namespace FC.GEPluginCtrls.HttpServer
             string path = string.Format(
                 CultureInfo.InvariantCulture,
                 "{0}{1}{2}{3}",
-                RootDirectory, 
+                RootDirectory,
                 Path.DirectorySeparatorChar.ToString(CultureInfo.InvariantCulture),
                 directory,
                 fileName).Replace(
@@ -492,7 +487,7 @@ namespace FC.GEPluginCtrls.HttpServer
                 while (this.AcceptClients)
                 {
                     // Set the event to nonsignaled state.
-                    resetEvent.Reset();
+                    ResetEvent.Reset();
 
                     // Start an asynchronous socket to listen for connections.
                     listener.BeginAccept(
@@ -500,7 +495,7 @@ namespace FC.GEPluginCtrls.HttpServer
                         listener);
 
                     // Wait until a connection is made before continuing.
-                    resetEvent.WaitOne();
+                    ResetEvent.WaitOne();
                 }
             }
             catch (SocketException sex)

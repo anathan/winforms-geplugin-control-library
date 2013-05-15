@@ -16,18 +16,13 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see http://www.gnu.org/licenses/.
 // </summary>
-
-#region
-
-using System.ComponentModel;
-using System.Reflection;
-
-#endregion
-
 namespace FC.GEPluginCtrls
 {
+    using System.ComponentModel;
+    using System.Reflection;
+
     /// <summary>
-    /// Extension helper methods for the control libray
+    /// Extension helper methods for enumerations in the control library
     /// </summary>
     internal static class Extensions
     {

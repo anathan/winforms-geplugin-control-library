@@ -19,67 +19,67 @@
 namespace FC.GEPluginCtrls
 {
     /// <summary>
-    /// A collection the names of javascript functions that should be available in the active document.
+    /// A collection the names of JavaScript functions that should be available in the active document.
     /// These are wrapper functions to allow access to objects outside the Google Earth Api.
     /// </summary>
     /// <remarks>
-    /// This collection can be thought of as a simple kind of an interface for javascipt methods in an active document.
+    /// This collection can be thought of as a simple kind of an interface for JavaScript methods in an active document.
     /// That is, any function name listed here should be present in a document that is designed to work with the controls.
     /// </remarks>
     public static class JSFunction
     {
         /// <summary>
-        /// The javascript method name of the google.earth.addEventListener wrapper.
+        /// The JavaScript method name of the google.earth.addEventListener wrapper.
         /// </summary>
         public const string AddEventListener = "jsAddEventListener";
 
         /// <summary>
-        /// The javascript method name of the google.earth.createInstance wrapper.
+        /// The JavaScript method name of the google.earth.createInstance wrapper.
         /// </summary>
         public const string CreateInstance = "jsCreateInstance";
 
         /// <summary>
-        /// The javascript method name of the  GClientGeocoder.getLatLng wrapper.
+        /// The JavaScript method name of the  GClientGeocoder.getLatLng wrapper.
         /// </summary>
         public const string DoGeocode = "jsDoGeocode";
 
         /// <summary>
-        /// The javascript method name of the eval wrapper.
+        /// The JavaScript method name of the eval wrapper.
         /// </summary>
         public const string Evaluate = "jsEvaluate";
 
         /// <summary>
-        /// The javascript method name of the  window.execScript wrapper.
+        /// The JavaScript method name of the  window.execScript wrapper.
         /// </summary>
         public const string Execute = "jsExecute";
 
         /// <summary>
-        /// The javascript method name of the google.earth.executeBatch wrapper.
+        /// The JavaScript method name of the google.earth.executeBatch wrapper.
         /// </summary>
         public const string ExecuteBatch = "jsExecuteBatch";
 
         /// <summary>
-        /// The javascript method name of the google.earth.fetchKml wrapper.
+        /// The JavaScript method name of the google.earth.fetchKml wrapper.
         /// </summary>
         public const string FetchKml = "jsFetchKml";
 
         /// <summary>
-        /// The javascript method name of the google.earth.getLanguage wrapper.
+        /// The JavaScript method name of the google.earth.getLanguage wrapper.
         /// </summary>
         public const string GetLanguage = "jsGetLanguage";
 
         /// <summary>
-        /// The javascript method name of the google.earth.isInstalled wrapper.
+        /// The JavaScript method name of the google.earth.isInstalled wrapper.
         /// </summary>
         public const string IsInstalled = "jsIsInstalled";
 
         /// <summary>
-        /// The javascript method name of the google.earth.removeEventListener wrapper.
+        /// The JavaScript method name of the google.earth.removeEventListener wrapper.
         /// </summary>
         public const string RemoveEventListener = "jsRemoveEventListener";
 
         /// <summary>
-        /// The javascript method name of the google.earth.setLanguage wrapper.
+        /// The JavaScript method name of the google.earth.setLanguage wrapper.
         /// </summary>
         public const string SetLanguage = "jsSetLanguage";
     }

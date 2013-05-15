@@ -16,16 +16,11 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see http://www.gnu.org/licenses/.
 // </summary>
-
-#region
-
-using System;
-using System.Globalization;
-
-#endregion
-
 namespace FC.GEPluginCtrls.Geo
 {
+    using System;
+    using System.Globalization;
+
     /// <summary>
     /// Bounds class
     /// </summary>
@@ -90,11 +85,11 @@ namespace FC.GEPluginCtrls.Geo
         /// <summary>
         /// Initializes a new instance of the Bounds class.
         /// </summary>
-        /// <param name="southwest">southeast coordinate [lat, lng]</param>
-        /// <param name="northeast">northwest coordinate [lat, lng]</param>
+        /// <param name="southwest">southeast coordinate [latitude, longitude]</param>
+        /// <param name="northeast">northwest coordinate [latitude, longitude]</param>
         public Bounds(double[] southwest, double[] northeast) :
             this(new Coordinate(southwest), new Coordinate(northeast))
-        { 
+        {
         }
 
         #region Public Properties
@@ -187,7 +182,7 @@ namespace FC.GEPluginCtrls.Geo
         }
 
         /// <summary>
-        /// Gets a value indicating whether or not the bounds intersect the antimeridian.
+        /// Gets a value indicating whether or not the bounds intersect the anti-meridian.
         /// </summary>
         public bool CrossesAntiMeridian
         {

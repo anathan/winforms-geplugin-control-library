@@ -1,4 +1,4 @@
-﻿// <copyright file="ViewerOptions.cs" company="FC">
+﻿// <copyright file="KmlViewerOptions.cs" company="FC">
 //   Copyright (c) 2008 - 2012 Fraser Chapman
 // </copyright>
 // <author>Fraser Chapman</author>
@@ -17,18 +17,13 @@
 //   You should have received a copy of the GNU General Public License
 //   along with this program. If not, see http://www.gnu.org/licenses/.
 // </summary>
-
-#region
-
-using System;
-using System.Runtime.InteropServices;
-
-#endregion
-
 namespace FC.GEPluginCtrls
 {
+    using System;
+    using System.Runtime.InteropServices;
+
     /// <summary>
-    /// Enumeration of options for use with <see cref="ViewerOptions"/>
+    /// Enumeration of options for use with <see cref="KmlViewerOptions"/>
     /// </summary>
     public enum ViewerOption
     {
@@ -54,7 +49,7 @@ namespace FC.GEPluginCtrls
     }
 
     /// <summary>
-    /// Enumeration of states to use with <see cref="ViewerOptions"/>
+    /// Enumeration of states to use with <see cref="KmlViewerOptions"/>
     /// </summary>
     public enum OptionState
     {
@@ -82,29 +77,37 @@ namespace FC.GEPluginCtrls
     /// </summary>
     /// <remarks>
     /// <para>
-    /// Unlike kmlViewerOptions in the api this class automatically applies any changes when SetOption is called.
+    /// Unlike kmlViewerOptions in the API this class automatically applies any changes when SetOption is called.
     /// This negates the user having to create a camera, set its options, then apply its view to the current abstract view to see the change.
     /// </para>
     /// </remarks>
-    public sealed class ViewerOptions
+    public sealed class KmlViewerOptions
     {
+        // see: https://developers.google.com/earth/documentation/reference/interface_kml_viewer_options
+
         /// <summary>
         /// The ViewerOptions object
         /// </summary>
         private readonly dynamic viewerOptions;
 
+        /// <summary>
+        /// the GEPlugin object that these options relate to 
+        /// </summary>
         private readonly dynamic plugin;
 
+        /// <summary>
+        /// the KmlCamera object used to set the options on the plug-in
+        /// </summary>
         private readonly dynamic camera;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ViewerOptions"/> class. 
+        /// Initializes a new instance of the <see cref="KmlViewerOptions"/> class. 
         /// Initializes a new instance of the ViewerOptions class.
         /// </summary>
         /// <param name="ge">
         /// The plug-in object 
         /// </param>
-        public ViewerOptions(dynamic ge)
+        public KmlViewerOptions(dynamic ge)
         {
             if (!GEHelpers.IsGE(ge))
             {
@@ -112,9 +115,8 @@ namespace FC.GEPluginCtrls
             }
 
             this.plugin = ge;
-            this.viewerOptions = plugin.createViewerOptions(string.Empty);
-            this.camera = plugin.createCamera(string.Empty);
-
+            this.viewerOptions = this.plugin.createViewerOptions(string.Empty);
+            this.camera = this.plugin.createCamera(string.Empty);
         }
 
         /// <summary>
@@ -130,10 +132,10 @@ namespace FC.GEPluginCtrls
         {
             try
             {
-                int i = this.viewerOptions.getOption((int) option);
-                if (Enum.IsDefined(typeof (OptionState), option))
+                int i = this.viewerOptions.getOption((int)option);
+                if (Enum.IsDefined(typeof(OptionState), option))
                 {
-                    return (OptionState) i;
+                    return (OptionState)i;
                 }
             }
             catch (COMException)
@@ -156,8 +158,8 @@ namespace FC.GEPluginCtrls
         {
             try
             {
-                this.viewerOptions.setOption((int) option, (int) value);
-                ApplyOptions();
+                this.viewerOptions.setOption((int)option, (int)value);
+                this.ApplyOptions();
             }
             catch (COMException)
             {
@@ -169,8 +171,8 @@ namespace FC.GEPluginCtrls
         /// </summary>
         private void ApplyOptions()
         {
-            camera.setViewerOptions(viewerOptions);
-            plugin.getView().setAbstractView(camera);
+            this.camera.setViewerOptions(viewerOptions);
+            this.plugin.getView().setAbstractView(this.camera);
         }
     }
 }

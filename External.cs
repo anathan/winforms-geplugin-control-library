@@ -16,23 +16,18 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see http://www.gnu.org/licenses/.
 // </summary>
-
-#region
-
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Reflection;
-using System.Runtime.InteropServices;
-using Microsoft.CSharp.RuntimeBinder;
-
-#endregion
-
 namespace FC.GEPluginCtrls
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Diagnostics;
+    using System.Reflection;
+    using System.Runtime.InteropServices;
+    using Microsoft.CSharp.RuntimeBinder;
+
     /// <summary>
-    /// This COM Visible class contains all the public methods to be called from Javascript.
-    /// The various events are used by the <see cref="GEWebBrowser"/> when dealing with the plugin
+    /// This COM Visible class contains all the public methods to be called from JavaScript.
+    /// The various events are used by the <see cref="GEWebBrowser"/> when dealing with the plug-in
     /// </summary>
     [ComVisible(true)]
     public class External : IExternal
@@ -42,7 +37,7 @@ namespace FC.GEPluginCtrls
         /// <summary>
         /// Stores fetched Kml Objects
         /// </summary>
-        private static readonly Dictionary<string, object> kmlObjectCache =
+        private static readonly Dictionary<string, object> KmlDictionary =
             new Dictionary<string, object>();
 
         #endregion
@@ -60,7 +55,7 @@ namespace FC.GEPluginCtrls
         public event EventHandler<GEEventArgs> KmlEvent;
 
         /// <summary>
-        /// Raised when a kml/kmz file has loaded
+        /// Raised when a KML/KMZ file has loaded
         /// </summary>
         public event EventHandler<GEEventArgs> KmlLoaded;
 
@@ -75,7 +70,7 @@ namespace FC.GEPluginCtrls
         public event EventHandler<GEEventArgs> PluginEvent;
 
         /// <summary>
-        /// Rasied when there is a viewchangebegin, viewchange or viewchangeend event 
+        /// Raised when there is a viewchangebegin, viewchange or viewchangeend event 
         /// </summary>
         public event EventHandler<GEEventArgs> ViewEvent;
 
@@ -85,11 +80,11 @@ namespace FC.GEPluginCtrls
 
         /// <summary>
         /// Gets the store of fetched IKmlObjects.
-        /// Used in the process of synchronously loading networklinks
+        /// Used in the process of synchronously loading network links
         /// </summary>
         internal static Dictionary<string, object> KmlObjectCache
         {
-            get { return kmlObjectCache; }
+            get { return KmlDictionary; }
         }
 
         #endregion
@@ -97,7 +92,7 @@ namespace FC.GEPluginCtrls
         #region Public methods
 
         /// <summary>
-        /// Allows javascript to send debug messages
+        /// Allows JavaScript to send debug messages
         /// </summary>
         /// <param name="category">the category of the message</param>
         /// <param name="message">the debug message</param>
@@ -107,7 +102,7 @@ namespace FC.GEPluginCtrls
         }
 
         /// <summary>
-        /// Can be called from javascript to invoke method in managed code.
+        /// Can be called from JavaScript to invoke method in managed code.
         /// </summary>
         /// <param name="name">the name of the managed method to be called</param>
         /// <param name="parameters">array of parameter objects</param>
@@ -116,7 +111,7 @@ namespace FC.GEPluginCtrls
             try
             {
                 object[] data = parameters.GetType().Name == "__ComObject"
-                                    ? new object[] {parameters.kmlObject, (string) parameters.url}
+                                    ? new object[] { parameters.kmlObject, (string)parameters.url }
                                     : parameters;
 
                 GEEventArgs ea = new GEEventArgs(data);
@@ -134,7 +129,7 @@ namespace FC.GEPluginCtrls
         }
 
         /// <summary>
-        /// Called from javascript when the plugin is ready
+        /// Called from JavaScript when the plugin is ready
         /// </summary>
         /// <param name="ge">the plugin instance</param>
         public void Ready(dynamic ge)
@@ -148,7 +143,7 @@ namespace FC.GEPluginCtrls
         }
 
         /// <summary>
-        /// Called from javascript when there is an error
+        /// Called from JavaScript when there is an error
         /// </summary>
         /// <param name="type">the error message</param>
         /// <param name="message">the error type</param>
@@ -160,7 +155,7 @@ namespace FC.GEPluginCtrls
         }
 
         /// <summary>
-        /// Called from javascript when there is a kml event
+        /// Called from JavaScript when there is a kml event
         /// </summary>
         /// <param name="kmlEvent">the kml event</param>
         /// <param name="action">the event id</param>
@@ -181,7 +176,7 @@ namespace FC.GEPluginCtrls
         }
 
         /// <summary>
-        /// Called from javascript when there is a GEPlugin event
+        /// Called from JavaScript when there is a GEPlugin event
         /// </summary>
         /// <param name="sender">The plugin object</param>
         /// <param name="action">The event action</param>
@@ -202,7 +197,7 @@ namespace FC.GEPluginCtrls
         }
 
         /// <summary>
-        /// Called from javascript when there is a View event
+        /// Called from JavaScript when there is a View event
         /// </summary>
         /// <param name="sender">The plugin object</param>
         /// <param name="action">The event action</param>
@@ -285,7 +280,7 @@ namespace FC.GEPluginCtrls
                 lock (KmlObjectCache)
                 {
                     KmlObjectCache[url] = kmlObject;
-                    GEWebBrowser.KmlObjectCacheSyncEvents[url].Set();
+                    GEWebBrowser.ResetEvents[url].Set();
                 }
             }
         }

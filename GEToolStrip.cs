@@ -16,25 +16,20 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see http://www.gnu.org/licenses/.
 // </summary>
-
-#region
-
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.Drawing;
-using System.Drawing.Imaging;
-using System.IO;
-using System.Windows.Forms;
-using Microsoft.CSharp.RuntimeBinder;
-
-#endregion
-
 namespace FC.GEPluginCtrls
 {
+    using System;
+    using System.Collections.Generic;
+    using System.ComponentModel;
+    using System.Diagnostics;
+    using System.Drawing;
+    using System.Drawing.Imaging;
+    using System.IO;
+    using System.Windows.Forms;
+    using Microsoft.CSharp.RuntimeBinder;
+
     /// <summary>
-    /// The GEToolStrip provides a quick way to access and set the plugin options
+    /// The GEToolStrip provides a quick way to access and set the plug-in options
     /// </summary>
     public sealed partial class GEToolStrip : ToolStrip, IGEControls
     {
@@ -51,7 +46,7 @@ namespace FC.GEPluginCtrls
         private GEOptions options;
 
         /// <summary>
-        /// The plugin navigation cotrol 
+        /// The plug-in navigation control 
         /// </summary>
         private GENavigationControl control;
 
@@ -170,10 +165,10 @@ namespace FC.GEPluginCtrls
         }
 
         /// <summary>
-        /// Gets or sets a value indicating whether the language combobox is visible
+        /// Gets or sets a value indicating whether the language combo box is visible
         /// </summary>
         [Category("Control Options"),
-        Description("Specifies the visibility of the language combobox."),
+        Description("Specifies the visibility of the language combo box."),
         DefaultValue(true)]
         public bool ShowLanguageComboBox
         {
@@ -195,14 +190,18 @@ namespace FC.GEPluginCtrls
         }
 
         /// <summary>
-        /// Gets or sets the alignment property of the toolstrip items
+        /// Gets or sets the alignment property of the tool strip items
         /// </summary>
         [Category("Control Options"),
         Description("Gets or sets the alignment of the toolstrip items."),
         DefaultValue(ToolStripItemAlignment.Left)]
         public ToolStripItemAlignment ToolStripItemAlignment
         {
-            get { return this.toolStripItemAlignment; }
+            get
+            {
+                return this.toolStripItemAlignment;
+            }
+
             set
             {
                 if (this.toolStripItemAlignment != value)
@@ -212,13 +211,13 @@ namespace FC.GEPluginCtrls
                 }
             }
         }
-        
+
         #endregion
 
         #region Public methods
 
         /// <summary>
-        /// Adds multiple entries to the Auto Compleate suggestion list
+        /// Adds multiple entries to the auto-complete suggestion list
         /// </summary>
         /// <param name="suggestions">The suggestions to be entered</param>
         /// <example>Example: GEToolStrip.AddAutoCompleteSuggestions(new string[] { "London", "Paris", "Rome" });</example>
@@ -228,7 +227,7 @@ namespace FC.GEPluginCtrls
         }
 
         /// <summary>
-        /// Adds an entry to the Auto Compleate suggestion list
+        /// Adds an entry to the auto-complete suggestion list
         /// </summary>
         /// <param name="suggestion">The suggestion entry</param>
         /// <example>Example: GEToolStrip.AddAutoCompleteSuggestions("London");</example>
@@ -238,7 +237,7 @@ namespace FC.GEPluginCtrls
         }
 
         /// <summary>
-        /// Removes all entries from the Auto Compleate suggestion list
+        /// Removes all entries from the auto-complete suggestion list
         /// </summary>
         /// <example>Example: GEToolStrip.ClearAutoCompleteSuggestions()</example>
         public void ClearAutoCompleteSuggestions()
@@ -269,7 +268,7 @@ namespace FC.GEPluginCtrls
         #region Private methods
 
         /// <summary>
-        /// Resets the toolstrips menu items to match the default initialization state of the plug-in.
+        /// Resets the tool strip's menu items to match the default initialization state of the plug-in.
         /// </summary>
         private void ResetToolStripDefaults()
         {
@@ -291,14 +290,14 @@ namespace FC.GEPluginCtrls
         }
 
         /// <summary>
-        /// Force the plug-in to confom to the tool-strip settings
+        /// Force the plug-in to conform to the tool-strip settings
         /// </summary>
         private void SynchronizeOptions()
         {
             if (this.browser.PluginIsReady)
             {
                 // checked: t(1)+1=2 = MapType.Sky - unchecked: f(0)+1=1 = MapType.Earth
-                this.options.SetMapType(((MapType)Convert.ToUInt16(this.skyMenuItem.Checked) + 1));
+                this.options.SetMapType((MapType)Convert.ToUInt16(this.skyMenuItem.Checked) + 1);
 
                 this.options.StatusBarVisibility = this.statusBarMenuItem.Checked;
                 this.options.StatusBarVisibility = this.statusBarMenuItem.Checked;
@@ -339,7 +338,7 @@ namespace FC.GEPluginCtrls
         }
 
         /// <summary>
-        /// Builds the language combobox options from the Languages class
+        /// Builds the language combo-box options from the Languages class
         /// </summary>
         private void BuildLanguageOptions()
         {
@@ -348,19 +347,23 @@ namespace FC.GEPluginCtrls
             Dictionary<string, string> languageList = Languages.Codes();
             foreach (KeyValuePair<string, string> entry in languageList)
             {
-                ToolStripMenuItem item = new ToolStripMenuItem {Text = entry.Value, Tag = entry.Key};
+                ToolStripMenuItem item = new ToolStripMenuItem { Text = entry.Value, Tag = entry.Key };
                 this.languageComboBox.Items.Add(item);
             }
         }
 
+        /// <summary>
+        /// Toggles the tools strips item layout between left-to-right and right-to-left
+        /// </summary>
         private void ToggleAlignment()
         {
             List<ToolStripItem> list = new List<ToolStripItem>();
             foreach (ToolStripItem item in this.Items)
             {
-                item.Alignment = toolStripItemAlignment;
+                item.Alignment = this.toolStripItemAlignment;
                 list.Add(item);
             }
+
             this.Items.Clear();
             list.ForEach(i => this.Items.Add(i));
         }
@@ -370,7 +373,7 @@ namespace FC.GEPluginCtrls
         #region Event handlers
 
         /// <summary>
-        /// Called when the KeyUp event is rasied in the navigation text box
+        /// Called when the KeyUp event is raised in the navigation text box
         /// </summary>
         /// <param name="sender">The object that raised the event.</param>
         /// <param name="e">Event arguments.</param>
@@ -456,11 +459,11 @@ namespace FC.GEPluginCtrls
         /// <param name="e">Event arguments.</param>
         private void LayersItem_Clicked(object sender, EventArgs e)
         {
-            ToolStripMenuItem item = (ToolStripMenuItem) sender;
+            ToolStripMenuItem item = (ToolStripMenuItem)sender;
 
             if (this.browser.PluginIsReady)
             {
-                GEHelpers.EnableLayer(this.browser.Plugin, (Layer) item.Tag, item.Checked);
+                GEHelpers.EnableLayer(this.browser.Plugin, (Layer)item.Tag, item.Checked);
             }
         }
 
@@ -631,7 +634,7 @@ namespace FC.GEPluginCtrls
                 Bitmap image = this.browser.ScreenGrab();
 
                 // Save the file with a dialog
-                using (SaveFileDialog dialog = new SaveFileDialog {Filter = "JPEG files (*.jpg;*.jpeg)|*.jpg;*.jpeg|All files (*.*)|*.*"})
+                using (SaveFileDialog dialog = new SaveFileDialog { Filter = "JPEG files (*.jpg;*.jpeg)|*.jpg;*.jpeg|All files (*.*)|*.*" })
                 {
                     if (dialog.ShowDialog() == DialogResult.OK)
                     {
@@ -671,7 +674,7 @@ namespace FC.GEPluginCtrls
         /// <param name="e">Event arguments.</param>
         private void LanguageComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-            ToolStripMenuItem item = (ToolStripMenuItem) this.languageComboBox.SelectedItem;
+            ToolStripMenuItem item = (ToolStripMenuItem)this.languageComboBox.SelectedItem;
             this.browser.SetLanguage(item.Tag.ToString());
         }
 

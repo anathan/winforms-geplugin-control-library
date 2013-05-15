@@ -16,15 +16,10 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see http://www.gnu.org/licenses/.
 // </summary>
-
-#region
-
-using System;
-
-#endregion
-
 namespace FC.GEPluginCtrls
 {
+    using System;
+
     /// <summary>
     /// Wrapper for the GETourPlayer com object.
     /// Maps all its getter and setter methods to managed properties
@@ -34,9 +29,9 @@ namespace FC.GEPluginCtrls
         #region Private Fields
 
         /// <summary>
-        /// The plugin object 
+        /// The plug-in object 
         /// </summary>
-        private dynamic ge = null;
+        private readonly dynamic ge = null;
 
         /// <summary>
         /// The options object 

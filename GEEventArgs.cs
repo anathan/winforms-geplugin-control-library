@@ -16,15 +16,10 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see http://www.gnu.org/licenses/.
 // </summary>
-
-#region
-
-using System;
-
-#endregion
-
 namespace FC.GEPluginCtrls
 {
+    using System;
+
     /// <summary>
     /// Custom event arguments 
     /// </summary>
@@ -40,7 +35,7 @@ namespace FC.GEPluginCtrls
         /// <summary>
         /// Initializes a new instance of the GEEventArgs class
         /// </summary>
-        /// <param name="feature">Plugin API object to initialise with.</param>
+        /// <param name="feature">Plug-in API object to initialise with.</param>
         public GEEventArgs(object feature)
         {
             this.ApiObject = feature;

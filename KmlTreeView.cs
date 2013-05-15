@@ -16,26 +16,21 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see http://www.gnu.org/licenses/.
 // </summary>
-
-#region
-
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Globalization;
-using System.Runtime.InteropServices;
-using System.Windows.Forms;
-using System.Windows.Forms.VisualStyles;
-
-#endregion
-
 namespace FC.GEPluginCtrls
 {
+    using System;
+    using System.Collections.Generic;
+    using System.ComponentModel;
+    using System.Drawing;
+    using System.Globalization;
+    using System.Runtime.InteropServices;
+    using System.Windows.Forms;
+    using System.Windows.Forms.VisualStyles;
+
     /// <summary>
-    /// The KmlTreeView provides a quick and easy way to display kml content.
-    /// It intergratres with the <see cref="GEWebBrowser"/> allowing a user to
-    /// easily 'fly-to' and toggle the visiblity of features in the plugin.
+    /// The KmlTreeView provides a quick and easy way to display KML content.
+    /// It integrates with the <see cref="GEWebBrowser"/> allowing a user to
+    /// easily 'fly-to' and toggle the visibility of features in the plug-in.
     /// </summary>
     /// <remarks>
     /// The control supports virtual loading of content using the <see cref="KmlTreeViewNode"/> class.
@@ -58,12 +53,12 @@ namespace FC.GEPluginCtrls
         private ImageList triStateImageList = null;
 
         /// <summary>
-        /// Vaule indicating whether check-boxes are visible.
+        /// Value indicating whether check-boxes are visible.
         /// </summary>
         private bool checkBoxesVisible = false;
 
         /// <summary>
-        /// Vaule indicating whether to prevent the check-boxes check event.
+        /// Value indicating whether to prevent the check-boxes check event.
         /// </summary>
         private bool preventChecking = false;
 
@@ -83,7 +78,7 @@ namespace FC.GEPluginCtrls
         #region Control Properties
 
         /// <summary>
-        /// Gets or sets a value indicating whether the treeview should display checkboxes or not.
+        /// Gets or sets a value indicating whether the tree view should display checkboxes or not.
         /// Default True
         /// </summary>
         [Category("Control Options")]
@@ -111,9 +106,9 @@ namespace FC.GEPluginCtrls
         #region Public methods
 
         /// <summary>
-        /// Creates a KmlTreeViewNode from an kml feature 
+        /// Creates a KmlTreeViewNode from an KML feature 
         /// </summary>
-        /// <param name="feature">The kml feature to base the node on</param>
+        /// <param name="feature">The KML feature to base the node on</param>
         /// <returns>A KmlTreeViewNode based on the feature</returns>
         public KmlTreeViewNode CreateNode(dynamic feature)
         {
@@ -121,12 +116,12 @@ namespace FC.GEPluginCtrls
             KmlTreeViewNode treeNode = new KmlTreeViewNode(feature);
 
             // if the children are hidden just return the empty node...
-            if(treeNode.KmlListStyle == ListItemStyle.CheckHideChildren)
+            if (treeNode.KmlListStyle == ListItemStyle.CheckHideChildren)
             {
                 return treeNode;
             }
 
-            // if the node is a networlink or a document or folder
+            // if the node is a network link or a document or folder
             // and it has children...
             if (treeNode.ApiType == ApiType.KmlNetworkLink ||
                 ((treeNode.ApiType == ApiType.KmlDocument ||
@@ -145,7 +140,7 @@ namespace FC.GEPluginCtrls
         ///  As the node key is automatically set from the kmlObject ID the IDs should always correspond and be unique.
         /// </summary>
         /// <param name="id">The API object id</param>
-        /// <returns>The treenode for the object from the given ID (or an empty treenode if the ID isn't found)</returns>
+        /// <returns>The tree node for the object from the given ID (or an empty tree node if the ID isn't found)</returns>
         public KmlTreeViewNode GetNodeById(string id)
         {
             TreeNode[] nodes = this.Nodes.Find(id, true);
@@ -153,16 +148,16 @@ namespace FC.GEPluginCtrls
 
             if (nodes.Length == 1)
             {
-                node = (KmlTreeViewNode) nodes[0];
+                node = (KmlTreeViewNode)nodes[0];
             }
 
             return node;
         }
 
         /// <summary>
-        /// Load a kml object into the treeview
+        /// Load a KML object into the tree view
         /// </summary>
-        /// <param name="feature">The kml object to parse</param>
+        /// <param name="feature">The KML object to parse</param>
         public void ParseKmlObject(dynamic feature)
         {
             this.Nodes.Add(this.CreateNode(feature));
@@ -170,9 +165,9 @@ namespace FC.GEPluginCtrls
         }
 
         /// <summary>
-        /// Load a collection of kml objects into the treeview
+        /// Load a collection of KML objects into the tree view
         /// </summary>
-        /// <param name="features">The kml objects to parse</param>
+        /// <param name="features">The KML objects to parse</param>
         public void ParseKmlObject(dynamic[] features)
         {
             foreach (dynamic feature in features)
@@ -276,7 +271,7 @@ namespace FC.GEPluginCtrls
         {
             base.OnAfterExpand(e);
 
-            KmlTreeViewNode eventNode = (KmlTreeViewNode) e.Node;
+            KmlTreeViewNode eventNode = (KmlTreeViewNode)e.Node;
             eventNode.SetStyle();
 
             // If there is a place-holder node 
@@ -328,9 +323,9 @@ namespace FC.GEPluginCtrls
 
             // check if the node needs updating...
             // ideally this should be event driven rather than via user interaction
-            // but as yet the api does not expose networklink events...
+            // but as yet the API does not expose network link events...
             KmlTreeViewNode node =
-                UpdateCheck((KmlTreeViewNode) e.Node, this.browser);
+                UpdateCheck((KmlTreeViewNode)e.Node, this.browser);
             node.Refresh(); 
 
             if (node.IsLoading)
@@ -383,7 +378,7 @@ namespace FC.GEPluginCtrls
                 return;
             }
 
-            KmlTreeViewNode treeNode = (KmlTreeViewNode) e.Node;
+            KmlTreeViewNode treeNode = (KmlTreeViewNode)e.Node;
             if (e.Button == MouseButtons.Left)
             {
                 // toggle the check state
@@ -393,7 +388,7 @@ namespace FC.GEPluginCtrls
                 if (!treeNode.Checked)
                 {
                     // Turn off the media player for the node if it was unchecked 
-                    // For example, unchecking a Tour object in the tree exits the tour player
+                    // For example, un-checking a Tour object in the tree exits the tour player
                     GEHelpers.ToggleMediaPlayer(this.browser.Plugin, treeNode.ApiObject, false);
                 }
             }
@@ -418,7 +413,7 @@ namespace FC.GEPluginCtrls
             while (nodes.Count > 0);
 
             bool state = false;
-            treeNode = (KmlTreeViewNode) e.Node;
+            treeNode = (KmlTreeViewNode)e.Node;
 
             while (treeNode.Parent != null)
             {
@@ -451,9 +446,9 @@ namespace FC.GEPluginCtrls
         #region Private methods
 
         /// <summary>
-        /// Generates an ID for a feature loaded from a remote reasource 
+        /// Generates an ID for a feature loaded from a remote resource 
         /// </summary>
-        /// <param name="url">the base url</param>
+        /// <param name="url">the base URL</param>
         /// <param name="id">the object id</param>
         /// <returns>the generated id</returns>
         private static string GenerateId(string url, string id)
@@ -463,7 +458,7 @@ namespace FC.GEPluginCtrls
         }
 
         /// <summary>
-        /// Checks if a given element in the treeview needs updating
+        /// Checks if a given element in the tree view needs updating
         /// </summary>
         /// <param name="node">The node to check for</param>
         /// <param name="browser">The browser instance to check in</param>
@@ -482,7 +477,7 @@ namespace FC.GEPluginCtrls
 
             if (liveObject != null)
             {
-                KmlTreeViewNode newNode = new KmlTreeViewNode(liveObject) {Name = node.Name, BaseUrl = node.BaseUrl};
+                KmlTreeViewNode newNode = new KmlTreeViewNode(liveObject) { Name = node.Name, BaseUrl = node.BaseUrl };
 
                 if (node.Parent != null)
                 {
@@ -567,7 +562,7 @@ namespace FC.GEPluginCtrls
 
             if (baseNode.ApiType == ApiType.KmlNetworkLink)
             {
-                // fetch the networklink data 
+                // fetch the network link data 
                 string url = KmlHelpers.GetUrl(baseNode.ApiObject).ToString();
                 dynamic data;
                 bool rebuild = false;
@@ -590,15 +585,15 @@ namespace FC.GEPluginCtrls
 
                     if (rebuild)
                     {
-                        // The kmlobjects are created via parsekml so they need their id's need to be rebuilt
-                        // so that the Url is still present (e.g. http://foo.com/#id vs #id)
-                        // the baseurl of the node is set so that any child nodes can also have there id's rebuilt
+                        // The KmlObjects are created via parseKml so they need their id's need to be rebuilt
+                        // so that the Url is still present (e.g. http://foo.com/#id vs. #id)
+                        // the `baseurl` of the node is set so that any child nodes can also have there id's rebuilt
                         // when they are created.
                         link.Name = GenerateId(url, data.getId());
                         link.BaseUrl = url; 
                     }
 
-                    // create a new treenode from the data and push it on to the stack
+                    // create a new tree node from the data and push it on to the stack
                     children.Push(link);
                 }
                 else
@@ -661,14 +656,14 @@ namespace FC.GEPluginCtrls
             baseNode.Nodes.Clear();
 
             // add the children to the node 
-            // (is just a new placeholder if there was error loading a networklink)
+            // (is just a new placeholder if there was error loading a network link)
             while (children.Count > 0)
             {
                 KmlTreeViewNode child = children.Pop();
                 baseNode.Nodes.Add(child);
 
                 // If the parent has a BaseUrl then we need to use this to generate the 
-                // correct ids for the child, we also set the baseurl on the child for its children ...
+                // correct ids for the child, we also set the `baseurl` on the child for its children ...
                 // we also do an update check as it is possible the node needs to be updated...
                 string url = ((KmlTreeViewNode)child.Parent).BaseUrl;
 

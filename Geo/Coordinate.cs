@@ -16,16 +16,11 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see http://www.gnu.org/licenses/.
 // </summary>
-
-#region
-
-using System;
-using System.Globalization;
-
-#endregion
-
 namespace FC.GEPluginCtrls.Geo
 {
+    using System;
+    using System.Globalization;
+
     /// <summary>
     /// Coordinate class
     /// </summary>
@@ -71,11 +66,11 @@ namespace FC.GEPluginCtrls.Geo
                         if (GEHelpers.IsApiType(geometry, ApiType.KmlPoint))
                         {
                             feature = geometry;
-                            goto case ApiType.KmlPoint;
+                            goto case ApiType.KmlPoint;  // statement fall-through
                         }
-                    }
 
-                    return;
+                        return;
+                    }
 
                 case ApiType.KmlCoord:
                 case ApiType.KmlLocation:
@@ -83,9 +78,9 @@ namespace FC.GEPluginCtrls.Geo
                         this.Latitude = feature.getLatitude();
                         this.Longitude = feature.getLongitude();
                         this.Altitude = feature.getAltitude();
+                        return;
                     }
 
-                    return;
                 case ApiType.KmlPoint:
                 case ApiType.KmlLookAt:
                 case ApiType.KmlCamera:
@@ -94,9 +89,8 @@ namespace FC.GEPluginCtrls.Geo
                         this.Longitude = feature.getLongitude();
                         this.Altitude = feature.getAltitude();
                         this.AltitudeMode = (AltitudeMode)feature.getAltitudeMode();
+                        return;
                     }
-
-                    return;
             }
         }
 
@@ -104,9 +98,9 @@ namespace FC.GEPluginCtrls.Geo
         /// Initializes a new instance of the Coordinate class.
         /// </summary>
         /// <param name="coordinate">expects 2, 3 or 4 values
-        /// [lat, lng] or
-        /// [lat, lng, alt] or 
-        /// [lat, lng, alt, (int)altMode]</param>
+        /// [latitude, longitude] or
+        /// [latitude, longitude, altitude] or 
+        /// [latitude, longitude, altitude, altitude-mode]</param>
         public Coordinate(double[] coordinate)
             : this()
         {
@@ -120,22 +114,21 @@ namespace FC.GEPluginCtrls.Geo
                 case 4:
                     {
                         this.AltitudeMode = (AltitudeMode)coordinate[3];
-                        goto case 3; // really!?
+                        goto case 3; // statement fall-through
                     }
 
                 case 3:
                     {
                         this.Altitude = coordinate[2];
-                        goto case 2; // yes, to get statement fallthrough...
+                        goto case 2; // statement fall-through
                     }
 
                 case 2:
                     {
                         this.Latitude = Maths.FixLatitude(coordinate[0]);
                         this.Longitude = Maths.FixLongitude(coordinate[1]);
+                        return;
                     }
-
-                    return;
 
                 default:
                     throw
@@ -151,15 +144,6 @@ namespace FC.GEPluginCtrls.Geo
         /// <remarks>clones a coordinate</remarks>
         public Coordinate(Coordinate coordinate)
             : this(coordinate.Latitude, coordinate.Longitude, coordinate.Altitude, coordinate.AltitudeMode)
-        { 
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the Coordinate class.
-        /// </summary>
-        /// <param name="coordinate">A Tuple to base the Coordinate on (lat, lng, alt, mode)</param>
-        public Coordinate(Tuple<double, double, double, int> coordinate)
-            : this(coordinate.Item1, coordinate.Item2, coordinate.Item3, (AltitudeMode)coordinate.Item4)
         { 
         }
 
@@ -241,7 +225,7 @@ namespace FC.GEPluginCtrls.Geo
         /// <param name="destination">The end Coordinate</param>
         /// <param name="haversine">Optionally use the haversine formula, default is false</param>
         /// <param name="units">The unit system to use, default is metric</param>
-        /// <remarks>by defaut simple spherical trig (law of cosines) is used</remarks>
+        /// <remarks>by default simple spherical trig (law of cosines) is used</remarks>
         /// <returns>The distance between the two Coordinates in km</returns>
         public double Distance(Coordinate destination, bool haversine = false, UnitSystem units = UnitSystem.Metric)
         {
@@ -313,10 +297,10 @@ namespace FC.GEPluginCtrls.Geo
         }
 
         /// <summary>
-        /// Computes the inital bearing to a Coordinate
+        /// Computes the initial bearing to a Coordinate
         /// </summary>
         /// <param name="destination">the destination Coordinate</param>
-        /// <returns>The inital bearing to the destination Coordinate</returns>
+        /// <returns>The initial bearing to the destination Coordinate</returns>
         public double BearingInitial(Coordinate destination)
         {
             return Maths.BearingInitial(this, destination);
@@ -339,9 +323,9 @@ namespace FC.GEPluginCtrls.Geo
         }
 
         /// <summary>
-        /// Returns a string that represents the current Coordinate (lat, lng, alt)
+        /// Returns a string that represents the current Coordinate (latitude, longitude, altitude)
         /// </summary>
-        /// <returns> (lat, lng, alt)</returns>
+        /// <returns>(latitude, longitude, altitude)</returns>
         public override string ToString()
         {
             return string.Format(
