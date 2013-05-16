@@ -28,6 +28,7 @@ namespace FC.GEPluginCtrls
     using System.IO;
     using System.Net;
     using System.Runtime.InteropServices;
+    using System.Security;
     using System.Security.Permissions;
     using System.Threading;
     using System.Windows.Forms;
@@ -39,8 +40,9 @@ namespace FC.GEPluginCtrls
     /// This browser control holds the Google Earth Plug-in,
     /// it also provides wrapper methods to work with the Google.Earth namespace
     /// </summary>
+    [SecurityCritical]
     [PermissionSet(SecurityAction.Demand, Name = "FullTrust")]
-    public sealed partial class GEWebBrowser : WebBrowser
+    public sealed partial class GEWebBrowser : WebBrowser, INotifyPropertyChanged
     {
         #region Private Fields
 
@@ -64,12 +66,12 @@ namespace FC.GEPluginCtrls
         private dynamic plugin = null;
 
         /// <summary>
-        /// Current plug-in Imagery database
+        /// Current plug-in Imagery database - uses INotifyPropertyChanged
         /// </summary>
         private ImageryBase imageryBase = ImageryBase.Earth;
 
         /// <summary>
-        /// Indicates whether the plug-in is ready to use.
+        /// Current plug-in state - uses INotifyPropertyChanged
         /// </summary>
         private bool pluginIsReady = false;
 
@@ -82,55 +84,13 @@ namespace FC.GEPluginCtrls
         {
             this.InitializeComponent();
             this.DoubleBuffered = true;
-
-            // External - COM visible class
             this.ObjectForScripting = this.external;
-
-            // when the plugin has finished loading
-            // if we have a reference to the plugin object
-            // set the various fields and raise the PluginReady event
-            this.external.PluginReady += (o, e) =>
-                                             {
-                                                 if (null != e.ApiObject)
-                                                 {
-                                                     this.plugin = e.ApiObject;
-                                                     this.pluginIsReady = true;
-                                                     this.PluginReady(this, e);
-
-                                                     Form parent = this.FindForm();
-
-                                                     if (parent != null)
-                                                     {
-                                                         parent.FormClosing += (f, x) =>
-                                                                                   {
-                                                                                       // prevents script errors on exit...
-                                                                                       this.KillPlugin();
-                                                                                       this.DocumentText = string.Empty;
-                                                                                   };
-                                                     }
-                                                 }
-                                             };
-
-            // wireup the other external events to their handlers
+            this.external.PluginReady += this.OnExternal_PluginReady;
             this.external.KmlLoaded += (o, e) => this.KmlLoaded(this, e);
             this.external.ScriptError += (o, e) => this.ScriptError(this, e);
             this.external.KmlEvent += (o, e) => this.KmlEvent(this, e);
             this.external.PluginEvent += (o, e) => this.PluginEvent(this, e);
             this.external.ViewEvent += (o, e) => this.ViewEvent(this, e);
-
-            // when a document has finished loading
-            // listen for any errors in the window
-            // handle any errors and raise a custom script error event
-            this.DocumentCompleted += (o, e) =>
-                                          {
-                                              HtmlDocument htmlDocument = this.Document;
-                                              if (htmlDocument != null && htmlDocument.Window != null)
-                                              {
-                                                  htmlDocument.Window.Error += OnWindowOnError;
-                                              }
-
-                                              this.Navigating += OnWebBrowserNavigatingEventHandler;
-                                          };
         }
 
         #region Public Events
@@ -165,6 +125,11 @@ namespace FC.GEPluginCtrls
         /// </summary>
         public event EventHandler<GEEventArgs> ViewEvent = delegate { };
 
+        /// <summary>
+        /// INotifyPropertyChanged implementation 
+        /// </summary>
+        public event PropertyChangedEventHandler PropertyChanged;
+
         #endregion
 
         #region Public Properties
@@ -193,6 +158,7 @@ namespace FC.GEPluginCtrls
             set
             {
                 this.imageryBase = value;
+                this.OnPropertyChanged("ImageryBase");
                 this.CreateInstance(this.imageryBase);
             }
         }
@@ -201,9 +167,17 @@ namespace FC.GEPluginCtrls
         /// Gets a value indicating whether the plug-in is ready
         /// </summary>
         [Browsable(false)]
-        public bool PluginIsReady
-        {
-            get { return this.pluginIsReady; }
+        public bool PluginIsReady {
+            get
+            {
+                return this.pluginIsReady;
+            }
+
+            set
+            {
+                this.pluginIsReady = value;
+                this.OnPropertyChanged("PluginIsReady");
+            }
         }
 
         /// <summary>
@@ -288,26 +262,38 @@ namespace FC.GEPluginCtrls
         #region Public methods
 
         /// <summary>
-        /// Kills all running geplugin processes on the system
+        /// Kills the current plug-in processes on the system.
         /// </summary>
-        public void KillPlugin()
+        /// <param name="all">Optionally kill all Google Earth plug-in processes on the system. Default is False</param>
+        public void KillPlugin(bool all)
         {
-            this.pluginIsReady = false;
+            this.PluginIsReady = false;
 
-            if (this.plugin != null)
+            if (all)
             {
-                try
+                foreach (Process process in Process.GetProcesses())
                 {
-                    this.plugin.Kill_();
+                    if (process.ProcessName == "geplugin")
+                    {
+                        Debug.WriteLine(process.Id.ToString(), "KillPlugin");
+                        process.Kill();
+                    }
                 }
-                catch (RuntimeBinderException rbex)
-                {
-                    Debug.WriteLine("Refresh: " + rbex.Message, "GEWebBrowser");
-                }
-                catch (COMException cex)
-                {
-                    Debug.WriteLine("Refresh: " + cex.Message, "GEWebBrowser");
-                }
+
+                return;
+            }
+
+            try
+            {
+                this.plugin.Kill_();
+            }
+            catch (RuntimeBinderException rbex)
+            {
+                Debug.WriteLine("Refresh: " + rbex.Message, "GEWebBrowser");
+            }
+            catch (COMException cex)
+            {
+                Debug.WriteLine("Refresh: " + cex.Message, "GEWebBrowser");
             }
         }
 
@@ -347,13 +333,15 @@ namespace FC.GEPluginCtrls
         /// <example>Example: GEWebBrowser.CreateInstance(ImageryBase.Moon);</example>
         public void CreateInstance(ImageryBase database)
         {
-            if (this.Document != null)
+            if (null == this.Document)
             {
-                this.pluginIsReady = false;
-                string name = database.ToString();
-                this.InvokeJavaScript(JSFunction.CreateInstance, new object[] { name });
-                this.imageryBase = database;
+                return;
             }
+
+            this.PluginIsReady = false;
+            string name = database.ToString();
+            this.InvokeJavaScript(JSFunction.CreateInstance, new object[] { name });
+            this.imageryBase = database;
         }
 
         /// <summary>
@@ -417,12 +405,14 @@ namespace FC.GEPluginCtrls
         /// <example>Example: GEWebBrowser.FetchKml("http://www.site.com/file.kml", "createCallback_(OnKmlLoaded)");</example>
         public void FetchKml(Uri url, string completionCallback)
         {
-            if (this.Document != null)
+            if (null == this.Document)
             {
-                this.InvokeJavaScript(
-                    JSFunction.FetchKml,
-                    new object[] { url.ToString(), completionCallback });
+                return;
             }
+
+            this.InvokeJavaScript(
+                JSFunction.FetchKml,
+                new object[] { url.ToString(), completionCallback });
         }
 
         /// <summary>
@@ -692,21 +682,21 @@ namespace FC.GEPluginCtrls
         /// <returns>The result of the evaluated function</returns>
         public object InvokeJavaScript(string function, object[] args)
         {
-            if (null != this.Document)
+            if (null == this.Document)
             {
-                Debug.WriteLine(
-                    string.Format(
-                        CultureInfo.InvariantCulture,
-                        "InvokeJavascript: {0}( {1} )",
-                        function,
-                        string.Join(", ", args)),
-                    "GEWebBrowser");
-
-                // see http://msdn.microsoft.com/en-us/library/4b1a88bz.aspx
-                return this.Document.InvokeScript(function, args);
+                return null;
             }
 
-            return null;
+            Debug.WriteLine(
+                string.Format(
+                    CultureInfo.InvariantCulture,
+                    "InvokeJavascript: {0}( {1} )",
+                    function,
+                    string.Join(", ", args)),
+                "GEWebBrowser");
+
+            // see http://msdn.microsoft.com/en-us/library/4b1a88bz.aspx
+            return this.Document.InvokeScript(function, args);
         }
 
         /// <summary>
@@ -787,7 +777,7 @@ namespace FC.GEPluginCtrls
         /// <param name="code">The language code to use</param>
         public void SetLanguage(string code)
         {
-            this.pluginIsReady = false;
+            this.PluginIsReady = false;
             this.InvokeJavaScript(JSFunction.SetLanguage, new object[] { code });
         }
 
@@ -797,40 +787,74 @@ namespace FC.GEPluginCtrls
         /// </summary>
         public override void Refresh()
         {
-            this.KillPlugin();
+            if (null == this.Document)
+            {
+                return;
+            }
+
+            this.KillPlugin(false);
             base.Refresh();
         }
 
         #endregion
 
-        #region Private methods
+        #region Protected Methods
 
         /// <summary>
         /// Handles any navigation events in the browser based on the <see cref="RedirectLinksToSystemBrowser"/> property
         /// </summary>
-        /// <param name="b">The browser</param>
-        /// <param name="ne">The navigation event arguments</param>
-        private void OnWebBrowserNavigatingEventHandler(object b, WebBrowserNavigatingEventArgs ne)
+        /// <param name="e">The navigation event arguments</param>
+        protected override void OnNavigating(WebBrowserNavigatingEventArgs e)
         {
+            // Drop empty hosts 
+            if (e.Url.Host.Length == 0)
+            {
+                return;
+            }
+
+            // TODO: Investigate what is causing javascript:void(0) to be navigated to
+            // I think it is something internal in the Earth Api JavaScript.
+            // exiting here seems to stop ERR_BRIDGE_TIMEOUT errors though...
+            if (e.Url.ToString() == "javascript:void(0);")
+            {
+                return;
+            }
+
+            // TODO: Investigate why this URL is fired in certain versions of IE
+            // res://ieframe.dll/dnserrordiagoff_webOC.htm#javascript:void(0);
+            // again, this seems to be the cause of some ERR_BRIDGE_TIMEOUT errors.
+            if (e.Url.Scheme == "res")
+            {
+                return;
+            }
+
+            if (e.Url.ToString().StartsWith("http://www.google.com/intl/en-GB/earth/plugin/error.html#error="))
+            {
+                Debug.WriteLine(e.Url.ToString());
+                return;
+            }
+
+            base.OnNavigating(e);
+
+            if (!this.PluginIsReady)
+            {
+                return;
+            }
+
             if (!this.RedirectLinksToSystemBrowser)
             {
                 return;
             }
 
             // prevent WebBrowser navigation
-            ne.Cancel = true;
-
-            if (ne.Url.Host.Length <= 0)
-            {
-                return;
-            }
+            e.Cancel = true;
 
             // then open the URL in the system browser
             Process process = new Process
             {
                 StartInfo =
                 {
-                    FileName = ne.Url.ToString()
+                    FileName = e.Url.ToString()
                 }
             };
 
@@ -838,14 +862,86 @@ namespace FC.GEPluginCtrls
         }
 
         /// <summary>
+        /// Handles any document completed events in the browser.
+        /// Wires up the custom error handling.
+        /// </summary>
+        /// <param name="e">The document completed event arguments</param>
+        protected override void OnDocumentCompleted(WebBrowserDocumentCompletedEventArgs e)
+        {
+            base.OnDocumentCompleted(e);
+
+            if (this.Document != null && this.Document.Window != null)
+            {
+                this.Document.Window.Error += this.OnWindow_Error;
+            }
+        }
+
+        #endregion
+
+        #region Private methods
+
+        /// <summary>
+        /// Handles the external plug-in ready event.
+        /// Sets the various fields and raise the PluginReady event.
+        /// Wires up the form closing event
+        /// </summary>
+        /// <param name="sender">The external class</param>
+        /// <param name="e">The event arguments</param>
+        private void OnExternal_PluginReady(object sender, GEEventArgs e)
+        {
+            if (null == e.ApiObject)
+            {
+                throw new Exception("GEPlugin is null or not an object");
+            }
+
+            this.plugin = e.ApiObject;
+            this.PluginIsReady = true;
+            this.PluginReady(this, e);
+
+            Form parent = this.FindForm();
+            if (parent != null)
+            {
+                parent.FormClosing += this.OnForm_Closing;
+            }
+        }
+
+        /// <summary>
+        /// Handles the parent form closing.
+        /// Kill the plug-in and clears the HTML document
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void OnForm_Closing(object sender, FormClosingEventArgs e)
+        {
+            if (this.plugin != null)
+            {
+                this.KillPlugin(false);
+                this.DocumentText = string.Empty;
+            }
+        }
+
+        /// <summary>
         /// Handles any native errors in the window and raises a custom script error in their place.
         /// </summary>
         /// <param name="w">the window object</param>
         /// <param name="we">the error arguments</param>
-        private void OnWindowOnError(object w, HtmlElementErrorEventArgs we)
+        private void OnWindow_Error(object w, HtmlElementErrorEventArgs we)
         {
             we.Handled = true;
             this.ScriptError(this, new GEEventArgs("line:" + we.LineNumber, "Description: " + we.Description));
+        }
+
+        /// <summary>
+        /// Used to raise the property changed event.
+        /// </summary>
+        /// <param name="name"></param>
+        private void OnPropertyChanged(string name)
+        {
+            PropertyChangedEventHandler handler = PropertyChanged;
+            if (handler != null)
+            {
+                handler(this, new PropertyChangedEventArgs(name));
+            }
         }
 
         #endregion

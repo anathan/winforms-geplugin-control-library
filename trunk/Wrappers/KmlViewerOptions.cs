@@ -171,7 +171,7 @@ namespace FC.GEPluginCtrls
         /// </summary>
         private void ApplyOptions()
         {
-            this.camera.setViewerOptions(viewerOptions);
+            this.camera.setViewerOptions(this.viewerOptions);
             this.plugin.getView().setAbstractView(this.camera);
         }
     }

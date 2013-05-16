@@ -54,7 +54,7 @@ namespace FC.GEPluginCtrls
             this.SuspendLayout();
             this.IsWebBrowserContextMenuEnabled = false;
             this.ScrollBarsEnabled = false;
-            this.ScriptErrorsSuppressed = false;
+            this.ScriptErrorsSuppressed = true;
             this.WebBrowserShortcutsEnabled = false;
             this.AllowNavigation = true;
             this.ResumeLayout();

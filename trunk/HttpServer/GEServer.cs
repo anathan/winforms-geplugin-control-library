@@ -72,7 +72,7 @@ namespace FC.GEPluginCtrls.HttpServer
         public static string RootDirectory { get; set; }
 
         /// <summary>
-        /// Gets the current base url (protocol, ip, port) of the server, e.g. "http://127.0.0.1:8080/"
+        /// Gets the current base URL (protocol, IP, port) of the server, e.g. "http://127.0.0.1:8080/"
         /// This address will point at the <see cref="RootDirectory"/> of the sever.
         /// </summary>
         public Uri BaseUrl
@@ -95,7 +95,7 @@ namespace FC.GEPluginCtrls.HttpServer
 
         /// <summary>
         /// Gets or sets the IP Address for the server to use 
-        /// The default is 127.0.0.1 (localhost/loopback)
+        /// The default is 127.0.0.1 (localhost/loopback address)
         /// </summary>
         public IPAddress IPAddress { get; set; }
 

@@ -24,7 +24,7 @@ namespace FC.GEPluginCtrls
     /// <summary>
     /// A COM interface is needed because .NET does not provide a way
     /// to set the properties of a HTML script element.
-    /// This negates the need to reference mshtml
+    /// This negates the need to reference MSHTML
     /// </summary>
     [ComImport, Guid("3050F536-98B5-11CF-BB82-00AA00BDCE0B"),
     InterfaceType((short)2),

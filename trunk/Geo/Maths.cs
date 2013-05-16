@@ -263,11 +263,11 @@ namespace FC.GEPluginCtrls.Geo
         }
 
         /// <summary>
-        /// Normalises a longitude to the [-180,180] range.
+        /// Normalizes a longitude to the [-180,180] range.
         /// Longitudes above 180 or below -180 are wrapped.
-        /// If the wrapped value is exactly equal to min or max, favors max, unless favorMin is true.
+        /// If the wrapped value is exactly equal to min or max, favours max, unless favorMin is true.
         /// </summary>
-        /// <param name="longitude">The longitude in degrees to normalise</param>
+        /// <param name="longitude">The longitude in degrees to normalize</param>
         /// <returns>Longitude within the [-180,180] range</returns>
         public static double FixLongitude(double longitude)
         {

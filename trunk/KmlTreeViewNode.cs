@@ -305,7 +305,7 @@ namespace FC.GEPluginCtrls
             }
             catch (COMException cex)
             {
-                Debug.WriteLine(cex, "Refresh");
+                Debug.WriteLine("Refresh" + cex.Message, "KmlTreeViewNode");
             }
         }
 

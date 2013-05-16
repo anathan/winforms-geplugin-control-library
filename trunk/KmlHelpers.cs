@@ -745,6 +745,10 @@ namespace FC.GEPluginCtrls
             {
                 listItem = (ListItemStyle)kmlFeature.getComputedStyle().getListStyle().getListItemType();
             }
+            catch (COMException cex)
+            {
+                Debug.WriteLine("GetListItemType: " + cex.Message, "KmlHelpers");
+            }
             catch (RuntimeBinderException rbex)
             {
                 Debug.WriteLine("GetListItemType: " + rbex.Message, "KmlHelpers");
