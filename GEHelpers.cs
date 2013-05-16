@@ -23,6 +23,7 @@ namespace FC.GEPluginCtrls
     using System.Globalization;
     using System.Reflection;
     using System.Runtime.InteropServices;
+    using System.Security;
     using System.Security.Permissions;
     using System.Text;
     using FC.GEPluginCtrls.Geo;
@@ -477,6 +478,7 @@ namespace FC.GEPluginCtrls
         /// Displays the current plug-in view in Google Maps using the default system browser
         /// </summary>
         /// <param name="ge">The plug-in instance</param>
+        [SecurityCritical]
         [PermissionSet(SecurityAction.LinkDemand, Name = "FullTrust")]
         public static void ShowCurrentViewInMaps(dynamic ge)
         {
@@ -491,18 +493,17 @@ namespace FC.GEPluginCtrls
             {
                 // Get the current view 
                 dynamic lookat = ge.getView().copyAsLookAt(ge.ALTITUDE_RELATIVE_TO_GROUND);
-                double range = lookat.getRange();
-
-                // calculate the equivalent zoom level from the given range
-                double zoom = Math.Round(26 - (Math.Log(range) / Math.Log(2)));
+ 
+                // calculate the equivalent zoom level from the given range.
+                double equivalent = Math.Round(26 - (Math.Log(lookat.getRange()) / Math.Log(2)));
 
                 // Google Maps have an integer "zoom level" which defines the resolution of the current view.
                 // Zoom levels between 0 (entire world on map) to 21+ (down to individual buildings) are possible.
-                zoom = Math.Min(Math.Max(zoom, 1), 21);
-
+                double zoom = Maths.ConstrainValue(equivalent, 1, 21);
+                
                 // Build the maps URL
                 url = string.Format(
-                    "http://maps.google.co.uk/maps?ll={0},{1}&z={2}",
+                    "https://maps.google.co.uk/maps?ll={0},{1}&z={2}",
                     lookat.getLatitude(),
                     lookat.getLongitude(),
                     zoom);

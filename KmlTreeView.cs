@@ -237,9 +237,12 @@ namespace FC.GEPluginCtrls
             this.Enabled = true;
             this.CheckBoxes = true;
 
-            this.browser.PluginReady += (o, e) =>
+            this.browser.PropertyChanged += (o, e) =>
             {
-                this.Enabled = true;
+                if (e.PropertyName == "PluginIsReady")
+                {
+                    this.Enabled = this.browser.PluginIsReady;
+                }
             };
         }
 

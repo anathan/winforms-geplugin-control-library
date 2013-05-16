@@ -96,8 +96,8 @@
             <summary>
             Initializes a new instance of the Bounds class.
             </summary>
-            <param name="southwest">southeast coordinate [lat, lng]</param>
-            <param name="northeast">northwest coordinate [lat, lng]</param>
+            <param name="southwest">southeast coordinate [latitude, longitude]</param>
+            <param name="northeast">northwest coordinate [latitude, longitude]</param>
         </member>
         <member name="M:FC.GEPluginCtrls.Geo.Bounds.op_Equality(FC.GEPluginCtrls.Geo.Bounds,FC.GEPluginCtrls.Geo.Bounds)">
             <summary>
@@ -236,7 +236,7 @@
         </member>
         <member name="P:FC.GEPluginCtrls.Geo.Bounds.CrossesAntiMeridian">
             <summary>
-            Gets a value indicating whether or not the bounds intersect the antimeridian.
+            Gets a value indicating whether or not the bounds intersect the anti-meridian.
             </summary>
         </member>
         <member name="P:FC.GEPluginCtrls.Geo.Bounds.Northeast">
@@ -263,7 +263,7 @@
             <summary>
             Initializes a new instance of the KmlTreeViewNode class.
             </summary>
-            <param name="kmlFeature">A <paramref name="kmlFeature">kml feature</paramref> to base the treenode on</param>
+            <param name="kmlFeature">A <paramref name="kmlFeature">KML feature</paramref> to base the tree node on</param>
         </member>
         <member name="M:FC.GEPluginCtrls.KmlTreeViewNode.SetStyle">
             <summary>
@@ -316,10 +316,10 @@
         </member>
         <member name="P:FC.GEPluginCtrls.KmlTreeViewNode.KmlUrl">
             <summary>
-            Gets the url of the underlying kml object.
+            Gets the URL of the underlying KML object.
             </summary>
             <remarks>
-            The url is obtained via kmlHelpers which adds support for legacy kml spcifications.
+            The URL is obtained via kmlHelpers which adds support for legacy KML specifications.
             </remarks>
         </member>
         <member name="P:FC.GEPluginCtrls.KmlTreeViewNode.KmlListStyle">
@@ -329,14 +329,13 @@
         </member>
         <member name="P:FC.GEPluginCtrls.KmlTreeViewNode.ApiObjectVisible">
             <summary>
-            Gets or sets a value indicating whether the node is cheked and the kml object is visible
+            Gets or sets a value indicating whether the node is checked and the KML object is visible
             </summary>
         </member>
         <member name="T:FC.GEPluginCtrls.Languages">
             <summary>
             A class to provide the supported language codes
             Supported language codes are listed in the Google Maps API Coverage document
-            see: http://spreadsheets.google.com/pub?key=p9pdwsai2hDMsLkXsoM05KQ
             </summary>
         </member>
         <member name="M:FC.GEPluginCtrls.Languages.Codes">
@@ -436,7 +435,7 @@
         </member>
         <member name="F:FC.GEPluginCtrls.GEStatusStrip.interval">
             <summary>
-            Timer interval in miliseconds
+            Timer interval in milliseconds
             </summary>
         </member>
         <member name="F:FC.GEPluginCtrls.GEStatusStrip.streamingStatusLabelVisible">
@@ -832,6 +831,11 @@
             Builds the language combo-box options from the Languages class
             </summary>
         </member>
+        <member name="M:FC.GEPluginCtrls.GEToolStrip.ToggleAlignment">
+            <summary>
+            Toggles the tools strips item layout between left-to-right and right-to-left
+            </summary>
+        </member>
         <member name="M:FC.GEPluginCtrls.GEToolStrip.NavigationTextBox_KeyUp(System.Object,System.Windows.Forms.KeyEventArgs)">
             <summary>
             Called when the KeyUp event is raised in the navigation text box
@@ -1007,7 +1011,7 @@
             <param name="mime">mime type for the response</param>
             <param name="bytes">size of the response in bytes</param>
             <param name="code">the status code for the response (100, 200, 404, etc)</param>
-            <returns>A formated HTTP response header</returns>
+            <returns>A formatted HTTP response header</returns>
         </member>
         <member name="M:FC.GEPluginCtrls.HttpServer.GEServer.ReadCallback(System.IAsyncResult)">
             <summary>
@@ -1034,7 +1038,7 @@
             <summary>
             Ends a pending asynchronous data send.
             </summary>
-            <param name="result">The status of the operarion</param>
+            <param name="result">The status of the operation</param>
         </member>
         <member name="M:FC.GEPluginCtrls.HttpServer.GEServer.SendError(System.Net.Sockets.Socket,System.Net.HttpStatusCode)">
             <summary>
@@ -1056,7 +1060,7 @@
             <summary>
             Ends a pending asynchronous file send.
             </summary>
-            <param name="result">The status of the operarion</param>
+            <param name="result">The status of the operation</param>
         </member>
         <member name="M:FC.GEPluginCtrls.HttpServer.GEServer.GetMimeType(System.String)">
             <summary>
@@ -1086,7 +1090,7 @@
         </member>
         <member name="P:FC.GEPluginCtrls.HttpServer.GEServer.BaseUrl">
             <summary>
-            Gets the current base url (protocol, ip, port) of the server, e.g. "http://127.0.0.1:8080/"
+            Gets the current base URL (protocol, IP, port) of the server, e.g. "http://127.0.0.1:8080/"
             This address will point at the <see cref="P:FC.GEPluginCtrls.HttpServer.GEServer.RootDirectory"/> of the sever.
             </summary>
         </member>
@@ -1099,7 +1103,7 @@
         <member name="P:FC.GEPluginCtrls.HttpServer.GEServer.IPAddress">
             <summary>
             Gets or sets the IP Address for the server to use 
-            The default is 127.0.0.1 (localhost/loopback)
+            The default is 127.0.0.1 (localhost/loopback address)
             </summary>
         </member>
         <member name="P:FC.GEPluginCtrls.HttpServer.GEServer.Port">
@@ -1209,7 +1213,6 @@
             This class provides some basic Google Earth plug-in helpers functions.
             Interfaces whose names begin with GE allow for programmatic access to core plug-in functionality and other miscellaneous options.
             It is based on the "GEHelpers JavaScript library" by Roman Nurik
-            See: http://earth-api-samples.googlecode.com/svn/trunk/lib/geplugin-helpers.js
             </summary>
         </member>
         <member name="M:FC.GEPluginCtrls.GEHelpers.AddFeaturesToPlugin(System.Object,System.Object)">
@@ -1358,8 +1361,8 @@
         </member>
         <member name="T:FC.GEPluginCtrls.External">
             <summary>
-            This COM Visible class contains all the public methods to be called from Javascript.
-            The various events are used by the <see cref="T:FC.GEPluginCtrls.GEWebBrowser"/> when dealing with the plugin
+            This COM Visible class contains all the public methods to be called from JavaScript.
+            The various events are used by the <see cref="T:FC.GEPluginCtrls.GEWebBrowser"/> when dealing with the plug-in
             </summary>
         </member>
         <member name="F:FC.GEPluginCtrls.External.KmlDictionary">
@@ -1495,7 +1498,7 @@
         <member name="P:FC.GEPluginCtrls.External.KmlObjectCache">
             <summary>
             Gets the store of fetched IKmlObjects.
-            Used in the process of synchronously loading networklinks
+            Used in the process of synchronously loading network links
             </summary>
         </member>
         <member name="T:FC.GEPluginCtrls.NavigationControl">
@@ -1743,7 +1746,7 @@
             <summary>
             Creates a kmlLookAt from a Bounds object.
             </summary>
-            <param name="ge">the plugin</param>
+            <param name="ge">the plug-in</param>
             <param name="bounds">the bounds object to create the view of</param>
             <param name="aspectRatio">Optional aspect ratio</param>
             <param name="defaultRange">Optional default range</param>
@@ -1752,9 +1755,9 @@
         </member>
         <member name="M:FC.GEPluginCtrls.KmlHelpers.CreatePlacemark(System.Object,System.String,System.Double,System.Double,System.Double,FC.GEPluginCtrls.AltitudeMode,System.String,System.String,System.Boolean)">
             <summary>
-            Creates a kml placemark
+            Creates a KML placemark
             </summary>
-            <param name="ge">The plugin instance</param>
+            <param name="ge">The plug-in instance</param>
             <param name="id">Optional placemark Id. Default is empty</param>
             <param name="latitude">The placemark latitude in decimal degrees</param>
             <param name="longitude">The placemark longitude in decimal degrees</param>
@@ -1762,26 +1765,26 @@
             <param name="altitudeMode">Optional altitudeMode. Default is AltitudeMode.RelativeToGround</param>
             <param name="name">Optional name of the placemark. Default is empty</param>
             <param name="description">Optional placemark description text. Default is empty</param>
-            <param name="addFeature">Optionally adds the placemark directly to the plugin. Default is true</param>
+            <param name="addFeature">Optionally adds the placemark directly to the plug-in. Default is true</param>
             <returns>A placemark (or null)</returns>
         </member>
         <member name="M:FC.GEPluginCtrls.KmlHelpers.CreatePlacemark(System.Object,FC.GEPluginCtrls.Geo.Coordinate,System.String,System.String,System.String,System.Boolean)">
             <summary>
-            Creates a kml placemark
+            Creates a KML placemark
             </summary>
-            <param name="ge">The plugin instance</param>
-            <param name="coordinate">A Coordinate to use as the placemarks location</param>
+            <param name="ge">The plug-in instance</param>
+            <param name="coordinate">A Coordinate to use as the place marks location</param>
             <param name="id">Optional placemark Id. Default is empty</param>
             <param name="name">Optional name of the placemark. Default is empty</param>
             <param name="description">Optional placemark description text. Default is empty</param>
-            <param name="addFeature">Optionally adds the placemark directly to the plugin. Default is true</param>
+            <param name="addFeature">Optionally adds the placemark directly to the plug-in. Default is true</param>
             <returns>A placemark (or null)</returns>
         </member>
         <member name="M:FC.GEPluginCtrls.KmlHelpers.CreatePoint(System.Object,System.String,System.Double,System.Double,System.Double,FC.GEPluginCtrls.AltitudeMode)">
             <summary>
-            Creates a kml point
+            Creates a KML point
             </summary>
-            <param name="ge">The plugin instance</param>
+            <param name="ge">The plug-in instance</param>
             <param name="id">Optional placemark Id. Default is empty</param>
             <param name="latitude">The placemark latitude in decimal degrees</param>
             <param name="longitude">The placemark longitude in decimal degrees</param>
@@ -1791,18 +1794,18 @@
         </member>
         <member name="M:FC.GEPluginCtrls.KmlHelpers.CreatePoint(System.Object,FC.GEPluginCtrls.Geo.Coordinate,System.String)">
             <summary>
-            Creates a kml point from a Coordinate
+            Creates a KML point from a Coordinate
             </summary>
-            <param name="ge">The plugin instance</param>
+            <param name="ge">The plug-in instance</param>
             <param name="coordinate">The Coordinate to base the point on</param>
             <param name="id">Optional point Id. Default is empty</param>
-            <returns>A kml point (or null)</returns>
+            <returns>A KML point (or null)</returns>
         </member>
         <member name="M:FC.GEPluginCtrls.KmlHelpers.CreateHtmlStringBalloon(System.Object,System.String,System.Int32,System.Int32,System.Int32,System.Int32,System.Boolean,System.Object,System.Boolean,System.String,System.String)">
             <summary>
             Creates an Html String Balloon
             </summary>
-            <param name="ge">The plugin instance</param>
+            <param name="ge">The plug-in instance</param>
             <param name="html">The balloon content html string</param>
             <param name="minWidth">Optional minimum balloon width, default is 100</param>
             <param name="minHeight">Optional minimum balloon height, default is 100</param>
@@ -1932,11 +1935,11 @@
         </member>
         <member name="M:FC.GEPluginCtrls.KmlHelpers.GetChildNodes(System.Object)">
             <summary>
-            Gets the child nodes from a kml feature. 
+            Gets the child nodes from a KML feature. 
             Basically a wrapper for feature.getFeatures().getChildNodes();
             </summary>
             <param name="feature">The feature to get the children from</param>
-            <returns>A kml object contatining the child nodes, or null if the feature has no children or on any error.</returns>
+            <returns>A KML object containing the child nodes, or null if the feature has no children or on any error.</returns>
         </member>
         <member name="M:FC.GEPluginCtrls.KmlHelpers.HasChildNodes(System.Object)">
             <summary>
@@ -1967,12 +1970,11 @@
             Based on kmldomwalk.js 
             see: http://code.google.com/p/earth-api-samples/source/browse/trunk/lib/kmldomwalk.js
             </summary>
-            <param name="feature">The kml object to parse</param>
+            <param name="feature">The KML object to parse</param>
             <param name="callback">A delegate action, each node visited will be passed to this as the single parameter</param>
             <param name="walkFeatures">Optionally walk features, default is true</param>
             <param name="walkGeometries">Optionally walk geometries, default is false</param>
             <remarks>This method is used by <see cref="T:FC.GEPluginCtrls.KmlTreeView"/> to build the nodes</remarks>
-            <example>KmlHelpers.WalkKmlDom(kml, (Action dynamic)(x =&gt; { /* each x in the dom */}));</example>
         </member>
         <member name="T:FC.GEPluginCtrls.HttpServer.StateObject">
             <summary>
@@ -2043,12 +2045,12 @@
         </member>
         <member name="M:FC.GEPluginCtrls.Geo.Maths.BearingInitial(FC.GEPluginCtrls.Geo.Coordinate,FC.GEPluginCtrls.Geo.Coordinate)">
             <summary>
-            Get the inital bearing from one location to another
+            Get the initial bearing from one location to another
             </summary>
             <param name="origin">the starting location</param>
             <param name="destination">the destination location</param>>
             <remarks>See: http://williams.best.vwh.net/avform.htm for the original function </remarks>
-            <returns>The inital bearing from origin to destination</returns>
+            <returns>The initial bearing from origin to destination</returns>
         </member>
         <member name="M:FC.GEPluginCtrls.Geo.Maths.ConvertDegreesToRadians(System.Double)">
             <summary>
@@ -2075,7 +2077,7 @@
             <summary>
             Convert Kilometres To Miles 
             </summary>
-            <param name="kilometres">distance in kilometrees</param>
+            <param name="kilometres">distance in kilometres</param>
             <returns>distance in miles</returns>
         </member>
         <member name="M:FC.GEPluginCtrls.Geo.Maths.ConvertMilesToKilometres(System.Double)">
@@ -2083,7 +2085,7 @@
             Convert Miles To Kilometres
             </summary>
             <param name="miles">distance in miles</param>
-            <returns>distance in kilometrees</returns>
+            <returns>distance in kilometres</returns>
         </member>
         <member name="M:FC.GEPluginCtrls.Geo.Maths.Destination(FC.GEPluginCtrls.Geo.Coordinate,System.Double,System.Double,FC.GEPluginCtrls.UnitSystem)">
             <summary>
@@ -2148,11 +2150,11 @@
         </member>
         <member name="M:FC.GEPluginCtrls.Geo.Maths.FixLongitude(System.Double)">
             <summary>
-            Normalises a longitude to the [-180,180] range.
+            Normalizes a longitude to the [-180,180] range.
             Longitudes above 180 or below -180 are wrapped.
-            If the wrapped value is exactly equal to min or max, favors max, unless favorMin is true.
+            If the wrapped value is exactly equal to min or max, favours max, unless favorMin is true.
             </summary>
-            <param name="longitude">The longitude in degrees to normalise</param>
+            <param name="longitude">The longitude in degrees to normalize</param>
             <returns>Longitude within the [-180,180] range</returns>
         </member>
         <member name="M:FC.GEPluginCtrls.Geo.Maths.ReverseAngle(System.Double)">
@@ -2160,7 +2162,7 @@
             Reverses a number in the [0,PI] range
             </summary>
             <param name="radians">value in radians</param>
-            <returns>The oposite angle</returns>
+            <returns>The opposite angle</returns>
         </member>
         <member name="M:FC.GEPluginCtrls.Geo.Maths.WrapValue(System.Double,System.Double,System.Double,System.Boolean)">
             <summary>
@@ -2457,8 +2459,8 @@
         <member name="F:FC.GEPluginCtrls.GEWebBrowser.external">
             <summary>
             External is A COM Visible class that holds all the public methods
-            to be called from javascript. An instance of this is set
-            to the base object's ObjectForScripting property in the constuctor.
+            to be called from JavaScript. An instance of this is set
+            to the base object's ObjectForScripting property in the constructor.
             </summary>
         </member>
         <member name="F:FC.GEPluginCtrls.GEWebBrowser.plugin">
@@ -2469,12 +2471,12 @@
         </member>
         <member name="F:FC.GEPluginCtrls.GEWebBrowser.imageryBase">
             <summary>
-            Current plug-in Imagery database
+            Current plug-in Imagery database - uses INotifyPropertyChanged
             </summary>
         </member>
         <member name="F:FC.GEPluginCtrls.GEWebBrowser.pluginIsReady">
             <summary>
-            Indicates whether the plug-in is ready to use.
+            Current plug-in state - uses INotifyPropertyChanged
             </summary>
         </member>
         <member name="M:FC.GEPluginCtrls.GEWebBrowser.#ctor">
@@ -2482,10 +2484,11 @@
             Initializes a new instance of the GEWebBrowser class.
             </summary>
         </member>
-        <member name="M:FC.GEPluginCtrls.GEWebBrowser.KillPlugin">
+        <member name="M:FC.GEPluginCtrls.GEWebBrowser.KillPlugin(System.Boolean)">
             <summary>
-            Kills all running geplugin processes on the system
+            Kills the current plug-in processes on the system.
             </summary>
+            <param name="all">Optionally kill all Google Earth plug-in processes on the system. Default is False</param>
         </member>
         <member name="M:FC.GEPluginCtrls.GEWebBrowser.AddEventListener(System.Object,FC.GEPluginCtrls.EventId,System.String,System.Boolean)">
             <summary>
@@ -2615,14 +2618,12 @@
             </summary>
             <param name="input">the location to geocode</param>
             <returns>the KmlPoint object for the geocode, or an empty object</returns>
-            <example>Example: GEWebBrowser.InvokeDoGeocode("London");</example>
         </member>
         <member name="M:FC.GEPluginCtrls.GEWebBrowser.InjectJavaScript(System.String)">
             <summary>
             Inject a JavaScript element into the document head
             </summary>
             <param name="javaScript">the script code</param>
-            <example>GEWebBrowser.InjectJavascript("var say=function(msg){alert(msg);}");</example>
         </member>
         <member name="M:FC.GEPluginCtrls.GEWebBrowser.InvokeJavaScript(System.String)">
             <summary>
@@ -2630,7 +2631,6 @@
             </summary>
             <param name="function">The name of the function to invoke</param>
             <returns>The result of the evaluated function</returns>
-            <example>Example: GEWebBrowser.InvokeJavaScript("say");</example>
         </member>
         <member name="M:FC.GEPluginCtrls.GEWebBrowser.InvokeJavaScript(System.String,System.Object[])">
             <summary>
@@ -2639,7 +2639,6 @@
             <param name="function">The name of the function to invoke</param>
             <param name="args">any arguments</param>
             <returns>The result of the evaluated function</returns>
-            <example>Example: GEWebBrowser.InvokeJavaScript("say", new object[] { "hello" });</example>
         </member>
         <member name="M:FC.GEPluginCtrls.GEWebBrowser.LoadEmbeddedPlugin">
             <summary>
@@ -2673,19 +2672,48 @@
             Overrides the default WebBrowser Refresh method
             </summary>
         </member>
-        <member name="M:FC.GEPluginCtrls.GEWebBrowser.OnWebBrowserNavigatingEventHandler(System.Object,System.Windows.Forms.WebBrowserNavigatingEventArgs)">
+        <member name="M:FC.GEPluginCtrls.GEWebBrowser.OnNavigating(System.Windows.Forms.WebBrowserNavigatingEventArgs)">
             <summary>
             Handles any navigation events in the browser based on the <see cref="P:FC.GEPluginCtrls.GEWebBrowser.RedirectLinksToSystemBrowser"/> property
             </summary>
-            <param name="b">The browser</param>
-            <param name="ne">The navigation event arguments</param>
+            <param name="e">The navigation event arguments</param>
         </member>
-        <member name="M:FC.GEPluginCtrls.GEWebBrowser.OnWindowOnError(System.Object,System.Windows.Forms.HtmlElementErrorEventArgs)">
+        <member name="M:FC.GEPluginCtrls.GEWebBrowser.OnDocumentCompleted(System.Windows.Forms.WebBrowserDocumentCompletedEventArgs)">
+            <summary>
+            Handles any document completed events in the browser.
+            Wires up the custom error handling.
+            </summary>
+            <param name="e">The document completed event arguments</param>
+        </member>
+        <member name="M:FC.GEPluginCtrls.GEWebBrowser.OnExternal_PluginReady(System.Object,FC.GEPluginCtrls.GEEventArgs)">
+            <summary>
+            Handles the external plug-in ready event.
+            Sets the various fields and raise the PluginReady event.
+            Wires up the form closing event
+            </summary>
+            <param name="sender">The external class</param>
+            <param name="e">The event arguments</param>
+        </member>
+        <member name="M:FC.GEPluginCtrls.GEWebBrowser.OnForm_Closing(System.Object,System.Windows.Forms.FormClosingEventArgs)">
+            <summary>
+            Handles the parent form closing.
+            Kill the plug-in and clears the HTML document
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:FC.GEPluginCtrls.GEWebBrowser.OnWindow_Error(System.Object,System.Windows.Forms.HtmlElementErrorEventArgs)">
             <summary>
             Handles any native errors in the window and raises a custom script error in their place.
             </summary>
             <param name="w">the window object</param>
             <param name="we">the error arguments</param>
+        </member>
+        <member name="M:FC.GEPluginCtrls.GEWebBrowser.OnPropertyChanged(System.String)">
+            <summary>
+            Used to raise the property changed event.
+            </summary>
+            <param name="name"></param>
         </member>
         <member name="F:FC.GEPluginCtrls.GEWebBrowser.components">
             <summary>
@@ -2732,6 +2760,11 @@
         <member name="E:FC.GEPluginCtrls.GEWebBrowser.ViewEvent">
             <summary>
             Raised when there is a viewchangebegin, viewchange or viewchangeend event 
+            </summary>
+        </member>
+        <member name="E:FC.GEPluginCtrls.GEWebBrowser.PropertyChanged">
+            <summary>
+            INotifyPropertyChanged implementation 
             </summary>
         </member>
         <member name="P:FC.GEPluginCtrls.GEWebBrowser.Plugin">
@@ -2811,7 +2844,7 @@
             <summary>
             Sets the map type to Earth or sky mode.
             </summary>
-            <param name="mapType">The maptype to use in the plugin</param>
+            <param name="mapType">The MapType to use in the plug-in</param>
         </member>
         <member name="P:FC.GEPluginCtrls.GEOptions.AtmosphereVisibility">
             <summary>
@@ -2830,7 +2863,7 @@
         <member name="P:FC.GEPluginCtrls.GEOptions.BuildingHighlightingEnabled">
             <summary>
             Gets or sets a value indicating whether building highlighting is enabled. 
-            When enabled, buildings will be highlighted when they are moused over.
+            When enabled, buildings will be highlighted when a mouse-over event occurs on them.
             Disabled by default
             </summary>
         </member>
@@ -3024,7 +3057,7 @@
             <summary>
             Enumeration of the available types in the Google Earth Api.
             </summary>
-            <remarks>This is a compleate list as of v1.007 of the API</remarks>
+            <remarks>This is a complete list as of v1.007 of the API</remarks>
         </member>
         <member name="F:FC.GEPluginCtrls.ApiType.None">
             <summary>
@@ -3445,7 +3478,7 @@
             <summary>
             A COM interface is needed because .NET does not provide a way
             to set the properties of a HTML script element.
-            This negates the need to reference mshtml
+            This negates the need to reference MSHTML
             </summary>
         </member>
         <member name="P:FC.GEPluginCtrls.IHtmlScriptElement.Text">
@@ -3460,7 +3493,7 @@
         </member>
         <member name="T:FC.GEPluginCtrls.Extensions">
             <summary>
-            Extension helper methods for the control libray
+            Extension helper methods for enumerations in the control library
             </summary>
         </member>
         <member name="M:FC.GEPluginCtrls.Extensions.GetId(FC.GEPluginCtrls.Layer)">
@@ -3490,6 +3523,116 @@
             The Earth map type, used with GEOptions setMapType
             </summary>
         </member>
+        <member name="T:FC.GEPluginCtrls.ViewerOption">
+            <summary>
+            Enumeration of options for use with <see cref="T:FC.GEPluginCtrls.KmlViewerOptions"/>
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.ViewerOption.None">
+            <summary>
+            No option
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.ViewerOption.Sunlight">
+            <summary>
+            Passed to the ViewerOptions.SetOption method, along with a OptionsValue, to specify whether the Sun option should be visible.
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.ViewerOption.HistoricalImagery">
+            <summary>
+            Passed to the ViewerOptions.SetOption method, along with a OptionsValue, to specify whether historical imagery should be enabled.
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.ViewerOption.StreetView">
+            <summary>
+            Passed to the ViewerOptions.SetOption method, along with a OptionsValue, to specify whether Street View should be enabled when the view reaches ground level. Note that this applies only to programmatic movement, such as fly-to;
+            </summary>
+        </member>
+        <member name="T:FC.GEPluginCtrls.OptionState">
+            <summary>
+            Enumeration of states to use with <see cref="T:FC.GEPluginCtrls.KmlViewerOptions"/>
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.OptionState.Default">
+            <summary>
+            Sets the render state to its default value.
+            </summary>
+            <remarks>
+            Currently, sunlight, Street View, and historical imagery all default to a disabled state.
+            </remarks>
+        </member>
+        <member name="F:FC.GEPluginCtrls.OptionState.Enabled">
+            <summary>
+            Set the render state to on. Passed to the KmlViewerOptions.setOption method.
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.OptionState.Disabled">
+            <summary>
+            Set the render state to off. Passed to the KmlViewerOptions.setOption method.
+            </summary>
+        </member>
+        <member name="T:FC.GEPluginCtrls.KmlViewerOptions">
+            <summary>
+            Controls the display of sunlight, historical imagery, and Street View panoramas in the plug-in.
+            </summary>
+            <remarks>
+            <para>
+            Unlike kmlViewerOptions in the API this class automatically applies any changes when SetOption is called.
+            This negates the user having to create a camera, set its options, then apply its view to the current abstract view to see the change.
+            </para>
+            </remarks>
+        </member>
+        <member name="F:FC.GEPluginCtrls.KmlViewerOptions.viewerOptions">
+            <summary>
+            The ViewerOptions object
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.KmlViewerOptions.plugin">
+            <summary>
+            the GEPlugin object that these options relate to 
+            </summary>
+        </member>
+        <member name="F:FC.GEPluginCtrls.KmlViewerOptions.camera">
+            <summary>
+            the KmlCamera object used to set the options on the plug-in
+            </summary>
+        </member>
+        <member name="M:FC.GEPluginCtrls.KmlViewerOptions.#ctor(System.Object)">
+            <summary>
+            Initializes a new instance of the <see cref="T:FC.GEPluginCtrls.KmlViewerOptions"/> class. 
+            Initializes a new instance of the ViewerOptions class.
+            </summary>
+            <param name="ge">
+            The plug-in object 
+            </param>
+        </member>
+        <member name="M:FC.GEPluginCtrls.KmlViewerOptions.GetOption(FC.GEPluginCtrls.ViewerOption)">
+            <summary>
+            Returns the current state of the specified option.
+            </summary>
+            <param name="option">
+            The ViewerOption. 
+            </param>
+            <returns>
+            The current ViewerOptionsValue for the specified ViewerOption 
+            </returns>
+        </member>
+        <member name="M:FC.GEPluginCtrls.KmlViewerOptions.SetOption(FC.GEPluginCtrls.ViewerOption,FC.GEPluginCtrls.OptionState)">
+            <summary>
+            Set the state of viewer options, including sunlight, Street View, and historical imagery.
+            </summary>
+            <param name="option">
+            The ViewerOption. 
+            </param>
+            <param name="value">
+            The ViewerOptionsValue. 
+            </param>
+        </member>
+        <member name="M:FC.GEPluginCtrls.KmlViewerOptions.ApplyOptions">
+            <summary>
+            Applies the ViewerOptions to the current view.
+            </summary>
+        </member>
         <member name="T:FC.GEPluginCtrls.GEEventArgs">
             <summary>
             Custom event arguments 
@@ -3504,7 +3647,7 @@
             <summary>
             Initializes a new instance of the GEEventArgs class
             </summary>
-            <param name="feature">Plugin API object to initialise with.</param>
+            <param name="feature">Plug-in API object to initialise with.</param>
         </member>
         <member name="M:FC.GEPluginCtrls.GEEventArgs.#ctor(System.String)">
             <summary>
@@ -3683,7 +3826,7 @@
         </member>
         <member name="M:FC.GEPluginCtrls.KmlColor.op_Equality(FC.GEPluginCtrls.KmlColor,FC.GEPluginCtrls.KmlColor)">
             <summary>
-            KmlColor equality operator (aabbggrr)
+            KmlColor equality operator
             </summary>
             <param name="color1"> The first KmlColor </param>
             <param name="color2"> The Second KmlColor </param>
@@ -3691,7 +3834,7 @@
         </member>
         <member name="M:FC.GEPluginCtrls.KmlColor.op_Inequality(FC.GEPluginCtrls.KmlColor,FC.GEPluginCtrls.KmlColor)">
             <summary>
-            KmlColor inequality operator (aabbggrr)
+            KmlColor inequality operator
             </summary>
             <param name="color1"> The first KmlColor </param>
             <param name="color2"> The Second KmlColor </param>
@@ -3699,14 +3842,14 @@
         </member>
         <member name="M:FC.GEPluginCtrls.KmlColor.Equals(System.Object)">
             <summary>
-            KmlColor equality (aabbggrr)
+            KmlColor equality
             </summary>
             <param name="obj"> the object to check against </param>
             <returns> True if the KmlColor are equal </returns>
         </member>
         <member name="M:FC.GEPluginCtrls.KmlColor.Equals(FC.GEPluginCtrls.KmlColor)">
             <summary>
-            KmlColor equality (argb)
+            KmlColor equality
             </summary>
             <param name="other"> the KmlColor to check against </param>
             <returns> True if the KmlColor are equal </returns>
@@ -3755,7 +3898,7 @@
             Wrapper used to used to manipulate the navigation controls in Google Earth.
             </summary>
             <remarks>See http://code.google.com/apis/earth/documentation/reference/interface_g_e_navigation_control.html
-            for the api notes on the GENavigationControl object</remarks>
+            for the API notes on the GENavigationControl object</remarks>
         </member>
         <member name="F:FC.GEPluginCtrls.GENavigationControl.ge">
             <summary>
@@ -3780,11 +3923,11 @@
             <param name="ge">GEPlugin COM object</param>
             <param name="controlType">The control type. default is NavigationControl.Large</param>
             <param name="visibility">The visibility of the control. default is Visibility.Show</param>
-            <param name="streetViewEnabled">Optionally enables the streetview features. Default is true (on)</param>
+            <param name="streetViewEnabled">Optionally enables the street view features. Default is true (on)</param>
         </member>
         <member name="P:FC.GEPluginCtrls.GENavigationControl.ControlType">
             <summary>
-            Gets or sets the navigaton control type
+            Gets or sets the navigation control type
             </summary>
         </member>
         <member name="P:FC.GEPluginCtrls.GENavigationControl.StreetViewEnabled">
@@ -3871,106 +4014,6 @@
         <member name="F:FC.GEPluginCtrls.EventId.ViewChangeEnd">
             <summary>
             The view change end event id
-            </summary>
-        </member>
-        <member name="T:FC.GEPluginCtrls.ViewerOption">
-            <summary>
-            Enumeration of options for use with <see cref="T:FC.GEPluginCtrls.KmlViewerOptions"/>
-            </summary>
-        </member>
-        <member name="F:FC.GEPluginCtrls.ViewerOption.None">
-            <summary>
-            No option
-            </summary>
-        </member>
-        <member name="F:FC.GEPluginCtrls.ViewerOption.Sunlight">
-            <summary>
-            Passed to the ViewerOptions.SetOption method, along with a OptionsValue, to specify whether the Sun option should be visible.
-            </summary>
-        </member>
-        <member name="F:FC.GEPluginCtrls.ViewerOption.HistoricalImagery">
-            <summary>
-            Passed to the ViewerOptions.SetOption method, along with a OptionsValue, to specify whether historical imagery should be enabled.
-            </summary>
-        </member>
-        <member name="F:FC.GEPluginCtrls.ViewerOption.StreetView">
-            <summary>
-            Passed to the ViewerOptions.SetOption method, along with a OptionsValue, to specify whether Street View should be enabled when the view reaches ground level. Note that this applies only to programmatic movement, such as fly-to;
-            </summary>
-        </member>
-        <member name="T:FC.GEPluginCtrls.OptionState">
-            <summary>
-            Enumeration of states to use with <see cref="T:FC.GEPluginCtrls.KmlViewerOptions"/>
-            </summary>
-        </member>
-        <member name="F:FC.GEPluginCtrls.OptionState.Default">
-            <summary>
-            Sets the render state to its default value.
-            </summary>
-            <remarks>
-            Currently, sunlight, Street View, and historical imagery all default to a disabled state.
-            </remarks>
-        </member>
-        <member name="F:FC.GEPluginCtrls.OptionState.Enabled">
-            <summary>
-            Set the render state to on. Passed to the KmlViewerOptions.setOption method.
-            </summary>
-        </member>
-        <member name="F:FC.GEPluginCtrls.OptionState.Disabled">
-            <summary>
-            Set the render state to off. Passed to the KmlViewerOptions.setOption method.
-            </summary>
-        </member>
-        <member name="T:FC.GEPluginCtrls.KmlViewerOptions">
-            <summary>
-            Controls the display of sunlight, historical imagery, and Street View panoramas in the plug-in.
-            </summary>
-            <remarks>
-            <para>
-            Unlike kmlViewerOptions in the api this class automatically applies any changes when SetOption is called.
-            This negates the user having to create a camera, set its options, then apply its view to the current abstract view to see the change.
-            </para>
-            </remarks>
-        </member>
-        <member name="F:FC.GEPluginCtrls.KmlViewerOptions.viewerOptions">
-            <summary>
-            The ViewerOptions object
-            </summary>
-        </member>
-        <member name="M:FC.GEPluginCtrls.KmlViewerOptions.#ctor(System.Object)">
-            <summary>
-            Initializes a new instance of the <see cref="T:FC.GEPluginCtrls.KmlViewerOptions"/> class. 
-            Initializes a new instance of the ViewerOptions class.
-            </summary>
-            <param name="ge">
-            The plug-in object 
-            </param>
-        </member>
-        <member name="M:FC.GEPluginCtrls.KmlViewerOptions.GetOption(FC.GEPluginCtrls.ViewerOption)">
-            <summary>
-            Returns the current state of the specified option.
-            </summary>
-            <param name="option">
-            The ViewerOption. 
-            </param>
-            <returns>
-            The current ViewerOptionsValue for the specified ViewerOption 
-            </returns>
-        </member>
-        <member name="M:FC.GEPluginCtrls.KmlViewerOptions.SetOption(FC.GEPluginCtrls.ViewerOption,FC.GEPluginCtrls.OptionState)">
-            <summary>
-            Set the state of viewer options, including sunlight, Street View, and historical imagery.
-            </summary>
-            <param name="option">
-            The ViewerOption. 
-            </param>
-            <param name="value">
-            The ViewerOptionsValue. 
-            </param>
-        </member>
-        <member name="M:FC.GEPluginCtrls.KmlViewerOptions.ApplyOptions">
-            <summary>
-            Applies the ViewerOptions to the current view.
             </summary>
         </member>
     </members>

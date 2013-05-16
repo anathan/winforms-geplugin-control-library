@@ -23,6 +23,7 @@ namespace FC.GEPluginCtrls
     using System.Diagnostics;
     using System.Drawing;
     using System.Runtime.InteropServices;
+    using System.Security;
     using System.Security.Permissions;
     using System.Windows.Forms;
     using Microsoft.CSharp.RuntimeBinder;
@@ -230,36 +231,38 @@ namespace FC.GEPluginCtrls
         /// </summary>
         /// <param name="instance">The GEWebBrowser instance</param>
         /// <example>Example: GEToolStrip.SetBrowserInstance(GEWebBrowser)</example>
+        [SecurityCritical]
         [PermissionSet(SecurityAction.LinkDemand, Name = "FullTrust")]
         public void SetBrowserInstance(GEWebBrowser instance)
         {
             this.browser = instance;
-
-            if (this.browser.PluginIsReady)
+            if (!this.browser.PluginIsReady)
             {
-                this.Enabled = true;
-                timer = new Timer { Interval = this.interval };
-                timer.Start();
-                timer.Tick += this.Timer_Tick;
+                return;
+            }
 
-                this.browser.PluginReady += (o, e) => this.Enabled = true;
+            this.Enabled = true;
+            this.browser.PropertyChanged += (o, e) =>
+            {
+                if (e.PropertyName == "PluginIsReady")
+                {
+                    this.Enabled = this.browser.PluginIsReady;
+                }
+            };
 
-                Form findForm = this.FindForm();
-                if (findForm != null)
-                {
-                    findForm.FormClosing += (o, e) => timer.Stop();
-                }
+            timer = new Timer { Interval = this.interval };
+            timer.Start();
+            timer.Tick += this.Timer_Tick;
 
-                try
-                {
-                    this.browserVersionStatusLabel.Text = "ie " + this.browser.Version;
-                    this.apiVersionStatusLabel.Text = "api " + this.browser.Plugin.getApiVersion();
-                    this.pluginVersionStatusLabel.Text = "plugin " + this.browser.Plugin.getPluginVersion();
-                }
-                catch (RuntimeBinderException rbex)
-                {
-                    Debug.WriteLine("SetBrowserInstance: " + rbex.Message, "StatusStrip");
-                }
+            try
+            {
+                this.browserVersionStatusLabel.Text = "ie " + this.browser.Version;
+                this.apiVersionStatusLabel.Text = "api " + this.browser.Plugin.getApiVersion();
+                this.pluginVersionStatusLabel.Text = "plugin " + this.browser.Plugin.getPluginVersion();
+            }
+            catch (RuntimeBinderException rbex)
+            {
+                Debug.WriteLine("SetBrowserInstance: " + rbex.Message, "StatusStrip");
             }
         }
 

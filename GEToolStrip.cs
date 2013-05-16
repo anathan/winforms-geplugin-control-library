@@ -254,13 +254,23 @@ namespace FC.GEPluginCtrls
         {
             this.browser = instance;
 
-            if (this.browser.PluginIsReady)
+            if (!this.browser.PluginIsReady)
             {
-                this.options = new GEOptions(this.browser.Plugin);
-                this.control = new GENavigationControl(this.browser.Plugin);
-                this.SynchronizeOptions();
-                this.Enabled = true;
+                return;
             }
+
+            this.Enabled = true;
+            this.options = new GEOptions(this.browser.Plugin);
+            this.control = new GENavigationControl(this.browser.Plugin);
+            this.SynchronizeOptions();
+
+            this.browser.PropertyChanged += (o, e) =>
+            {
+                if (e.PropertyName == "PluginIsReady")
+                {
+                    this.Enabled = this.browser.PluginIsReady;
+                }
+            };
         }
 
         #endregion
@@ -599,7 +609,6 @@ namespace FC.GEPluginCtrls
                             this.layersDropDownButton.Enabled = false;
                             this.viewInMapsButton.Enabled = false;
                             this.historyMenuItem.Enabled = false;
-                            this.Enabled = false;
                             this.browser.CreateInstance(type);
                             break;
                         default:

@@ -166,7 +166,7 @@ namespace FC.GEPluginCtrls
         }
 
         /// <summary>
-        /// KmlColor equality operator (aabbggrr)
+        /// KmlColor equality operator
         /// </summary>
         /// <param name="color1"> The first KmlColor </param>
         /// <param name="color2"> The Second KmlColor </param>
@@ -177,7 +177,7 @@ namespace FC.GEPluginCtrls
         }
 
         /// <summary>
-        /// KmlColor inequality operator (aabbggrr)
+        /// KmlColor inequality operator
         /// </summary>
         /// <param name="color1"> The first KmlColor </param>
         /// <param name="color2"> The Second KmlColor </param>
@@ -188,7 +188,7 @@ namespace FC.GEPluginCtrls
         }
 
         /// <summary>
-        /// KmlColor equality (aabbggrr)
+        /// KmlColor equality
         /// </summary>
         /// <param name="obj"> the object to check against </param>
         /// <returns> True if the KmlColor are equal </returns>
@@ -198,7 +198,7 @@ namespace FC.GEPluginCtrls
         }
 
         /// <summary>
-        /// KmlColor equality (argb)
+        /// KmlColor equality
         /// </summary>
         /// <param name="other"> the KmlColor to check against </param>
         /// <returns> True if the KmlColor are equal </returns>
