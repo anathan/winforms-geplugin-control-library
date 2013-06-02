@@ -20,13 +20,11 @@ namespace FC.GEPluginCtrls
 {
     using System;
     using System.ComponentModel;
-    using System.Diagnostics;
     using System.Drawing;
     using System.Runtime.InteropServices;
     using System.Security;
     using System.Security.Permissions;
     using System.Windows.Forms;
-    using Microsoft.CSharp.RuntimeBinder;
 
     /// <summary>
     /// The GEStatusStrip shows various information about the plug-in
@@ -36,11 +34,6 @@ namespace FC.GEPluginCtrls
         #region Private fields
 
         /// <summary>
-        /// Timer used when polling data
-        /// </summary>
-        private static Timer timer;
-
-        /// <summary>
         /// An instance of the current browser
         /// </summary>
         private GEWebBrowser browser;
@@ -48,7 +41,7 @@ namespace FC.GEPluginCtrls
         /// <summary>
         /// Timer interval in milliseconds
         /// </summary>
-        private int interval = 250;
+        private int interval = 500;
 
         /// <summary>
         /// Indicates whether the streaming status label is visible
@@ -83,17 +76,18 @@ namespace FC.GEPluginCtrls
         public GEStatusStrip()
         {
             this.InitializeComponent();
+            this.timer.Interval = this.interval;
             this.Enabled = false;
         }
 
         #region Public properties
 
         /// <summary>
-        /// Gets or sets the timer interval for polling data
+        /// Gets or sets the timer interval for polling data in milliseconds
         /// </summary>
         [Category("Control Options"),
-        Description("Gets or sets the timer interval for polling data."),
-        DefaultValue(100)]
+        Description("Gets or sets the timer interval for polling data. Default value is 500ms"),
+        DefaultValue(500)]
         public int Interval
         {
             get
@@ -236,33 +230,48 @@ namespace FC.GEPluginCtrls
         public void SetBrowserInstance(GEWebBrowser instance)
         {
             this.browser = instance;
+
             if (!this.browser.PluginIsReady)
             {
                 return;
             }
 
             this.Enabled = true;
+            this.ShowStatusLabels(true);
+
             this.browser.PropertyChanged += (o, e) =>
             {
-                if (e.PropertyName == "PluginIsReady")
+                if (e.PropertyName != "PluginIsReady")
                 {
-                    this.Enabled = this.browser.PluginIsReady;
+                    return;
                 }
+
+                this.ShowStatusLabels(this.browser.PluginIsReady);
             };
+        }
 
-            timer = new Timer { Interval = this.interval };
-            timer.Start();
-            timer.Tick += this.Timer_Tick;
+        #endregion
 
-            try
+        #region private methods
+
+        private void ShowStatusLabels(bool value)
+        {
+            if (value)
             {
+                this.Enabled = true;
                 this.browserVersionStatusLabel.Text = "ie " + this.browser.Version;
                 this.apiVersionStatusLabel.Text = "api " + this.browser.Plugin.getApiVersion();
                 this.pluginVersionStatusLabel.Text = "plugin " + this.browser.Plugin.getPluginVersion();
+                this.timer.Start();
+                this.timer.Tick += this.Timer_Tick;
             }
-            catch (RuntimeBinderException rbex)
+            else
             {
-                Debug.WriteLine("SetBrowserInstance: " + rbex.Message, "StatusStrip");
+                this.apiVersionStatusLabel.Text = string.Empty;
+                this.browserVersionStatusLabel.Text = string.Empty;
+                this.pluginVersionStatusLabel.Text = string.Empty;
+                this.Enabled = false;
+                timer.Stop();
             }
         }
 
@@ -271,45 +280,35 @@ namespace FC.GEPluginCtrls
         #region Event handlers
 
         /// <summary>
-        /// Timer tick callback function
+        /// Timer tick event handler
         /// </summary>
         /// <param name="sender">The object that raised the event.</param>
         /// <param name="e">Event arguments.</param>
         private void Timer_Tick(object sender, EventArgs e)
         {
-            if (this.browser.PluginIsReady)
+            if (!this.browser.PluginIsReady)
             {
-                double percent;
-
-                try
-                {
-                    percent = this.browser.Plugin.getStreamingPercent();
-                }
-                catch (COMException)
-                {
-                    timer.Stop();
-                    return;
-                }
-
-                if (100 == percent || 0 == percent)
-                {
-                    this.streamingStatusLabel.ForeColor = Color.Gray;
-                    this.streamingStatusLabel.Text = "idle";
-                    this.streamingProgressBar.Value = 0;
-                }
-                else
-                {
-                    this.streamingStatusLabel.ForeColor = Color.Black;
-                    this.streamingProgressBar.Value = (int)percent;
-                    this.streamingStatusLabel.Text = percent + "%";
-                }
+                return;
             }
-            else
+
+            double percent;
+
+            try
+            {
+                percent = this.browser.Plugin.getStreamingPercent();
+            }
+            catch (COMException)
             {
                 timer.Stop();
+                percent = 0;
             }
+
+            this.streamingProgressBar.Value = (int)percent;
+            this.streamingStatusLabel.Text = string.Concat(percent, '%');
         }
 
         #endregion
+
+
     }
 }

@@ -210,8 +210,6 @@ namespace FC.GEPluginCtrls.HttpServer
         /// <param name="result">Represents the status of an asynchronous operation.</param>
         private static void ReadCallback(IAsyncResult result)
         {
-            string rawData = string.Empty;
-
             // Retrieve the state object and the handler socket
             // from the asynchronous state object.
             StateObject state = (StateObject)result.AsyncState;
@@ -224,7 +222,7 @@ namespace FC.GEPluginCtrls.HttpServer
             {
                 // There might be more data, so store the data received so far.
                 state.Data.Append(new UTF8Encoding(false).GetString(state.Buffer, 0, bytesRead));
-                rawData = state.Data.ToString();
+                string rawData = state.Data.ToString();
 
                 // check for end-of-header (CRLFCRLF)
                 if (rawData.EndsWith(
@@ -271,7 +269,7 @@ namespace FC.GEPluginCtrls.HttpServer
         /// <param name="data">byte data to send</param>
         private static void Send(Socket handler, byte[] data)
         {
-            handler.BeginSend(data, 0, data.Length, 0, new AsyncCallback(SendCallback), handler);
+            handler.BeginSend(data, 0, data.Length, 0, SendCallback, handler);
         }
 
         /// <summary>
@@ -291,12 +289,13 @@ namespace FC.GEPluginCtrls.HttpServer
             }
             catch (SocketException sex)
             {
-                Debug.WriteLine("SendCallback: " + sex.ToString(), "Server-Error");
+                Debug.WriteLine("SendCallback: " + sex, "Server-Error");
                 handler.Shutdown(SocketShutdown.Both);
                 handler.Close();
             }
         }
 
+/*
         /// <summary>
         /// Encodes an HTTP Error and sends the data asynchronously to the specified socket.
         /// The plain-text error is also sent, e.g: 404 NotFound
@@ -309,6 +308,7 @@ namespace FC.GEPluginCtrls.HttpServer
             Send(handler, BuildResponseHeader("text/plain; charset=UTF-8", code.Length, status));
             Send(handler, code);
         }
+*/
 
         /// <summary>
         /// Attempts to asynchronously serve a file on the specified socket.
@@ -359,8 +359,8 @@ namespace FC.GEPluginCtrls.HttpServer
                     string.Format(
                     CultureInfo.InvariantCulture,
                     "Sent {0} to {1}",
-                    state.Data.ToString(),
-                    handler.RemoteEndPoint.ToString()),
+                    state.Data,
+                    handler.RemoteEndPoint),
                     "GEServer");
             }
             catch (SocketException)
@@ -386,7 +386,7 @@ namespace FC.GEPluginCtrls.HttpServer
             }
             catch (ArgumentException aex)
             {
-                Debug.WriteLine("GetMimeType: " + aex.ToString(), "Server-Error");
+                Debug.WriteLine("GetMimeType: " + aex, "Server-Error");
             }
 
             switch (extension)
@@ -490,9 +490,7 @@ namespace FC.GEPluginCtrls.HttpServer
                     ResetEvent.Reset();
 
                     // Start an asynchronous socket to listen for connections.
-                    listener.BeginAccept(
-                        AcceptCallback,
-                        listener);
+                    listener.BeginAccept(AcceptCallback, listener);
 
                     // Wait until a connection is made before continuing.
                     ResetEvent.WaitOne();
@@ -500,7 +498,11 @@ namespace FC.GEPluginCtrls.HttpServer
             }
             catch (SocketException sex)
             {
-                Debug.WriteLine("Accept: " + sex.ToString(), "GEServer");
+                Debug.WriteLine("Accept: " + sex, "GEServer");
+            }
+            finally
+            {
+                listener.Dispose();
             }
         }
 

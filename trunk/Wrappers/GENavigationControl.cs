@@ -30,14 +30,9 @@ namespace FC.GEPluginCtrls
         #region Private fields
 
         /// <summary>
-        /// The plug-in object
-        /// </summary>
-        private readonly dynamic ge = null;
-
-        /// <summary>
         /// The com navigation control
         /// </summary>
-        private readonly dynamic navigation = null;
+        private readonly dynamic navigation;
 
         #endregion
 
@@ -52,7 +47,6 @@ namespace FC.GEPluginCtrls
                 throw new ArgumentException("ge is not of the type GEPlugin");
             }
 
-            this.ge = ge;
             this.navigation = ge.getNavigationControl();
         }
 
@@ -74,7 +68,6 @@ namespace FC.GEPluginCtrls
                 throw new ArgumentException("ge is not of the type GEPlugin");
             }
 
-            this.ge = ge;
             this.navigation = ge.getNavigationControl();
 
             this.ControlType = controlType;

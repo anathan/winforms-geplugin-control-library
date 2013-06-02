@@ -29,14 +29,9 @@ namespace FC.GEPluginCtrls
         #region Private Fields
 
         /// <summary>
-        /// The plug-in object 
-        /// </summary>
-        private readonly dynamic ge = null;
-
-        /// <summary>
         /// The options object 
         /// </summary>
-        private readonly dynamic tourPlayer = null;
+        private readonly dynamic tourPlayer;
 
         #endregion
 
@@ -51,7 +46,6 @@ namespace FC.GEPluginCtrls
                 throw new ArgumentException("ge is not of the type GEPlugin");
             }
 
-            this.ge = ge;
             this.tourPlayer = ge.getTourPlayer();
         }
 

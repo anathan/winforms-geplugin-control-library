@@ -38,7 +38,7 @@ namespace FC.GEPluginCtrls
         /// <summary>
         /// An instance of the current browser
         /// </summary>
-        private GEWebBrowser browser = null;
+        private GEWebBrowser browser;
 
         /// <summary>
         /// An instance of the options wrapper class
@@ -277,6 +277,7 @@ namespace FC.GEPluginCtrls
 
         #region Private methods
 
+/*
         /// <summary>
         /// Resets the tool strip's menu items to match the default initialization state of the plug-in.
         /// </summary>
@@ -298,6 +299,7 @@ namespace FC.GEPluginCtrls
             this.sunMenuItem.Checked = false;
             this.controlsMenuItem.Checked = false;
         }
+*/
 
         /// <summary>
         /// Force the plug-in to conform to the tool-strip settings
@@ -558,8 +560,6 @@ namespace FC.GEPluginCtrls
                         case "HISTORY":
                             this.browser.Plugin.getTime().setHistoricalImageryEnabled(value);
                             break;
-                        default:
-                            break;
                     }
                 }
                 catch (RuntimeBinderException rbex)
@@ -637,12 +637,14 @@ namespace FC.GEPluginCtrls
         /// <param name="e">Event arguments.</param>
         private void ScreenGrabButton_Click(object sender, EventArgs e)
         {
-            if (this.browser.PluginIsReady)
+            if (!this.browser.PluginIsReady)
             {
-                // Take a 'screen grab' of the plugin
-                Bitmap image = this.browser.ScreenGrab();
+                return;
+            }
 
-                // Save the file with a dialog
+            // Take a 'screen grab' of the plugin
+            using (Bitmap image = this.browser.ScreenGrab())
+            {
                 using (SaveFileDialog dialog = new SaveFileDialog { Filter = "JPEG files (*.jpg;*.jpeg)|*.jpg;*.jpeg|All files (*.*)|*.*" })
                 {
                     if (dialog.ShowDialog() == DialogResult.OK)

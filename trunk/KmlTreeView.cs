@@ -45,22 +45,22 @@ namespace FC.GEPluginCtrls
         /// <summary>
         /// The current browser
         /// </summary>
-        private GEWebBrowser browser = null;
+        private GEWebBrowser browser;
 
         /// <summary>
         /// The custom image list for tri-state check-box support
         /// </summary>
-        private ImageList triStateImageList = null;
+        private ImageList triStateImageList;
 
         /// <summary>
         /// Value indicating whether check-boxes are visible.
         /// </summary>
-        private bool checkBoxesVisible = false;
+        private bool checkBoxesVisible;
 
         /// <summary>
         /// Value indicating whether to prevent the check-boxes check event.
         /// </summary>
-        private bool preventChecking = false;
+        private bool preventChecking;
 
         #endregion
 
@@ -110,7 +110,7 @@ namespace FC.GEPluginCtrls
         /// </summary>
         /// <param name="feature">The KML feature to base the node on</param>
         /// <returns>A KmlTreeViewNode based on the feature</returns>
-        public KmlTreeViewNode CreateNode(dynamic feature)
+        public static KmlTreeViewNode CreateNode(dynamic feature)
         {
             // create the node from the feature
             KmlTreeViewNode treeNode = new KmlTreeViewNode(feature);
@@ -430,7 +430,7 @@ namespace FC.GEPluginCtrls
            
                 if (state)
                 {
-                    ((KmlTreeViewNode)treeNode.Parent).ApiObjectVisible = true;
+                    treeNode.Parent.ApiObjectVisible = true;
                     treeNode.Parent.StateImageIndex = 2;
                 }
                 else
@@ -438,7 +438,7 @@ namespace FC.GEPluginCtrls
                     treeNode.Parent.StateImageIndex = index;
                 }
 
-                treeNode = (KmlTreeViewNode)treeNode.Parent;
+                treeNode = treeNode.Parent;
             }
 
             this.preventChecking = false;
@@ -668,7 +668,7 @@ namespace FC.GEPluginCtrls
                 // If the parent has a BaseUrl then we need to use this to generate the 
                 // correct ids for the child, we also set the `baseurl` on the child for its children ...
                 // we also do an update check as it is possible the node needs to be updated...
-                string url = ((KmlTreeViewNode)child.Parent).BaseUrl;
+                string url = child.Parent.BaseUrl;
 
                 if (!string.IsNullOrEmpty(url) && child.ApiObject != null)
                 {

@@ -48,6 +48,8 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>Documentation.xml</DocumentationFile>
+    <CodeAnalysisRuleSet>ExtendedDesignGuidelineRules.ruleset</CodeAnalysisRuleSet>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <PlatformTarget>x86</PlatformTarget>
@@ -112,7 +114,6 @@
     <Compile Include="GEStatusStrip.Designer.cs">
       <DependentUpon>GEStatusStrip.cs</DependentUpon>
     </Compile>
-    <Compile Include="Interfaces\IExternal.cs" />
     <Compile Include="Enumerations\ImageryBase.cs" />
     <Compile Include="KmlHelpers.cs" />
     <Compile Include="Languages.cs" />
@@ -132,6 +133,9 @@
     <Compile Include="Wrappers\KmlViewerOptions.cs" />
     <Compile Include="Wrappers\GEWindow.cs" />
     <Compile Include="Wrappers\KmlColor.cs" />
+    <EmbeddedResource Include="GEStatusStrip.resx">
+      <DependentUpon>GEStatusStrip.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="GEToolStrip.resx">
       <DependentUpon>GEToolStrip.cs</DependentUpon>
       <SubType>Designer</SubType>

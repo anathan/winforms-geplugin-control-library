@@ -189,6 +189,16 @@ namespace FC.GEPluginCtrls.Geo
         /// <returns>True if the two coordinates are equal</returns>
         public static bool operator ==(Coordinate coordinate1, Coordinate coordinate2)
         {
+            if (ReferenceEquals(coordinate1, null) && ReferenceEquals(coordinate2, null))
+            {
+                return true;
+            }
+
+            if (ReferenceEquals(coordinate1, null) || ReferenceEquals(coordinate2, null))
+            {
+                return false;
+            }
+
             return coordinate1.Equals(coordinate2);
         }
 
@@ -245,13 +255,7 @@ namespace FC.GEPluginCtrls.Geo
         public override bool Equals(object obj)
         {
             Coordinate other = obj as Coordinate;
-
-            if (other != null)
-            {
-                return this.Equals(other);
-            }
-
-            return false;
+            return other != null && this.Equals(other);
         }
 
         /// <summary>

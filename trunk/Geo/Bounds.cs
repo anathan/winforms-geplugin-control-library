@@ -78,6 +78,11 @@ namespace FC.GEPluginCtrls.Geo
         /// <param name="bounds">The bounds object to copy</param>
         public Bounds(Bounds bounds)
         {
+            if (bounds == null)
+            {
+                throw new ArgumentNullException("bounds");
+            }
+
             this.Northeast = bounds.Northeast;
             this.Southwest = bounds.Southwest;
         }
@@ -204,7 +209,7 @@ namespace FC.GEPluginCtrls.Geo
 
         #endregion
 
-        #region operators
+        #region Operators
 
         /// <summary>
         /// Determines whether the specified Bounds objects are equal.
@@ -214,7 +219,8 @@ namespace FC.GEPluginCtrls.Geo
         /// <returns>true if the specified Bounds objects are equal</returns>
         public static bool operator ==(Bounds bounds1, Bounds bounds2)
         {
-            return bounds1.Equals(bounds2);
+            return ReferenceEquals(bounds1, null) && ReferenceEquals(bounds2, null)
+                   || !ReferenceEquals(bounds1, null) && !ReferenceEquals(bounds2, null) && bounds1.Equals(bounds2);
         }
 
         /// <summary>
@@ -239,6 +245,11 @@ namespace FC.GEPluginCtrls.Geo
         /// <returns>True if the Coordinate is inside the Bounds</returns>
         public bool ContainsCoordinate(Coordinate coordinate)
         {
+            if (coordinate == null)
+            {
+                throw new ArgumentNullException("coordinate");
+            }
+
             // check latitude
             if (!(this.South <= coordinate.Latitude && coordinate.Latitude <= this.North))
             {
@@ -288,9 +299,9 @@ namespace FC.GEPluginCtrls.Geo
             }
 
             return new Coordinate(
-                latitude: this.Northeast.Latitude - this.Southwest.Latitude,
-                longitude: LongitudinalSpan(this.Southwest.Longitude, this.Northeast.Longitude),
-                altitude: this.Is3D ? (this.Northeast.Altitude - this.Southwest.Altitude) : 0);
+                this.Northeast.Latitude - this.Southwest.Latitude,
+                LongitudinalSpan(this.Southwest.Longitude, this.Northeast.Longitude),
+                this.Is3D ? (this.Northeast.Altitude - this.Southwest.Altitude) : 0);
         }
 
         /// <summary>
@@ -302,6 +313,11 @@ namespace FC.GEPluginCtrls.Geo
         /// <param name="coordinate">The Coordinate to extend the bounds by.</param>
         public void Extend(Coordinate coordinate)
         {
+            if (coordinate == null)
+            {
+                throw new ArgumentNullException("coordinate");
+            }
+
             if (this.ContainsCoordinate(coordinate))
             {
                 return;
@@ -360,12 +376,7 @@ namespace FC.GEPluginCtrls.Geo
         public override bool Equals(object obj)
         {
             Bounds other = obj as Bounds;
-            if (other != null)
-            {
-                return this.Equals(obj);
-            }
-
-            return false;
+            return other != null && this.Equals(obj);
         }
 
         /// <summary>
