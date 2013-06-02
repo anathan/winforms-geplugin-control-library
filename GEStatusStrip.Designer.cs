@@ -75,56 +75,53 @@ namespace FC.GEPluginCtrls
         /// </summary>
         private void InitializeComponent()
         {
-            components = new System.ComponentModel.Container();
-            apiVersionStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
-            browserVersionStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
-            streamingProgressBar = new System.Windows.Forms.ToolStripProgressBar();
-            streamingStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
-            pluginVersionStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
-            //
+            this.components = new System.ComponentModel.Container();
+            this.apiVersionStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
+            this.browserVersionStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
+            this.streamingProgressBar = new System.Windows.Forms.ToolStripProgressBar();
+            this.streamingStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
+            this.pluginVersionStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
+            this.timer = new System.Windows.Forms.Timer(this.components);
+            this.SuspendLayout();
+            // 
             // apiVersionStatusLabel
-            //
-            this.apiVersionStatusLabel.Name = "apiVersionStatusLabel";
+            // 
             this.apiVersionStatusLabel.ForeColor = System.Drawing.Color.Gray;
-            this.apiVersionStatusLabel.Spring = false;
-            this.apiVersionStatusLabel.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.apiVersionStatusLabel.Name = "apiVersionStatusLabel";
             this.apiVersionStatusLabel.Size = new System.Drawing.Size(23, 17);
             this.apiVersionStatusLabel.Text = "api ";
-            //
+            this.apiVersionStatusLabel.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
             // browserVersionStatusLabel
-            //
-            this.browserVersionStatusLabel.Name = "browserVersionStatusLabel";
+            // 
             this.browserVersionStatusLabel.ForeColor = System.Drawing.Color.Gray;
-            this.browserVersionStatusLabel.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.browserVersionStatusLabel.Spring = true;
+            this.browserVersionStatusLabel.Name = "browserVersionStatusLabel";
             this.browserVersionStatusLabel.Size = new System.Drawing.Size(23, 17);
+            this.browserVersionStatusLabel.Spring = true;
             this.browserVersionStatusLabel.Text = "ie ";
+            this.browserVersionStatusLabel.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // streamingProgressBar
             // 
             this.streamingProgressBar.Name = "streamingProgressBar";
             this.streamingProgressBar.Size = new System.Drawing.Size(100, 16);
-            ////this.streamingProgressBar.Minimum = 0;
-            ////this.streamingProgressBar.Maximum = 100;
             // 
             // streamingStatusLabel
             // 
             this.streamingStatusLabel.Name = "streamingStatusLabel";
             this.streamingStatusLabel.Size = new System.Drawing.Size(23, 17);
             this.streamingStatusLabel.Text = "idle";
-            //
+            // 
             // pluginVersionStatusLabel
-            //
-            this.pluginVersionStatusLabel.Name = "pluginVersionStatusLabel";
+            // 
             this.pluginVersionStatusLabel.ForeColor = System.Drawing.Color.Gray;
-            this.pluginVersionStatusLabel.Spring = false;
-            this.pluginVersionStatusLabel.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.pluginVersionStatusLabel.Name = "pluginVersionStatusLabel";
             this.pluginVersionStatusLabel.Size = new System.Drawing.Size(23, 17);
             this.pluginVersionStatusLabel.Text = "plugin ";
-            //
-            //
+            this.pluginVersionStatusLabel.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
             // GEStatusStrip
-            //
+            // 
             this.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.streamingProgressBar,
             this.streamingStatusLabel,
@@ -133,11 +130,14 @@ namespace FC.GEPluginCtrls
             this.pluginVersionStatusLabel});
             this.Location = new System.Drawing.Point(0, 347);
             this.Name = "geStatusStrip1";
-            this.Text = "geStatusStrip1";
             this.Size = new System.Drawing.Size(693, 22);
+            this.Text = "geStatusStrip1";
             this.ResumeLayout(false);
+
         }
 
         #endregion
+
+        private System.Windows.Forms.Timer timer;
     }
 }

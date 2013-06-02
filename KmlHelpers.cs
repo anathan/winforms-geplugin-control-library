@@ -45,7 +45,7 @@ namespace FC.GEPluginCtrls
         public static Bounds ComputeBounds(dynamic kmlFeature)
         {
             Bounds bounds = new Bounds();
-            Action<dynamic> eachNode = (feature) =>
+            Action<dynamic> eachNode = feature =>
             {
                 ApiType type = GEHelpers.GetApiType(feature);
                 switch (type)
@@ -511,7 +511,7 @@ namespace FC.GEPluginCtrls
             }
             catch (RuntimeBinderException rbex)
             {
-                Debug.WriteLine("CreateLineString: " + rbex.ToString(), "KmlHelpers");
+                Debug.WriteLine("CreateLineString: " + rbex, "KmlHelpers");
             }
 
             return placemark;
@@ -661,7 +661,7 @@ namespace FC.GEPluginCtrls
         public static XmlNodeList GetElementsByTagName(dynamic kmlFeature, string tagName)
         {
             XmlDocument doc = new XmlDocument();
-            string kml = string.Empty;
+            string kml;
 
             try
             {
@@ -692,7 +692,7 @@ namespace FC.GEPluginCtrls
         /// <example>string URL = KmlHelpers.GetUrl(kmlObject);</example>
         public static Uri GetUrl(dynamic kmlFeature)
         {
-            Uri uri = null;
+            Uri uri;
             string link = string.Empty;
 
             XmlNodeList list = GetElementsByTagName(kmlFeature, "href");

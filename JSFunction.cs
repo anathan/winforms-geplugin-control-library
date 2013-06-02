@@ -64,6 +64,11 @@ namespace FC.GEPluginCtrls
         public const string FetchKml = "jsFetchKml";
 
         /// <summary>
+        /// The JavaScript method name of a synchronous google.earth.fetchKml wrapper.
+        /// </summary>
+        public const string FetchKmlSynchronous = "jsFetchKmlSynchronous";
+
+        /// <summary>
         /// The JavaScript method name of the google.earth.getLanguage wrapper.
         /// </summary>
         public const string GetLanguage = "jsGetLanguage";

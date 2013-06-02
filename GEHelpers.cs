@@ -337,7 +337,7 @@ namespace FC.GEPluginCtrls
         /// <returns>true if the string is a URI</returns>
         public static bool IsUri(string input, UriKind kind)
         {
-            Uri x = null;
+            Uri x;
             return Uri.TryCreate(input, kind, out x);
         }
 

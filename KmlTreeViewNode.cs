@@ -21,6 +21,7 @@ namespace FC.GEPluginCtrls
     using System;
     using System.Diagnostics;
     using System.Runtime.InteropServices;
+    using System.Text.RegularExpressions;
     using System.Windows.Forms;
 
     /// <summary>
@@ -29,6 +30,87 @@ namespace FC.GEPluginCtrls
     [Serializable]
     public sealed class KmlTreeViewNode : TreeNode
     {
+        /// <summary>
+        /// Animation timer
+        /// </summary>
+        private Timer timer;
+
+        /// <summary>
+        /// The available Image Icons for KmlTreeViewNodes
+        /// </summary>
+        private enum Icon
+        {
+            /// <summary>
+            /// The Earth image icon
+            /// </summary>
+            Ge = 0,
+
+            /// <summary>
+            /// The Kml file image icon
+            /// </summary>
+            Kml = 1,
+
+            /// <summary>
+            /// The placemark/flag image icon
+            /// </summary>
+            Flag = 2,
+
+            /// <summary>
+            /// The Image overlay image icon
+            /// </summary>
+            Overlay = 3,
+
+            /// <summary>
+            /// The KmlPhotoOverlay image icon
+            /// </summary>
+            Photo = 4,
+
+            /// <summary>
+            /// The KmlTour image icon
+            /// </summary>
+            Tour = 5,
+
+            /// <summary>
+            /// The folder closed image icon
+            /// </summary>
+            FolderClosed = 6,
+
+            /// <summary>
+            /// The folder open image icon
+            /// </summary>
+            FolderOpen = 7,
+
+            /// <summary>
+            /// The link folder closed image icon
+            /// </summary>
+            LinkFolderClosed = 8,
+
+            /// <summary>
+            /// The link folder open image icon
+            /// </summary>
+            LinkFolderOpen = 9,
+
+            /// <summary>
+            /// The link folder state 0 image icon
+            /// </summary>
+            LinkFolderLoading0 = 10,
+
+            /// <summary>
+            /// The link folder state 1 image icon
+            /// </summary>
+            linkFolderLoading1 = 11,
+
+            /// <summary>
+            /// The link folder state 2 image icon
+            /// </summary>
+            LinkFolderLoading2 = 12,
+
+            /// <summary>
+            /// The link folder disconnected image icon
+            /// </summary>
+            LinkFolderClosedDisconected = 13
+        }
+
         /// <summary>
         /// Initializes a new instance of the KmlTreeViewNode class.
         /// </summary>
@@ -81,6 +163,22 @@ namespace FC.GEPluginCtrls
         /// </summary>
         public ApiType ApiType { get; private set; }
 
+        public new KmlTreeViewNode FirstNode
+        {
+            get
+            {
+                return (KmlTreeViewNode)base.FirstNode;
+            }
+        }
+
+        public new KmlTreeViewNode Parent
+        {
+            get
+            {
+                return (KmlTreeViewNode)base.Parent;
+            }
+        }
+
         #endregion
 
         #region Internal Properties
@@ -105,12 +203,7 @@ namespace FC.GEPluginCtrls
         {
             get
             {
-                if (this.ApiObject != null)
-                {
-                    return KmlHelpers.GetUrl(this.ApiObject).ToString();
-                }
-
-                return string.Empty;
+                return KmlHelpers.GetUrl(this.ApiObject);
             }
         }
 
@@ -121,12 +214,7 @@ namespace FC.GEPluginCtrls
         {
             get
             {
-                if (this.ApiObject != null)
-                {
-                    return KmlHelpers.GetListItemType(this.ApiObject);
-                }
-
-                return ListItemStyle.Check;
+                return this.ApiObject == null ? ListItemStyle.Check : KmlHelpers.GetListItemType(this.ApiObject);
             }
         }
 
@@ -177,81 +265,32 @@ namespace FC.GEPluginCtrls
         {
             switch (this.ApiType)
             {
-                case ApiType.KmlDocument:
                 case ApiType.KmlFolder:
-                    {
-                        if (this.IsExpanded)
-                        {
-                            this.ImageKey = "folderOpen";
-                            this.SelectedImageKey = "folderOpen";
-                        }
-                        else
-                        {
-                            this.ImageKey = "folderClosed";
-                            this.SelectedImageKey = "folderClosed";
-                        }
-                    }
-
+                case ApiType.KmlDocument:
+                    this.SetIcon(this.IsExpanded ? Icon.FolderOpen : Icon.FolderClosed);
                     return;
 
                 case ApiType.KmlNetworkLink:
-                    {
-                        if (this.IsExpanded)
-                        {
-                            this.ImageKey = "linkFolderOpen";
-                            this.SelectedImageKey = "linkFolderOpen";
-                        }
-                        else
-                        {
-                            this.ImageKey = "linkFolderClosed";
-                            this.SelectedImageKey = "linkFolderClosed";
-                        }
-                    }
-
+                    this.SetIcon(
+                        this.IsExpanded ? Icon.LinkFolderOpen : Icon.LinkFolderClosed);
                     return;
 
                 case ApiType.KmlPlacemark:
-                    {
-                        this.ImageKey = "flag";
-                        this.SelectedImageKey = "flag";
-                    }
-
+                    this.SetIcon(Icon.Flag);
                     return;
 
                 case ApiType.KmlGroundOverlay:
                 case ApiType.KmlScreenOverlay:
-                    {
-                        this.ImageKey = "overlay";
-                        this.SelectedImageKey = "overlay";
-                    }
-
+                    this.SetIcon(Icon.Overlay);
                     return;
 
                 case ApiType.KmlPhotoOverlay:
-                    {
-                        this.ImageKey = "photo";
-                        this.SelectedImageKey = "photo";
-                    }
-
+                    this.SetIcon(Icon.Photo);
                     return;
 
                 case ApiType.KmlTour:
-                    {
-                        this.ImageKey = "tour";
-                        this.SelectedImageKey = "tour";
-                    }
-
-                    return;
-
                 case ApiType.KmlLayer:
-                    {
-                        this.ImageKey = "tour";
-                        this.SelectedImageKey = "tour";
-                    }
-
-                    return;
-
-                default:
+                    this.SetIcon(Icon.Tour);
                     return;
             }
         }
@@ -261,25 +300,25 @@ namespace FC.GEPluginCtrls
         /// </summary>
         internal void Animate()
         {
-            this.IsLoading = true;
-
-            Timer t = new Timer { Interval = 500, Enabled = true };
-            int i = 2;
-
-            t.Tick += (o, e) =>
+            if (this.timer != null)
             {
-                if (i >= 0)
+                this.IsLoading = false;
+                this.timer.Stop();
+                this.timer.Dispose();
+                return;
+            }
+
+            this.timer = new Timer { Interval = 500, Enabled = true };
+            this.IsLoading = true;
+            var icon = Icon.LinkFolderLoading2;
+            this.timer.Tick += (o, e) =>
+            {
+                if (icon < Icon.LinkFolderLoading0)
                 {
-                    this.ImageKey = "linkFolderClosed_" + i;
-                    this.SelectedImageKey = "linkFolderClosed_" + i;
-                    i -= 1;
+                    icon = Icon.LinkFolderLoading2;
                 }
-                else
-                {
-                    i = 2;
-                    this.ImageKey = "linkFolderClosed_" + i;
-                    this.SelectedImageKey = "linkFolderClosed_" + i;
-                }
+
+                this.SetIcon(icon--);
             };
         }
 
@@ -297,8 +336,7 @@ namespace FC.GEPluginCtrls
             {
                 this.Name = this.ApiObject.getId();
                 this.ApiType = GEHelpers.GetApiType(this.ApiObject);
-                this.Text = this.ApiObject.getName();
-                this.ApiObjectVisible = Convert.ToBoolean(this.ApiObject.getVisibility());
+                this.Text = RemoveScrubbingString(this.ApiObject.getName());
                 this.StateImageIndex = this.ApiObjectVisible ? 1 : 0;
                 this.Checked = this.ApiObjectVisible;
                 this.SetStyle();
@@ -312,6 +350,31 @@ namespace FC.GEPluginCtrls
         #endregion
 
         #region Private Methods
+
+        /// <summary>
+        /// Sets the <paramref name="icon"/> for the base ImageIndex and SelectedImageIndex.
+        /// </summary>
+        /// <param name="icon">
+        /// The icon. 
+        /// </param>
+        private void SetIcon(Icon icon)
+        {
+            this.ImageIndex = this.SelectedImageIndex = (int)icon;
+        }
+
+        /// <summary>
+        /// Removes the API scrubbing string if present 
+        /// and converts HTML entities.
+        /// </summary>
+        /// <param name="name">The string to clean</param>
+        /// <returns>A string with out the API scrubbing string in it</returns>
+        private static string RemoveScrubbingString(string name)
+        {
+            string result = Regex.Replace(name, @"<!--\s*Content-type: mhtml-die-die-die\s*-->", string.Empty);
+            result = result.Replace("&#040;", "(");
+            result = result.Replace("&#041;", ")");
+            return result;
+        }
 
         /// <summary>
         /// Clean any html and add line-breaks for use with tooltips.

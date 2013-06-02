@@ -42,7 +42,7 @@
     
     var ge = null; // GEPlugin
     var geocoder = null; // GClientGeocoder
-    var application = null; // External
+    var application = window.external;
     var events_ = {
       generic: [],
       view: [],
@@ -77,29 +77,9 @@
       ge = object;
       geocoder = new window.google.maps.Geocoder(); //v3
       ge.getWindow().setVisibility(true);
-      application = window.external;
       application.Ready(ge);
     };
     
-    /**
-     * Used to refrence a callback function from managed code.
-     * @param arguments {array} an array of arguments.
-     * @return {object} a callback function.
-     */
-    var createCallback_ = function() {
-      var data = {
-        method: arguments[0],
-        url: arguments[1]
-      };
-      return function(kmlObject) {
-        if (kmlObject) {
-          data.kmlObject = kmlObject;
-          application.InvokeCallBack(data.method, data);
-        } else {
-          application.SendError(data.method, "kmlObject is null");
-        }
-      };
-    };
     
     /**
      * KmlEvent event listner callback function
@@ -213,12 +193,24 @@
      * google.earth.fetchKml wrapper.
      * Retrieves and parses a KML or KMZ file at the given URL and returns an instance of a KmlFeature-derived class representing the parsed KML object model.
      * @param url {string} The path of the file to load.
-     * @param callback {string} The method to invoke on compleation.
+     * @param callback {string} The method to invoke on completion.
      */
-    var jsFetchKml = function(url, callback) {
-      window.google.earth.fetchKml(ge, url, eval(callback));
+    var jsFetchKml = function(url) {
+      window.google.earth.fetchKml(ge, url, function(kmlObject) {
+       if(kmlObject) {
+         application.FetchKmlCallback(kmlObject);
+        } else {
+         application.SendError("jsFetchKml", url);
+       }
+      }); 
     };
-      
+
+    var jsFetchKmlSynchronous = function(url) {
+        window.google.earth.fetchKml(ge, url, function(event) {
+            window.external.FetchKmlSynchronousCallback(event, url);
+        });
+    };
+    
     /**
      * GClientGeocoder.getLatLng wrapper.
      * @param {string} address The address to attempt geocode.

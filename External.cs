@@ -23,6 +23,8 @@ namespace FC.GEPluginCtrls
     using System.Diagnostics;
     using System.Reflection;
     using System.Runtime.InteropServices;
+    using System.Threading;
+
     using Microsoft.CSharp.RuntimeBinder;
 
     /// <summary>
@@ -30,14 +32,20 @@ namespace FC.GEPluginCtrls
     /// The various events are used by the <see cref="GEWebBrowser"/> when dealing with the plug-in
     /// </summary>
     [ComVisible(true)]
-    public class External : IExternal
+    public class External
     {
         #region Private fields
 
         /// <summary>
+        /// Cache of kml event objects
+        /// </summary>
+        private static readonly Dictionary<string, AutoResetEvent> AutoResetDictionary =
+            new Dictionary<string, AutoResetEvent>();
+
+        /// <summary>
         /// Stores fetched Kml Objects
         /// </summary>
-        private static readonly Dictionary<string, object> KmlDictionary =
+        private static readonly Dictionary<string, object> KmlObjectDictionary =
             new Dictionary<string, object>();
 
         #endregion
@@ -82,9 +90,17 @@ namespace FC.GEPluginCtrls
         /// Gets the store of fetched IKmlObjects.
         /// Used in the process of synchronously loading network links
         /// </summary>
-        internal static Dictionary<string, object> KmlObjectCache
+        internal static Dictionary<string, object> KmlDictionary
         {
-            get { return KmlDictionary; }
+            get { return KmlObjectDictionary; }
+        }
+
+        internal static Dictionary<string, AutoResetEvent>  ResetDictionary
+        {
+            get
+            {
+                return AutoResetDictionary;
+            }
         }
 
         #endregion
@@ -99,33 +115,6 @@ namespace FC.GEPluginCtrls
         public void DebugMessage(string category, string message)
         {
             Debug.WriteLine(message, category);
-        }
-
-        /// <summary>
-        /// Can be called from JavaScript to invoke method in managed code.
-        /// </summary>
-        /// <param name="name">the name of the managed method to be called</param>
-        /// <param name="parameters">array of parameter objects</param>
-        public void InvokeCallback(string name, dynamic parameters)
-        {
-            try
-            {
-                object[] data = parameters.GetType().Name == "__ComObject"
-                                    ? new object[] { parameters.kmlObject, (string)parameters.url }
-                                    : parameters;
-
-                GEEventArgs ea = new GEEventArgs(data);
-                MethodInfo info = this.GetType().GetMethod(name, BindingFlags.Instance | BindingFlags.NonPublic);
-                info.Invoke(this, new object[] { ea });
-            }
-            catch (RuntimeBinderException rbex)
-            {
-                Debug.WriteLine("InvokeCallBack: " + rbex.Message, "External");
-            }
-            catch (NullReferenceException nrex)
-            {
-                Debug.WriteLine("InvokeCallBack: " + nrex.Message, "External");
-            }
         }
 
         /// <summary>
@@ -199,7 +188,7 @@ namespace FC.GEPluginCtrls
         /// <summary>
         /// Called from JavaScript when there is a View event
         /// </summary>
-        /// <param name="sender">The plugin object</param>
+        /// <param name="sender">The plug-in object</param>
         /// <param name="action">The event action</param>
         public void ViewEventCallback(object sender, string action)
         {
@@ -215,6 +204,25 @@ namespace FC.GEPluginCtrls
             {
                 Debug.WriteLine("ViewEventCallBack: " + rbex.Message, "External");
             }
+        }
+
+        /// <summary>
+        /// Called from JavaScript when Kml has been fetched
+        /// </summary>
+        /// <param name="KmlObject">The fetched Kml object</param>
+        public void FetchKmlCallback(object KmlObject)
+        {
+            this.OnFetchKml(new GEEventArgs(KmlObject));
+        }
+
+        /// <summary>
+        /// Called from JavaScript when Kml has been synchronously fetched
+        /// </summary>
+        /// <param name="KmlObject">The fetched Kml object</param>
+        /// <param name="url">The url that the object was fetched from</param>
+        public void FetchKmlSynchronousCallback(object KmlObject, string url)
+        {
+            this.OnFetchKmlSynchronous(new GEEventArgs("FetchKmlSynchronous", url, KmlObject));
         }
 
         #endregion
@@ -255,10 +263,10 @@ namespace FC.GEPluginCtrls
         /// Protected method for raising the KmlLoaded event
         /// </summary>
         /// <param name="e">The Event arguments</param>
-        protected virtual void OnKmlLoaded(GEEventArgs e)
+        protected virtual void OnFetchKml(GEEventArgs e)
         {
             EventHandler<GEEventArgs> handler = this.KmlLoaded;
-            dynamic kmlObject = ((object[])e.ApiObject)[0];
+            dynamic kmlObject = e.ApiObject;
 
             if (handler != null)
             {
@@ -270,18 +278,12 @@ namespace FC.GEPluginCtrls
         /// Protected method for capturing fetched IKmlObjects
         /// </summary>
         /// <param name="e">The Event arguments</param>
-        protected virtual void OnKmlFetched(GEEventArgs e)
+        protected virtual void OnFetchKmlSynchronous(GEEventArgs e)
         {
-            object[] result = e.ApiObject;
-            if (result.Length == 2)
+            lock (KmlDictionary)
             {
-                dynamic kmlObject = result[0];
-                string url = (string)result[1];
-                lock (KmlObjectCache)
-                {
-                    KmlObjectCache[url] = kmlObject;
-                    GEWebBrowser.ResetEvents[url].Set();
-                }
+                KmlDictionary[e.Data] = e.ApiObject;
+                ResetDictionary[e.Data].Set();
             }
         }
 
