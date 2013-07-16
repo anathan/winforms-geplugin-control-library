@@ -1,4 +1,4 @@
-﻿// <copyright file="GENavigationControl.cs" company="FC">
+ // <copyright file="GENavigationControl.cs" company="FC">
 // Copyright (c) 2008 Fraser Chapman
 // </copyright>
 // <author>Fraser Chapman</author>
@@ -40,28 +40,14 @@ namespace FC.GEPluginCtrls
         /// Initializes a new instance of the GENavigationControl class.
         /// </summary>
         /// <param name="ge">GEPlugin COM object</param>
-        public GENavigationControl(dynamic ge)
-        {
-            if (!GEHelpers.IsGE(ge))
-            {
-                throw new ArgumentException("ge is not of the type GEPlugin");
-            }
-
-            this.navigation = ge.getNavigationControl();
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the GENavigationControl class.
-        /// </summary>
-        /// <param name="ge">GEPlugin COM object</param>
         /// <param name="controlType">The control type. default is NavigationControl.Large</param>
         /// <param name="visibility">The visibility of the control. default is Visibility.Show</param>
-        /// <param name="streetViewEnabled">Optionally enables the street view features. Default is true (on)</param>
+        /// <param name="streetViewEnabled">Optionally enables the street view features. Default is true</param>
         public GENavigationControl(
             dynamic ge,
             NavigationControl controlType = NavigationControl.Large,
             Visibility visibility = Visibility.Show,
-            bool streetViewEnabled = false)
+            bool streetViewEnabled = true)
         {
             if (!GEHelpers.IsGE(ge))
             {
