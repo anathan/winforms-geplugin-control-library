@@ -19,21 +19,24 @@
 namespace FC.GEPluginCtrls
 {
     using System;
-    using System.Collections.Generic;
     using System.ComponentModel;
     using System.Diagnostics;
     using System.Drawing;
     using System.Drawing.Imaging;
     using System.Globalization;
     using System.IO;
+    using System.Linq;
     using System.Net;
+    using System.Reflection;
     using System.Runtime.InteropServices;
     using System.Security;
     using System.Security.Permissions;
+    using System.Text;
     using System.Threading;
     using System.Windows.Forms;
     using System.Xml;
 
+    using FC.GEPluginCtrls.Geo;
     using FC.GEPluginCtrls.Properties;
 
     using Microsoft.CSharp.RuntimeBinder;
@@ -326,11 +329,6 @@ namespace FC.GEPluginCtrls
         /// <example>GEWebBrowser.AddEventListener(object, "click", "function(event){alert(event.getType);}");</example>
         public void AddEventListener(object feature, EventId action, string callback = null, bool useCapture = false)
         {
-            if (!string.IsNullOrEmpty(callback))
-            {
-                callback = "_x=" + callback;
-            }
-
             this.InvokeJavaScript(
                 JSFunction.AddEventListener,
                 feature,
@@ -604,12 +602,7 @@ namespace FC.GEPluginCtrls
         /// <returns>the KmlPoint object for the geocode, or an empty object</returns>
         public object InvokeDoGeocode(string input)
         {
-            if (null != this.Document)
-            {
-                return this.InvokeJavaScript(JSFunction.DoGeocode, input);
-            }
-
-            return null;
+            return null == this.Document ? null : this.InvokeJavaScript(JSFunction.DoGeocode, input);
         }
 
         /// <summary>
@@ -618,28 +611,30 @@ namespace FC.GEPluginCtrls
         /// <param name="javaScript">the script code</param>
         public void InjectJavaScript(string javaScript)
         {
-            if (null != this.Document)
+            if (null == this.Document)
             {
-                try
-                {
-                    HtmlElement headElement = this.Document.GetElementsByTagName("head")[0];
-                    HtmlElement scriptElement = this.Document.CreateElement("script");
-                    if (scriptElement == null)
-                    {
-                        return;
-                    }
+                return;
+            }
 
-                    scriptElement.SetAttribute("type", "text/javascript");
-
-                    // use the custom mshtml interface to append the script to the element
-                    IHtmlScriptElement element = (IHtmlScriptElement)scriptElement.DomElement;
-                    element.Text = "/* <![CDATA[ */ " + javaScript + " /* ]]> */";
-                    headElement.AppendChild(scriptElement);
-                }
-                catch (InvalidOperationException ioex)
+            try
+            {
+                HtmlElement headElement = this.Document.GetElementsByTagName("head")[0];
+                HtmlElement scriptElement = this.Document.CreateElement("script");
+                if (scriptElement == null)
                 {
-                    Debug.WriteLine("InjectJavascript: " + ioex, "GEWebBrowser");
+                    return;
                 }
+
+                scriptElement.SetAttribute("type", "text/javascript");
+
+                // use the custom mshtml interface to append the script to the element
+                IHtmlScriptElement element = (IHtmlScriptElement)scriptElement.DomElement;
+                element.Text = "/* <![CDATA[ */ " + javaScript + " /* ]]> */";
+                headElement.AppendChild(scriptElement);
+            }
+            catch (InvalidOperationException ioex)
+            {
+                Debug.WriteLine("InjectJavascript: " + ioex, "GEWebBrowser");
             }
         }
 

@@ -308,7 +308,5 @@ namespace FC.GEPluginCtrls
         }
 
         #endregion
-
-
     }
 }

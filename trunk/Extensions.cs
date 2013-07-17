@@ -18,6 +18,7 @@
 // </summary>
 namespace FC.GEPluginCtrls
 {
+    using System;
     using System.ComponentModel;
     using System.Reflection;
 
@@ -29,11 +30,11 @@ namespace FC.GEPluginCtrls
         /// <summary>
         /// Gets the internal ID for a Layer
         /// </summary>
-        /// <param name="input">Layer type</param>
+        /// <param name="layer">Layer type</param>
         /// <returns>The layer ID or an empty string</returns>
-        internal static string GetId(this Layer input)
+        internal static string GetId(this Layer layer)
         {
-            FieldInfo fi = input.GetType().GetField(input.ToString());
+            FieldInfo fi = layer.GetType().GetField(layer.ToString());
             DescriptionAttribute[] attributes =
                 (DescriptionAttribute[])fi.GetCustomAttributes(typeof(DescriptionAttribute), false);
 
@@ -43,6 +44,24 @@ namespace FC.GEPluginCtrls
             }
 
             return string.Empty;
+        }
+
+        internal static bool GetInheritedVisibility(this Layer layer, GEWebBrowser browser)
+        {
+            if (!browser.PluginIsReady)
+            {
+                return false;
+            }
+
+            var target = browser.Plugin.getLayerRoot().getLayerById(layer.GetId());
+
+            if (target == null || !Convert.ToBoolean(target.getVisibility()))
+            {
+                return false;
+            }
+
+            var parent = target.getParentNode();
+            return parent != null || GetInheritedVisibility(parent, browser);
         }
     }
 }

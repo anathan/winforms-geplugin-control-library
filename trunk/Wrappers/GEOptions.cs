@@ -60,7 +60,7 @@ namespace FC.GEPluginCtrls
         {
             get
             {
-                return this.options.getAtmosphereVisibility();
+                return Convert.ToBoolean(this.options.getAtmosphereVisibility());
             }
 
             set
@@ -165,7 +165,7 @@ namespace FC.GEPluginCtrls
         {
             get
             {
-                return this.options.getGridVisibility();
+                return Convert.ToBoolean(this.options.getGridVisibility());
             }
 
             set
@@ -182,7 +182,7 @@ namespace FC.GEPluginCtrls
         {
             get
             {
-                return this.options.getMouseNavigationEnabled();
+                return Convert.ToBoolean(this.options.getMouseNavigationEnabled());
             }
 
             set
@@ -198,7 +198,7 @@ namespace FC.GEPluginCtrls
         {
             get
             {
-                return this.options.getOverviewMapVisibility();
+                return Convert.ToBoolean(this.options.getOverviewMapVisibility());
             }
 
             set
@@ -214,7 +214,7 @@ namespace FC.GEPluginCtrls
         {
             get
             {
-                return this.options.getScaleLegendVisibility();
+                return Convert.ToBoolean(this.options.getScaleLegendVisibility());
             }
 
             set
@@ -247,7 +247,7 @@ namespace FC.GEPluginCtrls
         {
             get
             {
-                return this.options.getStatusBarVisibility();
+                return Convert.ToBoolean(this.options.getStatusBarVisibility());
             }
 
             set
@@ -291,7 +291,7 @@ namespace FC.GEPluginCtrls
         {
             get
             {
-                return this.options.getUnitsFeetMiles();
+                return Convert.ToBoolean(this.options.getUnitsFeetMiles());
             }
 
             set

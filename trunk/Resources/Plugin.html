@@ -1,5 +1,4 @@
 ﻿<!DOCTYPE html>
-<!-- saved from url=(0016)http://localhost -->
 <html lang="en">
   <!--
   |
@@ -30,261 +29,319 @@
     <!-- google.earth.api -->
     <script type="text/javascript" src="http://www.google.com/jsapi"></script>
     <script type="text/javascript">
-    /* <![CDATA[ */
+      /* <![CDATA[ */
 
-    google.load('earth', '1', {
-      'language': 'en-GB'
-    });
-    
-    google.load('maps', '3.6', {
-      other_params: 'sensor=false&libraries=geometry'
-    });
+    google.load('earth', '1', { 'language': 'en-GB' });
+    google.load('maps','3.6', { other_params: 'sensor=false' });
     
     var ge = null; // GEPlugin
     var geocoder = null; // GClientGeocoder
-    var application = window.external;
-    var events_ = {
-      generic: [],
-      view: [],
+    var application = null; // External
+    
+    var events_ =
+    {
+      generic : [],
+      view : [], 
       plugin: []
     };
     
     /**
-     * Internal methods called from javascript
-     * suffix_
-     */
-     
+    * Internal methods called from javascript
+    * suffix_
+    */
+    
     /*
-     * Main entry point
-     */
-    var init_ = function() {
+    * Main entry point
+    */
+    var init_ = function()
+    {
       jsCreateInstance('earth');
     };
-    
+
     /**
-     * Sends error messages to the application.
-     * @param error {string} the error message.
-     */
-    var failureCallback_ = function(error) {
+    * Sends error messages to the application.
+    * @param error {string} the error message.
+    */
+    var failureCallback_ = function(error)
+    {
       application.SendError("Plugin Error", "Plugin failed to load: " + error);
     };
-    
+
     /**
-     * Called when plugin loading is successful.
-     * @param object {GEPlugin} the plug-in object.
-     */
-    var initCallback_ = function(object) {
+    * Called when plugin loading is successful.
+    * @param object {GEPlugin} the plug-in object.
+    */
+    var initCallback_ = function(object)
+    {
       ge = object;
+
       geocoder = new window.google.maps.Geocoder(); //v3
       ge.getWindow().setVisibility(true);
+      
+      application = window.external;
       application.Ready(ge);
     };
-    
-    
+
     /**
-     * KmlEvent event listner callback function
-     * @param kmlEvent {kmlMouseEvent} the mouse event object
-     * @parma action {string} the event action (click, dblclick, mousedown, etc)
-     */
-    var kmlEventListener_ = function(kmlEvent, action) {
-      if (kmlEvent) {
+    * Used to refrence a callback function from managed code.
+    * @param arguments {array} an array of arguments.
+    * @return {object} a callback function.
+    */
+    var createCallback_ = function()
+    {
+      var data = 
+      {
+        method: arguments[0],
+        url: arguments[1]
+      };
+
+      return function(kmlObject)
+      {
+        if (kmlObject)
+        {
+          data.kmlObject = kmlObject;
+          application.InvokeCallBack(data.method, data);
+        }
+        else
+        {
+          application.SendError(data.method, "kmlObject is null");
+        }
+      };
+    };
+
+    /**
+    * KmlEvent event listner callback function
+    * @param kmlEvent {kmlMouseEvent} the mouse event object
+    * @parma action {string} the event action (click, dblclick, mousedown, etc)
+    */
+    var kmlEventListener_ = function(kmlEvent, action) 
+    {
+      if(kmlEvent)
+      {
         application.KmlEventCallBack(kmlEvent, action);
       }
     };
-    
+
     /**
-     * GEView event listner callback function.
-     * @param action {string} the event action (viewchangebegin, viewchange, viewchangeend).
-     */
-    var viewEventListener_ = function(action) {
-      if (action) {
+    * GEView event listner callback function.
+    * @param action {string} the event action (viewchangebegin, viewchange, viewchangeend).
+    */
+    var viewEventListener_ = function(action) 
+    {
+      if(action)
+      {
         application.ViewEventCallBack(ge.getView(), action);
       }
     };
-      
+
     /**
-     * GEPlugin event listner callback function.
-     * @param action {string} the event action (frameend, balloonclose or balloonopening).
-     */
-    var pluginEventListener_ = function(action) {
-      if (action) {
+    * GEPlugin event listner callback function.
+    * @param action {string} the event action (frameend, balloonclose or balloonopening).
+    */
+    var pluginEventListener_ = function(action)
+    {
+      if(action)
+      {
         application.PluginEventCallBack(ge, action);
       }
     };
-      
+
     /**
-     * Methods to be invoked from managed code.
-     * jsPrefix
-     */
-     
+    * Methods to be invoked from managed code.
+    * jsPrefix
+    */
+    
     /**
-     * google.earth.executeBatch wrapper.
-     * Executes the specified function as a batch method
-     * @param {string} method The javascript to execute.
-     * @param {string} context A pramater to pass to the method
-     */
-    var jsExecuteBatch = function(method, context) {
+    * eval wrapper.
+    * Evaluates a string and executes it as if it was script code.
+    * @param {string} script The javascript to evaluate.
+    * @return {object} The result of the executed code.
+    */
+    var jsEvaluate = function(script)
+    {
+      return eval(script);
+    };
+
+    /**
+    * window.execScript wrapper.
+    * Executes the specified script in the javascript language.
+    * @param {string} script The javascript to execute.
+    */
+    var jsExecute = function(script)
+    {
+      window.execScript(script);
+    };
+
+    /**
+    * google.earth.executeBatch wrapper.
+    * Executes the specified function as a batch method
+    * @param {string} method The javascript to execute.
+    * @param {string} context A pramater to pass to the method
+    */
+    var jsExecuteBatch = function(method, context)
+    {
       var me = this;
       window.google.earth.executeBatch(ge, function() {
         method.call(me, context);
       });
     };
-      
+
     /**
-     * google.earth.addEventListener wrapper.
-     * Attaches a listener to a given object for a specific event; when the event occurs on the object, the given callback is invoked.
-     * @param feature {object} The object on which to listen to the event.
-     * @param hash {int} A unique hash for the object supplied in the feature parameter.
-     * @param action {string} The event string identifying the event to listen for.
-     * @param callback {string} A function that will be called when the event occurs on the object.
-     */
-    var jsAddEventListener = function(feature, hash, action, callback, useCapture) {
+    * google.earth.addEventListener wrapper.
+    * Attaches a listener to a given object for a specific event; when the event occurs on the object, the given callback is invoked.
+    * @param feature {object} The object on which to listen to the event.
+    * @param hash {int} A unique hash for the object supplied in the feature parameter.
+    * @param action {string} The event string identifying the event to listen for.
+    * @param callback {string} A function that will be called when the event occurs on the object.
+    */
+    var jsAddEventListener = function(feature, hash, action, callback, useCapture)
+    {     
       action = action.toLowerCase();
-      if (action == "viewchangebegin" || action == "viewchange" || action == "viewchangeend") {
+      if(action == "viewchangebegin" || action == "viewchange" || action == "viewchangeend")
+      {
         // view events 
-        events_.view[action] = function() {
-          viewEventListener_(action);
-        };
+        events_.view[action] = function() { viewEventListener_(action); };
         window.google.earth.addEventListener(feature, action, events_.view[action], useCapture);
-      } else if (action == "frameend" || action == "balloonclose" || action == "balloonopening") {
+      }
+      else if(action == "frameend" || action == "balloonclose" || action == "balloonopening")
+      {
         // plugin events
-        events_.plugin[action] = function() {
-          pluginEventListener_(action);
-        };
+        events_.plugin[action] = function() { pluginEventListener_(action); };
         window.google.earth.addEventListener(feature, action, events_.plugin[action], useCapture);
-      } else {
+      }
+      else
+      {
         // generic events
-        if (null === callback) {
-          callback = function(event) {
-            kmlEventListener_(event, action);
-          };
-        }
+        if(null == callback)
+        {
+          callback = function(event) { kmlEventListener_(event, action); };
+        } 
+        
         events_.generic[hash] = eval(callback);
         window.google.earth.addEventListener(feature, action, events_.generic[hash], useCapture);
       }
     };
-      
+
     /**
-     * google.earth.removeEventListener wrapper.
-     * Removes an event listener previously added using google.earth.addEventListener() from the event chain.
-     * @param feature {object} The object on which to listen to the event.
-     * @param hash {int} A unique hash for the object supplied in the feature parameter.
-     * @param action {string} The event string identifying the event to listen for.
-     * @param callback {string} The function that was set as the callback.
-     */
-    var jsRemoveEventListener = function(feature, hash, action, useCapture) {
+    * google.earth.removeEventListener wrapper.
+    * Removes an event listener previously added using google.earth.addEventListener() from the event chain.
+    * @param feature {object} The object on which to listen to the event.
+    * @param hash {int} A unique hash for the object supplied in the feature parameter.
+    * @param action {string} The event string identifying the event to listen for.
+    * @param callback {string} The function that was set as the callback.
+    */
+    var jsRemoveEventListener = function(feature, hash, action, useCapture)
+    {      
       action = action.toLowerCase();
-      if (action == "viewchangebegin" || action == "viewchange" || action == "viewchangeend") {
+      if(action == "viewchangebegin" || action == "viewchange" || action == "viewchangeend")
+      {
         // view events 
         window.google.earth.removeEventListener(feature, action, events_.view[action], useCapture);
         events_.view[action] = null;
-      } else if (action == "frameend" || action == "balloonclose" || action == "balloonopening") {
+      }
+      else if(action == "frameend" || action == "balloonclose" || action == "balloonopening")
+      {
         // plugin events
         window.google.earth.removeEventListener(feature, action, events_.plugin[action], useCapture);
         events_.plugin[action] = null;
-      } else {
+      }      
+      else
+      {       
         // generic events
         window.google.earth.removeEventListener(feature, action, events_.generic[hash], useCapture);
         events_.generic[hash] = null;
       }
     };
-      
+
     /**
-     * google.earth.fetchKml wrapper.
-     * Retrieves and parses a KML or KMZ file at the given URL and returns an instance of a KmlFeature-derived class representing the parsed KML object model.
-     * @param url {string} The path of the file to load.
-     * @param callback {string} The method to invoke on completion.
-     */
-    var jsFetchKml = function(url) {
-      window.google.earth.fetchKml(ge, url, function(kmlObject) {
-       if(kmlObject) {
-         application.FetchKmlCallback(kmlObject);
-        } else {
-         application.SendError("jsFetchKml", url);
-       }
-      }); 
+    * google.earth.fetchKml wrapper.
+    * Retrieves and parses a KML or KMZ file at the given URL and returns an instance of a KmlFeature-derived class representing the parsed KML object model.
+    * @param url {string} The path of the file to load.
+    * @param callback {string} The method to invoke on compleation.
+    */
+    var jsFetchKml = function(url, callback)
+    {
+      window.google.earth.fetchKml(ge, url, eval(callback));
     };
 
-    var jsFetchKmlSynchronous = function(url) {
-        window.google.earth.fetchKml(ge, url, function(event) {
-            window.external.FetchKmlSynchronousCallback(event, url);
+    /**
+    * GClientGeocoder.getLatLng wrapper.
+    * @param {string} address The address to attempt geocode.
+    * @return a GLatLng point on success, false on fail.
+    */
+    var jsDoGeocode = function(address) {
+        geocoder.geocode({ 'address': address }, function(results, status) {
+            if (status == google.maps.GeocoderStatus.OK) {
+                var point = results[0].geometry.location;
+                var lookat = ge.createLookAt('');
+                lookat.set(point.lat(), point.lng(), 100, ge.ALTITUDE_RELATIVE_TO_GROUND, 0, 0, 1000);
+                ge.getView().setAbstractView(lookat);
+                return point;
+            } else {
+                application.SendError("Geocode", address + ": " + status);
+            }
+            
+            return null;
         });
     };
-    
+
     /**
-     * GClientGeocoder.getLatLng wrapper.
-     * @param {string} address The address to attempt geocode.
-     * @return a GLatLng point on success, false on fail.
-     */
-    var jsDoGeocode = function(address) {
-      geocoder.geocode({
-        'address': address
-      }, function(results, status) {
-        if (status == google.maps.GeocoderStatus.OK) {
-          var point = results[0].geometry.location;
-          var lookat = ge.createLookAt('');
-          lookat.set(point.lat(), point.lng(), 0, ge.ALTITUDE_RELATIVE_TO_GROUND, 0, 0, 1000);
-          ge.getView().setAbstractView(lookat);
-          return point;
-        } else {
-          application.SendError("Geocode", address + ": " + status);
-        }
-        return null;
-      });
-    };
-      
-    /**
-     * google.earth.createInstance wrapper.
-     * Attempts to create an instance of the plugin.
-     * @param name {string} The name of the database to use (earth, moon or mars).
-     * @return {object} name param on success, false on fail.
-     */
-    var jsCreateInstance = function(name) {
+    * google.earth.createInstance wrapper.
+    * Attempts to create an instance of the plugin.
+    * @param name {string} The name of the database to use (earth, moon or mars).
+    * @return {object} name param on success, false on fail.
+    */
+    var jsCreateInstance = function(name)
+    {
       document.getElementById('map3d').innerHTML = '';
       var db = name.toLowerCase();
-      switch (db) {
-      case 'earth':
-        google.earth.createInstance('map3d', initCallback_, failureCallback_);
-        return db;
-      case 'mars':
-      case 'moon':
-        google.earth.createInstance('map3d', initCallback_, failureCallback_, {
-          database: 'http://khmdb.google.com/?db=' + db
-        });
-        return db;
-      default:
-        return false;
+      
+      switch(db)
+      {
+        case 'earth' :
+          google.earth.createInstance('map3d', initCallback_, failureCallback_);
+          return db;
+        case 'mars' :
+        case 'moon' :
+          google.earth.createInstance('map3d', initCallback_, failureCallback_,
+            { database: 'http://khmdb.google.com/?db=' + db });
+          return db;
+        default :
+          return false;
       }
     };
-      
+
     /**
-     * google.earth.setLanguage wrapper.
-     * Sets the langauge code for the plugin to use
-     * @param code {string} the langauge code to use.
-     */
-    var jsSetLanguage = function(code) {
+    * google.earth.setLanguage wrapper.
+    * Sets the langauge code for the plugin to use
+    * @param code {string} the langauge code to use.
+    */
+    var jsSetLanguage = function(code)
+    {
       google.earth.setLanguage(code);
       jsCreateInstance('earth');
     };
-      
+
     /**
-     * google.earth.getLanguage wrapper.
-     * Gets the current langauge code used by the plugin
-     * @return {string} the current langauge code.
-     */
-    var jsGetLanguage = function() {
+    * google.earth.getLanguage wrapper.
+    * Gets the current langauge code used by the plugin
+    * @return {string} the current langauge code.
+    */
+    var jsGetLanguage = function()
+    {
       return google.earth.getLanguage();
     };
-    
+
     /**
-     * google.earth.isInstalled wrapper.
-     * Whether or not the Google Earth Browser Plug-in is currently installed on the user's machine.
-     * @return {bool} true on success, false on fail.
-     */
-    var jsIsInstalled = function() {
+    * google.earth.isInstalled wrapper.
+    * Whether or not the Google Earth Browser Plug-in is currently installed on the user's machine.
+    * @return {bool} true on success, false on fail.
+    */
+    var jsIsInstalled = function()
+    {
       return google.earth.isInstalled();
     };
-      
+    
     google.setOnLoadCallback(init_);
     
     /* ]]> */
