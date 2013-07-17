@@ -1504,12 +1504,6 @@
             The com navigation control
             </summary>
         </member>
-        <member name="M:FC.GEPluginCtrls.GENavigationControl.#ctor(System.Object)">
-            <summary>
-            Initializes a new instance of the GENavigationControl class.
-            </summary>
-            <param name="ge">GEPlugin COM object</param>
-        </member>
         <member name="M:FC.GEPluginCtrls.GENavigationControl.#ctor(System.Object,FC.GEPluginCtrls.NavigationControl,FC.GEPluginCtrls.Visibility,System.Boolean)">
             <summary>
             Initializes a new instance of the GENavigationControl class.
@@ -1517,7 +1511,7 @@
             <param name="ge">GEPlugin COM object</param>
             <param name="controlType">The control type. default is NavigationControl.Large</param>
             <param name="visibility">The visibility of the control. default is Visibility.Show</param>
-            <param name="streetViewEnabled">Optionally enables the street view features. Default is true (on)</param>
+            <param name="streetViewEnabled">Optionally enables the street view features. Default is true</param>
         </member>
         <member name="P:FC.GEPluginCtrls.GENavigationControl.ControlType">
             <summary>
@@ -3637,7 +3631,7 @@
             <summary>
             Gets the internal ID for a Layer
             </summary>
-            <param name="input">Layer type</param>
+            <param name="layer">Layer type</param>
             <returns>The layer ID or an empty string</returns>
         </member>
         <member name="T:FC.GEPluginCtrls.KmlTreeViewNode">

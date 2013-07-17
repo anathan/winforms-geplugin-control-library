@@ -21,6 +21,7 @@ namespace FC.GEPluginCtrls
     using System;
     using System.Diagnostics;
     using System.Globalization;
+    using System.Linq;
     using System.Reflection;
     using System.Runtime.InteropServices;
     using System.Security;
@@ -79,13 +80,12 @@ namespace FC.GEPluginCtrls
             }
 
             ////ge.getLayerRoot().enableLayerById(layer.GetId(), value);
-            foreach (Layer eachLayer in Enum.GetValues(typeof(Layer)))
+            foreach (
+                Layer eachLayer in
+                    Enum.GetValues(typeof(Layer))
+                        .Cast<Layer>()
+                        .Where(eachLayer => !eachLayer.Equals(Layer.None) && layer.HasFlag(eachLayer)))
             {
-                if (eachLayer.Equals(Layer.None) || !layer.HasFlag(eachLayer))
-                {
-                    continue;
-                }
-
                 try
                 {
                     ge.getLayerRoot().enableLayerById(eachLayer.GetId(), value);
@@ -94,8 +94,9 @@ namespace FC.GEPluginCtrls
                 {
                     Debug.WriteLine("GetAllFeaturesKml: " + rbex, "GEHelpers");
                 }
-                catch (COMException)
+                catch (COMException cex)
                 {
+                    Debug.WriteLine("GetAllFeaturesKml: " + cex, "GEHelpers");
                 }
             }
         }

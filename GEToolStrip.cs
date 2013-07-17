@@ -273,80 +273,116 @@ namespace FC.GEPluginCtrls
             };
         }
 
+        public override void Refresh()
+        {
+            base.Refresh();
+            this.SynchronizeControl();
+        }
+
         #endregion
 
         #region Private methods
 
-/*
         /// <summary>
-        /// Resets the tool strip's menu items to match the default initialization state of the plug-in.
+        /// Force the tool-strip to conform to the plug-in settings
         /// </summary>
-        private void ResetToolStripDefaults()
+        private void SynchronizeControl()
         {
+            if (!this.browser.PluginIsReady)
+            {
+                return;
+            }
+
+            // options
             this.earthMenuItem.Checked = true;
-            this.marsMenuItem.Checked = false;
-            this.moonMenuItem.Checked = false;
-            this.statusBarMenuItem.Checked = false;
-            this.gridMenuItem.Checked = false;
-            this.overviewMapMenuItem.Checked = false;
-            this.scaleLegendMenuItem.Checked = false;
-            this.atmosphereMenuItem.Checked = true;
-            this.mouseNavigationMenuItem.Checked = true;
-            this.imperialUnitsMenuItem.Checked = false;
-            this.scaleLegendMenuItem.Checked = false;
-            this.overviewMapMenuItem.Checked = false;
-            this.skyMenuItem.Checked = false;
-            this.sunMenuItem.Checked = false;
-            this.controlsMenuItem.Checked = false;
+            this.statusBarMenuItem.Checked = this.options.StatusBarVisibility;
+            this.statusBarMenuItem.Checked = this.options.StatusBarVisibility;
+            this.gridMenuItem.Checked = this.options.GridVisibility;
+            this.overviewMapMenuItem.Checked = this.options.OverviewMapVisibility;
+            this.scaleLegendMenuItem.Checked = this.options.ScaleLegendVisibility;
+            this.atmosphereMenuItem.Checked = this.options.AtmosphereVisibility;
+            this.mouseNavigationMenuItem.Checked = this.options.MouseNavigationEnabled;
+            this.scaleLegendMenuItem.Checked = this.options.ScaleLegendVisibility;
+            this.overviewMapMenuItem.Checked = this.options.OverviewMapVisibility;
+            this.imperialUnitsMenuItem.Checked = this.options.UnitsFeetMiles;
+            this.controlsMenuItem.Checked = Convert.ToBoolean(this.control.Visibility);
+            this.sunMenuItem.Checked = Convert.ToBoolean(this.browser.Plugin.getSun().getVisibility());
+
+            // imagery items
+            foreach (ToolStripMenuItem item in this.imageryDropDownButton.DropDownItems)
+            {
+                item.Enabled = true;
+                item.Checked = false;
+            }
+
+            // if we aren't in Earth mode layers don't matter
+            if (this.browser.ImageryBase != ImageryBase.Earth)
+            {
+                this.skyMenuItem.Checked = true;
+                return;
+            }
+
+            this.earthMenuItem.Checked = true;
+
+            // layers
+            this.bordersMenuItem.Checked = Layer.Borders.GetInheritedVisibility(this.browser);
+            this.buildingsMenuItem.Checked = Layer.Buildings.GetInheritedVisibility(this.browser);
+            this.buildingsGreyMenuItem.Checked = Layer.BuildingsLowRes.GetInheritedVisibility(this.browser);
+            this.roadsMenuItem.Checked = Layer.Roads.GetInheritedVisibility(this.browser);
+            this.terrainMenuItem.Checked = Layer.Terrain.GetInheritedVisibility(this.browser);
+            this.treesMenuItem.Checked = Layer.Trees.GetInheritedVisibility(this.browser);
         }
-*/
 
         /// <summary>
         /// Force the plug-in to conform to the tool-strip settings
         /// </summary>
         private void SynchronizeOptions()
         {
-            if (this.browser.PluginIsReady)
+            if (!this.browser.PluginIsReady)
             {
-                // checked: t(1)+1=2 = MapType.Sky - unchecked: f(0)+1=1 = MapType.Earth
-                this.options.SetMapType((MapType)Convert.ToUInt16(this.skyMenuItem.Checked) + 1);
-
-                this.options.StatusBarVisibility = this.statusBarMenuItem.Checked;
-                this.options.StatusBarVisibility = this.statusBarMenuItem.Checked;
-                this.options.GridVisibility = this.gridMenuItem.Checked;
-                this.options.OverviewMapVisibility = this.overviewMapMenuItem.Checked;
-                this.options.ScaleLegendVisibility = this.scaleLegendMenuItem.Checked;
-                this.options.AtmosphereVisibility = this.atmosphereMenuItem.Checked;
-                this.options.MouseNavigationEnabled = this.mouseNavigationMenuItem.Checked;
-                this.options.ScaleLegendVisibility = this.scaleLegendMenuItem.Checked;
-                this.options.OverviewMapVisibility = this.overviewMapMenuItem.Checked;
-                this.options.UnitsFeetMiles = this.imperialUnitsMenuItem.Checked;
-                this.control.Visibility = (Visibility)Convert.ToUInt16(this.controlsMenuItem.Checked);
-
-                // no wrapper for the sun - so make a direct api call to GEPlugin.getSun().setVisibility()
-                this.browser.Plugin.getSun().setVisibility(Convert.ToUInt16(this.sunMenuItem.Checked));
-
-                if (this.browser.ImageryBase == ImageryBase.Earth)
-                {
-                    GEHelpers.EnableLayer(this.browser.Plugin, Layer.Borders, this.bordersMenuItem.Checked);
-                    GEHelpers.EnableLayer(this.browser.Plugin, Layer.Buildings, this.buildingsMenuItem.Checked);
-                    GEHelpers.EnableLayer(this.browser.Plugin, Layer.BuildingsLowRes, this.buildingsGreyMenuItem.Checked);
-                    GEHelpers.EnableLayer(this.browser.Plugin, Layer.Roads, this.roadsMenuItem.Checked);
-                    GEHelpers.EnableLayer(this.browser.Plugin, Layer.Terrain, this.terrainMenuItem.Checked);
-                    GEHelpers.EnableLayer(this.browser.Plugin, Layer.Trees, this.treesMenuItem.Checked);
-
-                    foreach (ToolStripMenuItem item in this.imageryDropDownButton.DropDownItems)
-                    {
-                        // every imagery item is enabled and unchecked
-                        item.Enabled = true;
-                        item.Checked = false;
-                    }
-
-                    // the Earth item is checked and disabled
-                    this.earthMenuItem.Checked = true;
-                    this.earthMenuItem.Enabled = false;
-                }
+                return;
             }
+
+            // checked: t(1)+1=2 = MapType.Sky - unchecked: f(0)+1=1 = MapType.Earth
+            this.options.SetMapType((MapType)Convert.ToUInt16(this.skyMenuItem.Checked) + 1);
+
+            this.options.StatusBarVisibility = this.statusBarMenuItem.Checked;
+            this.options.StatusBarVisibility = this.statusBarMenuItem.Checked;
+            this.options.GridVisibility = this.gridMenuItem.Checked;
+            this.options.OverviewMapVisibility = this.overviewMapMenuItem.Checked;
+            this.options.ScaleLegendVisibility = this.scaleLegendMenuItem.Checked;
+            this.options.AtmosphereVisibility = this.atmosphereMenuItem.Checked;
+            this.options.MouseNavigationEnabled = this.mouseNavigationMenuItem.Checked;
+            this.options.ScaleLegendVisibility = this.scaleLegendMenuItem.Checked;
+            this.options.OverviewMapVisibility = this.overviewMapMenuItem.Checked;
+            this.options.UnitsFeetMiles = this.imperialUnitsMenuItem.Checked;
+            this.control.Visibility = (Visibility)Convert.ToUInt16(this.controlsMenuItem.Checked);
+
+            // no wrapper for the sun - so make a direct api call to GEPlugin.getSun().setVisibility()
+            this.browser.Plugin.getSun().setVisibility(Convert.ToUInt16(this.sunMenuItem.Checked));
+
+            if (this.browser.ImageryBase != ImageryBase.Earth)
+            {
+                return;
+            }
+
+            GEHelpers.EnableLayer(this.browser.Plugin, Layer.Borders, this.bordersMenuItem.Checked);
+            GEHelpers.EnableLayer(this.browser.Plugin, Layer.Buildings, this.buildingsMenuItem.Checked);
+            GEHelpers.EnableLayer(this.browser.Plugin, Layer.BuildingsLowRes, this.buildingsGreyMenuItem.Checked);
+            GEHelpers.EnableLayer(this.browser.Plugin, Layer.Roads, this.roadsMenuItem.Checked);
+            GEHelpers.EnableLayer(this.browser.Plugin, Layer.Terrain, this.terrainMenuItem.Checked);
+            GEHelpers.EnableLayer(this.browser.Plugin, Layer.Trees, this.treesMenuItem.Checked);
+
+            foreach (ToolStripMenuItem item in this.imageryDropDownButton.DropDownItems)
+            {
+                // every imagery item is enabled and unchecked
+                item.Enabled = true;
+                item.Checked = false;
+            }
+
+            // the Earth item is checked and disabled
+            this.earthMenuItem.Checked = true;
+            this.earthMenuItem.Enabled = false;
         }
 
         /// <summary>
