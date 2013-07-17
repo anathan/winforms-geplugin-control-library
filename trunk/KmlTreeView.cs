@@ -160,7 +160,7 @@ namespace FC.GEPluginCtrls
         /// <param name="feature">The KML object to parse</param>
         public void ParseKmlObject(dynamic feature)
         {
-            this.Nodes.Add(this.CreateNode(feature));
+            this.Nodes.Add(CreateNode(feature));
             this.Refresh();
         }
 

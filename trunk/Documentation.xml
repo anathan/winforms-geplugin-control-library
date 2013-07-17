@@ -1817,6 +1817,11 @@
             <param name="instance">The GEWebBrowser instance</param>
             <example>Example: GEToolStrip.SetBrowserInstance(GEWebBrowser)</example>
         </member>
+        <member name="M:FC.GEPluginCtrls.GEToolStrip.SynchronizeControl">
+            <summary>
+            Force the tool-strip to conform to the plug-in settings
+            </summary>
+        </member>
         <member name="M:FC.GEPluginCtrls.GEToolStrip.SynchronizeOptions">
             <summary>
             Force the plug-in to conform to the tool-strip settings
