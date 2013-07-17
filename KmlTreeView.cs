@@ -1,4 +1,4 @@
-﻿// <copyright file="KMLTreeView.cs" company="FC">
+ // <copyright file="KMLTreeView.cs" company="FC">
 // Copyright (c) 2011 Fraser Chapman
 // </copyright>
 // <author>Fraser Chapman</author>
@@ -584,7 +584,7 @@ namespace FC.GEPluginCtrls
 
                 if (data != null)
                 {
-                    KmlTreeViewNode link = this.CreateNode(data);
+                    KmlTreeViewNode link = CreateNode(data);
 
                     if (rebuild)
                     {
@@ -622,7 +622,7 @@ namespace FC.GEPluginCtrls
                         // and push it on to the stack. 
                         try
                         {
-                            children.Push(this.CreateNode(kmlChildNodes.item(i)));
+                            children.Push(CreateNode(kmlChildNodes.item(i)));
                         }
                         catch (COMException)
                         {
