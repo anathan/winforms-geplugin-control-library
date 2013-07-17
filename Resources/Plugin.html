@@ -254,16 +254,27 @@
     };
 
     /**
-    * google.earth.fetchKml wrapper.
-    * Retrieves and parses a KML or KMZ file at the given URL and returns an instance of a KmlFeature-derived class representing the parsed KML object model.
-    * @param url {string} The path of the file to load.
-    * @param callback {string} The method to invoke on compleation.
-    */
-    var jsFetchKml = function(url, callback)
-    {
-      window.google.earth.fetchKml(ge, url, eval(callback));
+     * google.earth.fetchKml wrapper.
+     * Retrieves and parses a KML or KMZ file at the given URL and returns an instance of a KmlFeature-derived class representing the parsed KML object model.
+     * @param url {string} The path of the file to load.
+     * @param callback {string} The method to invoke on completion.
+     */
+    var jsFetchKml = function(url) {
+      window.google.earth.fetchKml(ge, url, function(kmlObject) {
+       if(kmlObject) {
+         application.FetchKmlCallback(kmlObject);
+        } else {
+         application.SendError("jsFetchKml", url);
+       }
+      }); 
     };
 
+    var jsFetchKmlSynchronous = function(url) {
+        window.google.earth.fetchKml(ge, url, function(event) {
+            window.external.FetchKmlSynchronousCallback(event, url);
+        });
+    };
+    
     /**
     * GClientGeocoder.getLatLng wrapper.
     * @param {string} address The address to attempt geocode.
