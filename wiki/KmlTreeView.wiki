@@ -66,13 +66,6 @@ The KMLTreeViewcontrol inherits from the standard [http://msdn.microsoft.com/en-
 /// </summary>
 public KmlTreeView()
 
-/// <summary>
-/// Initializes a new instance of the KmlTreeView class.
-/// </summary>
-/// <param name="browser">The GEWebBrowser instance to work with</param>
-/// <remarks>Equivalent to initializing then calling <see cref="SetBrowserInstance"/></remarks>
-public KmlTreeView(GEWebBrowser browser)
-
 }}}
 
 == Public methods == 
