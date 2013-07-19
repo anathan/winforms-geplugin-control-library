@@ -12,15 +12,50 @@ https://sites.google.com/site/earthapi2/KmlTreeView2.jpg
 
 The KMLTreeView control intergtes with the GEWebBrowser to display kml/kmz files in a standard tree structure. 
 
+= Example =
+
+This example presumes you have an instance of the GEWebBrowser and KmlTreeView on a Form. It shows how to load and display the same KML data in KmlTreeView and plug-in.
+ 
+{{{
+public partial class Form1 : Form
+{
+  public Form1()
+  {
+    InitializeComponent();
+    
+    // load the plugin
+    this.geWebBrowser1.LoadEmbeddedPlugin();
+    
+    // set up the events we need, plugin ready and kml loaded
+    this.geWebBrowser1.PluginReady += this.geWebBrowser1_PluginReady;
+    this.geWebBrowser1.KmlLoaded += this.geWebBrowser1_KmlLoaded;
+  }
+
+  // when the plugin is ready
+  void geWebBrowser1_PluginReady(object sender, GEEventArgs e)
+  {
+    // tell the treeview which browser to work with
+    this.kmlTreeView1.SetBrowserInstance(this.geWebBrowser1);
+    
+    // load some kml data
+    geWebBrowser1.FetchKml("https://developers.google.com/kml/documentation/KML_Samples.kml");
+    
+  }
+  
+  // when kml has been loaded
+  void geWebBrowser1_KmlLoaded(object sender, GEEventArgs e)
+  {
+    // load the kml data into the plug-in and treeview
+    this.geWebBrowser1.ParseKmlObject(e.ApiObject);
+    this.kmlTreeView1.ParseKmlObject(e.ApiObject);
+  }
+}
+}}}
+
+kmlTreeView1.setBrowserInstnc
 = Details =
 
 The KMLTreeViewcontrol inherits from the standard [http://msdn.microsoft.com/en-us/library/system.web.ui.webcontrols.treeview.aspx System.Windows.Forms.TreeView] control class and has the same base members, methods, properties and events. 
-
-= Visual Designer = 
-
-These are the control options as they appear in the designer when using the control in Visual Studio.
-
-https://sites.google.com/site/earthapi2/KmlTreeViewProperties.jpg
 
 == Constructors == 
 
@@ -38,103 +73,18 @@ public KmlTreeView()
 /// <remarks>Equivalent to initializing then calling <see cref="SetBrowserInstance"/></remarks>
 public KmlTreeView(GEWebBrowser browser)
 
-
-/// <summary>
-/// Initializes a new instance of the KmlTreeView class.
-/// </summary>
-/// <param name="browser">The GEWebBrowser instance to work with</param>
-/// <param name="kmlObject">A kml object to parse into the tree</param>
-/// <remarks>
-/// Equivalent to initializing, calling <see cref="SetBrowserInstance"/>
-/// then calling ParseKmlObject 
-/// </remarks>
-public KmlTreeView(GEWebBrowser browser, dynamic kmlObject)
-
-}}}
-
-== Public properties ==
-
-{{{
-/// <summary>
-/// Gets or sets the minimum height of any balloons triggered from the control
-/// </summary>
-public int BalloonMinimumHeight
-
-/// <summary>
-/// Gets or sets the minimum width of any balloons triggered from the control
-/// </summary>
-public int BalloonMinimumWidth
-
-/// <summary>
-/// Gets or sets a value indicating whether the treeview should check all children when a parent is checked. Default True
-/// </summary>
-public bool CheckAllChildren
-
-/// <summary>
-/// Gets or sets a value indicating whether to expand the tree node based on the kml object's visiblity.
-/// If true and the kml object is visible the node expands on construction.
-/// The default setting is false.
-/// <remarks>Please note network links have a further setting to allow this behavior <see cref="ExpandVisibleNetworkLinks"/></remarks>
-/// </summary>
-public bool ExpandVisibleFeatures
-
-/// <summary>
-/// Gets or sets a value indicating whether to expand the tree nodes based on the networklink's visiblity.
-/// If true, and the networklink is visible (and <see cref="ExpandVisibleFeatures"/> is set to true)
-/// the node expands on construction.
-/// The default setting is false.
-/// </summary>
-/// <remarks>
-/// Setting this to true can cause the tree to take a long time to load a large chains of networklinks
-/// if they themselves are set to visible.
-/// </remarks>
-public bool ExpandVisibleNetworkLinks
-
-/// <summary>
-/// Gets or sets a value indicating whether the treeview should expand to show the contents of networklinks 
-/// when they are loaded. Default true.
-/// </summary>
-/// <remarks>
-/// When set to true the tree gives better visual feedback when links have finished loading.
-/// </remarks>
-public bool ExpandNetworkLinkContentOnLoad
-
-/// <summary>
-/// Gets or sets a value indicating whether the plugin should 'fly to' the location (if any) of the
-/// feature represented by the treenode
-/// The default setting is true
-/// </summary>
-public bool FlyToOnDoubleClickNode
-
-/// <summary>
-/// Gets or sets a value indicating whether to open the balloon (if any) when
-/// feature represented by the treenode is double clicked
-/// The default setting is true
-/// </summary>
-public bool OpenBalloonsOnDoubleClick
-
-/// <summary>
-/// Gets or sets a value indicating whether to use unsafe html balloons (if any) when
-/// feature represented by the treenode is double clicked
-/// The default setting is false
-/// </summary>
-public bool UseUnsafeHtmlBalloons
-
-/// <summary>
-/// Gets or sets a value indicating whether nodes should use the kml descripton for their tooltip text
-/// The default setting is false and the snippet is used instead.
-/// </summary>
-public bool UseDescriptionsForToolTips
-
-/// <summary>
-/// Gets or sets a value indicating whether ToolTips are show for a node. By default the snippet is used if turned on. Default is true
-/// </summary>
-public new bool ShowNodeToolTips
 }}}
 
 == Public methods == 
 
 {{{
+/// <summary>
+/// Creates a KmlTreeViewNode from an KML feature 
+/// </summary>
+/// <param name="feature">The KML feature to base the node on</param>
+/// <returns>A KmlTreeViewNode based on the feature</returns>
+public static KmlTreeViewNode CreateNode(dynamic feature)
+
 /// <summary>
 /// Recursively parses a kml object into the tree
 /// </summary>
