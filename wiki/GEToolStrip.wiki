@@ -119,10 +119,10 @@ public void SetBrowserInstance(GEWebBrowser browser)
 
 == Source == 
 
-[http://code.google.com/p/winforms-geplugin-control-library/source/browse/trunk/Controls/GEToolStrip.cs GEToolStrip.cs]
+[http://code.google.com/p/winforms-geplugin-control-library/source/browse/trunk/GEToolStrip.cs GEToolStrip.cs]
 
-[http://code.google.com/p/winforms-geplugin-control-library/source/browse/trunk/Controls/GEToolStrip.Designer.cs GEToolStrip.Designer.cs]
+[http://code.google.com/p/winforms-geplugin-control-library/source/browse/trunk/GEToolStrip.Designer.cs GEToolStrip.Designer.cs]
 
-[http://code.google.com/p/winforms-geplugin-control-library/source/browse/trunk/Controls/GEToolStrip.resx GEToolStrip.resx]
+[http://code.google.com/p/winforms-geplugin-control-library/source/browse/trunk/GEToolStrip.resx GEToolStrip.resx]
 
 <wiki:gadget url="http://earthapi.googlepages.com/ad.xml" border="0" width="728" height="90" />
