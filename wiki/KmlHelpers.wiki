@@ -18,7 +18,7 @@ Some of the code is based on the "GEHelpers javasctipt library" by Roman Nurik. 
 
 == Source == 
 
-[http://code.google.com/p/winforms-geplugin-control-library/source/browse/trunk/Helpers/KmlHelpers.cs KmlHelpers.cs]
+[http://code.google.com/p/winforms-geplugin-control-library/source/browse/trunk/KmlHelpers.cs KmlHelpers.cs]
 
 == Remarks ==
 
