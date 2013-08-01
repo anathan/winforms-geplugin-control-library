@@ -1,4 +1,4 @@
-﻿// <copyright file="GEServer.cs" company="FC">
+ // <copyright file="GEServer.cs" company="FC">
 // Copyright (c) 2008 Fraser Chapman
 // </copyright>
 // <author>Fraser Chapman</author>
@@ -86,12 +86,6 @@ namespace FC.GEPluginCtrls.HttpServer
                     this.Port));
             }
         }
-
-        /// <summary>
-        /// Gets or sets the default file name 
-        /// The default value is "default. "
-        /// </summary>
-        public string DefaultFileName { get; set; }
 
         /// <summary>
         /// Gets or sets the IP Address for the server to use 
@@ -422,45 +416,13 @@ namespace FC.GEPluginCtrls.HttpServer
         /// </summary>
         /// <param name="requestUri">the uri for the file</param>
         /// <returns>the local file path for the uri</returns>
-        private static string TranslatePath(string requestUri)
+        private static string TranslatePath(Uri requestUri)
         {
-            string directory = Path.GetDirectoryName(requestUri.Replace("/", Path.DirectorySeparatorChar.ToString(CultureInfo.InvariantCulture)));
-            string fileName = Path.GetFileName(requestUri);
-
-            if (!string.IsNullOrEmpty(directory))
-            {
-                // remove any leading slash from the path
-                if (directory.StartsWith(Path.DirectorySeparatorChar.ToString(CultureInfo.InvariantCulture), StringComparison.OrdinalIgnoreCase))
-                {
-                    directory = directory.TrimStart(Path.DirectorySeparatorChar);
-                }
-
-                // add a trailing slash to the path if required
-                if (!directory.EndsWith(Path.DirectorySeparatorChar.ToString(CultureInfo.InvariantCulture), StringComparison.OrdinalIgnoreCase))
-                {
-                    directory += Path.DirectorySeparatorChar.ToString(CultureInfo.InvariantCulture);
-                }
-            }
-
-            if (string.IsNullOrEmpty(fileName))
-            {
-                fileName = "default.kml";
-            }
-
-            // builds the local file path and removes any double slashes e.g. 
-            // \root\dir\file.kml
-            string path = string.Format(
-                CultureInfo.InvariantCulture,
-                "{0}{1}{2}{3}",
-                RootDirectory,
-                Path.DirectorySeparatorChar.ToString(CultureInfo.InvariantCulture),
-                directory,
-                fileName).Replace(
-                Path.DirectorySeparatorChar.ToString(CultureInfo.InvariantCulture) +
-                Path.DirectorySeparatorChar.ToString(CultureInfo.InvariantCulture),
-                Path.DirectorySeparatorChar.ToString(CultureInfo.InvariantCulture));
-
-            return path;
+            string url = requestUri.ToString();
+            string rawUri = url.Replace("/", Path.DirectorySeparatorChar.ToString(CultureInfo.InvariantCulture));
+            string directory = Path.GetDirectoryName(rawUri) ?? string.Empty;
+            string fileName = Path.GetFileName(url) ?? string.Empty;
+            return Path.Combine(RootDirectory, directory.TrimStart(Path.DirectorySeparatorChar), fileName);
         }
 
         /// <summary>
