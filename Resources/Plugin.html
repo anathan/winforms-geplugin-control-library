@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="en">
   <!--
   |
@@ -28,6 +28,7 @@
     you should place it on a publicly accessible server and generate a valid API key for it -->
     <!-- google.earth.api -->
     <script type="text/javascript" src="http://www.google.com/jsapi"></script>
+    <script type="text/javascript" src="https://earth-api-utility-library.googlecode.com/svn/trunk/extensions/dist/extensions.pack.js"></script>
     <script type="text/javascript">
       /* <![CDATA[ */
 
@@ -35,6 +36,7 @@
     google.load('maps','3.6', { other_params: 'sensor=false' });
     
     var ge = null; // GEPlugin
+    var gex = null; // GEarthExtensions
     var geocoder = null; // GClientGeocoder
     var application = null; // External
     
@@ -74,7 +76,7 @@
     var initCallback_ = function(object)
     {
       ge = object;
-
+      gex = new GEarthExtensions(ge);
       geocoder = new window.google.maps.Geocoder(); //v3
       ge.getWindow().setVisibility(true);
       
@@ -279,15 +281,18 @@
     * GClientGeocoder.getLatLng wrapper.
     * @param {string} address The address to attempt geocode.
     * @return a GLatLng point on success, false on fail.
+    * TODO: allow a callback method to be specified in managed code
     */
     var jsDoGeocode = function(address) {
         geocoder.geocode({ 'address': address }, function(results, status) {
             if (status == google.maps.GeocoderStatus.OK) {
-                var point = results[0].geometry.location;
-                var lookat = ge.createLookAt('');
-                lookat.set(point.lat(), point.lng(), 100, ge.ALTITUDE_RELATIVE_TO_GROUND, 0, 0, 1000);
-                ge.getView().setAbstractView(lookat);
-                return point;
+                var viewport = results[0].geometry.viewport;
+                var bounds = new geo.Bounds(viewport.getSouthWest(), viewport.getNorthEast());
+                gex.view.setToBoundsView(bounds, {
+                  aspectRatio: 1.0
+                });
+                
+                return results;
             } else {
                 application.SendError("Geocode", address + ": " + status);
             }
@@ -358,7 +363,7 @@
     /* ]]> */
     </script>
     <style type="text/css">
-      html { height: 100% }
+      html, body { height: 100% }
       body { height: 100%; margin: 0; padding: 0; cursor: none; }
       #map3d { height: 100% }
     </style>
